@@ -1,5 +1,0 @@
-# REST clients
-
-REST clients.
-
-
