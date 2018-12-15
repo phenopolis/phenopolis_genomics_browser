@@ -1,0 +1,1296 @@
+---
+swagger: "2.0"
+info:
+  description: ""
+  version: "1.0.0"
+  title: "Phenopolis API"
+  termsOfService: "http://swagger.io/terms/"
+  contact:
+    email: "info@phenopolis.org"
+  license:
+    name: "Apache 2.0"
+    url: "http://www.apache.org/licenses/LICENSE-2.0.html"
+host: "www.phenopolis.org"
+basePath: "/v1"
+tags:
+- name: "variant"
+  description: "Variant information"
+  externalDocs:
+    description: ""
+    url: "http://www.phenopolis.org"
+- name: "gene"
+  description: "Gene information"
+- name: "phenotype"
+  description: "Phenotype information"
+  externalDocs:
+    description: ""
+    url: "http://www.phenopolis.org"
+schemes:
+- "https"
+- "http"
+paths:
+  /variants:
+    post:
+      tags:
+      - "variants"
+      summary: "Finds Variants by patient or gene or chrom:range"
+      operationId: "find_variants_by_patient_or_gene_or_range"
+      produces:
+      - "application/json"
+      parameters:
+      - in: "body"
+        name: "variantFilters"
+        description: ""
+        required: false
+        schema:
+          $ref: "#/definitions/VariantFilters"
+      responses:
+        200:
+          description: "successful operation"
+          schema:
+            $ref: "#/definitions/inline_response_200"
+        400:
+          description: "Invalid status value"
+      security:
+      - phenopolis_auth:
+        - "write:variants"
+        - "read:variants"
+      x-swagger-router-controller: "swagger_server.controllers.variants_controller"
+  /gene:
+    get:
+      tags:
+      - "gene"
+      summary: ""
+      description: ""
+      operationId: "get_gene_by_id"
+      produces:
+      - "application/json"
+      parameters:
+      - name: "id"
+        in: "query"
+        description: "Gene ENSEMBL id"
+        required: true
+        type: "array"
+        items:
+          type: "string"
+      responses:
+        200:
+          description: "successful operation"
+          schema:
+            type: "array"
+            items:
+              $ref: "#/definitions/Gene"
+        400:
+          description: "Invalid tag value"
+      security:
+      - phenopolis_auth:
+        - "write:variants"
+        - "read:variants"
+      x-swagger-router-controller: "swagger_server.controllers.gene_controller"
+  /variant/{variantId}:
+    get:
+      tags:
+      - "variant"
+      summary: "Find variant by ID"
+      description: "Returns a single variant"
+      operationId: "get_variant_by_id"
+      produces:
+      - "application/json"
+      parameters:
+      - name: "variantId"
+        in: "path"
+        description: "ID of variant to return"
+        required: true
+        type: "integer"
+        format: "int64"
+      responses:
+        200:
+          description: "successful operation"
+          schema:
+            $ref: "#/definitions/Variant"
+        400:
+          description: "Invalid ID supplied"
+        404:
+          description: "Variant not found"
+      security:
+      - api_key: []
+      x-swagger-router-controller: "swagger_server.controllers.variant_controller"
+  /hpo/:
+    get:
+      tags:
+      - "phenotype"
+      summary: "Returns Human Phenotype Ontology (HPO)"
+      description: ""
+      operationId: "get_hp_oby_id"
+      produces:
+      - "application/json"
+      parameters: []
+      responses:
+        200:
+          description: "successful operation"
+          schema:
+            $ref: "#/definitions/HPO"
+      security:
+      - api_key: []
+      x-swagger-router-controller: "swagger_server.controllers.phenotype_controller"
+  /patient:
+    get:
+      tags:
+      - "patient"
+      summary: "Returns patient"
+      description: ""
+      operationId: "get_patient_by_id"
+      produces:
+      - "application/json"
+      parameters: []
+      responses:
+        200:
+          description: "successful operation"
+          schema:
+            $ref: "#/definitions/Patient"
+      security:
+      - api_key: []
+      x-swagger-router-controller: "swagger_server.controllers.patient_controller"
+securityDefinitions:
+  phenopolis_auth:
+    type: "oauth2"
+    authorizationUrl: "https://www.phenopolis.org/oauth/dialog"
+    flow: "implicit"
+    scopes:
+      write:variants: "modify variants in your account"
+      read:variants: "read your variants"
+  api_key:
+    type: "apiKey"
+    name: "api_key"
+    in: "header"
+definitions:
+  VariantFilters:
+    type: "object"
+    properties:
+      chromosome:
+        type: "string"
+        description: "if queried from e.g. gene or range"
+      start:
+        type: "integer"
+      stop:
+        type: "integer"
+      gene:
+        type: "string"
+      genotypes:
+        type: "array"
+        description: "This is where you query a patient's variants. Note that you\
+          \ can also do simple arbitrary segregations here"
+        items:
+          $ref: "#/definitions/VariantFilters_genotypes"
+      gnomad:
+        $ref: "#/definitions/VariantFilters_gnomad"
+      cadd:
+        $ref: "#/definitions/VariantFilters_gnomad_af"
+    description: "common filters used to filter variants"
+    example:
+      cadd:
+        min: 1.46581298050294517310021547018550336360931396484375
+        max: 5.962133916683182377482808078639209270477294921875
+      stop: 6
+      gene: "gene"
+      chromosome: "chromosome"
+      start: 0
+      genotypes:
+      - patient: "patient"
+      - patient: "patient"
+      gnomad:
+        af:
+          min: 1.46581298050294517310021547018550336360931396484375
+          max: 5.962133916683182377482808078639209270477294921875
+        include_null: true
+        an: 100.0
+        hf:
+          min: 1.46581298050294517310021547018550336360931396484375
+          max: 5.962133916683182377482808078639209270477294921875
+  Variants:
+    type: "array"
+    description: "collection of variants, but with less detail"
+    items:
+      $ref: "#/definitions/Variants_inner"
+  GnomadBase:
+    type: "object"
+    properties:
+      hc:
+        type: "integer"
+        description: "homozygote count"
+      hf:
+        type: "number"
+        description: "estimated homozygote frequency"
+      ac:
+        type: "integer"
+        description: "alternative allele count"
+      an:
+        type: "integer"
+        description: "total allele count"
+      af:
+        type: "number"
+        description: "alternative allele frequency"
+    example:
+      ac: 7
+      af: 4.9652184929849543237878606305457651615142822265625
+      hc: 1
+      an: 1
+      hf: 6.8468526983526398765889098285697400569915771484375
+  AgeHist:
+    type: "object"
+    properties:
+      30:
+        type: "integer"
+      35:
+        type: "integer"
+      40:
+        type: "integer"
+      45:
+        type: "integer"
+      50:
+        type: "integer"
+      55:
+        type: "integer"
+      60:
+        type: "integer"
+      65:
+        type: "integer"
+      70:
+        type: "integer"
+      75:
+        type: "integer"
+      80:
+        type: "integer"
+      <30:
+        type: "integer"
+      '>80':
+        type: "integer"
+    description: "gnomad release 2.1 introduces age histogram"
+    example:
+      55: 7
+      45: 5
+      35: 1
+      '>80': 1
+      80: 7
+      70: 2
+      <30: 1
+      60: 9
+      50: 2
+      40: 5
+      30: 6
+      75: 4
+      65: 3
+  Gnomad:
+    type: "object"
+    properties:
+      filters:
+        $ref: "#/definitions/Gnomad_filters"
+      covered:
+        type: "boolean"
+      pop_filter:
+        type: "array"
+        description: "Populations that have far too many carriers than average. Used\
+          \ in Phenogenon"
+        items:
+          type: "string"
+      ageHet:
+        $ref: "#/definitions/AgeHist"
+      ageHom:
+        $ref: "#/definitions/AgeHist"
+      afr:
+        $ref: "#/definitions/GnomadBase"
+      amr:
+        $ref: "#/definitions/GnomadBase"
+      asj:
+        $ref: "#/definitions/GnomadBase"
+      eas:
+        $ref: "#/definitions/GnomadBase"
+      fin:
+        $ref: "#/definitions/GnomadBase"
+      nfe:
+        $ref: "#/definitions/GnomadBase"
+      sas:
+        $ref: "#/definitions/GnomadBase"
+      oth:
+        $ref: "#/definitions/GnomadBase"
+      male:
+        $ref: "#/definitions/GnomadBase"
+      female:
+        $ref: "#/definitions/GnomadBase"
+      overall:
+        $ref: "#/definitions/GnomadBase"
+    description: "gnomad release 2.1 returns much richer details such as age distribution\
+      \ of the carriers."
+    example:
+      oth:
+        ac: 7
+        af: 4.9652184929849543237878606305457651615142822265625
+        hc: 1
+        an: 1
+        hf: 6.8468526983526398765889098285697400569915771484375
+      sas:
+        ac: 7
+        af: 4.9652184929849543237878606305457651615142822265625
+        hc: 1
+        an: 1
+        hf: 6.8468526983526398765889098285697400569915771484375
+      ageHom:
+        55: 7
+        45: 5
+        35: 1
+        '>80': 1
+        80: 7
+        70: 2
+        <30: 1
+        60: 9
+        50: 2
+        40: 5
+        30: 6
+        75: 4
+        65: 3
+      amr:
+        ac: 7
+        af: 4.9652184929849543237878606305457651615142822265625
+        hc: 1
+        an: 1
+        hf: 6.8468526983526398765889098285697400569915771484375
+      fin:
+        ac: 7
+        af: 4.9652184929849543237878606305457651615142822265625
+        hc: 1
+        an: 1
+        hf: 6.8468526983526398765889098285697400569915771484375
+      filters:
+        genome: "genome"
+        exome: "exome"
+      pop_filter:
+      - "pop_filter"
+      - "pop_filter"
+      afr:
+        ac: 7
+        af: 4.9652184929849543237878606305457651615142822265625
+        hc: 1
+        an: 1
+        hf: 6.8468526983526398765889098285697400569915771484375
+      nfe:
+        ac: 7
+        af: 4.9652184929849543237878606305457651615142822265625
+        hc: 1
+        an: 1
+        hf: 6.8468526983526398765889098285697400569915771484375
+      eas:
+        ac: 7
+        af: 4.9652184929849543237878606305457651615142822265625
+        hc: 1
+        an: 1
+        hf: 6.8468526983526398765889098285697400569915771484375
+      covered: true
+      ageHet:
+        55: 7
+        45: 5
+        35: 1
+        '>80': 1
+        80: 7
+        70: 2
+        <30: 1
+        60: 9
+        50: 2
+        40: 5
+        30: 6
+        75: 4
+        65: 3
+      asj:
+        ac: 7
+        af: 4.9652184929849543237878606305457651615142822265625
+        hc: 1
+        an: 1
+        hf: 6.8468526983526398765889098285697400569915771484375
+      overall:
+        ac: 7
+        af: 4.9652184929849543237878606305457651615142822265625
+        hc: 1
+        an: 1
+        hf: 6.8468526983526398765889098285697400569915771484375
+      female:
+        ac: 7
+        af: 4.9652184929849543237878606305457651615142822265625
+        hc: 1
+        an: 1
+        hf: 6.8468526983526398765889098285697400569915771484375
+      male:
+        ac: 7
+        af: 4.9652184929849543237878606305457651615142822265625
+        hc: 1
+        an: 1
+        hf: 6.8468526983526398765889098285697400569915771484375
+  VariantBasic:
+    type: "object"
+    properties:
+      id:
+        type: "string"
+        example: ""
+      chromosome:
+        type: "string"
+        example: ""
+      position:
+        type: "number"
+        example: ""
+      rsid:
+        type: "string"
+        example: "rs2691305"
+      gene:
+        type: "array"
+        items:
+          type: "string"
+      filter:
+        type: "string"
+        example: "PASS"
+      cadd:
+        type: "number"
+        example: 30.0
+      feature_id:
+        type: "string"
+      feature_type:
+        type: "string"
+      hgvs_c:
+        type: "string"
+        example: "ENST00000335137.3:c.421A>G"
+      hgvs_p:
+        type: "string"
+        example: "ENSP00000334393.3:p.Thr141Ala"
+      consequence:
+        type: "string"
+      impact:
+        type: "string"
+      af_tommo:
+        type: "number"
+        example: 0.1
+        description: "Tommo"
+      af_jirdc:
+        type: "number"
+        example: 0.1
+        description: "Japanese"
+      af_krgdb:
+        type: "number"
+        example: 0.1
+        description: "Korean"
+    example:
+      feature_id: "feature_id"
+      consequence: "consequence"
+      gene:
+      - "gene"
+      - "gene"
+      chromosome: ""
+      impact: "impact"
+      af_krgdb: 0.1
+      rsid: "rs2691305"
+      af_jirdc: 0.1
+      filter: "PASS"
+      cadd: 30.0
+      feature_type: "feature_type"
+      hgvs_p: "ENSP00000334393.3:p.Thr141Ala"
+      hgvs_c: "ENST00000335137.3:c.421A>G"
+      af_tommo: 0.1
+      id: ""
+      position: ""
+  Variant:
+    type: "object"
+    properties:
+      id:
+        type: "string"
+      chromosome:
+        type: "string"
+      position:
+        type: "number"
+      rsid:
+        type: "string"
+      gene:
+        type: "array"
+        items:
+          type: "string"
+      external_AF:
+        $ref: "#/definitions/Variant_external_AF"
+      internal_AF:
+        $ref: "#/definitions/Variant_internal_AF"
+      filter:
+        type: "string"
+      cadd:
+        type: "number"
+      feature_id:
+        type: "string"
+      feature_type:
+        type: "string"
+      hgvs_c:
+        type: "string"
+      hgvs_p:
+        type: "string"
+      consequence:
+        type: "string"
+      impact:
+        type: "string"
+      carriers:
+        $ref: "#/definitions/Variant_carriers"
+      userComment:
+        $ref: "#/definitions/Variant_userComment"
+    example:
+      feature_id: "feature_id"
+      consequence: "consequence"
+      gene:
+      - "gene"
+      - "gene"
+      chromosome: "chromosome"
+      impact: "impact"
+      rsid: "rsid"
+      carriers:
+        homozygous:
+          unrelated: true
+          cohort: "cohort"
+          id: "id"
+          fullHpos:
+          - name: "name"
+            id: "id"
+          - name: "name"
+            id: "id"
+        missing:
+          unrelated: true
+          cohort: "cohort"
+          id: "id"
+          fullHpos:
+          - name: "name"
+            id: "id"
+          - name: "name"
+            id: "id"
+        heterozygous:
+          unrelated: true
+          cohort: "cohort"
+          id: "id"
+          fullHpos:
+          - name: "name"
+            id: "id"
+          - name: "name"
+            id: "id"
+      filter: "filter"
+      cadd: 6.77832496304801335185175048536621034145355224609375
+      feature_type: "feature_type"
+      userComment:
+        clinicalRating: 6.87805222012787620400331434211693704128265380859375
+        comments:
+        - contact: "hahaha@hohoho.com"
+          text: "text"
+          userId: "userId"
+        - contact: "hahaha@hohoho.com"
+          text: "text"
+          userId: "userId"
+        falsePositiveCounts: 5
+      hgvs_p: "hgvs_p"
+      hgvs_c: "hgvs_c"
+      id: "id"
+      position: 0.80082819046101150206595775671303272247314453125
+      external_AF:
+        tommo: 6.683562403749608193948006373830139636993408203125
+        ukirdc: 3.557195227068097320710649000830017030239105224609375
+        converge: 8.7620420127490010742121739895083010196685791015625
+        jirdc: 6.438423552598546706349225132726132869720458984375
+        krgdb: 9.0183481860707832566959041287191212177276611328125
+        bravo_af: 5.02500479152029466689555192715488374233245849609375
+        gnomad:
+          oth:
+            ac: 7
+            af: 4.9652184929849543237878606305457651615142822265625
+            hc: 1
+            an: 1
+            hf: 6.8468526983526398765889098285697400569915771484375
+          sas:
+            ac: 7
+            af: 4.9652184929849543237878606305457651615142822265625
+            hc: 1
+            an: 1
+            hf: 6.8468526983526398765889098285697400569915771484375
+          ageHom:
+            55: 7
+            45: 5
+            35: 1
+            '>80': 1
+            80: 7
+            70: 2
+            <30: 1
+            60: 9
+            50: 2
+            40: 5
+            30: 6
+            75: 4
+            65: 3
+          amr:
+            ac: 7
+            af: 4.9652184929849543237878606305457651615142822265625
+            hc: 1
+            an: 1
+            hf: 6.8468526983526398765889098285697400569915771484375
+          fin:
+            ac: 7
+            af: 4.9652184929849543237878606305457651615142822265625
+            hc: 1
+            an: 1
+            hf: 6.8468526983526398765889098285697400569915771484375
+          filters:
+            genome: "genome"
+            exome: "exome"
+          pop_filter:
+          - "pop_filter"
+          - "pop_filter"
+          afr:
+            ac: 7
+            af: 4.9652184929849543237878606305457651615142822265625
+            hc: 1
+            an: 1
+            hf: 6.8468526983526398765889098285697400569915771484375
+          nfe:
+            ac: 7
+            af: 4.9652184929849543237878606305457651615142822265625
+            hc: 1
+            an: 1
+            hf: 6.8468526983526398765889098285697400569915771484375
+          eas:
+            ac: 7
+            af: 4.9652184929849543237878606305457651615142822265625
+            hc: 1
+            an: 1
+            hf: 6.8468526983526398765889098285697400569915771484375
+          covered: true
+          ageHet:
+            55: 7
+            45: 5
+            35: 1
+            '>80': 1
+            80: 7
+            70: 2
+            <30: 1
+            60: 9
+            50: 2
+            40: 5
+            30: 6
+            75: 4
+            65: 3
+          asj:
+            ac: 7
+            af: 4.9652184929849543237878606305457651615142822265625
+            hc: 1
+            an: 1
+            hf: 6.8468526983526398765889098285697400569915771484375
+          overall:
+            ac: 7
+            af: 4.9652184929849543237878606305457651615142822265625
+            hc: 1
+            an: 1
+            hf: 6.8468526983526398765889098285697400569915771484375
+          female:
+            ac: 7
+            af: 4.9652184929849543237878606305457651615142822265625
+            hc: 1
+            an: 1
+            hf: 6.8468526983526398765889098285697400569915771484375
+          male:
+            ac: 7
+            af: 4.9652184929849543237878606305457651615142822265625
+            hc: 1
+            an: 1
+            hf: 6.8468526983526398765889098285697400569915771484375
+        kaviar: 9.3693102714106686335071572102606296539306640625
+        bravo_hom_f: 9.965781217890562260208753286860883235931396484375
+      internal_AF:
+        het_af: 1.2846590061165319429647979632136411964893341064453125
+        wt_af: 2.884162126668780246063761296682059764862060546875
+        hom_af: 6.96511769763884558415156789124011993408203125
+  GeneBasic:
+    type: "object"
+    properties:
+      id:
+        type: "string"
+        example: "ENSG00000119685"
+      symbol:
+        type: "string"
+        example: "TTLL5"
+      pLI:
+        type: "number"
+        example: 1.0
+        description: "can be obtained from gnomAD gene constraint table"
+      pRes:
+        type: "number"
+        example: 0.1
+        description: "can be obtained from gnomAD gene constraint table"
+      OMIM:
+        type: "array"
+        example:
+        - "stuff"
+        - "stuff2"
+        items:
+          type: "string"
+    example:
+      symbol: "TTLL5"
+      pRes: 0.1
+      OMIM:
+      - "stuff"
+      - "stuff2"
+      id: "ENSG00000119685"
+      pLI: 1.0
+  Gene:
+    type: "object"
+    properties:
+      id:
+        type: "string"
+        example: "ENSG00000119685"
+      symbol:
+        type: "string"
+        example: "TTLL5"
+      pLI:
+        type: "number"
+        example: 1.0
+        description: "can be obtained from gnomAD gene constraint table"
+      pRes:
+        type: "number"
+        example: 0.1
+        description: "can be obtained from gnomAD gene constraint table"
+      OMIM:
+        type: "array"
+        example:
+        - "stuff"
+        - "stuff2"
+        items:
+          type: "string"
+      variants:
+        type: "array"
+        items:
+          $ref: "#/definitions/VariantBasic"
+      HPO:
+        $ref: "#/definitions/HPO"
+    example:
+      symbol: "TTLL5"
+      pRes: 0.1
+      HPO:
+        prevalence: 0.80082819046101150206595775671303272247314453125
+        genes:
+          symbol: "TTLL5"
+          pRes: 0.1
+          OMIM:
+          - "stuff"
+          - "stuff2"
+          id: "ENSG00000119685"
+          pLI: 1.0
+        patients:
+          unrelated: true
+          cohort: "cohort"
+          id: "id"
+          fullHpos:
+          - name: "name"
+            id: "id"
+          - name: "name"
+            id: "id"
+        name: "name"
+        id: "HP:xxxx"
+      OMIM:
+      - "stuff"
+      - "stuff2"
+      id: "ENSG00000119685"
+      variants:
+      - feature_id: "feature_id"
+        consequence: "consequence"
+        gene:
+        - "gene"
+        - "gene"
+        chromosome: ""
+        impact: "impact"
+        af_krgdb: 0.1
+        rsid: "rs2691305"
+        af_jirdc: 0.1
+        filter: "PASS"
+        cadd: 30.0
+        feature_type: "feature_type"
+        hgvs_p: "ENSP00000334393.3:p.Thr141Ala"
+        hgvs_c: "ENST00000335137.3:c.421A>G"
+        af_tommo: 0.1
+        id: ""
+        position: ""
+      - feature_id: "feature_id"
+        consequence: "consequence"
+        gene:
+        - "gene"
+        - "gene"
+        chromosome: ""
+        impact: "impact"
+        af_krgdb: 0.1
+        rsid: "rs2691305"
+        af_jirdc: 0.1
+        filter: "PASS"
+        cadd: 30.0
+        feature_type: "feature_type"
+        hgvs_p: "ENSP00000334393.3:p.Thr141Ala"
+        hgvs_c: "ENST00000335137.3:c.421A>G"
+        af_tommo: 0.1
+        id: ""
+        position: ""
+      pLI: 1.0
+  HPO:
+    type: "object"
+    properties:
+      id:
+        type: "string"
+        example: "HP:xxxx"
+      name:
+        type: "string"
+      patients:
+        $ref: "#/definitions/PatientBasic"
+      genes:
+        $ref: "#/definitions/GeneBasic"
+      prevalence:
+        type: "number"
+    example:
+      prevalence: 0.80082819046101150206595775671303272247314453125
+      genes:
+        symbol: "TTLL5"
+        pRes: 0.1
+        OMIM:
+        - "stuff"
+        - "stuff2"
+        id: "ENSG00000119685"
+        pLI: 1.0
+      patients:
+        unrelated: true
+        cohort: "cohort"
+        id: "id"
+        fullHpos:
+        - name: "name"
+          id: "id"
+        - name: "name"
+          id: "id"
+      name: "name"
+      id: "HP:xxxx"
+  PatientBasic:
+    type: "object"
+    properties:
+      id:
+        type: "string"
+      fullHpos:
+        type: "array"
+        items:
+          $ref: "#/definitions/PatientBasic_fullHpos"
+      unrelated:
+        type: "boolean"
+      cohort:
+        type: "string"
+    description: "basic information about a patient, not including variants"
+    example:
+      unrelated: true
+      cohort: "cohort"
+      id: "id"
+      fullHpos:
+      - name: "name"
+        id: "id"
+      - name: "name"
+        id: "id"
+  Patient:
+    type: "object"
+    properties:
+      id:
+        type: "string"
+      unrelated:
+        type: "boolean"
+      cohort:
+        type: "string"
+        example: "info"
+        description: "or contact name"
+      contact:
+        type: "string"
+        example: "info@phenopolis.org"
+      hpos:
+        type: "array"
+        items:
+          $ref: "#/definitions/PatientBasic_fullHpos"
+      fullHpos:
+        type: "array"
+        items:
+          $ref: "#/definitions/PatientBasic_fullHpos"
+      variants:
+        $ref: "#/definitions/Patient_variants"
+    example:
+      unrelated: true
+      contact: "info@phenopolis.org"
+      cohort: "info"
+      id: "id"
+      fullHpos:
+      - name: "name"
+        id: "id"
+      - name: "name"
+        id: "id"
+      variants:
+        homozygous: ""
+        heterozygous: ""
+      hpos:
+      - name: "name"
+        id: "id"
+      - name: "name"
+        id: "id"
+  inline_response_200:
+    properties:
+      parameters:
+        $ref: "#/definitions/VariantFilters"
+      data:
+        $ref: "#/definitions/Variants"
+    example:
+      data: ""
+      parameters:
+        cadd:
+          min: 1.46581298050294517310021547018550336360931396484375
+          max: 5.962133916683182377482808078639209270477294921875
+        stop: 6
+        gene: "gene"
+        chromosome: "chromosome"
+        start: 0
+        genotypes:
+        - patient: "patient"
+        - patient: "patient"
+        gnomad:
+          af:
+            min: 1.46581298050294517310021547018550336360931396484375
+            max: 5.962133916683182377482808078639209270477294921875
+          include_null: true
+          an: 100.0
+          hf:
+            min: 1.46581298050294517310021547018550336360931396484375
+            max: 5.962133916683182377482808078639209270477294921875
+  VariantFilters_genotypes:
+    properties:
+      patient:
+        type: "string"
+    example:
+      patient: "patient"
+  VariantFilters_gnomad_af:
+    properties:
+      min:
+        type: "number"
+      max:
+        type: "number"
+    example:
+      min: 1.46581298050294517310021547018550336360931396484375
+      max: 5.962133916683182377482808078639209270477294921875
+  VariantFilters_gnomad:
+    properties:
+      include_null:
+        type: "boolean"
+      an:
+        type: "number"
+        example: 100.0
+        description: "Some variants on gnomad has very few available alleles. If AN\
+          \ < an, treat its af as null"
+      af:
+        $ref: "#/definitions/VariantFilters_gnomad_af"
+      hf:
+        $ref: "#/definitions/VariantFilters_gnomad_af"
+    description: "cutoffs applied on gnomad frequencies. can include variants that\
+      \ are not covered"
+    example:
+      af:
+        min: 1.46581298050294517310021547018550336360931396484375
+        max: 5.962133916683182377482808078639209270477294921875
+      include_null: true
+      an: 100.0
+      hf:
+        min: 1.46581298050294517310021547018550336360931396484375
+        max: 5.962133916683182377482808078639209270477294921875
+  Variants_inner:
+    properties:
+      id:
+        type: "string"
+      chromosome:
+        type: "string"
+      position:
+        type: "number"
+      gnomad_af:
+        type: "number"
+        description: "If it is not covered by gnomad, the value should be null. If\
+          \ it is covered, but not found, the value should be 0"
+      gnomad_hf:
+        type: "number"
+      gnomad_pop_filter:
+        type: "array"
+        description: "Populations that have far too many carriers than average. Used\
+          \ in Phenogenon"
+        items:
+          type: "string"
+      filter:
+        type: "string"
+      gene:
+        type: "array"
+        items:
+          type: "string"
+      codingOrSplicing:
+        type: "boolean"
+      impact:
+        type: "string"
+      consequence:
+        type: "string"
+      cadd:
+        type: "number"
+      numberOfHetsCarriers:
+        type: "number"
+      numberOfHomsCarriers:
+        type: "number"
+      hgvs:
+        type: "string"
+        example: "such as ENST12345:c.100A>C:p.34M>P"
+  Gnomad_filters:
+    properties:
+      genome:
+        type: "string"
+      exome:
+        type: "string"
+    example:
+      genome: "genome"
+      exome: "exome"
+  Variant_external_AF:
+    properties:
+      gnomad:
+        $ref: "#/definitions/Gnomad"
+      bravo_af:
+        type: "number"
+        description: "You need to obtain license from https://bravo.sph.umich.edu/\
+          \ in order to use Bravo"
+      bravo_hom_f:
+        type: "number"
+        description: "You need to obtain license from https://bravo.sph.umich.edu/\
+          \ in order to use Bravo"
+      kaviar:
+        type: "number"
+      tommo:
+        type: "number"
+        description: "Allele frequency in Japanese"
+      converge:
+        type: "number"
+        description: "Allele frequency in Han Chinese"
+      krgdb:
+        type: "number"
+        description: "Allele frequency in Koreans"
+      jirdc:
+        type: "number"
+        description: "Japanese IRDC"
+      ukirdc:
+        type: "number"
+        description: "UKIRDC"
+    example:
+      tommo: 6.683562403749608193948006373830139636993408203125
+      ukirdc: 3.557195227068097320710649000830017030239105224609375
+      converge: 8.7620420127490010742121739895083010196685791015625
+      jirdc: 6.438423552598546706349225132726132869720458984375
+      krgdb: 9.0183481860707832566959041287191212177276611328125
+      bravo_af: 5.02500479152029466689555192715488374233245849609375
+      gnomad:
+        oth:
+          ac: 7
+          af: 4.9652184929849543237878606305457651615142822265625
+          hc: 1
+          an: 1
+          hf: 6.8468526983526398765889098285697400569915771484375
+        sas:
+          ac: 7
+          af: 4.9652184929849543237878606305457651615142822265625
+          hc: 1
+          an: 1
+          hf: 6.8468526983526398765889098285697400569915771484375
+        ageHom:
+          55: 7
+          45: 5
+          35: 1
+          '>80': 1
+          80: 7
+          70: 2
+          <30: 1
+          60: 9
+          50: 2
+          40: 5
+          30: 6
+          75: 4
+          65: 3
+        amr:
+          ac: 7
+          af: 4.9652184929849543237878606305457651615142822265625
+          hc: 1
+          an: 1
+          hf: 6.8468526983526398765889098285697400569915771484375
+        fin:
+          ac: 7
+          af: 4.9652184929849543237878606305457651615142822265625
+          hc: 1
+          an: 1
+          hf: 6.8468526983526398765889098285697400569915771484375
+        filters:
+          genome: "genome"
+          exome: "exome"
+        pop_filter:
+        - "pop_filter"
+        - "pop_filter"
+        afr:
+          ac: 7
+          af: 4.9652184929849543237878606305457651615142822265625
+          hc: 1
+          an: 1
+          hf: 6.8468526983526398765889098285697400569915771484375
+        nfe:
+          ac: 7
+          af: 4.9652184929849543237878606305457651615142822265625
+          hc: 1
+          an: 1
+          hf: 6.8468526983526398765889098285697400569915771484375
+        eas:
+          ac: 7
+          af: 4.9652184929849543237878606305457651615142822265625
+          hc: 1
+          an: 1
+          hf: 6.8468526983526398765889098285697400569915771484375
+        covered: true
+        ageHet:
+          55: 7
+          45: 5
+          35: 1
+          '>80': 1
+          80: 7
+          70: 2
+          <30: 1
+          60: 9
+          50: 2
+          40: 5
+          30: 6
+          75: 4
+          65: 3
+        asj:
+          ac: 7
+          af: 4.9652184929849543237878606305457651615142822265625
+          hc: 1
+          an: 1
+          hf: 6.8468526983526398765889098285697400569915771484375
+        overall:
+          ac: 7
+          af: 4.9652184929849543237878606305457651615142822265625
+          hc: 1
+          an: 1
+          hf: 6.8468526983526398765889098285697400569915771484375
+        female:
+          ac: 7
+          af: 4.9652184929849543237878606305457651615142822265625
+          hc: 1
+          an: 1
+          hf: 6.8468526983526398765889098285697400569915771484375
+        male:
+          ac: 7
+          af: 4.9652184929849543237878606305457651615142822265625
+          hc: 1
+          an: 1
+          hf: 6.8468526983526398765889098285697400569915771484375
+      kaviar: 9.3693102714106686335071572102606296539306640625
+      bravo_hom_f: 9.965781217890562260208753286860883235931396484375
+  Variant_internal_AF:
+    properties:
+      hom_af:
+        type: "number"
+        description: "Homozygous freq in Phenopolis."
+      het_af:
+        type: "number"
+      wt_af:
+        type: "number"
+    example:
+      het_af: 1.2846590061165319429647979632136411964893341064453125
+      wt_af: 2.884162126668780246063761296682059764862060546875
+      hom_af: 6.96511769763884558415156789124011993408203125
+  Variant_carriers:
+    properties:
+      heterozygous:
+        $ref: "#/definitions/PatientBasic"
+      homozygous:
+        $ref: "#/definitions/PatientBasic"
+      missing:
+        $ref: "#/definitions/PatientBasic"
+    example:
+      homozygous:
+        unrelated: true
+        cohort: "cohort"
+        id: "id"
+        fullHpos:
+        - name: "name"
+          id: "id"
+        - name: "name"
+          id: "id"
+      missing:
+        unrelated: true
+        cohort: "cohort"
+        id: "id"
+        fullHpos:
+        - name: "name"
+          id: "id"
+        - name: "name"
+          id: "id"
+      heterozygous:
+        unrelated: true
+        cohort: "cohort"
+        id: "id"
+        fullHpos:
+        - name: "name"
+          id: "id"
+        - name: "name"
+          id: "id"
+  Variant_userComment_comments:
+    properties:
+      text:
+        type: "string"
+      userId:
+        type: "string"
+      contact:
+        type: "string"
+        example: "hahaha@hohoho.com"
+    example:
+      contact: "hahaha@hohoho.com"
+      text: "text"
+      userId: "userId"
+  Variant_userComment:
+    properties:
+      clinicalRating:
+        type: "number"
+        description: "averaged ratings from 1 to 5 from users. 1 for definitely benign,\
+          \ and 5 for definitely pathogenic"
+      falsePositiveCounts:
+        type: "integer"
+        description: "Counts of users flagging this variant as non-existence"
+      comments:
+        type: "array"
+        description: "All the comments about this variant submitted by users"
+        items:
+          $ref: "#/definitions/Variant_userComment_comments"
+    description: "input from users"
+    example:
+      clinicalRating: 6.87805222012787620400331434211693704128265380859375
+      comments:
+      - contact: "hahaha@hohoho.com"
+        text: "text"
+        userId: "userId"
+      - contact: "hahaha@hohoho.com"
+        text: "text"
+        userId: "userId"
+      falsePositiveCounts: 5
+  PatientBasic_fullHpos:
+    properties:
+      id:
+        type: "string"
+      name:
+        type: "string"
+    example:
+      name: "name"
+      id: "id"
+  Patient_variants:
+    properties:
+      homozygous:
+        $ref: "#/definitions/Variants"
+      heterozygous:
+        $ref: "#/definitions/Variants"
+    example:
+      homozygous: ""
+      heterozygous: ""
+externalDocs:
+  description: "Find out more about Swagger"
+  url: "http://swagger.io"
