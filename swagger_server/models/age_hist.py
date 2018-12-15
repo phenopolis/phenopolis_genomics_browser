@@ -15,7 +15,7 @@ class AgeHist(Model):
     Do not edit the class manually.
     """
 
-    def __init__(self, _30: int=None, _35: int=None, _40: int=None, _45: int=None, _50: int=None, _55: int=None, _60: int=None, _65: int=None, _70: int=None, _75: int=None, _80: int=None, _30: int=None, _80: int=None):  # noqa: E501
+    def __init__(self, _30: int=None, _35: int=None, _40: int=None, _45: int=None, _50: int=None, _55: int=None, _60: int=None, _65: int=None, _70: int=None, _75: int=None, _80: int=None, lt_30: int=None, mt_80: int=None):  # noqa: E501
         """AgeHist - a model defined in Swagger
 
         :param _30: The _30 of this AgeHist.  # noqa: E501
@@ -40,10 +40,10 @@ class AgeHist(Model):
         :type _75: int
         :param _80: The _80 of this AgeHist.  # noqa: E501
         :type _80: int
-        :param _30: The _30 of this AgeHist.  # noqa: E501
-        :type _30: int
-        :param _80: The _80 of this AgeHist.  # noqa: E501
-        :type _80: int
+        :param lt_30: The lt_30 of this AgeHist.  # noqa: E501
+        :type lt_30: int
+        :param mt_80: The mt_80 of this AgeHist.  # noqa: E501
+        :type mt_80: int
         """
         self.swagger_types = {
             '_30': int,
@@ -57,8 +57,8 @@ class AgeHist(Model):
             '_70': int,
             '_75': int,
             '_80': int,
-            '_30': int,
-            '_80': int
+            'lt_30': int,
+            'mt_80': int
         }
 
         self.attribute_map = {
@@ -73,8 +73,8 @@ class AgeHist(Model):
             '_70': '70',
             '_75': '75',
             '_80': '80',
-            '_30': '&lt;30',
-            '_80': '&gt;80'
+            'lt_30': 'lt_30',
+            'mt_80': 'mt_80'
         }
 
         self.__30 = _30
@@ -88,8 +88,8 @@ class AgeHist(Model):
         self.__70 = _70
         self.__75 = _75
         self.__80 = _80
-        self.__30 = _30
-        self.__80 = _80
+        self._lt_30 = lt_30
+        self._mt_80 = mt_80
 
     @classmethod
     def from_dict(cls, dikt) -> 'AgeHist':
@@ -334,43 +334,43 @@ class AgeHist(Model):
         self.__80 = _80
 
     @property
-    def _30(self) -> int:
-        """Gets the _30 of this AgeHist.
+    def lt_30(self) -> int:
+        """Gets the lt_30 of this AgeHist.
 
 
-        :return: The _30 of this AgeHist.
+        :return: The lt_30 of this AgeHist.
         :rtype: int
         """
-        return self.__30
+        return self._lt_30
 
-    @_30.setter
-    def _30(self, _30: int):
-        """Sets the _30 of this AgeHist.
+    @lt_30.setter
+    def lt_30(self, lt_30: int):
+        """Sets the lt_30 of this AgeHist.
 
 
-        :param _30: The _30 of this AgeHist.
-        :type _30: int
+        :param lt_30: The lt_30 of this AgeHist.
+        :type lt_30: int
         """
 
-        self.__30 = _30
+        self._lt_30 = lt_30
 
     @property
-    def _80(self) -> int:
-        """Gets the _80 of this AgeHist.
+    def mt_80(self) -> int:
+        """Gets the mt_80 of this AgeHist.
 
 
-        :return: The _80 of this AgeHist.
+        :return: The mt_80 of this AgeHist.
         :rtype: int
         """
-        return self.__80
+        return self._mt_80
 
-    @_80.setter
-    def _80(self, _80: int):
-        """Sets the _80 of this AgeHist.
+    @mt_80.setter
+    def mt_80(self, mt_80: int):
+        """Sets the mt_80 of this AgeHist.
 
 
-        :param _80: The _80 of this AgeHist.
-        :type _80: int
+        :param mt_80: The mt_80 of this AgeHist.
+        :type mt_80: int
         """
 
-        self.__80 = _80
+        self._mt_80 = mt_80
