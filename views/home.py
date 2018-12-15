@@ -72,19 +72,20 @@ def homepage():
     username = ''
     if session and 'user' in session:
         username = session['user']
-    return render_template('home.html', title='Phenopolis - Home Page',
-        total_patients=total_patients,
-        male_patients=male_patients,
-        female_patients=female_patients,
-        unknown_patients=unknown_patients,
-        hpo_json=json.dumps(hpo_json),
-        total_variants=total_variants,
-        exac_variants=exac_variants,
-        pass_variants=pass_variants,
-        nonpass_variants=nonpass_variants,
-        pass_exac_variants=pass_exac_variants,
-        pass_nonexac_variants=pass_nonexac_variants,
-        version_number=version_number,
-        labnames=labnames,
-        username=username)
+    return jsonify({
+        'title':'Phenopolis - Home Page',
+        'total_patients':total_patients,
+        'male_patients':male_patients,
+        'female_patients':female_patients,
+        'unknown_patients':unknown_patients,
+        'hpo_json':json.dumps(hpo_json),
+        'total_variants':total_variants,
+        'exac_variants':exac_variants,
+        'pass_variants':pass_variants,
+        'nonpass_variants':nonpass_variants,
+        'pass_exac_variants':pass_exac_variants,
+        'pass_nonexac_variants':pass_nonexac_variants,
+        'version_number':version_number,
+        'labnames':labnames,
+        'username':username})
 

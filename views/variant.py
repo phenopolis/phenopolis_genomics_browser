@@ -4,16 +4,12 @@ from lookups import *
 import rest as annotation
 import requests
 from config import config
-if config.IMPORT_PYSAM_PRIMER3:
-    import pysam
-    import primer3
 import myvariant
 import re
 from utils import *
 import itertools
 import csv
 #hpo lookup
-import phizz
 import random
 import orm
 import vcf
@@ -34,11 +30,7 @@ def variant_page(variant_str):
         del variant['wt_samples']
         del variant['het_samples']
         del variant['hom_samples']
-    return render_template(
-        'variant.html',
-        title=variant_str,
-        variant=variant
-    )
+    return jsonify( 'variant.html', title=variant_str, variant=variant)
 
 #@app.route('/variant_json/<variant_str>')
 #def variant_json(variant_str): return jsonify(result=vcf.vcf_query(variant_str=variant_str))

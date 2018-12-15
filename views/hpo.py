@@ -244,10 +244,7 @@ def hpo_page(hpo_id):
     #for r in hpo_db.hpo_pubmed.find({'hpoid':hpo_id}): print(r)
     #print recessive_genes
     #print dominant_genes
-    return render_template('hpo.html',
-            title=hpo_id,
-            hpo_id=hpo_id,
-            hpo_name=hpo_name)
+    return jsonify(title=hpo_id, hpo_id=hpo_id, hpo_name=hpo_name)
 
 @app.route('/hpo_json/<hpo_id>')
 #@auth.login_required

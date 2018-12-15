@@ -70,15 +70,6 @@ def my_patients_json():
     return(jsonify(result=individuals))
 
 
-# shows each patients, 
-# all_individuals
-@app.route('/my_patients')
-@requires_auth
-def my_patients():
-    return render_template('my_patients.html')
-
-# shows each individual, 
-# all_individuals
 @app.route('/individuals_csv')
 @requires_auth
 def individuals_csv():
@@ -119,5 +110,4 @@ def individuals_csv():
     individuals=[f(p) for p in patients if 'external_id' in p]
     # family_history":{"consanguinity":true}
     #if session['user']=='demo': for ind in individuals: ind['external_id']=encrypt(ind['external_id'])
-    #return render_template('individuals_page.html',individuals=individuals,page=page,number=number,total=total)
     return '\n'.join([','.join([ind['external_id'],ind['total_variant_count'],ind['rare_variants_count']]) for ind in individuals])

@@ -90,8 +90,7 @@ def search():
     print('Version number is:-')
     print(version_number)
 
-    t = render_template('search.html',
-        title='home',
+    return jsonify( title='home',
         total_patients=total_patients,
         male_patients=male_patients,
         female_patients=female_patients,
@@ -106,7 +105,5 @@ def search():
         #image=image.decode('utf8'))
         image="",
         version_number=version_number)
-    #cache.set(cache_key, t)
-    return t
 
 

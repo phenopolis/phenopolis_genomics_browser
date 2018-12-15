@@ -171,8 +171,7 @@ def individual_page(individual):
     # current setting: unrelated, exac_af 0.01 for recessive, 0.001 for dominant, cadd_phred 15
     print 'get phenogenon genes'
     retinal_genes = {}
-    return render_template('individual.html', 
-            patient=patient,
+    return jsonify( patient=patient,
             table_headers=table_headers,
             pubmedbatch=pubmedbatch,
             pubmed_db=get_db('pubmed_cache'),

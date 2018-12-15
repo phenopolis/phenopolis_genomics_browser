@@ -20,7 +20,7 @@ if __name__ == "__main__":
     #context = ssl.SSLContext(ssl.PROTOCOL_TLSv1_2)
     # this is now handled by Apache
     #app.run(host='0.0.0.0',port=8000,threaded=True,debug=True)
-    app.run(host='0.0.0.0',port=8000,threaded=True)
+    app.run(host='0.0.0.0',port=7887,threaded=True)
     # threaded
     #app.run(threaded=True)
     #app.run(host='127.0.0.1',port=8000, debug = True, ssl_context=context)

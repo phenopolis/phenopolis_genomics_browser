@@ -13,7 +13,6 @@ from flask import g
 from flask import redirect
 from flask import url_for
 from flask import abort
-from flask import render_template
 from flask import flash
 from flask import jsonify
 from flask import send_from_directory
@@ -118,14 +117,6 @@ sess.init_app(app)
 
 print app.root_path
 
-# Minifys the HTML when app.config['HTML_COMPRESS'] is True; otherwise prettifies the HTML
-if app.config['HTML_COMPRESS']:
-    from minify_output import uglify
-    render_template = uglify(render_template)
-else:
-    from minify_output import prettify
-    render_template = prettify(render_template)
-
 def check_auth(username, password):
     """
     This function is called to check if a username / password combination is valid.
@@ -158,9 +149,9 @@ def requires_auth(f):
              return f(*args, **kwargs)
         print 'Not Logged In - Redirect to home to login'
         if config.LOCAL:
-           return redirect('/')
+           return jsonify(success='Unauthenticated'), 403
         else:
-           return redirect('https://uclex.cs.ucl.ac.uk/')
+           return jsonify(success='Unauthenticated'), 403
     return decorated
 
 
@@ -174,6 +165,8 @@ def make_session_timeout():
 def login():
     username=request.form['name']
     password=request.form['password']
+    print(username)
+    print(check_auth(username,password))
     if not check_auth(username,password):
        print 'Login Failed'
        return jsonify(error='Invalid Credentials. Please try again.'), 401
@@ -182,14 +175,14 @@ def login():
         return jsonify(success="Authenticated"), 200
 
 # 
-@app.route('/logout')
+@app.route('/logout', methods=['POST'])
 def logout():
     print('DELETE SESSION')
     session.pop('user',None)
     if config.LOCAL:
-        return redirect('/')
+        return jsonify(success='logged out'), 200
     else:
-        return redirect('https://uclex.cs.ucl.ac.uk/')
+        return jsonify(success='logged out'), 200
 
 
 # 
@@ -856,18 +849,6 @@ def private_variant_count():
     res=jsonify(result={'variant_count': private_variant_count, 'external_id':external_id})
     return res
 
-
-@app.route('/mim/<mim_id>')
-def mim_page(mim_id):
-    db=get_db(app.config['DB_NAME_PATIENTS'])
-    print(str(mim_id))
-    patients=[p for p in db.patients.find( { 'features': {'$elemMatch':{'id':str(hpo_id)}} } )]
-    patient_ids=[p['external_id'] for p in patients]
-    print(phizz.query_disease([hpo_id]))
-    print(len([v['VARIANT_ID'] for v in db.variants.find({'HET' : { '$in': patient_ids }})]))
-    print(len([v['VARIANT_ID'] for v in db.variants.find({'HOM' : { '$in': patient_ids }})]))
-    return render_template('test.html')
-
 @app.route('/patient/<patient_id>')
 def patient_page(patient_id):
     db=get_db()
@@ -880,107 +861,6 @@ def patient_page(patient_id):
 def exomiser_page(path):
     #is this user authorized to see this patient?
     return send_from_directory('Exomiser', path)
-
-@app.route('/example/')
-@requires_auth
-def example():
-    return send_from_directory('templates', 'temp-plot.html')
-
-
-
-@app.route('/region/<region_id>')
-def region_page(region_id):
-    db = get_db()
-    try:
-        region = region_id.split('-')
-        cache_key = 't-region-{}'.format(region_id)
-        t = cache.get(cache_key)
-        print 'Rendering %sregion: %s' % ('' if t is None else 'cached ', region_id)
-        if t is None:
-            chrom = region[0]
-            start = None
-            stop = None
-            if len(region) == 3:
-                chrom, start, stop = region
-                start = int(start)
-                stop = int(stop)
-            if start is None or stop - start > REGION_LIMIT or stop < start:
-                return render_template(
-                    'region.html',
-                    genes_in_region=None,
-                    variants_in_region=None,
-                    chrom=chrom,
-                    start=start,
-                    stop=stop,
-                    coverage=None,
-                    csq_order=csq_order,
-                )
-            if start == stop:
-                start -= 20
-                stop += 20
-            genes_in_region = lookups.get_genes_in_region(db, chrom, start, stop)
-            variants_in_region = lookups.get_variants_in_region(db, chrom, start, stop)
-            xstart = get_xpos(chrom, start)
-            xstop = get_xpos(chrom, stop)
-            coverage_array = lookups.get_coverage_for_bases(db, xstart, xstop)
-            t = render_template(
-                'region.html',
-                genes_in_region=genes_in_region,
-                variants_in_region=variants_in_region,
-                chrom=chrom,
-                start=start,
-                stop=stop,
-                coverage=coverage_array,
-                csq_order=csq_order,
-            )
-            cache.set(cache_key, t)
-        return t
-    except Exception, e:
-        print 'Failed on region:', region_id, ';Error=', traceback.format_exc()
-        abort(404)
-
-
-@app.route('/dbsnp/<rsid>')
-def dbsnp_page(rsid):
-    db = get_db()
-    try:
-        variants = lookups.get_variants_by_rsid(db, rsid)
-        chrom = None
-        start = None
-        stop = None
-        print 'Rendering rsid: %s' % rsid
-        return render_template(
-            'region.html',
-            rsid=rsid,
-            variants_in_region=variants,
-            chrom=chrom,
-            start=start,
-            stop=stop,
-            coverage=None,
-            genes_in_region=None,
-            csq_order=csq_order,
-        )
-    except Exception, e:
-        print 'Failed on rsid:', rsid, ';Error=', traceback.format_exc()
-        abort(404)
-
-
-@app.route('/not_found/<query>')
-def not_found_page(query):
-    return render_template(
-        'not_found.html',
-        query=query
-    )
-
-
-@app.route('/error/<query>')
-@app.errorhandler(404)
-def error_page(query):
-    return render_template(
-        'error.html',
-        query=query
-    )
-
 
 
 @app.route('/about')
@@ -997,34 +877,34 @@ def about_page():
     female_patients=patients_db.patients.find( {'sex':'F'}).count()
     print('female_patients',female_patients,)
     unknown_patients=patients_db.patients.find( {'sex':'U'}).count()
-    return render_template('about.html',total_patients=total_patients)
+    return jsonify('about.html',total_patients=total_patients)
 
 
 @app.route('/participants')
 def participants_page():
-    return render_template('about.html')
+    return jsonify('about.html')
 
 
 @app.route('/terms')
 def terms_page():
-    return render_template('terms.html')
+    return jsonify('terms.html')
 
 
 @app.route('/contact')
 def contact_page():
-    return render_template('contact.html')
+    return jsonify('contact.html')
 
 
 @app.route('/faq')
 def faq_page():
     patients_db=get_db(app.config['DB_NAME_PATIENTS']) 
     total_patients=patients_db.patients.count()
-    return render_template('faq.html',total_patients=total_patients)
+    return jsonify(total_patients=total_patients)
 
 @app.route('/samples')
 def samples_page():
     samples=pandas.read_csv('HPO/hpo.txt')
-    return render_template('samples.html',samples=samples.to_html(escape=False))
+    return jsonify(samples=samples.to_html(escape=False))
 
 
 @app.route('/text')
@@ -1617,9 +1497,6 @@ import views.igv
 import views.hpo
 import views.search
 import views.home
-import views.exomiser
-# work in progress, comment out if not needed
-import views.pheno4j
 
 
 
