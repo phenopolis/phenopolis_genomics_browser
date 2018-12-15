@@ -1,4 +1,3 @@
-import rest
 import json
 import orm
 

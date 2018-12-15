@@ -29,18 +29,13 @@ from jinja2_extensions import *
 import md5 
 from scipy.stats import chisquare
 import math 
-from Bio import Entrez
 from bson.json_util import loads
 from mongodb import *
-# fizz: hpo lookup
-import phizz
 import itertools
 import json
 import os
 import pymongo
 from config import config
-if config.IMPORT_PYSAM_PRIMER3:
-    import pysam
 import gzip
 import logging
 import lookups
@@ -64,11 +59,6 @@ from urlparse import urlparse
 import pickle 
 #import pdb 
 # handles live plotting if necessary
-import plotly
-print plotly.__version__  # version >1.9.4 required
-from plotly.graph_objs import Scatter, Layout 
-# connect to R session
-#import pyRserve 
 import numpy
 import subprocess
 import datetime
@@ -96,7 +86,7 @@ else:
     app = Flask(__name__, template_folder='../templates')
     app.config.from_pyfile('../phenopolis.cfg')
 
-ADMINISTRATORS = ( 'n.pontikos@ucl.ac.uk',)
+ADMINISTRATORS = ( 'info@phenopolis.org',)
 mail_on_500(app, ADMINISTRATORS)
 Compress(app)
 #app.config['COMPRESS_DEBUG'] = True
@@ -928,35 +918,6 @@ http://omim.org/entry/%(omim_accession)s''' % gene
         return "Search types other than gene transcript not yet supported"
 
 
-@app.route('/read_viz/<path:path>')
-def read_viz_files(path):
-    full_path = os.path.abspath(os.path.join(app.config["READ_VIZ_DIR"], path))
-    # security check - only files under READ_VIZ_DIR should be accsessible
-    if not full_path.startswith(app.config["READ_VIZ_DIR"]):
-        return "Invalid path: %s" % path
-    logging.info("path: " + full_path)
-    # handle igv.js Range header which it uses to request a subset of a .bam
-    range_header = request.headers.get('Range', None)
-    if not range_header:
-        return send_from_directory(app.config["READ_VIZ_DIR"], path)
-    m = re.search('(\d+)-(\d*)', range_header)
-    if not m:
-        error_msg = "ERROR: unexpected range header syntax: %s" % range_header
-        logging.error(error_msg)
-        return error_msg
-    size = os.path.getsize(full_path)
-    offset = int(m.group(1))
-    length = int(m.group(2) or size) - offset
-    data = None
-    with open(full_path, 'rb') as f:
-        f.seek(offset)
-        data = f.read(length)
-    rv = Response(data, 206, mimetype="application/octet-stream", direct_passthrough=True)
-    rv.headers.add('Content-Range', 'bytes {0}-{1}/{2}'.format(offset, offset + length - 1, size))
-    logging.info("GET range request: %s-%s %s" % (m.group(1), m.group(2), full_path))
-    return rv
-
-
 @app.after_request
 def apply_caching(response):
     response.headers['Cache-Control'] = 'no-cache'
@@ -1428,33 +1389,6 @@ def get_pred_score(obj):
                     pass
     return pred;
 
-
-@app.route('/plot/<gene>')
-def plot(gene):
-    #db = get_db()
-    #var=db.variants.find_one({'VARIANT_ID':'3_8775295_C_T'})
-    d=csv.DictReader(file('CARDIO/assoc_3.csv','r'),delimiter=',')
-    x=[i for i, r, in enumerate(d)]
-    d=csv.DictReader(file('CARDIO/assoc_3.csv','r'),delimiter=',')
-    y=[-math.log10(float(r['HCM.chisq.p'])) for r in d]
-    print(x)
-    print(y)
-    d=csv.DictReader(file('CARDIO/assoc_3.csv','r'),delimiter=',')
-    #layout = dict( yaxis = dict( type = 'log', tickvals = [ 1.5, 2.53, 5.99999 ]), xaxis = dict( ticktext = [ "green eggs", "& ham", "H2O", "Gorgonzola" ], tickvals = [ 0, 1, 2, 3, 4, 5 ]))
-    labels=[r['VARIANT_ID'] for r in d]
-    layout = Layout( xaxis = dict( ticktext=labels, tickvals=x ), title="p-value plot" )
-    #Layout( title="p-value plot")
-    plotly.offline.plot({
-        "data": [
-                Scatter(
-                    x=x,
-                    y=y
-                    )
-                ],
-        "layout": layout
-        }, filename='genes/%s-pvalues.html' % (gene,), auto_open=False)
-    return send_from_directory('genes', '%s-pvalues.html' % gene,)
-
 """ JINJA2 filer """
 def highlight(text, list, myclass):
     # wrap list element in text (case insensitive) with <span>
@@ -1493,7 +1427,6 @@ import views.my_patients
 import views.gene
 import views.variant
 import views.individual
-import views.igv
 import views.hpo
 import views.search
 import views.home

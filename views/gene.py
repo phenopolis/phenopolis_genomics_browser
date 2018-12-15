@@ -1,7 +1,6 @@
 from views import *
 from lookups import *
 from orm import *
-import rest as annotation
 import requests
 from config import config
 from vcf import vcf_query

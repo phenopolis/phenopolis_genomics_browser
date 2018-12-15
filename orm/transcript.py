@@ -1,4 +1,3 @@
-import rest
 from variant import Variant
 
 

@@ -1,4 +1,3 @@
-import rest
 import vcf
 import json
 from operator import itemgetter

@@ -1,6 +1,5 @@
 from views import *
 from lookups import *
-import rest as annotation
 import requests
 from flask import request
 from config import config
