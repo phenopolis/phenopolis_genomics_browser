@@ -5,8 +5,6 @@ import re
 from utils import *
 import itertools
 from config import config
-if config.IMPORT_PYSAM_PRIMER3:
-    import pysam
 import csv
 #hpo lookup
 import orm
@@ -88,4 +86,6 @@ def homepage():
         'version_number':version_number,
         'labnames':labnames,
         'username':username})
+
+
 

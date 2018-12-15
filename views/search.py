@@ -5,13 +5,8 @@ import re
 from utils import *
 import itertools
 from config import config
-if config.IMPORT_PYSAM_PRIMER3:
-    import pysam
 import csv
-#hpo lookup
-import orm
 import subprocess
-
 
 
 @app.route('/search', methods=['GET','POST'])
@@ -82,14 +77,12 @@ def search():
     #image=urllib.quote(base64.b64encode(imgdata.buf))
     #image=imgdata.buf
     #image = '<svg' + image.split('<svg')[1]
-
     try:
         version_number = subprocess.check_output(['git', 'describe', '--exact-match'])
     except:
         version_number = None
     print('Version number is:-')
     print(version_number)
-
     return jsonify( title='home',
         total_patients=total_patients,
         male_patients=male_patients,

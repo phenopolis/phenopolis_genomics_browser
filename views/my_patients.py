@@ -5,11 +5,7 @@ import re
 from utils import *
 import itertools
 from config import config
-if config.IMPORT_PYSAM_PRIMER3:
-    import pysam
 import csv
-#hpo lookup
-import orm
 
 def individuals_update(external_ids):
     patients_db=get_db(app.config['DB_NAME_PATIENTS'])

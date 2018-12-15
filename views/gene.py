@@ -3,7 +3,6 @@ from lookups import *
 from orm import *
 import requests
 from config import config
-from vcf import vcf_query
 import hashlib
 from bson.json_util import dumps
 
@@ -20,11 +19,9 @@ def hide_id_for_demo(data):
         # hide p_id
         new_p = 'hidden_'+hashlib.sha224(k).hexdigest()[:6]
         data['patients'][new_p] = data['patients'].pop(k)
-
     for k1,v1 in data['data'].items():
         for k2,v2 in v1['p'].items():
             v1['p'][k2] = ['hidden_'+hashlib.sha224(i).hexdigest()[:6] for i in v2]
-
     for k,v in data['variants'].items():
         new_v = 'hidden_'+hashlib.sha224(k).hexdigest()[:6]
         data['variants'][new_v] = data['variants'].pop(k)

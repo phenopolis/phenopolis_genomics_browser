@@ -3,19 +3,10 @@ from lookups import *
 import requests
 from flask import request
 from config import config
-if config.IMPORT_PYSAM_PRIMER3:
-    import pysam
-    import primer3
-import myvariant
 import re
 from utils import *
 import itertools
 import csv
-#hpo lookup
-import phizz
-import random
-import orm
-import vcf
 
 
 def phenogenon(hpo_id,lit_genes,omim_genes,recessive_genes,dominant_genes,cache=True):

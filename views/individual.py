@@ -1,12 +1,8 @@
 from views import *
-from lookups import *
 import requests
-import re
 from utils import *
 import itertools
 from config import config
-if config.IMPORT_PYSAM_PRIMER3:
-    import pysam
 import csv
 #hpo lookup
 import orm
@@ -18,12 +14,10 @@ import sys
 import re
 import itertools
 from urllib2 import HTTPError, URLError
-import pysam
 import csv
 from collections import defaultdict, Counter
 #import rest as annotation
 from optparse import OptionParser
-import mygene
 import lookups
 from orm import Patient
 import requests
@@ -124,64 +118,6 @@ def update_patient_data(individual):
 def individual_json(individual):
     patient=Patient(individual,patient_db=get_db(app.config['DB_NAME_PATIENTS']))
     return patient.json()
-
-
-@app.route('/individual/<individual>')
-@requires_auth
-#@cache.cached(timeout=24*3600)
-def individual_page(individual):
-    patient=Patient(individual,patient_db=get_db(app.config['DB_NAME_PATIENTS']),variant_db=get_db(app.config['DB_NAME']),hpo_db=get_db(app.config['DB_NAME_HPO']))
-    #if session['user']=='demo': individual=decrypt(str(individual))
-    # make sure that individual is accessible by user
-    if not lookup_patient(db=get_db(app.config['DB_NAME_USERS']),user=session['user'],external_id=individual): return 'Sorry you are not permitted to see this patient, please get in touch with us to access this information.'
-    db=get_db()
-    hpo_db=get_db(app.config['DB_NAME_HPO'])
-    # TODO
-    # mode of inheritance in hpo terms: HP:0000005
-    #print lookups.get_hpo_children(hpo_db, 'HP:0000005')
-    #patient['global_mode_of_inheritance']=patient2.get('global_mode_of_inheritance',None)
-    # minimise it
-    patient.__dict__['hpo_ids']=lookups.hpo_minimum_set(get_db(app.config['DB_NAME_HPO']), patient.hpo_ids)
-    hpo_gene=get_hpo_gene(patient.hpo_ids)
-    # get pubmedbatch scores
-    pubmedbatch = {}
-    genes = {}
-    # is this still updating?
-    if type(pubmedbatch) is dict:
-        update_status = pubmedbatch.get('status', 0)
-    else:
-        update_status=0
-    # get known and retnet genes
-    known_genes=[x['gene_name'] for x in db.retnet.find()]
-    RETNET = dict([(i['gene_name'],i) for i in db.retnet.find({},projection={'_id':False})])
-    print 'get pubmed score and RETNET'
-    gene_info=dict()
-    individuals=dict()
-    #
-    genes=[]
-    #genes['homozygous_variants']=[v['canonical_gene_name_upper'] for v in patient.homozygous_variants]
-    #genes['compound_hets']=[v['canonical_gene_name_upper'] for v in patient.compound_het_variants]
-    #genes['rare_variants']=[v['canonical_gene_name_upper'] for v in patient.rare_variants]
-            # print(g, genes_pubmed[g])
-    # figure out the order of columns from the variant row
-    table_headers=re.findall("<td class='?\"?(.*)-cell'?\"?.*>",file('templates/individual-page-tabs/individual_variant_row.tmpl','r').read())
-    if session['user']=='demo': table_headers=table_headers[:-1]
-    print table_headers
-    # get a list of genes related to retinal dystrophy. only relevant to subset group of ppl. talk to Jing or Niko for other cohorts. Note that dominant p value only counts paitents with 1 qualified variant on the gene. 
-    # current setting: unrelated, exac_af 0.01 for recessive, 0.001 for dominant, cadd_phred 15
-    print 'get phenogenon genes'
-    retinal_genes = {}
-    return jsonify( patient=patient,
-            table_headers=table_headers,
-            pubmedbatch=pubmedbatch,
-            pubmed_db=get_db('pubmed_cache'),
-            genes = genes,
-            individuals=individuals,
-            hpo_gene = hpo_gene,
-            gene_info={},
-            update_status = 0,
-            retinal_genes = {},
-            feature_venn = [])
 
 
 def get_feature_venn(patient):
@@ -433,26 +369,6 @@ def individual_update(individual):
         return redirect(referrer+'/individual/'+individual)
     else:
         return 'done'
-
-
-'''
-progress bar query
-'''
-@app.route('/pubmedbatch_progress_bar/<id>')
-def pubmedbatch_progress(id):
-    user = session.get('user') or app.config['DEFAULT_USER']
-    progress_id = user + id
-    return jsonify(PROGRESS_BAR[progress_id])
-
-'''
-get pubmedbatch cache results based on pubmedkey
-'''
-@app.route('/pubmedbatch-cache/<pubmedkey>')
-def pubmedbatch_getcache(pubmedkey):
-    db = get_db('pubmedbatch') 
-    result = db.cache.find_one({'key':pubmedkey},{'_id':False})
-    if result: return jsonify(result)
-    else: return jsonify('')
 
 
 
