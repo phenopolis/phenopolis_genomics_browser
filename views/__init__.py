@@ -30,7 +30,6 @@ import md5
 from scipy.stats import chisquare
 import math 
 from bson.json_util import loads
-from mongodb import *
 import itertools
 import json
 import os
