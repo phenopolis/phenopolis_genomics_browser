@@ -4,7 +4,7 @@
          "colNames" : [
             {"name": "Chromosome", "key": "chromosome", "default": "true"},
             {"name": "Start", "key": "start", "default": "true"},
-            {"name": "End", "key": "rsid", "default": "true"},
+            {"name": "End", "key": "end", "default": "true"},
             {"name": "Full name", "key": "description", "default": "true"}
          ],
          "data": [{
@@ -22,21 +22,27 @@
      },
      "gene_variants": {
         "colNames" : [
-          {"name": "Chromosome", "key": "chromosome", "default": "true"},
-          {"name": "Position", "key": "position", "default": "true"},
-          {"name": "Rsid", "key": "rsid", "default": "true"},
-          {"name": "Af_jirdc", "key": "af_jirdc", "default": "true"},
-          {"name": "Af_krgdb", "key": "af_krgdb", "default": "true"},
-          {"name": "Af_tommo", "key": "af_tommo", "default": "true"},
-          {"name": "Cadd", "key": "cadd", "default": "true"},
-          {"name": "Consequence", "key": "consequence", "default": "true"},
-          {"name": "Impact", "key": "impact", "default": "true"},
-          {"name": "Feature_id", "key": "feature_id", "default": "true"},
-          {"name": "Feature_type", "key": "feature_type", "default": "true"},
-          {"name": "Filter", "key": "filter", "default": "true"},
-          {"name": "Gene", "key": "gene", "default": "true"},
-          {"name": "Hgvs_c", "key": "hgvs_c", "default": "true"},
-          {"name": "Hgvs_p", "key": "hgvs_p", "default": "true"}
+           {"name": "Chromosome", "key": "#CHROM", "default": "true", "description":""},
+           {"name": "Position", "key": "POS", "default": "true", "description":"", "order":"asc"},
+           {"name": "Ref", "key": "REF", "default": "true", "description":""},
+           {"name": "Alt", "key": "ALT", "default": "true", "description":""},
+           {"name": "Rsid", "key": "ID", "default": "true", "class":"link_to_variant", "description":""},
+           {"name": "AF jirdc", "key": "af_jirdc", "default": "true", "description":""},
+           {"name": "AF krgdb", "key": "af_krgdb", "default": "true", "description":""},
+           {"name": "AF hgvd", "key": "af_hgvd", "default": "true", "description":""},
+           {"name": "AF tommo", "key": "af_tommo", "default": "true", "description":""},
+           {"name": "AF converge", "key": "af_converge", "default": "true", "description":""},
+           {"name": "AF kaviar", "key": "af_kaviar", "default": "true", "description":""},
+           {"name": "AF gnomad genomes", "key": "af_gnomad_genomes", "default": "true", "description":""},
+           {"name": "Cadd", "key": "cadd", "default": "true", "description":""},
+           {"name": "Most Severe Consequence", "key": "most_severe_consequence", "default": "true", "description":""},
+           {"name": "Impact", "key": "impact", "default": "true", "description":""},
+           {"name": "Feature_id", "key": "feature_id", "default": "true", "description":""},
+           {"name": "Feature_type", "key": "feature_type", "default": "true", "description":""},
+           {"name": "Filter", "key": "filter", "default": "true", "description":""},
+           {"name": "Gene", "key": "gene_symbol", "default": "false", "description":""},
+           {"name": "Hgvs_c", "key": "hgvsc", "default": "true", "description":""},
+           {"name": "Hgvs_p", "key": "hgvsp", "default": "true", "description":""}
         ],
         "data": [
           { "id": "", "chromosome": "", "position": "", "rsid": "rs2691305", "gene": [ "string" ], "filter": "PASS", "cadd": 30, "feature_id": "string", "feature_type": "string", "hgvs_c": "ENST00000335137.3:c.421A>G", "hgvs_p": "ENSP00000334393.3:p.Thr141Ala", "consequence": "string", "impact": "string", "af_tommo": 0.1, "af_jirdc": 0.1, "af_krgdb": 0.1 },
