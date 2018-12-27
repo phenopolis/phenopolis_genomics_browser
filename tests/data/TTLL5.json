@@ -2,12 +2,19 @@
   {
      "gene_metadata": {
          "colNames" : [
-            {"name": "Chromosome", "key": "chromosome", "default": "true"},
-            {"name": "Start", "key": "start", "default": "true"},
-            {"name": "End", "key": "end", "default": "true"},
-            {"name": "Full name", "key": "description", "default": "true"}
+            {"default": "true","name":"Full name", "key": "full_gene_name"},
+            {"default": "true","name":"Gene ID", "key": "gene_id"},
+            {"default": "true","name":"Chromosome", "key": "chrom"},
+            {"default": "true","name":"Start", "key": "start"},
+            {"default": "true","name":"End", "key": "stop"},
+            {"default": "true","name":"pLI", "key": "pLI"},
+            {"default": "true","name":"Number of Variants", "key": "number_of_variants"},
+            {"default": "true","name":"Strand", "key": "strand"},
+            {"default": "true","name":"Canonical Transcript", "key": "canonical_transcript"}
          ],
          "data": [{
+            "number_of_variants":10,
+            "pLI":1,
             "chromosome":"14",
             "start":76099968,
             "end":76421425,
