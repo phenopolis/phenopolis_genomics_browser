@@ -1,22 +1,52 @@
 [
   {
-    "id": "ENSG00000119685",
-    "symbol": "TTLL5",
-    "pLI": 1,
-    "pRes": 0.1,
-    "OMIM": [
-      "stuff",
-      "stuff2"
-    ],
-    "variants": [
-      { "id": "", "chromosome": "", "position": "", "rsid": "rs2691305", "gene": [ "string" ], "filter": "PASS", "cadd": 30, "feature_id": "string", "feature_type": "string", "hgvs_c": "ENST00000335137.3:c.421A>G", "hgvs_p": "ENSP00000334393.3:p.Thr141Ala", "consequence": "string", "impact": "string", "af_tommo": 0.1, "af_jirdc": 0.1, "af_krgdb": 0.1 },
-      { "id": "", "chromosome": "", "position": "", "rsid": "rs2691305", "gene": [ "string" ], "filter": "PASS", "cadd": 30, "feature_id": "string", "feature_type": "string", "hgvs_c": "ENST00000335137.3:c.421A>G", "hgvs_p": "ENSP00000334393.3:p.Thr141Ala", "consequence": "string", "impact": "string", "af_tommo": 0.1, "af_jirdc": 0.1, "af_krgdb": 0.1 },
-      { "id": "", "chromosome": "", "position": "", "rsid": "rs2691305", "gene": [ "string" ], "filter": "PASS", "cadd": 30, "feature_id": "string", "feature_type": "string", "hgvs_c": "ENST00000335137.3:c.421A>G", "hgvs_p": "ENSP00000334393.3:p.Thr141Ala", "consequence": "string", "impact": "string", "af_tommo": 0.1, "af_jirdc": 0.1, "af_krgdb": 0.1 },
-      { "id": "", "chromosome": "", "position": "", "rsid": "rs2691305", "gene": [ "string" ], "filter": "PASS", "cadd": 30, "feature_id": "string", "feature_type": "string", "hgvs_c": "ENST00000335137.3:c.421A>G", "hgvs_p": "ENSP00000334393.3:p.Thr141Ala", "consequence": "string", "impact": "string", "af_tommo": 0.1, "af_jirdc": 0.1, "af_krgdb": 0.1 },
-      { "id": "", "chromosome": "", "position": "", "rsid": "rs2691305", "gene": [ "string" ], "filter": "PASS", "cadd": 30, "feature_id": "string", "feature_type": "string", "hgvs_c": "ENST00000335137.3:c.421A>G", "hgvs_p": "ENSP00000334393.3:p.Thr141Ala", "consequence": "string", "impact": "string", "af_tommo": 0.1, "af_jirdc": 0.1, "af_krgdb": 0.1 },
-      { "id": "", "chromosome": "", "position": "", "rsid": "rs2691305", "gene": [ "string" ], "filter": "PASS", "cadd": 30, "feature_id": "string", "feature_type": "string", "hgvs_c": "ENST00000335137.3:c.421A>G", "hgvs_p": "ENSP00000334393.3:p.Thr141Ala", "consequence": "string", "impact": "string", "af_tommo": 0.1, "af_jirdc": 0.1, "af_krgdb": 0.1 },
-      { "id": "", "chromosome": "", "position": "", "rsid": "rs2691305", "gene": [ "string" ], "filter": "PASS", "cadd": 30, "feature_id": "string", "feature_type": "string", "hgvs_c": "ENST00000335137.3:c.421A>G", "hgvs_p": "ENSP00000334393.3:p.Thr141Ala", "consequence": "string", "impact": "string", "af_tommo": 0.1, "af_jirdc": 0.1, "af_krgdb": 0.1 }
-    ],
-    "HPO": { "id": "HP:xxxx", "name": "string", "patients": { "id": "string", "fullHpos": [ { "id": "string", "name": "string" } ], "unrelated": true, "cohort": "string" }, "genes": { "id": "ENSG00000119685", "symbol": "TTLL5", "pLI": 1, "pRes": 0.1, "OMIM": [ "stuff", "stuff2" ] }, "prevalence": 0 }
+     "gene_metadata": {
+         "colNames" : [
+            {"name": "Chromosome", "key": "chromosome", "default": "true"},
+            {"name": "Start", "key": "start", "default": "true"},
+            {"name": "End", "key": "rsid", "default": "true"},
+            {"name": "Full name", "key": "description", "default": "true"}
+         ],
+         "data": [{
+            "chromosome":"14",
+            "start":76099968,
+            "end":76421425,
+            "id": "ENSG00000119685",
+            "symbol": "TTLL5",
+            "pLI": 1,
+            "pRes": 0.1,
+            "OMIM": [ "stuff", "stuff2" ],
+            "description" : "This gene encodes a member of the tubulin tyrosine ligase like protein family. This protein interacts with two glucocorticoid receptor coactivators, transcriptional intermediary factor 2 and steroid receptor coactivator 1. This protein may function as a coregulator of glucocorticoid receptor mediated gene induction and repression. This protein may also function as an alpha tubulin polyglutamylase.",
+            "number_of_variants" : 10
+         }]
+     },
+     "gene_variants": {
+        "colNames" : [
+          {"name": "Chromosome", "key": "chromosome", "default": "true"},
+          {"name": "Position", "key": "position", "default": "true"},
+          {"name": "Rsid", "key": "rsid", "default": "true"},
+          {"name": "Af_jirdc", "key": "af_jirdc", "default": "true"},
+          {"name": "Af_krgdb", "key": "af_krgdb", "default": "true"},
+          {"name": "Af_tommo", "key": "af_tommo", "default": "true"},
+          {"name": "Cadd", "key": "cadd", "default": "true"},
+          {"name": "Consequence", "key": "consequence", "default": "true"},
+          {"name": "Impact", "key": "impact", "default": "true"},
+          {"name": "Feature_id", "key": "feature_id", "default": "true"},
+          {"name": "Feature_type", "key": "feature_type", "default": "true"},
+          {"name": "Filter", "key": "filter", "default": "true"},
+          {"name": "Gene", "key": "gene", "default": "true"},
+          {"name": "Hgvs_c", "key": "hgvs_c", "default": "true"},
+          {"name": "Hgvs_p", "key": "hgvs_p", "default": "true"}
+        ],
+        "data": [
+          { "id": "", "chromosome": "", "position": "", "rsid": "rs2691305", "gene": [ "string" ], "filter": "PASS", "cadd": 30, "feature_id": "string", "feature_type": "string", "hgvs_c": "ENST00000335137.3:c.421A>G", "hgvs_p": "ENSP00000334393.3:p.Thr141Ala", "consequence": "string", "impact": "string", "af_tommo": 0.1, "af_jirdc": 0.1, "af_krgdb": 0.1 },
+          { "id": "", "chromosome": "", "position": "", "rsid": "rs2691305", "gene": [ "string" ], "filter": "PASS", "cadd": 30, "feature_id": "string", "feature_type": "string", "hgvs_c": "ENST00000335137.3:c.421A>G", "hgvs_p": "ENSP00000334393.3:p.Thr141Ala", "consequence": "string", "impact": "string", "af_tommo": 0.1, "af_jirdc": 0.1, "af_krgdb": 0.1 },
+          { "id": "", "chromosome": "", "position": "", "rsid": "rs2691305", "gene": [ "string" ], "filter": "PASS", "cadd": 30, "feature_id": "string", "feature_type": "string", "hgvs_c": "ENST00000335137.3:c.421A>G", "hgvs_p": "ENSP00000334393.3:p.Thr141Ala", "consequence": "string", "impact": "string", "af_tommo": 0.1, "af_jirdc": 0.1, "af_krgdb": 0.1 },
+          { "id": "", "chromosome": "", "position": "", "rsid": "rs2691305", "gene": [ "string" ], "filter": "PASS", "cadd": 30, "feature_id": "string", "feature_type": "string", "hgvs_c": "ENST00000335137.3:c.421A>G", "hgvs_p": "ENSP00000334393.3:p.Thr141Ala", "consequence": "string", "impact": "string", "af_tommo": 0.1, "af_jirdc": 0.1, "af_krgdb": 0.1 },
+          { "id": "", "chromosome": "", "position": "", "rsid": "rs2691305", "gene": [ "string" ], "filter": "PASS", "cadd": 30, "feature_id": "string", "feature_type": "string", "hgvs_c": "ENST00000335137.3:c.421A>G", "hgvs_p": "ENSP00000334393.3:p.Thr141Ala", "consequence": "string", "impact": "string", "af_tommo": 0.1, "af_jirdc": 0.1, "af_krgdb": 0.1 },
+          { "id": "", "chromosome": "", "position": "", "rsid": "rs2691305", "gene": [ "string" ], "filter": "PASS", "cadd": 30, "feature_id": "string", "feature_type": "string", "hgvs_c": "ENST00000335137.3:c.421A>G", "hgvs_p": "ENSP00000334393.3:p.Thr141Ala", "consequence": "string", "impact": "string", "af_tommo": 0.1, "af_jirdc": 0.1, "af_krgdb": 0.1 },
+          { "id": "", "chromosome": "", "position": "", "rsid": "rs2691305", "gene": [ "string" ], "filter": "PASS", "cadd": 30, "feature_id": "string", "feature_type": "string", "hgvs_c": "ENST00000335137.3:c.421A>G", "hgvs_p": "ENSP00000334393.3:p.Thr141Ala", "consequence": "string", "impact": "string", "af_tommo": 0.1, "af_jirdc": 0.1, "af_krgdb": 0.1 }
+    ]
+    }
   }
 ]
