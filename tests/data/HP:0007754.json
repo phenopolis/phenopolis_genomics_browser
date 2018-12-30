@@ -13,47 +13,81 @@
     },
     "individuals" : {
          "colNames" : [
-            {"default": "true","name":"Individual", "key": "individual", "class":"preview_onhover", "type":"link"},
+            {"default": "true","name":"Individual", "key": "individual", "class":"preview_onhover", "type":"links"},
             {"default": "true","name":"Gender", "key": "gender"},
-            {"default": "true","name":"Phenotype", "key": "phenotype", "class":"chip preview_onhover", "type":"array_of_links"},
+            {"default": "true","name":"Phenotype", "key": "phenotype", "class":"chip preview_onhover", "type":"links"},
             {"default": "true","name":"Phenotype Score", "key": "phenotype_score"},
             {"default": "true","name":"Rare Hom", "key": "rare_hom"},
             {"default": "true","name":"Rare Comp Het", "key": "rare_comp_het"},
             {"default": "true","name":"Rare", "key": "rare"},
-            {"default": "true","name":"Candidate Genes", "key": "candidate_genes"},
+            {"default": "true","name":"Candidate Genes", "key": "candidate_genes","class":"preview_onhover", "type":"links"},
             {"default": "true","name":"Candidate Variants", "key": "candidate_variants"}
          ],
          "data" : [
              {
-                 "individual":{"display":"B240002", "href":"/individual/B240002", "onhover":"/individual/B240002?preview=true"},
+                 "individual": [{"display":"B240002", "href":"/individual/B240002"}],
                  "gender":"M",
-                 "phenotype":[{"display":"", "href":"", "onhover":""}],
-                 "phenotype_score": "", 
-                 "rare_hom": "", 
-                 "rare_comp_het": "", 
-                 "rare": "", 
-                 "candidate_genes": "", 
-                 "candidate_variants": ""
-             },
-             {
+                 "phenotype":[{"display":"", "href":"", "onhover":""},{"display":"", "href":"", "onhover":""}],
+                 "phenotype_score": "0.5025656666666667",
+                 "rare_hom": "54",
+                 "rare_comp_het": "33",
+                 "rare": "430",
+                 "candidate_genes": [{"display":"GUCY2D", "href":"/gene/GUCY2D"}],
+                 "candidate_variants": [{"display":"B240002", "href":"/individual/B240002"}]
              }
          ]
     },
     "literature_genes" : {
-         "colNames" : [ ],
-         "data" : [ ]
+         "colNames" : [
+               {"default": "true","name":"Gene", "key": "gene", "class":"preview_onhover", "type":"links"},
+               {"default": "true","name":"Phenogenon Dominant P-Value", "key": "phenogenon_dominant_pvalue"},
+               {"default": "true","name":"Phenogenon Recessive P-Value", "key": "phenogenon_recessive_pvalue"},
+         ],
+         "data" : [{
+              "gene": [{"display":"GUCY2D", "href":"/gene/GUCY2D"}],
+              "phenogenon_dominant_pvalue": "0.000013253768529014159",
+              "phenogenon_recessive_pvalue": "5.9983854400432855e-9"
+         }]
     },
     "phenogenon_recessive" : {
-         "colNames" : [ ],
-         "data" : [ ]
+         "colNames" : [
+               {"default": "true","name":"Recessive genes", "key": "gene_id", "class":"preview_onhover", "type":"links"},
+               {"default": "true","name":"P Value", "key": "pvalue"}
+         ],
+         "data" : [{
+              "gene_id": [{"display":"GUCY2D", "href":"/gene/GUCY2D"}],
+              "pvalue": "0.000013253768529014159"
+         }]
      },
     "phenogenon_dominant" : {
-         "colNames" : [ ],
-         "data" : [ ]
+         "colNames" : [
+               {"default": "true","name":"Dominant genes", "key": "gene_id", "class":"preview_onhover", "type":"links"},
+               {"default": "true","name":"P Value", "key": "pvalue"}
+         ],
+         "data" : [{
+              "gene_id": [{"display":"GUCY2D", "href":"/gene/GUCY2D"}],
+              "pvalue": "0.000013253768529014159"
+         }]
     },
     "skat" : {
-         "colNames" : [ ],
-         "data" : [ ]
+         "colNames" : [
+               {"default": "true","name":"Gene", "key": "gene_id", "class":"preview_onhover", "type":"links"},
+               {"default": "true","name":"pLI", "key": "pli"},
+               {"default": "true","name":"Mode", "key": "mode"},
+               {"default": "true","name":"Fisher P Value", "key": "fisher_p_value"},
+               {"default": "true","name":"SKATO", "key": "skato"},
+               {"default": "true","name":"Odds Ratio", "key": "odds_ratio"},
+               {"default": "true","name":"Variants", "key": "variants", "class":"preview_onhover", "type":"links"}
+         ],
+         "data" : [{
+              "gene_id": [{"display":"GUCY2D", "href":"/gene/GUCY2D"}],
+              "pli": "0.4",
+              "mode": "rec",
+              "fisher_p_value": "0.000036667",
+              "skato": "5.91958481177082e-39",
+              "odds_ratio": "9999999",
+              "variants": [{"display":"1-94354608-T-C", "href":"/variant/1-94354608-T-C"}]
+         }]
     }
   }
 ]
