@@ -34,7 +34,7 @@
            {"name": "Position", "key": "POS", "default": "true", "description":"", "order":"asc"},
            {"name": "Ref", "key": "REF", "default": "true", "description":""},
            {"name": "Alt", "key": "ALT", "default": "true", "description":""},
-           {"name": "Rsid", "key": "ID", "default": "true", "class":"preview_onhover", "type":"link", "description":""},
+           {"name": "Rsid", "key": "ID", "default": "true", "class":"preview_onhover", "type":"links", "description":""},
            {"name": "AF jirdc", "key": "af_jirdc", "default": "true", "description":""},
            {"name": "AF krgdb", "key": "af_krgdb", "default": "true", "description":""},
            {"name": "AF hgvd", "key": "af_hgvd", "default": "true", "description":""},
