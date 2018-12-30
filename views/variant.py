@@ -2,7 +2,6 @@ import flask
 from views import *
 from lookups import *
 import requests
-from config import config
 import myvariant
 import re
 from utils import *
@@ -15,6 +14,14 @@ import vcf
 import subprocess
 import os
 
+
+@app.route('/variant/',methods=['GET'])
+@requires_auth
+def variant():
+   variant_id=request.args.get('id')
+   x=json.loads(file('tests/data/14-76201609-C-G.json','r').read())
+   return json.dumps(x)
+    
 
 @app.route('/variant/<variant_str>')
 @requires_auth

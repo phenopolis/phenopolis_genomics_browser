@@ -4,7 +4,6 @@ import requests
 import re
 from utils import *
 import itertools
-from config import config
 import csv
 #hpo lookup
 import orm

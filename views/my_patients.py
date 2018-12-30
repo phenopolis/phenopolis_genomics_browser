@@ -4,7 +4,6 @@ import requests
 import re
 from utils import *
 import itertools
-from config import config
 import csv
 
 def individuals_update(external_ids):

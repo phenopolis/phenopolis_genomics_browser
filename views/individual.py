@@ -2,7 +2,6 @@ from views import *
 import requests
 from utils import *
 import itertools
-from config import config
 import csv
 #hpo lookup
 import orm

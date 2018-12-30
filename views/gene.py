@@ -2,7 +2,6 @@ from views import *
 from lookups import *
 from orm import *
 import requests
-from config import config
 import hashlib
 from bson.json_util import dumps
 
@@ -25,6 +24,70 @@ def hide_id_for_demo(data):
     for k,v in data['variants'].items():
         new_v = 'hidden_'+hashlib.sha224(k).hexdigest()[:6]
         data['variants'][new_v] = data['variants'].pop(k)
+
+
+@app.route('/gene_json/<gene_id>',methods=['GET','POST'])
+@requires_auth
+def gene_json(gene_id):
+    # if gene not ensembl id then translate to
+    db=get_db()
+    hpo_db=get_db(app.config['DB_NAME_HPO'])
+    patient_db=get_db(app.config['DB_NAME_PATIENTS'])
+    hpo=request.args.get('hpo')
+    if not gene_id.startswith('ENSG'): gene_id = lookups.get_gene_by_name(get_db(), gene_id)['gene_id']
+    gene=db.genes.find_one({'gene_id':gene_id})
+    del gene['_id']
+    variants=db.variants.find({'genes':gene_id})
+    return json.dumps(gene)
+
+   
+@app.route('/gene_phenogenon_json/<gene_id>',methods=['GET','POST'])
+@requires_auth
+def gene_phenogenon_json(gene_id):
+    # if gene not ensembl id then translate to
+    db=get_db()
+    if not gene_id.startswith('ENSG'): gene_id = lookups.get_gene_by_name(get_db(), gene_id)['gene_id']
+    gene=db.gene_hpo_new.find_one({'gene_id':gene_id})
+    del gene['_id']
+    return json.dumps(gene)
+
+@app.route('/gene/',methods=['GET'])
+@requires_auth
+def gene():
+   gene_id=request.args.get('id')
+   x=json.loads(file('tests/data/TTLL5.json','r').read())
+   filename='/media/pontikos_nas/pontikos/phenopolis/genes.db'
+   fd = os.open(filename, os.O_RDONLY)
+   conn = sqlite3.connect('/dev/fd/%d' % fd)
+   c=conn.cursor()
+   #python3
+   #conn=sqlite3.connect('file:/media/pontikos_nas/pontikos/phenopolis/genes.db?mode=ro', uri=True)
+   if gene_id.startswith('ENSG'):
+      c.execute('select * from genes where gene_id=?',(gene_id,))
+   else:
+      c.execute('select * from genes where gene_name=?',(gene_id,))
+   headers=[h[0] for h in c.description]
+   x[0]['gene_metadata']['data']=[dict(zip(headers,r)) for r in c.fetchall()]
+   c.close()
+   os.close(fd)
+   for d in x[0]['gene_metadata']['data']:
+       d['pLI']=1
+       d['number_of_variants']=10
+   #python3
+   #conn=sqlite3.connect('file:/media/pontikos_nas/pontikos/phenopolis/variants.db?mode=ro', uri=True)
+   filename='/media/pontikos_nas/pontikos/phenopolis/variants.db'
+   fd = os.open(filename, os.O_RDONLY)
+   conn = sqlite3.connect('/dev/fd/%d' % fd)
+   c=conn.cursor()
+   c.execute('select * from variants where gene_symbol=?',(x[0]['gene_metadata']['data'][0]['gene_name'],))
+   headers=[h[0] for h in c.description]
+   x[0]['gene_variants']['data']=[dict(zip(headers,r)) for r in c.fetchall()]
+   c.close()
+   os.close(fd)
+   for d in x[0]['gene_metadata']['data']:
+       d['number_of_variants']=len(x[0]['gene_variants']['data'])
+   return json.dumps(x)
+    
 
 '''
 routes
@@ -102,38 +165,5 @@ def gene_page(gene_id):
             'patients_status':dumps(patients_status),
             'hpo_terms':hpo_terms_dict})
 
-
-@app.route('/gene_json/<gene_id>',methods=['GET','POST'])
-@requires_auth
-def gene_json(gene_id):
-    # if gene not ensembl id then translate to
-    db=get_db()
-    hpo_db=get_db(app.config['DB_NAME_HPO'])
-    patient_db=get_db(app.config['DB_NAME_PATIENTS'])
-    hpo=request.args.get('hpo')
-    if not gene_id.startswith('ENSG'): gene_id = lookups.get_gene_by_name(get_db(), gene_id)['gene_id']
-    gene=db.genes.find_one({'gene_id':gene_id})
-    del gene['_id']
-    variants=db.variants.find({'genes':gene_id})
-    return json.dumps(gene)
-
-   
-@app.route('/gene_phenogenon_json/<gene_id>',methods=['GET','POST'])
-@requires_auth
-def gene_phenogenon_json(gene_id):
-    # if gene not ensembl id then translate to
-    db=get_db()
-    if not gene_id.startswith('ENSG'): gene_id = lookups.get_gene_by_name(get_db(), gene_id)['gene_id']
-    gene=db.gene_hpo_new.find_one({'gene_id':gene_id})
-    del gene['_id']
-    return json.dumps(gene)
-
-@app.route('/gene/',methods=['GET'])
-@requires_auth
-def gene():
-   gene_id=request.args.get('id')
-   x=json.loads(file('tests/data/TTLL5.json','r').read())
-   return json.dumps(x)
-    
 
     

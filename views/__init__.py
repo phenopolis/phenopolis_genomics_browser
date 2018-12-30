@@ -34,7 +34,6 @@ import itertools
 import json
 import os
 import pymongo
-from config import config
 import gzip
 import logging
 import lookups
@@ -68,7 +67,6 @@ from werkzeug.security import generate_password_hash, check_password_hash
 from passlib.hash import argon2
 import orm
 from lookups import *
-from config import config
 import regex
 import requests
 
@@ -76,14 +74,12 @@ logging.getLogger().addHandler(logging.StreamHandler())
 logging.getLogger().setLevel(logging.INFO)
 
 # Load default config and override config from an environment variable
-if config.LOCAL:
-    print 'LOCAL'
-    app = Flask(__name__,static_url_path='/static', static_folder='../static', template_folder='../templates')
-    app.config.from_pyfile('../local.cfg')
-else:
-    print 'SERVER'
-    app = Flask(__name__, template_folder='../templates')
-    app.config.from_pyfile('../phenopolis.cfg')
+print('LOCAL')
+app = Flask(__name__,static_url_path='/static', static_folder='../static', template_folder='../templates')
+app.config.from_pyfile('../local.cfg')
+#print('SERVER')
+#app = Flask(__name__, template_folder='../templates')
+#app.config.from_pyfile('../phenopolis.cfg')
 
 ADMINISTRATORS = ( 'info@phenopolis.org',)
 mail_on_500(app, ADMINISTRATORS)
@@ -104,7 +100,6 @@ app.config.from_object(__name__)
 sess=Session()
 sess.init_app(app)
 
-print app.root_path
 
 def check_auth(username, password):
     """
@@ -136,7 +131,7 @@ def requires_auth(f):
           password=request.form['password']
           if check_auth(username,password):
              return f(*args, **kwargs)
-        print 'Not Logged In - Redirect to home to login'
+        print('Not Logged In - Redirect to home to login')
         if config.LOCAL:
            return jsonify(success='Unauthenticated'), 403
         else:
@@ -157,10 +152,10 @@ def login():
     print(username)
     print(check_auth(username,password))
     if not check_auth(username,password):
-       print 'Login Failed'
+       print('Login Failed')
        return jsonify(error='Invalid Credentials. Please try again.'), 401
     else:
-        print 'LOGIN SUCCESS'
+        print('LOGIN SUCCESS')
         return jsonify(success="Authenticated"), 200
 
 # 
@@ -183,10 +178,10 @@ def change_password():
     if username == 'demo': 
         return jsonify(error='You do not have permission to change the password for username \'demo\'.'), 401
     elif not check_auth(username,password):
-        print 'Change password:- Login Failed'
+        print('Change password:- Login Failed')
         return jsonify(error='Username and current password incorrect. Please try again.'), 401
     else:
-        print 'LOGIN SUCCESS, CHANGING PASSWORD'
+        print('LOGIN SUCCESS, CHANGING PASSWORD')
         argon_password = argon2.hash(new_password_1)
         db_users = get_db(app.config['DB_NAME_USERS'])
         #db_users.users.update_one({'user':username},{'$set':{'password':hash}})
@@ -311,7 +306,7 @@ def create_cache():
         try:
             page_content = get_gene_page_content(gene_id)
         except Exception as e:
-            print e
+            print(e)
             continue
         f = open(os.path.join(app.config['GENE_CACHE_DIR'], '{}.html'.format(gene_id)), 'w')
         f.write(page_content)
@@ -320,7 +315,7 @@ def create_cache():
 
 def precalculate_metrics():
     db = get_db()
-    print 'Reading %s variants...' % db.variants.count()
+    print('Reading %s variants...' % db.variants.count())
     metrics = defaultdict(list)
     binned_metrics = defaultdict(list)
     progress = 0
@@ -342,10 +337,10 @@ def precalculate_metrics():
                     break
         progress += 1
         if not progress % 100000:
-            print 'Read %s variants. Took %s seconds' % (progress, int(time.time() - start_time))
-    print 'Done reading variants. Dropping metrics database... '
+            print('Read %s variants. Took %s seconds' % (progress, int(time.time() - start_time)))
+    print('Done reading variants. Dropping metrics database... ')
     db.metrics.drop()
-    print 'Dropped metrics database. Calculating metrics...'
+    print('Dropped metrics database. Calculating metrics...')
     for metric in metrics:
         bin_range = None
         data = map(numpy.log, metrics[metric]) if metric == 'DP' else metrics[metric]
@@ -377,7 +372,7 @@ def precalculate_metrics():
             'hist': list(hist[0])
         })
     db.metrics.ensure_index('metric')
-    print 'Done pre-calculating metrics!'
+    print('Done pre-calculating metrics!')
 
 def response(POS, REF, ALT, index, geno, chrom, pos):
     homozygous_genotype='/'.join([str(index),str(index)])
@@ -470,7 +465,7 @@ def get_rathergood_result(db, query):
     This could be important for performance later
     """
     query = query.strip()
-    print 'Query: %s' % query
+    print('Query: %s' % query)
     # phenotype
     if query.startswith('HP:'):
         description=phizz.query_hpo([query])
@@ -563,7 +558,7 @@ def awesome():
     #u.netloc
     print(referrer)
     datatype, identifier = get_rathergood_result(db, query)
-    print "Searched for %s: %s" % (datatype, identifier)
+    print("Searched for %s: %s" % (datatype, identifier))
     if datatype == 'gene':
         return redirect('{}/gene/{}'.format(referrer,identifier))
     elif datatype == 'transcript':
@@ -614,29 +609,6 @@ def chisq(variant_str):
     samples=[h for h in geno if geno[h].split(':')[0]=='0/1' or geno[h].split(':')[0]=='1/1']
     res=jsonify(result=hpo_patients)
     return res
-
-
-def stream_template(template_name, **context):
-    app.update_template_context(context)
-    t = app.jinja_env.get_template(template_name)
-    rv = t.stream(context)
-    rv.enable_buffering(5)
-    return rv
-
-@app.route('/my-large-page.html')
-def render_large_template():
-    rows = iter_all_rows()
-    return Response(stream_template('the_template.html', rows=rows))
-
-
-
-@app.route('/stream')
-def streamed_response():
-    def generate():
-         yield 'Hello '
-         yield request.args['name']
-         yield '!'
-    return Response(stream_with_context(generate()))
 
 def generate_patient_table():
     def get_variants(variant_ids):
@@ -957,8 +929,7 @@ def load_base_coverage():
         coverage_generator = parse_tabix_file_subset(coverage_files, i, n, get_base_coverage_from_file)
         try:
             db.base_coverage.insert(coverage_generator, w=0)
-        except pymongo.errors.InvalidOperation, e:
-            print(e)
+        except pymongo.errors.InvalidOperation:
             # handle error when coverage_generator is empty
             pass  
     db = get_db()
@@ -975,7 +946,6 @@ def load_base_coverage():
         p.start()
         procs.append(p)
     return procs
-    #print 'Done loading coverage. Took %s seconds' % int(time.time() - start_time)
 
 
 def load_variants_file():
@@ -1011,34 +981,33 @@ def load_variants_file():
         procs.append(p)
     return procs
 
-    #print 'Done loading variants. Took %s seconds' % int(time.time() - start_time)
 
 
 def load_constraint_information():
     db = get_db()
     db.constraint.drop()
-    print 'Dropped db.constraint.'
+    print('Dropped db.constraint.')
     start_time = time.time()
     with gzip.open(app.config['CONSTRAINT_FILE']) as constraint_file:
         for transcript in get_constraint_information(constraint_file):
             db.constraint.insert(transcript, w=0)
     db.constraint.ensure_index('transcript')
-    print 'Done loading constraint info. Took %s seconds' % int(time.time() - start_time)
+    print('Done loading constraint info. Took %s seconds' % int(time.time() - start_time))
 
 
 def load_mnps():
     db = get_db()
     start_time = time.time()
     db.variants.ensure_index('has_mnp')
-    print 'Done indexing.'
+    print('Done indexing.')
     while db.variants.find_and_modify({'has_mnp' : True}, {'$unset': {'has_mnp': '', 'mnps': ''}}): pass
-    print 'Deleted MNP data.'
+    print('Deleted MNP data.')
     with gzip.open(app.config['MNP_FILE']) as mnp_file:
         for mnp in get_mnp_data(mnp_file):
             variant = lookups.get_raw_variant(db, mnp['xpos'], mnp['ref'], mnp['alt'], True)
             db.variants.find_and_modify({'_id': variant['_id']}, {'$set': {'has_mnp': True}, '$push': {'mnps': mnp}}, w=0)
     db.variants.ensure_index('has_mnp')
-    print 'Done loading MNP info. Took %s seconds' % int(time.time() - start_time)
+    print('Done loading MNP info. Took %s seconds' % int(time.time() - start_time))
 
 
 @app.route('/load_gene_models/')
@@ -1047,7 +1016,7 @@ def load_gene_models():
     db.genes.drop()
     db.transcripts.drop()
     db.exons.drop()
-    print 'Dropped db.genes, db.transcripts, and db.exons.'
+    print('Dropped db.genes, db.transcripts, and db.exons.')
     start_time = time.time()
     canonical_transcripts = {}
     with gzip.open(app.config['CANONICAL_TRANSCRIPT_FILE']) as canonical_transcript_file:
@@ -1065,7 +1034,7 @@ def load_gene_models():
         for dbnsfp_gene in get_dbnsfp_info(dbnsfp_file):
             other_names = [other_name.upper() for other_name in dbnsfp_gene['gene_other_names']]
             dbnsfp_info[dbnsfp_gene['ensembl_gene']] = (dbnsfp_gene['gene_full_name'], other_names)
-    print 'Done loading metadata. Took %s seconds' % int(time.time() - start_time)
+    print('Done loading metadata. Took %s seconds' % int(time.time() - start_time))
     # grab genes from GTF
     start_time = time.time()
     with gzip.open(app.config['GENCODE_GTF']) as gtf_file:
@@ -1080,7 +1049,6 @@ def load_gene_models():
                 gene['full_gene_name'] = dbnsfp_info[gene_id][0]
                 gene['other_names'] = dbnsfp_info[gene_id][1]
             db.genes.insert(gene, w=0)
-    print 'Done loading genes. Took %s seconds' % int(time.time() - start_time)
     start_time = time.time()
     db.genes.ensure_index('gene_id')
     db.genes.ensure_index('gene_name_upper')
@@ -1088,26 +1056,21 @@ def load_gene_models():
     db.genes.ensure_index('other_names')
     db.genes.ensure_index('xstart')
     db.genes.ensure_index('xstop')
-    print 'Done indexing gene table. Took %s seconds' % int(time.time() - start_time)
     # and now transcripts
     start_time = time.time()
     with gzip.open(app.config['GENCODE_GTF']) as gtf_file:
         db.transcripts.insert((transcript for transcript in get_transcripts_from_gencode_gtf(gtf_file)), w=0)
-    print 'Done loading transcripts. Took %s seconds' % int(time.time() - start_time)
     start_time = time.time()
     db.transcripts.ensure_index('transcript_id')
     db.transcripts.ensure_index('gene_id')
-    print 'Done indexing transcript table. Took %s seconds' % int(time.time() - start_time)
     # Building up gene definitions
     start_time = time.time()
     with gzip.open(app.config['GENCODE_GTF']) as gtf_file:
         db.exons.insert((exon for exon in get_exons_from_gencode_gtf(gtf_file)), w=0)
-    print 'Done loading exons. Took %s seconds' % int(time.time() - start_time)
     start_time = time.time()
     db.exons.ensure_index('exon_id')
     db.exons.ensure_index('transcript_id')
     db.exons.ensure_index('gene_id')
-    print 'Done indexing exon table. Took %s seconds' % int(time.time() - start_time)
     return []
 
 
@@ -1128,7 +1091,6 @@ def load_dbsnp_file():
     db.dbsnp.ensure_index('xpos')
     start_time = time.time()
     dbsnp_file = app.config['DBSNP_FILE']
-    print "Loading dbsnp from %s" % dbsnp_file
     if os.path.isfile(dbsnp_file + ".tbi"): num_procs = app.config['LOAD_DB_PARALLEL_PROCESSES']
     else:
         # see if non-tabixed .gz version exists
@@ -1147,10 +1109,8 @@ def load_dbsnp_file():
         p.start()
         procs.append(p)
     return procs
-    #print 'Done loading dbSNP. Took %s seconds' % int(time.time() - start_time)
     #start_time = time.time()
     #db.dbsnp.ensure_index('rsid')
-    #print 'Done indexing dbSNP table. Took %s seconds' % int(time.time() - start_time)
 
 
 """
@@ -1221,29 +1181,6 @@ arg: {
 default step 1
 '''
 
-def update_progress_bar(obj):
-    # check if id in PROGRESS_BAR
-    if not obj['id'] in PROGRESS_BAR:
-        return 'ID does not exist in PROGRESS_BAR'
-
-    # update progress
-    if not 'step' in obj:
-        obj['step'] = 1
-    PROGRESS_BAR[obj['id']]['count'] += obj['step']
-
-    PROGRESS_BAR[obj['id']]['message'] = obj['message']
-    # done?
-    if PROGRESS_BAR[obj['id']]['count'] == PROGRESS_BAR[obj['id']]['total']:
-        PROGRESS_BAR[obj['id']]['status'] = 'done'
-
-'''
-kill a progress
-'''
-
-def kill_progress_bar(key):
-    if key in PROGRESS_BAR:
-        del PROGRESS_BAR[key]
-
 
 '''
 to check if an iterable is empty
@@ -1256,171 +1193,6 @@ def peek(iterable):
     except StopIteration:
         return None
     return first, itertools.chain([first], iterable)
-
-
-'''
-find the freaking PID, Title or Abstract no matter what!
-'''
-def find_item(obj, key):
-    if key in obj:
-        return obj[key]
-    if isinstance(obj, dict):
-        for k in obj:
-            if isinstance(obj[k], dict):
-                item = find_item(obj[k], key)
-                if item is not None:
-                    return item
-            elif isinstance(obj[k], list):
-                for i in obj[k]:
-                    if isinstance(i, str):
-                        continue
-                    item = find_item(i, key)
-                    if item is not None:
-                        return item
-    elif isinstance(obj, list):
-        for k in obj:
-            if isinstance(k, dict):
-                item = find_item(k, key)
-                if item is not None:
-                    return item
-            elif isinstance(k, list):
-                for i in k:
-                    if isinstance(i, str):
-                        continue
-                    item = find_item(i, key)
-                    if item is not None:
-                        return item
-
-
-"""
-for pubmedBatch
-check title and abstract is truely relevant. Assign to both this gene and each ref
-"""
-def scrutinise(obj):
-    print obj['smashed_all']
-    if obj['lag']:
-        obj['lag'] = obj['lag']/3600/24 # convert it to days
-            # need to update
-        search_results = Entrez.read(Entrez.esearch(db='pubmed', term=obj['smashed_all'], reldate=obj['lag'], datetype='pdat', usehistory='y'))
-    else:
-        # just search
-        search_results = Entrez.read(Entrez.esearch(db='pubmed',retmax=50, term=obj['smashed_all'], usehistory='y'))
-    # now done the search. let's get results
-    count = int(search_results["Count"])
-    print count
-    results = {'results':[], 'total_score':0}
-    # get search content
-    attempt = 1
-    while attempt <= 10:
-        try:
-            handle = Entrez.efetch("pubmed",
-                                   restart=0,
-                                   retmax=50,
-                                   retmode="xml",
-                                   webenv=search_results['WebEnv'],
-                                   query_key=search_results['QueryKey']
-                                   )
-            break
-        except HTTPError as err:
-            if 500 <= err.code <= 599:
-                print('Received error from server %s' % err)
-            else:
-                print('Something is wrong while efetch..')
-            print('Attempt %i of 10' % attempt)
-            attempt += 1
-            time.sleep(5)
-    record = Entrez.parse(handle)
-    if peek(record):
-        # got something. let's do some calculation
-        for r in record:
-            # calculate score
-            score = 0
-            pid = str(find_item(r, 'PMID'))
-            abstract_list = find_item(r, 'AbstractText')
-            # parse abstract
-            abstract = ''
-            if abstract_list:
-                for a in abstract_list:
-                    if hasattr(a, 'attributes') and 'Label' in a.attributes:
-                        abstract = abstract + '<b>' + a.attributes['Label'] + ': </b>'
-                        abstract = abstract + a + '<br/>'
-                    else:
-                        abstract = abstract + a
-        
-            title = find_item(r, 'ArticleTitle')
-            if title:
-                score = score + len(obj['reg'].findall(title))
-            if abstract:
-                score = score + len(obj['reg'].findall(abstract))
-        
-            # add result to genes[gene_name]
-            if score:
-                results['results'].append({
-                    'id': pid,
-                    'title': title,
-                    'abstract': abstract,
-                    'score': score
-                })
-                results['total_score'] = results['total_score'] + score
-    results['results'] = sorted(results['results'], key=lambda k: k['score'], reverse=True)
-    return results
-
-def get_pred_score(obj):
-    # for the batch_pubmed route.
-    # calculate the pred score
-    # [D/A].each = 10, [P].each = 5, [C].each = 6, [T/B/N].each = -1. If there is a splicing/insertion/deletion event, the score is set as 1000. Not given is set as 0
-    # ref: https://github.com/plagnollab/DNASeq_pipeline/blob/master/GATK_v2/filtering.md
-    pred = 0
-    if ('Func' in obj and re.search('splic', obj['Func'])) or ('ExonicFunc' in obj and re.search(r'stop|frame|del|insert', obj['ExonicFunc'])):
-        pred = 1000;
-    else:
-        for k in obj:
-            if re.search('Pred', k):
-                if obj[k] == 'D' or obj[k] == 'A':
-                    pred = pred + 10
-                elif obj[k] == 'P':
-                    pred = pred + 5
-                elif obj[k] == 'C':
-                    pred = pred + 6
-                elif obj[k] == 'T' or obj[k] == 'B' or obj[k] == 'N':
-                    pred = pred - 1
-                else:
-                    pass
-    return pred;
-
-""" JINJA2 filer """
-def highlight(text, list, myclass):
-    # wrap list element in text (case insensitive) with <span>
-    # note that gene description has to be split by ','
-    #  with class to do highlighting
-    for l in list:
-        # remove (.*), escape +?.*
-        l = re.sub(r'\(.*\)', '', l)
-        l = re.sub(r'\+','\\+',l)
-        l = re.sub(r'\?','\\?',l)
-        l = re.sub(r'\.','\\.',l)
-        l = re.sub(r'\*','\\*',l)
-        l = re.sub(r'\[.*\]','',l)
-        l = re.sub(r'\\', '\\\\',l)
-        words = l.split(',')
-        for w in words:
-            # wrap w with brackets to be a catch group
-            text = re.sub(r'(\b%s\b)' % w, r'<span class="%s">\1</span>' % myclass, text, flags=re.I)
-    return text
-jinja2.filters.FILTERS['highlight'] = highlight
-
-def highlight2(text, kw, myclass):
-    # wrap list element in text (case insensitive) with <span>
-    # note that gene description has to be split by ','
-    #  with class to do highlighting
-    # remove (.*), escape +?.*
-    for w in kw:
-        # wrap w with brackets to be a catch group
-        text = re.sub(r'\b(%s)\b'%w, r'<span class="%s">\1</span>' % myclass, text, flags=re.I)
-    return text
-jinja2.filters.FILTERS['highlight2'] = highlight2
-
-
 
 import views.my_patients
 import views.gene

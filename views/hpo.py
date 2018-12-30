@@ -2,7 +2,6 @@ from views import *
 from lookups import *
 import requests
 from flask import request
-from config import config
 import re
 from utils import *
 import itertools
