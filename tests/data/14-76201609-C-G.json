@@ -1,0 +1,67 @@
+[
+  {
+     "metadata": {
+         "colNames" : [
+            {"default":"true", "name":"Filter Status", "key":"filter_status"},
+            {"default":"true", "name":"Gene", "key":"gene"},
+            {"default":"true", "name":"Consequence", "key":"consequence"},
+            {"default":"true", "name":"Transcript", "key":"transcript"},
+            {"default":"true", "name":"dbSNP", "key":"dbsnp"},
+            {"default":"true", "name":"Allele Frequency", "key":"allele_frequency"},
+            {"default":"true", "name":"Kaviar", "key":"kaviar"},
+            {"default":"true", "name":"ExAC", "key":"exac"},
+            {"default":"true", "name":"Allele Count", "key":"allele_count"}
+         ],
+         "data": [
+             {"filter_status":"PASS", "gene":"GCAT", "consequence":"3_prime_UTR_variant=", "transcript":"ENST00000323205", "dbsnp":"rs13911", "allele_frequency":0.652, "kaviar":0.666536, "exac":0.682, "allele_count":"6066 / 9296"}
+         ]
+     },
+     "frequency" : {
+         "colNames" : [
+            {"default":"true", "name":"Type", "key":"type"},
+            {"default":"true","name":"AC", "key":"ac"},
+            {"default":"true", "name":"AN", "key":"an"},
+            {"default":"true", "name":"Het", "key":"het"},
+            {"default":"true", "name":"Hom", "key":"hom"},
+            {"default":"true", "name":"AF POPMAX", "key":"af_popmax"},
+            {"default":"true", "name":"AF", "key":"af"}
+         ],
+         "data" : [
+             { "type":"African", "ac":8016, "an":9730, "het":1412, "hom":3302, "af_pop_max":"", "af":0.823843782117 }
+         ]
+     },
+     "consequence" : {
+         "colNames" : [
+            {"default":"true", "name":"gene symbol", "key":"gene_symbol"},
+            {"default":"true", "name":"strand", "key":"strand"},
+            {"default":"true", "name":"transcript", "key":"transcript"},
+            {"default":"true", "name":"protein", "key":"protein"},
+            {"default":"true", "name":"consequence terms", "key":"consequence_terms"},
+            {"default":"true", "name":"impact", "key":"impact"},
+            {"default":"true", "name":"cadd", "key":"cadd"},
+            {"default":"true", "name":"polyphen", "key":"polyphen"},
+            {"default":"true", "name":"sift", "key":"sift"},
+            {"default":"true", "name":"carol", "key":"carol"}
+         ],
+         "data" : [
+             {"gene_symbol":"CGAT", "strand":"+", "transcript":"ENST00000248924.6:c.*37A>G", "protein":"", "consequence_terms":"3_prime_UTR_variant", "impact":"MODIFIER", "cadd":4.4, "polyphen":"", "sift":"", "carol":""}
+         ]
+     },
+     "quality" : {
+         "colNames": [
+         ],
+         "data" : [
+         ]
+     },
+     "individuals" : {
+         "colNames":[
+            {"default":"true", "name":"HOM", "key":"hom", "class":"preview_onhover", "type":"links", "description":"", "href":"/individual/"},
+            {"default":"true", "name":"HET", "key":"het", "class":"preview_onhover", "type":"links", "description":"", "href":"/individual/"},
+            {"default":"true", "name":"WT", "key":"wt", "class":"preview_onhover", "type":"links", "description":"", "href":"/individual/"}
+         ],
+         "data" : [
+            {"wt":[{"display":"Levine_Aug2014_IBDAJ_865"}, {"display":"Levine_Aug2014_IBDAJ_865", "href":"/individual/Levine_Aug2014_IBDAJ_865"}], "hom":[{"display":"Levine_Aug2014_IBDAJ_865"}, {"display":"OneKG_TSI_NA20542"}], "het":[{"display":"Levine_Macrogen_1011"},{"display":"Levine_Macrogen_1013"},{"display":"Levine_Macrogen_1012"}]}
+         ]
+     }
+  }
+]

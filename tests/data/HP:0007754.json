@@ -41,7 +41,7 @@
          "colNames" : [
                {"default": "true","name":"Gene", "key": "gene", "class":"preview_onhover", "type":"links"},
                {"default": "true","name":"Phenogenon Dominant P-Value", "key": "phenogenon_dominant_pvalue"},
-               {"default": "true","name":"Phenogenon Recessive P-Value", "key": "phenogenon_recessive_pvalue"},
+               {"default": "true","name":"Phenogenon Recessive P-Value", "key": "phenogenon_recessive_pvalue"}
          ],
          "data" : [{
               "gene": [{"display":"GUCY2D", "href":"/gene/GUCY2D"}],
