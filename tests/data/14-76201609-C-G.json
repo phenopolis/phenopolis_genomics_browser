@@ -1,5 +1,6 @@
 [
   {
+     "preview":[["het",10],["hom",5],["wt",100],
      "metadata": {
          "colNames" : [
             {"default":"true", "name":"Filter Status", "key":"filter_status"},
