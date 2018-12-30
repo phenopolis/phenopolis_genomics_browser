@@ -1,6 +1,6 @@
 [
   {
-     "preview":[["het",10],["hom",5],["wt",100],
+     "preview":[["het",10],["hom",5],["wt",100]],
      "metadata": {
          "colNames" : [
             {"default":"true", "name":"Filter Status", "key":"filter_status"},
@@ -56,12 +56,12 @@
      },
      "individuals" : {
          "colNames":[
-            {"default":"true", "name":"HOM", "key":"hom", "class":"preview_onhover", "type":"links", "description":"", "href":"/individual/"},
-            {"default":"true", "name":"HET", "key":"het", "class":"preview_onhover", "type":"links", "description":"", "href":"/individual/"},
-            {"default":"true", "name":"WT", "key":"wt", "class":"preview_onhover", "type":"links", "description":"", "href":"/individual/"}
+            {"default":"true", "name":"HOM", "key":"hom", "class":"preview_onhover", "type":"links", "description":"", "base_href":"/individual/"},
+            {"default":"true", "name":"HET", "key":"het", "class":"preview_onhover", "type":"links", "description":"", "base_href":"/individual/"},
+            {"default":"true", "name":"WT", "key":"wt", "class":"preview_onhover", "type":"links", "description":"", "base_href":"/individual/"}
          ],
          "data" : [
-            {"wt":[{"display":"Levine_Aug2014_IBDAJ_865"}, {"display":"Levine_Aug2014_IBDAJ_865", "href":"/individual/Levine_Aug2014_IBDAJ_865"}], "hom":[{"display":"Levine_Aug2014_IBDAJ_865"}, {"display":"OneKG_TSI_NA20542"}], "het":[{"display":"Levine_Macrogen_1011"},{"display":"Levine_Macrogen_1013"},{"display":"Levine_Macrogen_1012"}]}
+            {"wt":[{"display":"Levine_Aug2014_IBDAJ_865"}, {"display":"Levine_Aug2014_IBDAJ_865"}], "hom":[{"display":"Levine_Aug2014_IBDAJ_865"}, {"display":"OneKG_TSI_NA20542"}], "het":[{"display":"Levine_Macrogen_1011"},{"display":"Levine_Macrogen_1013"},{"display":"Levine_Macrogen_1012"}]}
          ]
      }
   }
