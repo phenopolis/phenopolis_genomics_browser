@@ -1,10 +1,7 @@
 from views import *
 from lookups import *
-import re
 from utils import *
-import itertools
 import subprocess
-
 
 @app.route('/search', methods=['GET','POST'])
 @requires_auth

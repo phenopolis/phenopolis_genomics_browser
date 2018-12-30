@@ -1,11 +1,7 @@
 from views import *
 from lookups import *
-import requests
-import re
 from utils import *
 import itertools
-import csv
-#hpo lookup
 import orm
 import subprocess
 
@@ -23,7 +19,6 @@ def register():
 
 @app.route('/', methods=['GET'])
 def homepage():
-    cache_key = 't-home'
     db=get_db()
     patients_db=get_db(app.config['DB_NAME_PATIENTS']) 
     total_variants=db.variants.count()
