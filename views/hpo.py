@@ -1,11 +1,56 @@
 from views import *
 from lookups import *
-import requests
 from flask import request
 import re
 from utils import *
 import itertools
 import csv
+
+@app.route('/hpo/<hpo_id>')
+@app.route('/hpo/<hpo_id>/<subset>')
+@requires_auth
+def hpo(hpo_id,subset='all'):
+   x=json.loads(file(app.config['HPO_JSON'],'r').read())
+   if subset=='all': return json.dumps(x)
+   else: return x[subset]
+
+def hpo2():
+    db=get_db()
+    hpo_db=get_db(app.config['DB_NAME_HPO'])
+    patients_db=get_db(app.config['DB_NAME_PATIENTS'])
+    #patients=[p for p in patients_db.patients.find( { 'features': {'$elemMatch':{'id':str(hpo_id)}} } )]
+    print(hpo_id)
+    if not hpo_id.startswith('HP:'):
+        hpo_term=hpo_db.hpo.find_one({'name':hpo_id})
+        hpo_id=hpo_term['id'][0]
+    print(hpo_id)
+    hpo_term=hpo_db.hpo.find_one({'id':hpo_id})
+    hpo_name=hpo_term['name'][0]
+    if 'is_a' in hpo_term:
+        parents=[ pid for pid in hpo_term['is_a'] ]
+    else:
+        parents=[]
+    print('HPO ANCESTORS')
+    hpo_ancestors=lookups.get_hpo_ancestors(hpo_db,hpo_id)
+    #print(lookups.get_hpo_ancestors_array(hpo_db,hpo_id))
+    print(hpo_ancestors)
+    print(len(hpo_ancestors))
+    print([h['name'] for h in hpo_ancestors])
+    #hpo_ancestors=dict((h['id'][0],h['name'][0]) for h in hpo_ancestors)
+    hpo_ancestors=[{'hpo_id':h['id'][0],'hpo_name':h['name'][0]} for h in hpo_ancestors]
+    #print(len([v['VARIANT_ID'] for v in db.variants.find({'HET' : { '$in': patient_ids }})]))
+    #print(len([v['VARIANT_ID'] for v in db.variants.find({'HOM' : { '$in': patient_ids }})]))
+    #r=patients_db.hpo.find_one({'hp_id':hpo_id})
+    #if r: external_ids=r['external_ids']
+    #else: external_ids=[]
+    genes=[lookups.get_gene_by_name(db, r['Gene-Name']) for r in hpo_db.hpo_gene.find({'HPO-ID':hpo_id})]
+    print('num genes', len(genes))
+    #for r in hpo_db.hpo_pubmed.find({'hpoid':hpo_id}): print(r)
+    #pmids=[r['pmid'] for r in hpo_db.hpo_pubmed.find({'hpoid':hpo_id})]
+    patients=lookups.get_hpo_patients(hpo_db,patients_db,hpo_id)
+    print('num patients', len(patients))
+    #return jsonify(result={'hpo_id':hpo_id,'hpo_name':hpo_name,'individuals':[str(p['external_id']) for p in patients],'genes':genes})
+    return jsonify(result={'hpo_id':hpo_id,'hpo_name':hpo_name,'individuals':[str(p['external_id']) for p in patients],'hpo_ancestors':hpo_ancestors, 'parents':parents})
 
 
 def phenogenon(hpo_id,lit_genes,omim_genes,recessive_genes,dominant_genes,cache=True):

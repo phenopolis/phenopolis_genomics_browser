@@ -14,15 +14,15 @@ import vcf
 import subprocess
 import os
 
-
-@app.route('/variant/',methods=['GET'])
+@app.route('/variant/<variant_id>')
+@app.route('/variant/<variant_id>/<subset>')
 @requires_auth
-def variant():
-   variant_id=request.args.get('id')
-   x=json.loads(file('tests/data/14-76201609-C-G.json','r').read())
-   return json.dumps(x)
-    
+def variant(variant_id, subset='all'):
+   x=json.loads(file(app.config['VARIANT_JSON'],'r').read())
+   if subset=='all': return json.dumps(x)
+   else: return json.dumps(x[subset])
 
+    
 @app.route('/variant/<variant_str>')
 @requires_auth
 def variant_page(variant_str):
@@ -38,8 +38,6 @@ def variant_page(variant_str):
         del variant['hom_samples']
     return jsonify( 'variant.html', title=variant_str, variant=variant)
 
-#@app.route('/variant_json/<variant_str>')
-#def variant_json(variant_str): return jsonify(result=vcf.vcf_query(variant_str=variant_str))
 
 @app.route('/variant_json/<variant_str>')
 def variant_json(variant_str):

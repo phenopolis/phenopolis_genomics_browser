@@ -18,14 +18,12 @@ from flask import jsonify
 from flask import send_from_directory
 from flask.ext.compress import Compress
 from flask.ext.runner import Runner
-from flask_errormail import mail_on_500
 from flask_debugtoolbar import DebugToolbarExtension 
 from flask.ext.cache import Cache
 import sys
 import StringIO
 import urllib, base64 
 import numpy as np
-from jinja2_extensions import *
 import md5 
 from scipy.stats import chisquare
 import math 
@@ -74,15 +72,9 @@ logging.getLogger().addHandler(logging.StreamHandler())
 logging.getLogger().setLevel(logging.INFO)
 
 # Load default config and override config from an environment variable
-print('LOCAL')
-app = Flask(__name__,static_url_path='/static', static_folder='../static', template_folder='../templates')
+app = Flask(__name__)
 app.config.from_pyfile('../local.cfg')
-#print('SERVER')
-#app = Flask(__name__, template_folder='../templates')
-#app.config.from_pyfile('../phenopolis.cfg')
 
-ADMINISTRATORS = ( 'info@phenopolis.org',)
-mail_on_500(app, ADMINISTRATORS)
 Compress(app)
 #app.config['COMPRESS_DEBUG'] = True
 #cache = SimpleCache(default_timeout=70*60*24)
@@ -100,20 +92,28 @@ app.config.from_object(__name__)
 sess=Session()
 sess.init_app(app)
 
+def sqlite3_ro_cursor(dbname):
+   fd = os.open(dbname, os.O_RDONLY)
+   conn = sqlite3.connect('/dev/fd/%d' % fd)
+   c=conn.cursor()
+   return (c, fd)
+
+def sqlite3_ro_close(cursor, fd):
+   cursor.close()
+   os.close(fd)
 
 def check_auth(username, password):
     """
     This function is called to check if a username / password combination is valid.
     """
-    q={'statements':[{'statement': "MATCH (u:User {user:'%s'}) RETURN u" % username}]}
-    print(q)
-    resp=requests.post('http://localhost:57474/db/data/transaction/commit',auth=('neo4j', '1'),json=q)
-    if not resp: return False
-    r=resp.json()['results'][0]['data'][0]['row'][0]
-    print(r)
+    c,fd,=sqlite3_ro_cursor(app.config['USERS_DB'])
+    c.execute('select * from users where user=?',(username,))
+    headers=[h[0] for h in c.description]
+    user=[dict(zip(headers,r)) for r in c.fetchall()]
+    print(user)
+    if len(user)==0: return False
     session['user']=username
-    return argon2.verify(password, r['argon_password'])
-
+    return argon2.verify(password, user[0]['argon_password'])
 
 def authenticate():
     """Sends a 401 response that enables basic auth"""
@@ -132,10 +132,7 @@ def requires_auth(f):
           if check_auth(username,password):
              return f(*args, **kwargs)
         print('Not Logged In - Redirect to home to login')
-        if config.LOCAL:
-           return jsonify(success='Unauthenticated'), 403
-        else:
-           return jsonify(success='Unauthenticated'), 403
+        return jsonify(success='Unauthenticated'), 403
     return decorated
 
 
@@ -163,10 +160,7 @@ def login():
 def logout():
     print('DELETE SESSION')
     session.pop('user',None)
-    if config.LOCAL:
-        return jsonify(success='logged out'), 200
-    else:
-        return jsonify(success='logged out'), 200
+    return jsonify(success='logged out'), 200
 
 
 # 

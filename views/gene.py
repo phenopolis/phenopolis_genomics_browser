@@ -5,6 +5,40 @@ import requests
 import hashlib
 from bson.json_util import dumps
 
+
+@app.route('/gene/<gene_id>')
+@app.route('/gene/gene_id>/<subset>')
+@requires_auth
+def gene(gene_id, subset='all'):
+   x=json.loads(file(app.config['GENE_JSON'],'r').read())
+   c,fd,=sqlite3_ro_cursor(app.config['GENES_DB'])
+   #python3
+   #conn=sqlite3.connect('file:/media/pontikos_nas/pontikos/phenopolis/genes.db?mode=ro', uri=True)
+   if gene_id.startswith('ENSG'):
+      c.execute('select * from genes where gene_id=?',(gene_id,))
+   else:
+      c.execute('select * from genes where gene_name=?',(gene_id,))
+   headers=[h[0] for h in c.description]
+   x[0]['metadata']['data']=[dict(zip(headers,r)) for r in c.fetchall()]
+   sqlite3_ro_close(c,fd)
+   for d in x[0]['metadata']['data']:
+       d['pLI']=1
+       d['number_of_variants']=10
+   #python3
+   #conn=sqlite3.connect('file:/media/pontikos_nas/pontikos/phenopolis/variants.db?mode=ro', uri=True)
+   c,fd,=sqlite3_ro_cursor(app.config['VARIANTS_DB'])
+   c.execute('select * from variants where gene_symbol=?',(x[0]['metadata']['data'][0]['gene_name'],))
+   headers=[h[0] for h in c.description]
+   x[0]['variants']['data']=[dict(zip(headers,r)) for r in c.fetchall()]
+   sqlite3_ro_close(c,fd)
+   for d in x[0]['metadata']['data']:
+       d['number_of_variants']=len(x[0]['variants']['data'])
+   if subset=='all': return json.dumps(x)
+   else: return x[subset]
+    
+
+
+
 '''
 defs
 '''
@@ -50,44 +84,6 @@ def gene_phenogenon_json(gene_id):
     gene=db.gene_hpo_new.find_one({'gene_id':gene_id})
     del gene['_id']
     return json.dumps(gene)
-
-@app.route('/gene/',methods=['GET'])
-@requires_auth
-def gene():
-   gene_id=request.args.get('id')
-   x=json.loads(file('tests/data/TTLL5.json','r').read())
-   filename='/media/pontikos_nas/pontikos/phenopolis/genes.db'
-   fd = os.open(filename, os.O_RDONLY)
-   conn = sqlite3.connect('/dev/fd/%d' % fd)
-   c=conn.cursor()
-   #python3
-   #conn=sqlite3.connect('file:/media/pontikos_nas/pontikos/phenopolis/genes.db?mode=ro', uri=True)
-   if gene_id.startswith('ENSG'):
-      c.execute('select * from genes where gene_id=?',(gene_id,))
-   else:
-      c.execute('select * from genes where gene_name=?',(gene_id,))
-   headers=[h[0] for h in c.description]
-   x[0]['gene_metadata']['data']=[dict(zip(headers,r)) for r in c.fetchall()]
-   c.close()
-   os.close(fd)
-   for d in x[0]['gene_metadata']['data']:
-       d['pLI']=1
-       d['number_of_variants']=10
-   #python3
-   #conn=sqlite3.connect('file:/media/pontikos_nas/pontikos/phenopolis/variants.db?mode=ro', uri=True)
-   filename='/media/pontikos_nas/pontikos/phenopolis/variants.db'
-   fd = os.open(filename, os.O_RDONLY)
-   conn = sqlite3.connect('/dev/fd/%d' % fd)
-   c=conn.cursor()
-   c.execute('select * from variants where gene_symbol=?',(x[0]['gene_metadata']['data'][0]['gene_name'],))
-   headers=[h[0] for h in c.description]
-   x[0]['gene_variants']['data']=[dict(zip(headers,r)) for r in c.fetchall()]
-   c.close()
-   os.close(fd)
-   for d in x[0]['gene_metadata']['data']:
-       d['number_of_variants']=len(x[0]['gene_variants']['data'])
-   return json.dumps(x)
-    
 
 '''
 routes

@@ -4,7 +4,6 @@ import requests
 import re
 from utils import *
 import itertools
-import csv
 
 def individuals_update(external_ids):
     patients_db=get_db(app.config['DB_NAME_PATIENTS'])
@@ -38,6 +37,13 @@ def individuals_update(external_ids):
     individuals=new_individuals+old_individuals
     users_db.users.update_one({'user':session['user']},{'$set':{'individuals':individuals}})
     return individuals
+
+def get_individuals2(build_cache=False):
+    c,ro,=sqlite3_ro_cursor(app.config('USERS_PATIENTS_DB'))
+    username=session['user']
+    c.execute("select patient from  users_patients where user=?",(username,))
+    headers=[h[0] for h in c.description]
+    patients=[dict(zip(headers,r)) for r in c.fetchall()]
 
 
 def get_individuals(build_cache=False):

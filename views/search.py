@@ -1,19 +1,14 @@
 from views import *
 from lookups import *
-import requests
 import re
 from utils import *
 import itertools
-import csv
 import subprocess
 
 
 @app.route('/search', methods=['GET','POST'])
 @requires_auth
 def search():
-    cache_key = 't-homepage'
-    #t = cache.get(cache_key)
-    #if t: return t
     db=get_db()
     patients_db=get_db(app.config['DB_NAME_PATIENTS']) 
     total_variants=db.variants.count()
