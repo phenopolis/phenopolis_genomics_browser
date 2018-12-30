@@ -1,8 +1,9 @@
 [
   {
-     "gene_metadata": {
+     "metadata": {
          "colNames" : [
             {"default": "true","name":"Full name", "key": "full_gene_name"},
+            {"default": "true","name":"Gene name", "key": "gene_name"},
             {"default": "true","name":"Gene ID", "key": "gene_id"},
             {"default": "true","name":"Chromosome", "key": "chrom"},
             {"default": "true","name":"Start", "key": "start"},
@@ -18,8 +19,8 @@
             "chromosome":"14",
             "start":76099968,
             "end":76421425,
-            "id": "ENSG00000119685",
-            "symbol": "TTLL5",
+            "gene_id": "ENSG00000119685",
+            "gene_name": "TTLL5",
             "pLI": 1,
             "pRes": 0.1,
             "OMIM": [ "stuff", "stuff2" ],
@@ -27,13 +28,13 @@
             "number_of_variants" : 10
          }]
      },
-     "gene_variants": {
+     "variants": {
         "colNames" : [
            {"name": "Chromosome", "key": "#CHROM", "default": "true", "description":""},
            {"name": "Position", "key": "POS", "default": "true", "description":"", "order":"asc"},
            {"name": "Ref", "key": "REF", "default": "true", "description":""},
            {"name": "Alt", "key": "ALT", "default": "true", "description":""},
-           {"name": "Rsid", "key": "ID", "default": "true", "class":"link_to_variant", "description":""},
+           {"name": "Rsid", "key": "ID", "default": "true", "class":"preview_onhover", "type":"link", "description":""},
            {"name": "AF jirdc", "key": "af_jirdc", "default": "true", "description":""},
            {"name": "AF krgdb", "key": "af_krgdb", "default": "true", "description":""},
            {"name": "AF hgvd", "key": "af_hgvd", "default": "true", "description":""},

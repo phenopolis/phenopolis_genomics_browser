@@ -1,0 +1,59 @@
+[
+  {
+     "preview":[["Number of Individuals",10],["DDD",5]],
+     "metadata": {
+         "colNames" : [
+            {"default": "true","name":"Name", "key": "name"},
+            {"default": "true","name":"ID", "key": "id"}
+         ],
+         "data" : [
+             {"name":"Macular dystrophy"},
+             {"id":"HP:0007754"}
+         ]
+    },
+    "individuals" : {
+         "colNames" : [
+            {"default": "true","name":"Individual", "key": "individual", "class":"preview_onhover", "type":"link"},
+            {"default": "true","name":"Gender", "key": "gender"},
+            {"default": "true","name":"Phenotype", "key": "phenotype", "class":"chip preview_onhover", "type":"array_of_links"},
+            {"default": "true","name":"Phenotype Score", "key": "phenotype_score"},
+            {"default": "true","name":"Rare Hom", "key": "rare_hom"},
+            {"default": "true","name":"Rare Comp Het", "key": "rare_comp_het"},
+            {"default": "true","name":"Rare", "key": "rare"},
+            {"default": "true","name":"Candidate Genes", "key": "candidate_genes"},
+            {"default": "true","name":"Candidate Variants", "key": "candidate_variants"}
+         ],
+         "data" : [
+             {
+                 "individual":{"display":"B240002", "href":"/individual/B240002", "onhover":"/individual/B240002?preview=true"},
+                 "gender":"M",
+                 "phenotype":[{"display":"", "href":"", "onhover":""}],
+                 "phenotype_score": "", 
+                 "rare_hom": "", 
+                 "rare_comp_het": "", 
+                 "rare": "", 
+                 "candidate_genes": "", 
+                 "candidate_variants": ""
+             },
+             {
+             }
+         ]
+    },
+    "literature_genes" : {
+         "colNames" : [ ],
+         "data" : [ ]
+    },
+    "phenogenon_recessive" : {
+         "colNames" : [ ],
+         "data" : [ ]
+     },
+    "phenogenon_dominant" : {
+         "colNames" : [ ],
+         "data" : [ ]
+    },
+    "skat" : {
+         "colNames" : [ ],
+         "data" : [ ]
+    }
+  }
+]
