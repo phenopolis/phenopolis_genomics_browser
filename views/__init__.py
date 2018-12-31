@@ -161,15 +161,14 @@ def logout():
     return jsonify(success='logged out'), 200
 
 
-@app.route('/set/<query>')
+#@app.route('/set/<query>')
 def set(query):
     value = query
     session['key'] = value
     return value
 
-@app.route('/get/')
-def get():
-    return session.get('key', 'not set')
+#@app.route('/get/')
+#def get(): return session.get('key', 'not set')
 
 
 def get_db(dbname=None):
@@ -248,7 +247,6 @@ def parse_tabix_file_subset(tabix_filenames, subset_i, subset_n, record_parser):
     print("Finished loading subset %(subset_i)s from  %(short_filenames)s (%(counter)s records)" % locals())
 
 
-
 def create_cache():
     """
     This is essentially a compile step that generates all cached resources.
@@ -279,67 +277,6 @@ def create_cache():
         f.close()
 
 
-def precalculate_metrics():
-    db = get_db()
-    print('Reading %s variants...' % db.variants.count())
-    metrics = defaultdict(list)
-    binned_metrics = defaultdict(list)
-    progress = 0
-    start_time = time.time()
-    for variant in db.variants.find(fields=['quality_metrics', 'site_quality', 'allele_num', 'allele_count']):
-        for metric, value in variant['quality_metrics'].iteritems():
-            metrics[metric].append(float(value))
-        qual = float(variant['site_quality'])
-        metrics['site_quality'].append(qual)
-        if variant['allele_num'] == 0: continue
-        if variant['allele_count'] == 1:
-            binned_metrics['singleton'].append(qual)
-        elif variant['allele_count'] == 2:
-            binned_metrics['doubleton'].append(qual)
-        else:
-            for af in AF_BUCKETS:
-                if float(variant['allele_count'])/variant['allele_num'] < af:
-                    binned_metrics[af].append(qual)
-                    break
-        progress += 1
-        if not progress % 100000:
-            print('Read %s variants. Took %s seconds' % (progress, int(time.time() - start_time)))
-    print('Done reading variants. Dropping metrics database... ')
-    db.metrics.drop()
-    print('Dropped metrics database. Calculating metrics...')
-    for metric in metrics:
-        bin_range = None
-        data = map(numpy.log, metrics[metric]) if metric == 'DP' else metrics[metric]
-        if metric == 'FS':
-            bin_range = (0, 20)
-        elif metric == 'VQSLOD':
-            bin_range = (-20, 20)
-        elif metric == 'InbreedingCoeff':
-            bin_range = (0, 1)
-        if bin_range is not None:
-            data = [x if (x > bin_range[0]) else bin_range[0] for x in data]
-            data = [x if (x < bin_range[1]) else bin_range[1] for x in data]
-        hist = numpy.histogram(data, bins=40, range=bin_range)
-        edges = hist[1]
-        # mids = [(edges[i]+edges[i+1])/2 for i in range(len(edges)-1)]
-        lefts = [edges[i] for i in range(len(edges)-1)]
-        db.metrics.insert({
-            'metric': metric,
-            'mids': lefts,
-            'hist': list(hist[0])
-        })
-    for metric in binned_metrics:
-        hist = numpy.histogram(map(numpy.log, binned_metrics[metric]), bins=40)
-        edges = hist[1]
-        mids = [(edges[i]+edges[i+1])/2 for i in range(len(edges)-1)]
-        db.metrics.insert({
-            'metric': 'binned_%s' % metric,
-            'mids': mids,
-            'hist': list(hist[0])
-        })
-    db.metrics.ensure_index('metric')
-    print('Done pre-calculating metrics!')
-
 def response(POS, REF, ALT, index, geno, chrom, pos):
     homozygous_genotype='/'.join([str(index),str(index)])
     heterozygous_genotype='/'.join(['0',str(index)])
@@ -369,8 +306,6 @@ def response(POS, REF, ALT, index, geno, chrom, pos):
     variant['hpo']=[p for p in get_db(app.config['DB_NAME_PATIENTS']).patients.find({'external_id':{'$in':samples}},{'_id':0,'features':1,'external_id':1})]
     return(jsonify(result=variant))
 
-
-
 def get_rathergood_suggestions(query):
     """
     This generates autocomplete suggestions when user
@@ -394,7 +329,7 @@ def get_rathergood_suggestions(query):
     results = itertools.islice(results, 0, 20)
     return list(results)
 
-@app.route('/phenotype_suggestions/<hpo>')
+#@app.route('/phenotype_suggestions/<hpo>')
 def get_phenotype_suggestions(hpo):
     # pattern = '.*?'.join(re.escape(hpo))   # Converts 'kid' to 'k.*?i.*?d'
     regex = re.compile(re.escape(hpo), re.IGNORECASE)  # Compiles a regex.
@@ -403,7 +338,7 @@ def get_phenotype_suggestions(hpo):
       ).sort([('score', {'$meta': 'textScore'})])]
     return json.dumps(suggestions[0:20])
 
-@app.route('/gene_suggestions/<gene>')
+#@app.route('/gene_suggestions/<gene>')
 def get_gene_suggestions(gene):
     # pattern = '.*?'.join(re.escape(gene))   # Converts 'kid' to 'k.*?i.*?d'
     regex = re.compile(re.escape(gene), re.IGNORECASE)  # Compiles a regex.
@@ -498,60 +433,14 @@ def get_rathergood_result(db, query):
         return 'variant', '{}-{}-{}-{}'.format(m.group(1), m.group(2), m.group(3), m.group(4))
     return 'not_found', query
 
-
-
 @app.route('/autocomplete/<query>')
+@requires_auth
 def rathergood_autocomplete(query):
     suggestions = get_rathergood_suggestions(query)
     return Response(json.dumps(suggestions),  mimetype='application/json')
 
-
-@app.route('/awesome')
-@requires_auth
-def awesome():
-    db = get_db()
-    query = str(request.args.get('query'))
-    #for n in dir(request): print(n, getattr(request,n))
-    #print(request.HTTP_REFERER)
-    print(request.referrer)
-    if request.referrer:
-        referrer=request.referrer
-        u = urlparse(referrer)
-        referrer='%s://%s' % (u.scheme,u.hostname,)
-        if u.port: referrer='%s:%s' % (referrer,u.port,)
-    else:
-        referrer=''
-    #u.netloc
-    print(referrer)
-    datatype, identifier = get_rathergood_result(db, query)
-    print("Searched for %s: %s" % (datatype, identifier))
-    if datatype == 'gene':
-        return redirect('{}/gene/{}'.format(referrer,identifier))
-    elif datatype == 'transcript':
-        return redirect('{}/transcript/{}'.format(referrer,identifier))
-    elif datatype == 'variant':
-        return redirect('{}/variant/{}'.format(referrer,identifier))
-    elif datatype == 'region':
-        return redirect('{}/region/{}'.format(referrer,identifier))
-    elif datatype == 'dbsnp_variant_set':
-        return redirect('{}/dbsnp/{}'.format(referrer,identifier))
-    elif datatype == 'hpo':
-        return redirect('{}/hpo/{}'.format(referrer,identifier))
-    elif datatype == 'mim':
-        return redirect('{}/mim/{}'.format(referrer,identifier))
-    elif datatype == 'individual':
-        return redirect('{}/individual/{}'.format(referrer,identifier))
-    elif datatype == 'error':
-        return redirect('{}/error/{}'.format(referrer,identifier))
-    elif datatype == 'not_found':
-        return redirect('{}/not_found/{}'.format(referrer,identifier))
-    else:
-        raise Exception
-
-
-@app.route('/patient/<patient_str>')
-def get_patient(patient_str):
-    return patient_str
+#@app.route('/patient/<patient_str>')
+#def get_patient(patient_str): return patient_str
 
 # AJAX
 # Not finished
@@ -649,21 +538,6 @@ def decrypt(s):
     s=obj.decrypt(s)
     s=s.replace(' ','')
     return s
-
-@app.route('/research_pubmed', methods=['POST'])
-def research_pubmed():
-    # use new search terms to update the individual-pubmedbatch table
-    patient_id = request.form['p_id']
-    search_term = request.form['OR']
-    # update patient pubmed result status as running (1)
-    db=get_db()
-    db.patients.update({'external_id':patient_id},{'$set': {'pubmedbatch_status': 1}})
-    # do the actual update
-    exit_status = subprocess.call(['python','offline_analysis/pubmedScore/pubmedScore.py', '-p', patient_id, '--keywords', search_term])
-    #exit_status=0
-    # reset update status to 0
-    db.patients.update({'external_id':patient_id},{'$set': {'pubmedbatch_status': 0}})
-    return str(exit_status)
 
 # AJAX
 # fetch patients iwth hpo term
@@ -988,8 +862,6 @@ def search():
         image="",
         version_number=version_number)
 
-
-#import views.my_patients
 import views.gene
 import views.variant
 import views.individual
