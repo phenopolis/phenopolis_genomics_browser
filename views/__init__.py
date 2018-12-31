@@ -306,6 +306,48 @@ def response(POS, REF, ALT, index, geno, chrom, pos):
     variant['hpo']=[p for p in get_db(app.config['DB_NAME_PATIENTS']).patients.find({'external_id':{'$in':samples}},{'_id':0,'features':1,'external_id':1})]
     return(jsonify(result=variant))
 
+@app.route('/awesome')	 #def get_patient(patient_str): return patient_str
+@requires_auth
+def awesome():
+     db = get_db()
+     query = str(request.args.get('query'))
+     #for n in dir(request): print(n, getattr(request,n))
+     #print(request.HTTP_REFERER)
+     print(request.referrer)
+     if request.referrer:
+         referrer=request.referrer
+         u = urlparse(referrer)
+         referrer='%s://%s' % (u.scheme,u.hostname,)
+         if u.port: referrer='%s:%s' % (referrer,u.port,)
+     else:
+         referrer=''
+     #u.netloc
+     print(referrer)
+     datatype, identifier = get_rathergood_result(db, query)
+     print("Searched for %s: %s" % (datatype, identifier))
+     if datatype == 'gene':
+         return redirect('{}/gene/{}'.format(referrer,identifier))
+     elif datatype == 'transcript':
+         return redirect('{}/transcript/{}'.format(referrer,identifier))
+     elif datatype == 'variant':
+         return redirect('{}/variant/{}'.format(referrer,identifier))
+     elif datatype == 'region':
+         return redirect('{}/region/{}'.format(referrer,identifier))
+     elif datatype == 'dbsnp_variant_set':
+         return redirect('{}/dbsnp/{}'.format(referrer,identifier))
+     elif datatype == 'hpo':
+         return redirect('{}/hpo/{}'.format(referrer,identifier))
+     elif datatype == 'mim':
+         return redirect('{}/mim/{}'.format(referrer,identifier))
+     elif datatype == 'individual':
+         return redirect('{}/individual/{}'.format(referrer,identifier))
+     elif datatype == 'error':
+         return redirect('{}/error/{}'.format(referrer,identifier))
+     elif datatype == 'not_found':
+         return redirect('{}/not_found/{}'.format(referrer,identifier))
+     else:
+         raise Exception
+
 def get_rathergood_suggestions(query):
     """
     This generates autocomplete suggestions when user
