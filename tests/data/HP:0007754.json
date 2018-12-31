@@ -14,7 +14,7 @@
          "colNames" : [
             {"default": "true","name":"Individual", "key": "individual", "class":"preview_onhover", "type":"links", "base_href": "/individual"},
             {"default": "true","name":"Gender", "key": "gender"},
-            {"default": "true","name":"Phenotype", "key": "phenotype", "class":"preview_onhover", "type":"links"},
+            {"default": "true","name":"Phenotype", "key": "phenotype", "class":"preview_onhover", "type":"links", "base_href":"/hpo/"},
             {"default": "true","name":"Phenotype Score", "key": "phenotype_score"},
             {"default": "true","name":"Rare Hom", "key": "rare_hom"},
             {"default": "true","name":"Rare Comp Het", "key": "rare_comp_het"},

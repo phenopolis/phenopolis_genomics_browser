@@ -41,7 +41,7 @@ def gene(gene_id, subset='all'):
                {"display": "Wikipedia","href": "http://en.wikipedia.org/"+gene_name},
                 {"display": "Pubmed Search","href": "http://www.ncbi.nlm.nih.gov/pubmed?term="+gene_name},
                 {"display": "Wikigenes","href": "http://www.wikigenes.org/?search="+gene_name},
-                {"display": "GTEx (expression","href": "http://www.gtexportal.org/home/gene/"+gene_name}
+                {"display": "GTEx (expression)","href": "http://www.gtexportal.org/home/gene/"+gene_name}
                ]
        d["related_hpo"]=[{"display": "", "href":""}]
    #python3
@@ -50,6 +50,7 @@ def gene(gene_id, subset='all'):
    c.execute('select * from variants where gene_symbol=?',(x[0]['metadata']['data'][0]['gene_name'],))
    headers=[h[0] for h in c.description]
    x[0]['variants']['data']=[dict(zip(headers,r)) for r in c.fetchall()]
+   print(len(x[0]['variants']['data']))
    sqlite3_ro_close(c,fd)
    for d in x[0]['metadata']['data']:
        d['number_of_variants']=len(x[0]['variants']['data'])

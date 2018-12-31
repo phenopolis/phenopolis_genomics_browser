@@ -12,7 +12,7 @@ import csv
 def hpo(hpo_id='HP:0000001',subset='all'):
    x=json.loads(file(app.config['HPO_JSON'],'r').read())
    if subset=='all': return json.dumps(x)
-   else: return x[subset]
+   else: return json.dumps([{subset:y[subset]} for y in x])
 
 def hpo2():
     db=get_db()
