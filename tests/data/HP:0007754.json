@@ -7,8 +7,7 @@
             {"default": "true","name":"ID", "key": "id"}
          ],
          "data" : [
-             {"name":"Macular dystrophy"},
-             {"id":"HP:0007754"}
+             {"name":"Macular dystrophy","id":"HP:0007754"}
          ]
     },
     "individuals" : {

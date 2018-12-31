@@ -39,7 +39,7 @@
      },
      "variants": {
         "colNames" : [
-           {"name": "Chromosome", "key": "#CHROM", "default": "true", "description":""},
+           {"name": "Chromosome", "key": "#CHROM", "default": "false", "description":"Chromosome on which variant falls."},
            {"name": "Position", "key": "POS", "default": "true", "description":"", "order":"asc"},
            {"name": "Ref", "key": "REF", "default": "true", "description":""},
            {"name": "Alt", "key": "ALT", "default": "true", "description":""},
