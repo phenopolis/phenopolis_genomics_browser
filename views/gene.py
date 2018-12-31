@@ -29,15 +29,21 @@ def gene(gene_id, subset='all'):
    for d in x[0]['metadata']['data']:
        d['pLI']=1
        d['number_of_variants']=10
-       d["external_services"]=[ {"display": "GnomAD Browser","href": "http://gnomad.broadinstitute.org/gene/"+gene_id},
-               {"display": "GeneCards","href": "http://www.genecards.org/cgi-bin/carddisp.pl?gene="+gene_name}]
-       d["genome_browser"]=[{"display": "Ensembl Browser", "href": "http://grch37.ensembl.org/Homo_sapiens/Gene/Summary?g="+gene_id},
-               {"display": "UCSC Browser", "href": "http://genome.ucsc.edu/cgi-bin/hgTracks?db=hg19&position=chr%s:%s-%s"%(chrom,start,stop,)}],
-       d["other"]=[{"display": "Wikipedia","href": "http://en.wikipedia.org/"+gene_name},
+       d["external_services"]=[
+               {"display": "GnomAD Browser","href": "http://gnomad.broadinstitute.org/gene/"+gene_id},
+               {"display": "GeneCards","href": "http://www.genecards.org/cgi-bin/carddisp.pl?gene="+gene_name}
+               ]
+       d["genome_browser"]=[
+               {"display": "Ensembl Browser", "href": "http://grch37.ensembl.org/Homo_sapiens/Gene/Summary?g="+gene_id},
+               {"display": "UCSC Browser", "href": "http://genome.ucsc.edu/cgi-bin/hgTracks?db=hg19&position=chr%s:%s-%s"%(chrom,start,stop,)}
+               ]
+       d["other"]=[
+               {"display": "Wikipedia","href": "http://en.wikipedia.org/"+gene_name},
                 {"display": "Pubmed Search","href": "http://www.ncbi.nlm.nih.gov/pubmed?term="+gene_name},
                 {"display": "Wikigenes","href": "http://www.wikigenes.org/?search="+gene_name},
-                {"display": "GTEx (expression","href": "http://www.gtexportal.org/home/gene/"+gene_name}]
-       d["related_hpo"]=[{"display": "Nyctalopia", "href":"HP:0000662"}]
+                {"display": "GTEx (expression","href": "http://www.gtexportal.org/home/gene/"+gene_name}
+               ]
+       d["related_hpo"]=[{"display": "", "href":""}]
    #python3
    #conn=sqlite3.connect('file:/media/pontikos_nas/pontikos/phenopolis/variants.db?mode=ro', uri=True)
    c,fd,=sqlite3_ro_cursor(app.config['VARIANTS_DB'])
@@ -50,9 +56,6 @@ def gene(gene_id, subset='all'):
    if subset=='all': return json.dumps(x)
    else: return x[subset]
     
-
-
-
 '''
 defs
 '''
