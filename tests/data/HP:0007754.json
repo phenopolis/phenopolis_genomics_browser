@@ -20,19 +20,19 @@
             {"default": "true","name":"Rare Comp Het", "key": "rare_comp_het"},
             {"default": "true","name":"Rare", "key": "rare"},
             {"default": "true","name":"Candidate Genes", "key": "candidate_genes","class":"preview_onhover", "type":"links", "base_href":"/gene/"},
-            {"default": "true","name":"Candidate Variants", "key": "candidate_variants", "class":"preview_onhover", "type":"links", "base_href":"/individual/"}
+            {"default": "true","name":"Candidate Variants", "key": "candidate_variants", "class":"preview_onhover", "type":"links", "base_href":"/variant/"}
          ],
          "data" : [
              {
                  "individual": [{"display":"B240002"}],
                  "gender":"M",
-                 "phenotype":[{"display":"", "href":"", "onhover":""},{"display":"", "href":"", "onhover":""}],
-                 "phenotype_score": "0.5025656666666667",
+                 "phenotype":[{"display":"Macular dystrophy", "end_href":"HP:0007754"},{"display":"Autosomal dominant inheritance", "end_href":"HP:0000006"}],
+                 "phenotype_score": "0.5025",
                  "rare_hom": "54",
                  "rare_comp_het": "33",
                  "rare": "430",
                  "candidate_genes": [{"display":"GUCY2D"}],
-                 "candidate_variants": [{"display":"B240002"}]
+                 "candidate_variants": [{"display":"17-7906426-T-C"}]
              }
          ]
     },
