@@ -1,10 +1,7 @@
 from views import *
 import requests
 from utils import *
-import itertools
-import csv
 #hpo lookup
-import orm
 from pprint import pprint
 import os
 import json
@@ -13,14 +10,19 @@ import sys
 import re
 import itertools
 from urllib2 import HTTPError, URLError
-import csv
 from collections import defaultdict, Counter
 #import rest as annotation
-from optparse import OptionParser
 import lookups
 from orm import Patient
-import requests
 
+@app.route('/individual/<individual_id>')
+@app.route('/individual/individual_id>/<subset>')
+@requires_auth
+def individual(gene_id, subset='all'):
+   x=json.loads(file(app.config['INDIVIDUAL_JSON'],'r').read())
+   if subset=='all': return json.dumps(x)
+   else: return x[subset]
+    
 def individuals_update(external_ids):
     patients_db=get_db(app.config['DB_NAME_PATIENTS'])
     users_db=get_db(app.config['DB_NAME_USERS'])
@@ -43,8 +45,6 @@ def individuals_update(external_ids):
         p['rare_compound_hets_count']=p2.get('rare_compound_hets_count','')
         p['rare_variants_count']=p2.get('rare_variants_count','')
         p['total_variant_count']=p2.get('total_variant_count','')
-        #p['all_variants_count']=get_db().patients.find_one({'external_id':p['external_id']},{'_id':0,'all_variants_count':1})['all_variants_count']
-        #db.cache.find_one({"key" : "%s_blindness,macula,macular,retina,retinal,retinitis,stargardt_" % })
         if '_id' in p: del p['_id']
         return p
     new_individuals=[f(eid) for eid in external_ids]
