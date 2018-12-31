@@ -989,8 +989,7 @@ def search():
         version_number=version_number)
 
 
-
-import views.my_patients
+#import views.my_patients
 import views.gene
 import views.variant
 import views.individual

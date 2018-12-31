@@ -9,7 +9,7 @@ import csv
 @app.route('/hpo/<hpo_id>')
 @app.route('/hpo/<hpo_id>/<subset>')
 @requires_auth
-def hpo(hpo_id,subset='all'):
+def hpo(hpo_id='HP:0000001',subset='all'):
    x=json.loads(file(app.config['HPO_JSON'],'r').read())
    if subset=='all': return json.dumps(x)
    else: return x[subset]

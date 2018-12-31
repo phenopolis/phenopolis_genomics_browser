@@ -63,16 +63,13 @@ def get_individuals(build_cache=False):
     data=requests.post('http://localhost:57474/db/data/cypher',auth=('neo4j','1'),json={'query':s})
     return data.json()
 
-@app.route('/my_patients_json')
-@requires_auth
 def my_patients_json():
     build_cache=str(request.args.get('build_cache')).lower()=='true'
     individuals=get_individuals(build_cache)
     return(jsonify(result=individuals))
 
-
-@app.route('/individuals_csv')
-@requires_auth
+#@app.route('/individuals_csv')
+#@requires_auth
 def individuals_csv():
     page=int(request.args.get('page',0))
     number=int(request.args.get('number',200))

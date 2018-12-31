@@ -8,6 +8,7 @@ import csv
 
 
 @app.route('/register',methods=['POST'])
+@requires_auth
 def register():
     name=request.form.get('name').replace(' ','')
     affiliation=request.form.get('affiliation')
@@ -21,6 +22,7 @@ def register():
 
 # 
 @app.route('/change_password', methods=['POST'])
+@requires_auth
 def change_password():
     username = request.form['change_pwd_name']
     password = request.form['current_password']
