@@ -7,7 +7,7 @@ from bson.json_util import dumps
 
 
 @app.route('/gene/<gene_id>')
-@app.route('/gene/gene_id>/<subset>')
+@app.route('/gene/<gene_id>/<subset>')
 @requires_auth
 def gene(gene_id, subset='all'):
    x=json.loads(file(app.config['GENE_JSON'],'r').read())
@@ -54,7 +54,7 @@ def gene(gene_id, subset='all'):
    for d in x[0]['metadata']['data']:
        d['number_of_variants']=len(x[0]['variants']['data'])
    if subset=='all': return json.dumps(x)
-   else: return x[subset]
+   else: return json.dumps([{subset:y[subset]} for y in x])
     
 '''
 defs

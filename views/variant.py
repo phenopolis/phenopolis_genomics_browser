@@ -20,7 +20,7 @@ import os
 def variant(variant_id, subset='all'):
    x=json.loads(file(app.config['VARIANT_JSON'],'r').read())
    if subset=='all': return json.dumps(x)
-   else: return json.dumps(x[subset])
+   else: return json.dumps([{subset:y[subset]} for y in x])
 
     
 @app.route('/variant/<variant_str>')
