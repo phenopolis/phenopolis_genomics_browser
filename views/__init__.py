@@ -23,7 +23,6 @@ from flask.ext.cache import Cache
 import sys
 import StringIO
 import urllib, base64 
-import numpy as np
 import md5 
 from scipy.stats import chisquare
 import math 
@@ -53,8 +52,6 @@ import time
 import StringIO 
 from urlparse import urlparse
 import pickle 
-#import pdb 
-# handles live plotting if necessary
 import numpy
 import subprocess
 import datetime
@@ -162,32 +159,6 @@ def logout():
     print('DELETE SESSION')
     session.pop('user',None)
     return jsonify(success='logged out'), 200
-
-
-# 
-@app.route('/change_password', methods=['POST'])
-def change_password():
-    username = request.form['change_pwd_name']
-    password = request.form['current_password']
-    new_password_1 = request.form['new_password_1']
-    if username == 'demo': 
-        return jsonify(error='You do not have permission to change the password for username \'demo\'.'), 401
-    elif not check_auth(username,password):
-        print('Change password:- Login Failed')
-        return jsonify(error='Username and current password incorrect. Please try again.'), 401
-    else:
-        print('LOGIN SUCCESS, CHANGING PASSWORD')
-        argon_password = argon2.hash(new_password_1)
-        db_users = get_db(app.config['DB_NAME_USERS'])
-        #db_users.users.update_one({'user':username},{'$set':{'password':hash}})
-        q={'query':'MATCH (u:User {user: $user}) SET u.password=$password','parameters':{'user':username,'password':password}}
-        resp=requests.post('http://localhost:57474/db/data/cypher',auth=('neo4j', '1'),json=q)
-        print(resp.json())
-        #db_users.users.update_one({'user':username},{'$set':{'argon_password':hash}})
-        q={'query':'MATCH (u:User {user: $user}) SET u.argon_password=$password','parameters':{'user':username,'password':argon_password}}
-        resp=requests.post('http://localhost:57474/db/data/cypher',auth=('neo4j', '1'),json=q)
-        msg = 'Password for username \''+username+'\' changed. You are logged in as \''+username+'\'.' 
-        return jsonify(success=msg), 200
 
 
 @app.route('/set/<query>')
@@ -805,13 +776,6 @@ def private_variant_count():
     res=jsonify(result={'variant_count': private_variant_count, 'external_id':external_id})
     return res
 
-@app.route('/patient/<patient_id>')
-def patient_page(patient_id):
-    db=get_db()
-    patients=[p for p in db.patients.find({'external_id': str(patient_id)})]
-    print(patients)
-    return None
-
 @app.route('/Exomiser/<path:path>')
 @requires_auth
 def exomiser_page(path):
@@ -895,219 +859,6 @@ def apply_caching(response):
 ### all the mongodb reading/writing code
 
 
-def load_db():
-    """
-    Load the database
-    """
-    # Initialize database
-    # Don't need to explicitly create tables with mongo, just indices
-    confirm = raw_input('This will drop the database and reload. Are you sure you want to continue? [no] ')
-    if not confirm.startswith('y'):
-        print('Exiting...')
-        sys.exit(1)
-    all_procs = []
-    for load_function in [load_variants_file, load_dbsnp_file, load_base_coverage, load_gene_models, load_constraint_information]:
-        procs = load_function()
-        all_procs.extend(procs)
-        print("Started %s processes to run %s" % (len(procs), load_function.__name__))
-    [p.join() for p in all_procs]
-    print('Done! Loading MNPs...')
-    load_mnps()
-    print('Done! Creating cache...')
-    #create_cache()
-    print('Done!')
-
-
-def load_base_coverage():
-    """ """
-    def load_coverage(coverage_files, i, n, db):
-        coverage_generator = parse_tabix_file_subset(coverage_files, i, n, get_base_coverage_from_file)
-        try:
-            db.base_coverage.insert(coverage_generator, w=0)
-        except pymongo.errors.InvalidOperation:
-            # handle error when coverage_generator is empty
-            pass  
-    db = get_db()
-    db.base_coverage.drop()
-    print("Dropped db.base_coverage")
-    # load coverage first; variant info will depend on coverage
-    db.base_coverage.ensure_index('xpos')
-    procs = []
-    coverage_files = app.config['BASE_COVERAGE_FILES']
-    num_procs = app.config['LOAD_DB_PARALLEL_PROCESSES']
-    random.shuffle(app.config['BASE_COVERAGE_FILES'])
-    for i in range(num_procs):
-        p = Process(target=load_coverage, args=(coverage_files, i, num_procs, db))
-        p.start()
-        procs.append(p)
-    return procs
-
-
-def load_variants_file():
-    def load_variants(sites_file, i, n, db):
-        for f in sites_file:
-            print(f)
-            variants_generator = parse_tabix_file_subset([f], i, n, get_variants_from_sites_vcf)
-            try:
-                db.variants.insert(variants_generator, w=0)
-            except pymongo.errors.InvalidOperation:
-                pass  # handle error when variant_generator is empty
-    db = get_db('exac')
-    db.variants.drop()
-    print("Dropped db.variants")
-    # grab variants from sites VCF
-    db.variants.ensure_index('xpos')
-    db.variants.ensure_index('xstart')
-    db.variants.ensure_index('xstop')
-    db.variants.ensure_index('rsid')
-    db.variants.ensure_index('genes')
-    db.variants.ensure_index('transcripts')
-    db.variants.ensure_index('variant_id')
-    #sites_vcfs = app.config['SITES_VCFS']
-    sites_vcfs=['ExAC.r0.3.1.sites.vep.vcf.gz']
-    print(sites_vcfs)
-    #if len(sites_vcfs) > 1: raise Exception("More than one sites vcf file found: %s" % sites_vcfs)
-    procs = []
-    num_procs = app.config['LOAD_DB_PARALLEL_PROCESSES']
-    #pdb.set_trace()
-    for i in range(num_procs):
-        p = Process(target=load_variants, args=(sites_vcfs, i, num_procs, db))
-        p.start()
-        procs.append(p)
-    return procs
-
-
-
-def load_constraint_information():
-    db = get_db()
-    db.constraint.drop()
-    print('Dropped db.constraint.')
-    start_time = time.time()
-    with gzip.open(app.config['CONSTRAINT_FILE']) as constraint_file:
-        for transcript in get_constraint_information(constraint_file):
-            db.constraint.insert(transcript, w=0)
-    db.constraint.ensure_index('transcript')
-    print('Done loading constraint info. Took %s seconds' % int(time.time() - start_time))
-
-
-def load_mnps():
-    db = get_db()
-    start_time = time.time()
-    db.variants.ensure_index('has_mnp')
-    print('Done indexing.')
-    while db.variants.find_and_modify({'has_mnp' : True}, {'$unset': {'has_mnp': '', 'mnps': ''}}): pass
-    print('Deleted MNP data.')
-    with gzip.open(app.config['MNP_FILE']) as mnp_file:
-        for mnp in get_mnp_data(mnp_file):
-            variant = lookups.get_raw_variant(db, mnp['xpos'], mnp['ref'], mnp['alt'], True)
-            db.variants.find_and_modify({'_id': variant['_id']}, {'$set': {'has_mnp': True}, '$push': {'mnps': mnp}}, w=0)
-    db.variants.ensure_index('has_mnp')
-    print('Done loading MNP info. Took %s seconds' % int(time.time() - start_time))
-
-
-@app.route('/load_gene_models/')
-def load_gene_models():
-    db = get_db()
-    db.genes.drop()
-    db.transcripts.drop()
-    db.exons.drop()
-    print('Dropped db.genes, db.transcripts, and db.exons.')
-    start_time = time.time()
-    canonical_transcripts = {}
-    with gzip.open(app.config['CANONICAL_TRANSCRIPT_FILE']) as canonical_transcript_file:
-        for gene, transcript in get_canonical_transcripts(canonical_transcript_file):
-            canonical_transcripts[gene] = transcript
-    omim_annotations = {}
-    with gzip.open(app.config['OMIM_FILE']) as omim_file:
-        for fields in get_omim_associations(omim_file):
-            if fields is None:
-                continue
-            gene, transcript, accession, description = fields
-            omim_annotations[gene] = (accession, description)
-    dbnsfp_info = {}
-    with gzip.open(app.config['DBNSFP_FILE']) as dbnsfp_file:
-        for dbnsfp_gene in get_dbnsfp_info(dbnsfp_file):
-            other_names = [other_name.upper() for other_name in dbnsfp_gene['gene_other_names']]
-            dbnsfp_info[dbnsfp_gene['ensembl_gene']] = (dbnsfp_gene['gene_full_name'], other_names)
-    print('Done loading metadata. Took %s seconds' % int(time.time() - start_time))
-    # grab genes from GTF
-    start_time = time.time()
-    with gzip.open(app.config['GENCODE_GTF']) as gtf_file:
-        for gene in get_genes_from_gencode_gtf(gtf_file):
-            gene_id = gene['gene_id']
-            if gene_id in canonical_transcripts:
-                gene['canonical_transcript'] = canonical_transcripts[gene_id]
-            if gene_id in omim_annotations:
-                gene['omim_accession'] = omim_annotations[gene_id][0]
-                gene['omim_description'] = omim_annotations[gene_id][1]
-            if gene_id in dbnsfp_info:
-                gene['full_gene_name'] = dbnsfp_info[gene_id][0]
-                gene['other_names'] = dbnsfp_info[gene_id][1]
-            db.genes.insert(gene, w=0)
-    start_time = time.time()
-    db.genes.ensure_index('gene_id')
-    db.genes.ensure_index('gene_name_upper')
-    db.genes.ensure_index('gene_name')
-    db.genes.ensure_index('other_names')
-    db.genes.ensure_index('xstart')
-    db.genes.ensure_index('xstop')
-    # and now transcripts
-    start_time = time.time()
-    with gzip.open(app.config['GENCODE_GTF']) as gtf_file:
-        db.transcripts.insert((transcript for transcript in get_transcripts_from_gencode_gtf(gtf_file)), w=0)
-    start_time = time.time()
-    db.transcripts.ensure_index('transcript_id')
-    db.transcripts.ensure_index('gene_id')
-    # Building up gene definitions
-    start_time = time.time()
-    with gzip.open(app.config['GENCODE_GTF']) as gtf_file:
-        db.exons.insert((exon for exon in get_exons_from_gencode_gtf(gtf_file)), w=0)
-    start_time = time.time()
-    db.exons.ensure_index('exon_id')
-    db.exons.ensure_index('transcript_id')
-    db.exons.ensure_index('gene_id')
-    return []
-
-
-def load_dbsnp_file():
-    db = get_db()
-    def load_dbsnp(dbsnp_file, i, n, db):
-        if os.path.isfile(dbsnp_file + ".tbi"):
-            dbsnp_record_generator = parse_tabix_file_subset([dbsnp_file], i, n, get_snp_from_dbsnp_file)
-            try:
-                db.dbsnp.insert(dbsnp_record_generator, w=0)
-            except pymongo.errors.InvalidOperation:
-                pass  # handle error when coverage_generator is empty
-        else:
-            with gzip.open(dbsnp_file) as f:
-                db.dbsnp.insert((snp for snp in get_snp_from_dbsnp_file(f)), w=0)
-    db.dbsnp.drop()
-    db.dbsnp.ensure_index('rsid')
-    db.dbsnp.ensure_index('xpos')
-    start_time = time.time()
-    dbsnp_file = app.config['DBSNP_FILE']
-    if os.path.isfile(dbsnp_file + ".tbi"): num_procs = app.config['LOAD_DB_PARALLEL_PROCESSES']
-    else:
-        # see if non-tabixed .gz version exists
-        if os.path.isfile(dbsnp_file):
-            print(("WARNING: %(dbsnp_file)s.tbi index file not found. Will use single thread to load dbsnp."
-                "To create a tabix-indexed dbsnp file based on UCSC dbsnp, do: \n"
-                "   wget http://hgdownload.soe.ucsc.edu/goldenPath/hg19/database/snp141.txt.gz \n"
-                "   gzcat snp141.txt.gz | cut -f 1-5 | bgzip -c > snp141.txt.bgz \n"
-                "   tabix -0 -s 2 -b 3 -e 4 snp141.txt.bgz") % locals())
-            num_procs = 1
-        else:
-            raise Exception("dbsnp file %s(dbsnp_file)s not found." % locals())
-    procs = []
-    for i in range(num_procs):
-        p = Process(target=load_dbsnp, args=(dbsnp_file, i, num_procs, db))
-        p.start()
-        procs.append(p)
-    return procs
-    #start_time = time.time()
-    #db.dbsnp.ensure_index('rsid')
-
-
 """
 Get the most recent common ancestor between two sets of hpo terms.
 """
@@ -1189,23 +940,11 @@ def peek(iterable):
         return None
     return first, itertools.chain([first], iterable)
 
-@app.route('/register',methods=['POST'])
-def register():
-    name=request.form.get('name').replace(' ','')
-    affiliation=request.form.get('affiliation')
-    email=request.form.get('email')
-    groups=request.form.getlist('group[]')
-    user=orm.User(user_db=get_db(app.config['DB_NAME_USERS']),user=name,groups=groups,email=email,affiliation=affiliation)
-    print(user.json())
-    print(user.status)
-    return jsonify(message=user.status['message']), user.status['http_code']
-
-
-@app.route('/', methods=['GET'])
-def homepage():
+@app.route('/search', methods=['GET','POST'])
+@requires_auth
+def search():
     db=get_db()
     patients_db=get_db(app.config['DB_NAME_PATIENTS']) 
-    total_variants=db.variants.count()
     total_variants=db.variants.count()
     print('total_variants',total_variants,)
     total_patients=patients_db.patients.count()
@@ -1220,18 +959,85 @@ def homepage():
     print('exac_variants',exac_variants,)
     pass_variants=db.variants.find({'FILTER':'PASS'}).count()
     print('pass_variants',pass_variants,)
-    #pass_exac_variants=db.variants.find({'in_exac':True,'filter':'PASS'}).count()
-    #pass_exac_variants=db.variants.find({'in_exac':True,'filter':'PASS'}).count()
     pass_exac_variants=0
     print('pass_exac_variants',pass_exac_variants,)
-    #pass_exac_variants=db.variants.find({'in_exac':True,'filter':'PASS'}).count()
     pass_exac_variants=0
-    #nonexac_variants=db.variants.find({'in_exac':False}).count()
     nonexac_variants=0
-    #pass_nonexac_variants=db.variants.find({'in_exac':False,'filter':'PASS'}).count()
     pass_nonexac_variants=0
     nonpass_variants=(total_variants-pass_variants)
     nonpass_nonexac_variants=nonexac_variants-pass_nonexac_variants
+    try:
+        version_number = subprocess.check_output(['git', 'describe', '--exact-match'])
+    except:
+        version_number = None
+    print('Version number is:-')
+    print(version_number)
+    return jsonify( title='home',
+        total_patients=total_patients,
+        male_patients=male_patients,
+        female_patients=female_patients,
+        unknown_patients=unknown_patients,
+        hpo_json=json.dumps(hpo_json),
+        total_variants=total_variants,
+        exac_variants=exac_variants,
+        pass_variants=pass_variants,
+        nonpass_variants=nonpass_variants,
+        pass_exac_variants=pass_exac_variants,
+        pass_nonexac_variants=pass_nonexac_variants,
+        #image=image.decode('utf8'))
+        image="",
+        version_number=version_number)
+
+
+@app.route('/search', methods=['GET','POST'])
+@requires_auth
+def search():
+    db=get_db()
+    patients_db=get_db(app.config['DB_NAME_PATIENTS']) 
+    total_variants=db.variants.count()
+    print('total_variants',total_variants,)
+    total_patients=patients_db.patients.count()
+    print('total_patients',total_patients,)
+    male_patients=patients_db.patients.find( {'sex':'M'}).count()
+    print('male_patients',male_patients,)
+    female_patients=patients_db.patients.find( {'sex':'F'}).count()
+    print('female_patients',female_patients,)
+    unknown_patients=patients_db.patients.find( {'sex':'U'}).count()
+    hpo_json={}
+    exac_variants=0
+    print('exac_variants',exac_variants,)
+    pass_variants=db.variants.find({'FILTER':'PASS'}).count()
+    print('pass_variants',pass_variants,)
+    pass_exac_variants=0
+    print('pass_exac_variants',pass_exac_variants,)
+    pass_exac_variants=0
+    nonexac_variants=0
+    pass_nonexac_variants=0
+    nonpass_variants=(total_variants-pass_variants)
+    nonpass_nonexac_variants=nonexac_variants-pass_nonexac_variants
+    try:
+        version_number = subprocess.check_output(['git', 'describe', '--exact-match'])
+    except:
+        version_number = None
+    print('Version number is:-')
+    print(version_number)
+    return jsonify( title='home',
+        total_patients=total_patients,
+        male_patients=male_patients,
+        female_patients=female_patients,
+        unknown_patients=unknown_patients,
+        hpo_json=json.dumps(hpo_json),
+        total_variants=total_variants,
+        exac_variants=exac_variants,
+        pass_variants=pass_variants,
+        nonpass_variants=nonpass_variants,
+        pass_exac_variants=pass_exac_variants,
+        pass_nonexac_variants=pass_nonexac_variants,
+        #image=image.decode('utf8'))
+        image="",
+        version_number=version_number)
+
+
 
 import views.my_patients
 import views.gene
@@ -1239,6 +1045,7 @@ import views.variant
 import views.individual
 import views.hpo
 import views.search
+import views.users
 
 
 
