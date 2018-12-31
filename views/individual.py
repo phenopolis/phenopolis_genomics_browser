@@ -16,12 +16,12 @@ import lookups
 from orm import Patient
 
 @app.route('/individual/<individual_id>')
-@app.route('/individual/individual_id>/<subset>')
+@app.route('/individual/<individual_id>/<subset>')
 @requires_auth
-def individual(gene_id, subset='all'):
+def individual(individual_id, subset='all'):
    x=json.loads(file(app.config['INDIVIDUAL_JSON'],'r').read())
    if subset=='all': return json.dumps(x)
-   else: return x[subset]
+   else: return json.dumps([{subset:y[subset]} for y in x])
     
 def individuals_update(external_ids):
     patients_db=get_db(app.config['DB_NAME_PATIENTS'])
