@@ -989,62 +989,12 @@ def search():
         version_number=version_number)
 
 
-@app.route('/search', methods=['GET','POST'])
-@requires_auth
-def search():
-    db=get_db()
-    patients_db=get_db(app.config['DB_NAME_PATIENTS']) 
-    total_variants=db.variants.count()
-    print('total_variants',total_variants,)
-    total_patients=patients_db.patients.count()
-    print('total_patients',total_patients,)
-    male_patients=patients_db.patients.find( {'sex':'M'}).count()
-    print('male_patients',male_patients,)
-    female_patients=patients_db.patients.find( {'sex':'F'}).count()
-    print('female_patients',female_patients,)
-    unknown_patients=patients_db.patients.find( {'sex':'U'}).count()
-    hpo_json={}
-    exac_variants=0
-    print('exac_variants',exac_variants,)
-    pass_variants=db.variants.find({'FILTER':'PASS'}).count()
-    print('pass_variants',pass_variants,)
-    pass_exac_variants=0
-    print('pass_exac_variants',pass_exac_variants,)
-    pass_exac_variants=0
-    nonexac_variants=0
-    pass_nonexac_variants=0
-    nonpass_variants=(total_variants-pass_variants)
-    nonpass_nonexac_variants=nonexac_variants-pass_nonexac_variants
-    try:
-        version_number = subprocess.check_output(['git', 'describe', '--exact-match'])
-    except:
-        version_number = None
-    print('Version number is:-')
-    print(version_number)
-    return jsonify( title='home',
-        total_patients=total_patients,
-        male_patients=male_patients,
-        female_patients=female_patients,
-        unknown_patients=unknown_patients,
-        hpo_json=json.dumps(hpo_json),
-        total_variants=total_variants,
-        exac_variants=exac_variants,
-        pass_variants=pass_variants,
-        nonpass_variants=nonpass_variants,
-        pass_exac_variants=pass_exac_variants,
-        pass_nonexac_variants=pass_nonexac_variants,
-        #image=image.decode('utf8'))
-        image="",
-        version_number=version_number)
-
-
 
 import views.my_patients
 import views.gene
 import views.variant
 import views.individual
 import views.hpo
-import views.search
 import views.users
 
 
