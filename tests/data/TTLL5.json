@@ -13,9 +13,9 @@
             {"default": "true","name":"Number of Variants", "key": "number_of_variants"},
             {"default": "true","name":"Strand", "key": "strand"},
             {"default": "true","name":"Canonical Transcript", "key": "canonical_transcript"},
-            {"default": "true","name":"Genome Browsers", "key": "genome_browser", "type": "links"},
-            {"default": "true","name":"External Services", "key": "external_services", "type": "links"},
-            {"default": "true","name":"Other", "key": "other", "type": "links"},
+            {"default": "true","name":"Genome Browsers", "key": "genome_browser", "type": "links", "link_class": "chip"},
+            {"default": "true","name":"External Services", "key": "external_services", "type": "links", "link_class": "chip"},
+            {"default": "true","name":"Other", "key": "other", "type": "links", "link_class": "chip"},
             {"default": "true","name":"Related HPO OMIMs", "key": "related_hpo", "type": "links", "base_href":"/hpo/"}
          ],
          "data": [{
