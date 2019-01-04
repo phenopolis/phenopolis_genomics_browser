@@ -23,9 +23,7 @@ from flask.ext.cache import Cache
 import sys
 import StringIO
 import urllib, base64 
-import md5 
 from scipy.stats import chisquare
-import math 
 from bson.json_util import loads
 import itertools
 import json
@@ -42,7 +40,6 @@ from werkzeug.contrib.cache import SimpleCache
 from multiprocessing import Process
 import glob
 import sqlite3
-import traceback
 import time 
 from functools import wraps 
 from werkzeug.exceptions import default_exceptions, HTTPException 
@@ -64,6 +61,7 @@ import orm
 from lookups import *
 import regex
 import requests
+import phizz
 
 logging.getLogger().addHandler(logging.StreamHandler())
 logging.getLogger().setLevel(logging.INFO)
@@ -136,12 +134,17 @@ def requires_auth(f):
 
 @app.before_request
 def make_session_timeout():
+    print('session timeout')
     session.permanent = True
     app.permanent_session_lifetime = datetime.timedelta(hours=2)
+    #app.permanent_session_lifetime = datetime.timedelta(seconds=2)
 
 # 
 @app.route('/login', methods=['POST'])
 def login():
+    print(request.args)
+    print('LOGIN form')
+    print(request.form.keys())
     username=request.form['name']
     password=request.form['password']
     print(username)
@@ -151,7 +154,7 @@ def login():
        return jsonify(error='Invalid Credentials. Please try again.'), 401
     else:
         print('LOGIN SUCCESS')
-        return jsonify(success="Authenticated"), 200
+        return jsonify(success="Authenticated", username=username), 200
 
 # 
 @app.route('/logout', methods=['POST'])
@@ -161,15 +164,10 @@ def logout():
     return jsonify(success='logged out'), 200
 
 
-#@app.route('/set/<query>')
-def set(query):
-    value = query
-    session['key'] = value
-    return value
-
-#@app.route('/get/')
-#def get(): return session.get('key', 'not set')
-
+@app.route('/is_logged_in')
+@requires_auth
+def is_logged_in():
+    return jsonify(user=session['user']), 200
 
 def get_db(dbname=None):
     """
@@ -306,9 +304,9 @@ def response(POS, REF, ALT, index, geno, chrom, pos):
     variant['hpo']=[p for p in get_db(app.config['DB_NAME_PATIENTS']).patients.find({'external_id':{'$in':samples}},{'_id':0,'features':1,'external_id':1})]
     return(jsonify(result=variant))
 
-@app.route('/awesome')	 #def get_patient(patient_str): return patient_str
+@app.route('/best_guess/')
 @requires_auth
-def awesome():
+def best_guess():
      db = get_db()
      query = str(request.args.get('query'))
      #for n in dir(request): print(n, getattr(request,n))
@@ -323,7 +321,7 @@ def awesome():
          referrer=''
      #u.netloc
      print(referrer)
-     datatype, identifier = get_rathergood_result(db, query)
+     datatype, identifier = get_result(db, query)
      print("Searched for %s: %s" % (datatype, identifier))
      if datatype == 'gene':
          return redirect('{}/gene/{}'.format(referrer,identifier))
@@ -348,7 +346,7 @@ def awesome():
      else:
          raise Exception
 
-def get_rathergood_suggestions(query):
+def get_suggestions(query):
     """
     This generates autocomplete suggestions when user
     query is the string that user types
@@ -390,7 +388,7 @@ def get_gene_suggestions(gene):
     )]
     return json.dumps(suggestions[0:20])
 
-def get_rathergood_result(db, query):
+def get_result(db, query):
     """
     Similar to the above, but this is after a user types enter
     We need to figure out what they meant - could be gene, variant, region
@@ -477,8 +475,8 @@ def get_rathergood_result(db, query):
 
 @app.route('/autocomplete/<query>')
 @requires_auth
-def rathergood_autocomplete(query):
-    suggestions = get_rathergood_suggestions(query)
+def autocomplete(query):
+    suggestions = get_suggestions(query)
     return Response(json.dumps(suggestions),  mimetype='application/json')
 
 #@app.route('/patient/<patient_str>')
@@ -698,74 +696,15 @@ def exomiser_page(path):
     #is this user authorized to see this patient?
     return send_from_directory('Exomiser', path)
 
-
-@app.route('/about')
-def about_page():
-    db=get_db()
-    patients_db=get_db(app.config['DB_NAME_PATIENTS']) 
-    total_variants=db.variants.count()
-    total_variants=db.variants.count()
-    print('total_variants',total_variants,)
-    total_patients=patients_db.patients.count()
-    print('total_patients',total_patients,)
-    male_patients=patients_db.patients.find( {'sex':'M'}).count()
-    print('male_patients',male_patients,)
-    female_patients=patients_db.patients.find( {'sex':'F'}).count()
-    print('female_patients',female_patients,)
-    unknown_patients=patients_db.patients.find( {'sex':'U'}).count()
-    return jsonify('about.html',total_patients=total_patients)
-
-
-@app.route('/participants')
-def participants_page():
-    return jsonify('about.html')
-
-
-@app.route('/terms')
-def terms_page():
-    return jsonify('terms.html')
-
-
-@app.route('/contact')
-def contact_page():
-    return jsonify('contact.html')
-
-
-@app.route('/faq')
-def faq_page():
-    patients_db=get_db(app.config['DB_NAME_PATIENTS']) 
-    total_patients=patients_db.patients.count()
-    return jsonify(total_patients=total_patients)
-
 @app.route('/samples')
 def samples_page():
     samples=pandas.read_csv('HPO/hpo.txt')
     return jsonify(samples=samples.to_html(escape=False))
 
 
-@app.route('/text')
-def text_page():
-    db = get_db()
-    query = request.args.get('text')
-    datatype, identifier = get_awesomebar_result(db, query)
-    if datatype in ['gene', 'transcript']:
-        gene = lookups.get_gene(db, identifier)
-        link = "http://genome.ucsc.edu/cgi-bin/hgTracks?db=hg19&position=chr%(chrom)s%%3A%(start)s-%(stop)s" % gene
-        output = '''Searched for %s. Found %s.
-%s; Canonical: %s.
-%s''' % (query, identifier, gene['full_gene_name'], gene['canonical_transcript'], link)
-        output += '' if 'omim_accession' not in gene else '''
-In OMIM: %(omim_description)s
-http://omim.org/entry/%(omim_accession)s''' % gene
-        return output
-    elif datatype == 'error' or datatype == 'not_found':
-        return "Gene/transcript %s not found" % query
-    else:
-        return "Search types other than gene transcript not yet supported"
-
-
 @app.after_request
 def apply_caching(response):
+    print 'CACHE'
     response.headers['Cache-Control'] = 'no-cache'
     response.headers['Cache-Control'] = 'no-cache, no-store, must-revalidate'
     # prevent click-jacking vulnerability identified by BITs
@@ -810,55 +749,9 @@ def mrc_hpo():
     ...
 }
 '''
-PROGRESS_BAR = {}
 
-'''
-initiate a progress instance
-arg: total length of genes
-return: progress_id
-'''
-
-def init_progress_bar(id,length):
-    # check id
-    if id in PROGRESS_BAR:
-        if PROGRESS_BAR[id]['status'] != 'done':
-            return 'the id already exists in PROGRESS_BAR'
-
-    # initialise progress_bar
-    PROGRESS_BAR[id] = {
-            'total': length,
-            'count':0,
-            'message': '',
-            'status':'running'
-    }
-    return 0
-
-'''
-update progress
-arg: {
-    id: id, 
-    message: message,
-    step: 1
-    }
-default step 1
-'''
-
-
-'''
-to check if an iterable is empty
-'''
-def peek(iterable):
-    try:
-        first = next(iterable)
-    except RuntimeError:
-        return None
-    except StopIteration:
-        return None
-    return first, itertools.chain([first], iterable)
-
-@app.route('/search', methods=['GET','POST'])
-@requires_auth
-def search():
+@app.route('/phenopolis_statistics')
+def phenopolis_statistics():
     db=get_db()
     patients_db=get_db(app.config['DB_NAME_PATIENTS']) 
     total_variants=db.variants.count()
@@ -889,20 +782,21 @@ def search():
     print('Version number is:-')
     print(version_number)
     return jsonify( title='home',
-        total_patients=total_patients,
-        male_patients=male_patients,
-        female_patients=female_patients,
-        unknown_patients=unknown_patients,
+        exomes="{:,}".format(total_patients),
+        males="{:,}".format(male_patients),
+        females="{:,}".format(female_patients),
+        unknowns="{:,}".format(unknown_patients),
         hpo_json=json.dumps(hpo_json),
-        total_variants=total_variants,
-        exac_variants=exac_variants,
-        pass_variants=pass_variants,
-        nonpass_variants=nonpass_variants,
-        pass_exac_variants=pass_exac_variants,
-        pass_nonexac_variants=pass_nonexac_variants,
+        total_variants="{:,}".format(total_variants),
+        exac_variants="{:,}".format(exac_variants),
+        pass_variants="{:,}".format(pass_variants),
+        nonpass_variants="{:,}".format(nonpass_variants),
+        pass_exac_variants="{:,}".format(pass_exac_variants),
+        pass_nonexac_variants="{:,}".format(pass_nonexac_variants),
         #image=image.decode('utf8'))
-        image="",
         version_number=version_number)
+
+
 
 import views.gene
 import views.variant
