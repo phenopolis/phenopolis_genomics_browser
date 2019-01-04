@@ -167,7 +167,7 @@ def logout():
 @app.route('/is_logged_in')
 @requires_auth
 def is_logged_in():
-    return jsonify(user=session['user']), 200
+    return jsonify(username=session['user']), 200
 
 def get_db(dbname=None):
     """
