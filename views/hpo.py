@@ -11,6 +11,14 @@ import csv
 @requires_auth
 def hpo(hpo_id='HP:0000001',subset='all'):
    x=json.loads(file(app.config['HPO_JSON'],'r').read())
+   patients_db=app.config['PATIENTS_DB'].format(session['user'])
+   if os.path.exists(patients_db):
+       print patients_db, 'exists'
+       c,fd,=sqlite3_ro_cursor(patients_db)
+       c.execute('select * from individuals where phenotype=?',(hpo_id,))
+       headers=[h[0] for h in c.description]
+       individuals=[dict(zip(headers,r)) for r in c.fetchall()]
+       x[0]['individuals']['data']=individuals
    if subset=='all': return json.dumps(x)
    else: return json.dumps([{subset:y[subset]} for y in x])
 
@@ -31,6 +39,7 @@ def hpo2():
     else:
         parents=[]
     print('HPO ANCESTORS')
+    hpo_db=get_db(app.config['DB_NAME_HPO'])
     hpo_ancestors=lookups.get_hpo_ancestors(hpo_db,hpo_id)
     #print(lookups.get_hpo_ancestors_array(hpo_db,hpo_id))
     print(hpo_ancestors)
@@ -281,7 +290,6 @@ def hpo_page(hpo_id):
     return jsonify(title=hpo_id, hpo_id=hpo_id, hpo_name=hpo_name)
 
 @app.route('/hpo_json/<hpo_id>')
-#@auth.login_required
 @requires_auth
 def hpo_json(hpo_id):
     db=get_db()

@@ -27,7 +27,7 @@ def gene(gene_id, subset='all'):
    gene_name=x[0]['metadata']['data'][0]['gene_name']
    sqlite3_ro_close(c,fd)
    for d in x[0]['metadata']['data']:
-       d['pLI']=1
+       #d['pLI']=1
        d['number_of_variants']=10
        d["external_services"]=[
                {"display": "GnomAD Browser","href": "http://gnomad.broadinstitute.org/gene/"+gene_id},
@@ -54,6 +54,12 @@ def gene(gene_id, subset='all'):
    sqlite3_ro_close(c,fd)
    for d in x[0]['metadata']['data']:
        d['number_of_variants']=len(x[0]['variants']['data'])
+   for y in x:
+       for x2 in y['variants']['data']:
+           x2['HET']=json.loads(x2['HET'])
+           x2['HET']=[x3 for x3 in x2['HET'] if x3['display']]
+           x2['HOM']=json.loads(x2['HOM'])
+           x2['HOM']=[x3 for x3 in x2['HOM'] if x3['display']]
    if subset=='all': return json.dumps(x)
    else: return json.dumps([{subset:y[subset]} for y in x])
     

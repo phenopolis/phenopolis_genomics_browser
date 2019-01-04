@@ -111,16 +111,14 @@ def check_auth(username, password):
     session['user']=username
     return argon2.verify(password, user[0]['argon_password'])
 
-def authenticate():
-    """Sends a 401 response that enables basic auth"""
-    return Response( 'Could not verify your access level for that URL.\n' 'You have to login with proper credentials', 401, {'WWW-Authenticate': 'Basic realm="Login Required"'})
-
 
 def requires_auth(f):
     @wraps(f)
     def decorated(*args, **kwargs):
         if session:
+          print 'session'
           if 'user' in session: 
+             print session['user']
              return f(*args, **kwargs)
         if request.method == 'POST':
           username=request.form['user']
@@ -128,7 +126,7 @@ def requires_auth(f):
           if check_auth(username,password):
              return f(*args, **kwargs)
         print('Not Logged In - Redirect to home to login')
-        return jsonify(success='Unauthenticated'), 403
+        return jsonify(error='Unauthenticated'), 401
     return decorated
 
 
@@ -304,69 +302,33 @@ def response(POS, REF, ALT, index, geno, chrom, pos):
     variant['hpo']=[p for p in get_db(app.config['DB_NAME_PATIENTS']).patients.find({'external_id':{'$in':samples}},{'_id':0,'features':1,'external_id':1})]
     return(jsonify(result=variant))
 
-@app.route('/best_guess/')
+@app.route('/best_guess')
 @requires_auth
 def best_guess():
      db = get_db()
      query = str(request.args.get('query'))
-     #for n in dir(request): print(n, getattr(request,n))
-     #print(request.HTTP_REFERER)
-     print(request.referrer)
-     if request.referrer:
-         referrer=request.referrer
-         u = urlparse(referrer)
-         referrer='%s://%s' % (u.scheme,u.hostname,)
-         if u.port: referrer='%s:%s' % (referrer,u.port,)
-     else:
-         referrer=''
-     #u.netloc
-     print(referrer)
+     referrer=''
      datatype, identifier = get_result(db, query)
      print("Searched for %s: %s" % (datatype, identifier))
      if datatype == 'gene':
-         return redirect('{}/gene/{}'.format(referrer,identifier))
+         return jsonify(redirect='{}/gene/{}'.format(referrer,identifier))
      elif datatype == 'transcript':
-         return redirect('{}/transcript/{}'.format(referrer,identifier))
+         return jsonify(redirect='{}/transcript/{}'.format(referrer,identifier))
      elif datatype == 'variant':
-         return redirect('{}/variant/{}'.format(referrer,identifier))
+         return jsonify(redirect='{}/variant/{}'.format(referrer,identifier))
      elif datatype == 'region':
-         return redirect('{}/region/{}'.format(referrer,identifier))
+         return jsonify(redirect='{}/region/{}'.format(referrer,identifier))
      elif datatype == 'dbsnp_variant_set':
-         return redirect('{}/dbsnp/{}'.format(referrer,identifier))
+         return jsonify(redirect='{}/dbsnp/{}'.format(referrer,identifier))
      elif datatype == 'hpo':
-         return redirect('{}/hpo/{}'.format(referrer,identifier))
+         return jsonify(redirect='{}/hpo/{}'.format(referrer,identifier))
      elif datatype == 'mim':
-         return redirect('{}/mim/{}'.format(referrer,identifier))
+         return jsonify(redirect='{}/mim/{}'.format(referrer,identifier))
      elif datatype == 'individual':
-         return redirect('{}/individual/{}'.format(referrer,identifier))
-     elif datatype == 'error':
-         return redirect('{}/error/{}'.format(referrer,identifier))
-     elif datatype == 'not_found':
-         return redirect('{}/not_found/{}'.format(referrer,identifier))
-     else:
-         raise Exception
+         return jsonify(redirect='{}/individual/{}'.format(referrer,identifier))
+     return jsonify(message='Could not find search query'), 420
 
 def get_suggestions(query):
-    """
-    This generates autocomplete suggestions when user
-    query is the string that user types
-    If it is the prefix for a gene, return list of gene names
-    """
-    regex = re.compile(re.escape(query), re.IGNORECASE)
-    patient_results = [x['external_id'] for x in get_db(app.config['DB_NAME_PATIENTS']).patients.find(
-      {'external_id':regex}, {'score': {'$meta': 'textScore'}}
-      ).sort([('score', {'$meta': 'textScore'})])
-    ]
-    gene_results = [x['gene_name'] for x in get_db().genes.find(
-      {'gene_name':regex}, {'score': {'$meta': 'textScore'}}
-      ).sort([('score', {'$meta': 'textScore'})])
-    ]
-    hpo_results = [x['name'][0] for x in get_db(app.config['DB_NAME_HPO']).hpo.find(
-      {'name':regex}, {'score': {'$meta': 'textScore'}}
-      ).sort([('score', {'$meta': 'textScore'})])
-    ]
-    results = patient_results+gene_results+hpo_results
-    results = itertools.islice(results, 0, 20)
     return list(results)
 
 #@app.route('/phenotype_suggestions/<hpo>')
@@ -389,22 +351,6 @@ def get_gene_suggestions(gene):
     return json.dumps(suggestions[0:20])
 
 def get_result(db, query):
-    """
-    Similar to the above, but this is after a user types enter
-    We need to figure out what they meant - could be gene, variant, region
-    Return tuple of (datatype, identifier)
-    Where datatype is one of 'gene', 'variant', or 'region'
-    And identifier is one of:
-    - ensembl ID for gene
-    - variant ID string for variant (eg. 1-1000-A-T)
-    - region ID string for region (eg. 1-1000-2000)
-    Follow these steps:
-    - if query is an ensembl ID, return it
-    - if a gene symbol, return that gene's ensembl ID
-    - if an RSID, return that variant's string
-    Finally, note that we don't return the whole object here - only it's identifier.
-    This could be important for performance later
-    """
     query = query.strip()
     print('Query: %s' % query)
     # phenotype
@@ -476,7 +422,21 @@ def get_result(db, query):
 @app.route('/autocomplete/<query>')
 @requires_auth
 def autocomplete(query):
-    suggestions = get_suggestions(query)
+    regex = re.compile(re.escape(query), re.IGNORECASE)
+    patient_results = [x['external_id'] for x in get_db(app.config['DB_NAME_PATIENTS']).patients.find(
+      {'external_id':regex}, {'score': {'$meta': 'textScore'}}
+      ).sort([('score', {'$meta': 'textScore'})])
+    ]
+    gene_results = [x['gene_name'] for x in get_db().genes.find(
+      {'gene_name':regex}, {'score': {'$meta': 'textScore'}}
+      ).sort([('score', {'$meta': 'textScore'})])
+    ]
+    hpo_results = [x['name'][0] for x in get_db(app.config['DB_NAME_HPO']).hpo.find(
+      {'name':regex}, {'score': {'$meta': 'textScore'}}
+      ).sort([('score', {'$meta': 'textScore'})])
+    ]
+    results = patient_results+gene_results+hpo_results
+    suggestions = itertools.islice(results, 0, 20)
     return Response(json.dumps(suggestions),  mimetype='application/json')
 
 #@app.route('/patient/<patient_str>')

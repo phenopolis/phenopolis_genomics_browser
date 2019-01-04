@@ -9,7 +9,6 @@ import pymongo
 import sys
 import re
 import itertools
-from urllib2 import HTTPError, URLError
 from collections import defaultdict, Counter
 #import rest as annotation
 import lookups
@@ -20,8 +19,15 @@ from orm import Patient
 @requires_auth
 def individual(individual_id, subset='all'):
    x=json.loads(file(app.config['INDIVIDUAL_JSON'],'r').read())
-   if subset=='all': return json.dumps(x)
-   else: return json.dumps([{subset:y[subset]} for y in x])
+   patient_json=app.config['PATIENTS_DATA'].format(session['user'],individual_id)
+   print patient_json+'/annovar.json'
+   if os.path.isfile(patient_json+'/annovar.json'):
+       print patient_json, 'exists'
+       x=json.loads(file(patient_json+'/annovar.json','r').read())
+   if subset=='all':
+       return json.dumps(x)
+   else:
+       return json.dumps([{subset:y[subset]} for y in x])
     
 def individuals_update(external_ids):
     patients_db=get_db(app.config['DB_NAME_PATIENTS'])
@@ -112,13 +118,6 @@ def update_patient_data(individual):
     return jsonify({'success': True}), 200
 
 
-@app.route('/individual_json/<individual>')
-@requires_auth
-def individual_json(individual):
-    patient=Patient(individual,patient_db=get_db(app.config['DB_NAME_PATIENTS']))
-    return patient.json()
-
-
 def get_feature_venn(patient):
     hpo_ids=[feature['id'] for feature in patient.observed_features]
     hpo_db=get_db(app.config['DB_NAME_HPO'])
@@ -206,37 +205,6 @@ def get_hpo_gene(hpo_ids):
             hpo_gene[hpo_id]=hpo_gene.get(hpo_id,[])+[gene_name]
     for k in hpo_gene: hpo_gene[k]=list(frozenset(list(hpo_gene[k])))
     return hpo_gene
-
-
-def find_item(obj, key):
-    if key in obj:
-        return obj[key]
-    if isinstance(obj, dict):
-        for k in obj:
-            if isinstance(obj[k], dict):
-                item = find_item(obj[k], key)
-                if item is not None:
-                    return item
-            elif isinstance(obj[k], list):
-                for i in obj[k]:
-                    if isinstance(i, str):
-                        continue
-                    item = find_item(i, key)
-                    if item is not None:
-                        return item
-    elif isinstance(obj, list):
-        for k in obj:
-            if isinstance(k, dict):
-                item = find_item(k, key)
-                if item is not None:
-                    return item
-            elif isinstance(k, list):
-                for i in k:
-                    if isinstance(i, str):
-                        continue
-                    item = find_item(i, key)
-                    if item is not None:
-                        return item
 
 def exomiser(individual):
     patient_hpo_terms=lookups.get_patient_hpo(hpo_db, patient_db, individual, ancestors=False)
@@ -349,26 +317,5 @@ def load_patient(individual,auth,pubmed_key,hpo='HP:0000001'):
     pubmed_key="blindness-macula-macular-pigmentosa-retina-retinal-retinitis-stargardt"
     patient["pubmed_key"]=pubmed_key
     #db.patients.update({'external_id':patient_id}, patient, upsert=True)
-
-
-
-@app.route('/individual_update/<individual>')
-@requires_auth
-def individual_update(individual):
-    print 'UPDATE'
-    print p
-    print get_db(app.config['DB_NAME_PATIENTS']).patients.update({'external_id':individual},{'$set':p})
-    print 'DB'
-    print get_db(app.config['DB_NAME_PATIENTS']).patients.find_one({'external_id':individual})
-    if request.referrer:
-        referrer=request.referrer
-        u = urlparse(referrer)
-        referrer='%s://%s' % (u.scheme,u.hostname,)
-        if u.port: referrer='%s:%s' % (referrer,u.port,)
-        return redirect(referrer+'/individual/'+individual)
-    else:
-        return 'done'
-
-
 
 
