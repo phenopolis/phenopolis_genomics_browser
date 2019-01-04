@@ -436,7 +436,7 @@ def autocomplete(query):
       ).sort([('score', {'$meta': 'textScore'})])
     ]
     results = patient_results+gene_results+hpo_results
-    suggestions = itertools.islice(results, 0, 20)
+    suggestions = list(itertools.islice(results, 0, 20))
     return Response(json.dumps(suggestions),  mimetype='application/json')
 
 #@app.route('/patient/<patient_str>')
