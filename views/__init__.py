@@ -75,12 +75,6 @@ Compress(app)
 #cache = SimpleCache(default_timeout=70*60*24)
 cache = Cache(app,config={'CACHE_TYPE': 'simple'})
 
-#from flask_httpauth import HTTPBasicAuth
-#auth = HTTPBasicAuth()
-
-REGION_LIMIT = 1E5
-EXON_PADDING = 50
-
 # Check Configuration section for more details
 SESSION_TYPE = 'mongodb'
 app.config.from_object(__name__)
