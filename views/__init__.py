@@ -668,7 +668,8 @@ def apply_caching(response):
     response.headers['Cache-Control'] = 'no-cache'
     response.headers['Cache-Control'] = 'no-cache, no-store, must-revalidate'
     # prevent click-jacking vulnerability identified by BITs
-    response.headers["X-Frame-Options"] = "SAMEORIGIN"
+    #response.headers["X-Frame-Options"] = "SAMEORIGIN"
+    response.headers["Access-Control-Allow-Origin"] = "*"
     return response
 
 ### all the mongodb reading/writing code

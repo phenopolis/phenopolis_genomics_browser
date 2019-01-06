@@ -28,7 +28,6 @@ def gene(gene_id, subset='all'):
    sqlite3_ro_close(c,fd)
    for d in x[0]['metadata']['data']:
        #d['pLI']=1
-       d['number_of_variants']=10
        d["external_services"]=[
                {"display": "GnomAD Browser","href": "http://gnomad.broadinstitute.org/gene/"+gene_id},
                {"display": "GeneCards","href": "http://www.genecards.org/cgi-bin/carddisp.pl?gene="+gene_name}
