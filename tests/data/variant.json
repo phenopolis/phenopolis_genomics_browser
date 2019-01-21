@@ -4,7 +4,7 @@
      "metadata": {
          "colNames" : [
             {"default":"true", "name":"Filter Status", "key":"FILTER"},
-            {"default":"true", "name":"Gene", "key":"gene_symbol"},
+            {"default":"true", "name":"Gene", "key":"gene_symbol", "type": "links", "base_href":"/gene/"},
             {"default":"true", "name":"Consequence", "key":"most_severe_consequence"},
             {"default":"true", "name":"HGVSc", "key":"hgvsc"},
             {"default":"true", "name":"HGVSp", "key":"hgvsp"},

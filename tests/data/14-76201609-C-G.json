@@ -4,7 +4,7 @@
      "metadata": {
          "colNames" : [
             {"default":"true", "name":"Filter Status", "key":"filter_status"},
-            {"default":"true", "name":"Gene", "key":"gene"},
+            {"default":"true", "name":"Gene", "key":"gene", "type": "links", "base_href":"/gene/"},
             {"default":"true", "name":"Consequence", "key":"consequence"},
             {"default":"true", "name":"Transcript", "key":"transcript"},
             {"default":"true", "name":"dbSNP", "key":"dbsnp"},

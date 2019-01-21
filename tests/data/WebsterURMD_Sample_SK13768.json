@@ -1,6 +1,6 @@
 [
   {
-     "preview":[["Number of Variants",102]],
+     "preview":[["Sorry","You are not authorised to see this individual"]],
      "metadata": {
          "colNames" : [
             {"default": "true","name":"Gender", "key": "gender"},
@@ -9,10 +9,10 @@
             {"default": "true","name":"Candidate Genes", "key": "candidate_genes", "type":"links", "href":"/gene/"}
          ],
          "data": [{
-             "gender":"Female",
-             "features":[{"display":"Abnormality of the retina","href":"HP:0000479"}],
+             "gender":"U",
+             "features":[{"display":"All","href":"HP:0000001"}],
              "consanguinity":"unknown",
-             "candidate_genes":[{"display":"DRAM2"}]
+             "candidate_genes":[{"display":""}]
          }]
      },
      "rare_homs": {
@@ -40,7 +40,7 @@
            {"name": "Hgvs_p", "key": "hgvsp", "default": "true", "description":""}
         ],
         "data": [
-          { "ID": [{"display":"ID","href":"12-32434-A-G"}], "#CHROM": "5", "position": "1234", "rsid": "rs2691305", "gene": [ "string" ], "filter": "PASS", "cadd": 30, "feature_id": "string", "feature_type": "string", "hgvs_c": "ENST00000335137.3:c.421A>G", "hgvs_p": "ENSP00000334393.3:p.Thr141Ala", "consequence": "string", "impact": "string", "af_tommo": 0.1, "af_jirdc": 0.1, "af_krgdb": 0.1 }
+          { "ID": [{"display":"ID","href":"12-32434-A-G"}], "#CHROM": "5", "POS": "1234", "rsid": "rs2691305", "gene": [ "string" ], "filter": "PASS", "cadd": 30, "feature_id": "string", "feature_type": "string", "hgvs_c": "ENST00000335137.3:c.421A>G", "hgvs_p": "ENSP00000334393.3:p.Thr141Ala", "consequence": "string", "impact": "string", "af_tommo": 0.1, "af_jirdc": 0.1, "af_krgdb": 0.1 }
     ]
     },
     "rare_comp_hets": {

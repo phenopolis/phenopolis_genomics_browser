@@ -30,7 +30,9 @@
            {"name": "AF", "key": "AF", "default": "true", "description":"Internal allele frequency"},
            {"name": "AC", "key": "AC", "default": "true", "description":"Internal allele count"},
            {"name": "AN", "key": "AN", "default": "false", "description":"Internal total allele number (including WT)"},
+           {"name": "HET COUNT", "key": "HET_COUNT", "default": "true", "description":"Internal total number of heterozygotes"},
            {"name": "HET", "key": "HET", "default": "true", "description":"Het individuals", "type":"links", "base_href":"/individual/", "class":"preview_onhover"},
+           {"name": "HOM COUNT", "key": "HOM_COUNT", "default": "true", "description":"Internal total number of homozygotes"},
            {"name": "HOM", "key": "HOM", "default": "true", "description":"Hom individuals", "type":"links", "base_href":"/individual/", "class":"preview_onhover"},
            {"name":"DP", "key":"DP", "default": "false", "description":"Depth of sequencing"},
            {"name":"FS", "key":"FS", "default": "false", "description":"Fisher Strand"},
@@ -44,17 +46,15 @@
            {"name": "AF converge", "key": "af_converge", "default": "true", "description":"Chinese consortium"},
            {"name": "AF kaviar", "key": "af_kaviar", "default": "true", "description":""},
            {"name": "AF gnomad genomes", "key": "af_gnomad_genomes", "default": "true", "description":""},
-           {"name": "Cadd", "key": "cadd", "default": "true", "description":""},
+           {"name": "CADD", "key": "cadd_phred", "default": "true", "description":"Combined Annotation Dependent Depletion"},
            {"name": "Most Severe Consequence", "key": "most_severe_consequence", "default": "true", "description":"most severe consequence of variant on different transcripts"},
-           {"name": "Impact", "key": "impact", "default": "false", "description":""},
-           {"name": "Feature_id", "key": "feature_id", "default": "false", "description":""},
-           {"name": "Feature_type", "key": "feature_type", "default": "false", "description":""},
            {"name": "Filter", "key": "FILTER", "default": "true", "description":"variant filter"},
-           {"name": "Gene", "key": "gene_symbol", "default": "false", "description":"Gene Symbol"},
+           {"name": "Gene", "key": "gene_symbol", "default": "false", "description":"Gene Symbol", "type":"links", "base_href":"/gene/"},
            {"name": "Hgvs_c", "key": "hgvsc", "default": "true", "description":"HGVS cDNA"},
            {"name": "Hgvs_p", "key": "hgvsp", "default": "true", "description":"HGVS protein"},
            {"name": "DANN", "key": "dann", "default": "false", "description":"DANN score"}
         ],
         "data": [ ]
+  }
   }
 ]

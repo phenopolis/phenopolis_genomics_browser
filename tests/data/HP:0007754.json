@@ -12,9 +12,9 @@
     },
     "individuals" : {
          "colNames" : [
-            {"default": "true","name":"Individual", "key": "individual", "class":"preview_onhover", "type":"links", "base_href": "/individual"},
-            {"default": "true","name":"Gender", "key": "gender"},
-            {"default": "true","name":"Phenotype", "key": "phenotype", "class":"preview_onhover", "type":"links", "base_href":"/hpo/"},
+            {"default": "true","name":"Individual", "key": "external_id", "class":"preview_onhover", "type":"links", "base_href": "/individual"},
+            {"default": "true","name":"Gender", "key": "sex"},
+            {"default": "true","name":"Phenotype", "key": "simplified_observed_features_names", "class":"preview_onhover", "type":"links", "base_href":"/hpo/"},
             {"default": "true","name":"Phenotype Score", "key": "phenotype_score"},
             {"default": "true","name":"Rare Hom", "key": "rare_hom"},
             {"default": "true","name":"Rare Comp Het", "key": "rare_comp_het"},
@@ -24,7 +24,7 @@
          ],
          "data" : [
              {
-                 "individual": [{"display":"B240002"}],
+                 "individual": [{"display":"WebsterURMD_Sample_SK13768"}],
                  "gender":"M",
                  "phenotype":[{"display":"Macular dystrophy", "end_href":"HP:0007754"},{"display":"Autosomal dominant inheritance", "end_href":"HP:0000006"}],
                  "phenotype_score": "0.5025",

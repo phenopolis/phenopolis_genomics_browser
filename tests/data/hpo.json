@@ -5,7 +5,8 @@
          "colNames" : [
             {"default": "true","name":"Name", "key": "name"},
             {"default": "true","name":"ID", "key": "id"},
-            {"default": "true","name":"Count", "key": "count"}
+            {"default": "true","name":"Count", "key": "count"},
+            {"default": "true","name":"Parent Phenotypes", "key": "parent_phenotypes", "type":"links", "base_href":"/hpo", "class":"preview_onhover"}
          ],
          "data" : [ ]
     },
@@ -16,9 +17,7 @@
             {"default": "true","name":"Phenotype", "key": "simplified_observed_features_names", "class":"preview_onhover", "type":"links", "base_href":"/hpo/"},
             {"default": "true","name":"Candidate Genes", "key": "genes","class":"preview_onhover", "type":"links", "base_href":"/gene/"}
          ],
-         "data" : [{
-             }
-         ]
+         "data" : [ ]
     },
     "literature_genes" : {
          "colNames" : [
@@ -26,24 +25,21 @@
                {"default": "true","name":"Phenogenon Dominant P-Value", "key": "phenogenon_dominant_pvalue"},
                {"default": "true","name":"Phenogenon Recessive P-Value", "key": "phenogenon_recessive_pvalue"}
          ],
-         "data" : [{
-         }]
+         "data" : [ ] 
     },
     "phenogenon_recessive" : {
          "colNames" : [
                {"default": "true","name":"Recessive genes", "key": "gene_id", "class":"preview_onhover", "type":"links",  "base_href":"/gene/"},
                {"default": "true","name":"P Value", "key": "pvalue"}
          ],
-         "data" : [{
-         }]
+         "data" : [ ]
      },
     "phenogenon_dominant" : {
          "colNames" : [
                {"default": "true","name":"Dominant genes", "key": "gene_id", "class":"preview_onhover", "type":"links",  "base_href":"/gene/"},
                {"default": "true","name":"P Value", "key": "pvalue"}
          ],
-         "data" : [{
-         }]
+         "data" : [ ]
     },
     "skat" : {
          "colNames" : [
@@ -55,8 +51,7 @@
                {"default": "true","name":"Odds Ratio", "key": "odds_ratio"},
                {"default": "true","name":"Variants", "key": "variants", "class":"preview_onhover", "type":"links",  "base_href":"/variant/"}
          ],
-         "data" : [{
-         }]
+         "data" : [ ]
     }
   }
 ]
