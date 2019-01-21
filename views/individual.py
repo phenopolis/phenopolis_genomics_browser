@@ -18,12 +18,68 @@ from orm import Patient
 @app.route('/individual/<individual_id>/<subset>')
 @requires_auth
 def individual(individual_id, subset='all'):
+   patients_db=app.config['PATIENTS_DB'].format(session['user'])
    x=json.loads(file(app.config['INDIVIDUAL_JSON'],'r').read())
-   patient_json=app.config['PATIENTS_DATA'].format(session['user'],individual_id)
-   print patient_json+'/annovar.json'
-   if os.path.isfile(patient_json+'/annovar.json'):
-       print patient_json, 'exists'
-       x=json.loads(file(patient_json+'/annovar.json','r').read())
+   c,fd,=sqlite3_ro_cursor(patients_db)
+   c.execute("select * from individuals where external_id=?",(individual_id,))
+   headers=[h[0] for h in c.description]
+   hits=c.fetchall()
+   if not hits:
+       x[0]['preview']=[['Sorry', 'You are not permitted to see this patient']]
+       return json.dumps(x)
+   individual=[dict(zip(headers,r)) for r in hits]
+   if individual:
+       individual=individual[0]
+   else:
+       return x
+   ind=individual
+   c,fd,=sqlite3_ro_cursor(app.config['PHENOPOLIS_DB'])
+   if subset=='preview':
+       query=""" select count(1) from hom_variants hv, variants v where hv."#CHROM"=v."#CHROM" and hv."POS"=v."POS" and hv."REF"=v."REF" and hv."ALT"=v."ALT" and hv.individual='%s' """ % (individual_id,)
+       hom_count=c.execute(query).fetchone()[0]
+       query=""" select count(1) from het_variants hv, variants v where hv."#CHROM"=v."#CHROM" and hv."POS"=v."POS" and hv."REF"=v."REF" and hv."ALT"=v."ALT" and hv.individual='%s' """ % (individual_id,)
+       het_count=c.execute(query).fetchone()[0]
+       query=""" select count (1) from (select count(1) from het_variants hv, variants v where hv."#CHROM"=v."#CHROM" and hv."POS"=v."POS" and hv."REF"=v."REF" and hv."ALT"=v."ALT" and hv.individual='%s' group by v.gene_symbol having count(v.gene_symbol)>1) as t """ % (individual_id,)
+       comp_het_count=c.execute(query).fetchone()[0]
+       x[0]['preview']=[
+               ['Sex', ind['sex']],
+               ['Genes', [g for g in ind.get('genes','').split(',')]],
+               ['Features',[f for f in ind['simplified_observed_features_names'].split(',')]],
+               ['Number of hom variants',hom_count],
+               ['Number of compound hets',comp_het_count],
+               ['Number of het variants', het_count] ]
+       sqlite3_ro_close(c,fd)
+       return json.dumps(x)
+   # hom variants
+   query=""" select v.* from hom_variants hv, variants v where hv."#CHROM"=v."#CHROM" and hv."POS"=v."POS" and hv."REF"=v."REF" and hv."ALT"=v."ALT" and hv.individual='%s' """ % (individual_id,)
+   print query
+   c.execute(query)
+   headers=[h[0] for h in c.description]
+   hom_variants=[dict(zip(headers,r)) for r in c.fetchall()]
+   x[0]['rare_homs']['colNames']=json.load(file(app.config['HOM_VARIANTS_COLNAMES'].format(session['user']),'r'))
+   x[0]['rare_homs']['data']=hom_variants
+   # rare variants
+   query=""" select v.* from het_variants hv, variants v where hv."#CHROM"=v."#CHROM" and hv."POS"=v."POS" and hv."REF"=v."REF" and hv."ALT"=v."ALT" and hv.individual='%s' """ % (individual_id,)
+   x[0]['rare_variants']['colNames']=json.load(file(app.config['HET_VARIANTS_COLNAMES'].format(session['user']),'r'))
+   print query
+   c.execute(query)
+   headers=[h[0] for h in c.description]
+   rare_variants=[dict(zip(headers,r)) for r in c.fetchall()]
+   sqlite3_ro_close(c,fd)
+   x[0]['rare_variants']['colNames']=json.load(file(app.config['HET_VARIANTS_COLNAMES'].format(session['user']),'r'))
+   x[0]['rare_variants']['data']=rare_variants
+   # rare_comp_hets
+   x[0]['rare_comp_hets']['colNames']=json.load(file(app.config['HET_VARIANTS_COLNAMES'].format(session['user']),'r'))
+   gene_counter=Counter([v['gene_symbol'] for v in x[0]['rare_variants']['data']])
+   x[0]['rare_comp_hets']['data']=[v for v in x[0]['rare_variants']['data'] if gene_counter[v['gene_symbol']]>1]
+   x[0]['metadata']["colNames"]=[ {"default": "true","name":"Gender", "key": "sex"}, {"default": "true","name":"Features", "key": "simplified_observed_features", "type":"links", "base_href":"/hpo/", "class":"preview_onhover"}, {"default": "true","name":"Consanguinity", "key": "consanguinity"}, {"default": "true","name":"Candidate Genes", "key": "genes", "type":"links", "href":"/gene/"}]
+   x[0]['metadata']['data'][0]['sex']=ind['sex']
+   x[0]['metadata']['data'][0]['external_id']=[{'display':ind['external_id']}]
+   x[0]['metadata']['data'][0]['simplified_observed_features']=[{'display':i, 'end_href':j} for i,j, in zip(ind['simplified_observed_features_names'].split(';'),ind['simplified_observed_features'].split(','))]
+   process_for_display(x[0]['rare_homs']['data'])
+   process_for_display(x[0]['rare_variants']['data'])
+   if ind['genes']:
+       x[0]['metadata']['data'][0]['genes']=[{'display':i} for i in ind.get('genes','').split(',')]
    if subset=='all':
        return json.dumps(x)
    else:

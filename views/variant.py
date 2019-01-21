@@ -19,8 +19,78 @@ import os
 @requires_auth
 def variant(variant_id, subset='all'):
    x=json.loads(file(app.config['VARIANT_JSON'],'r').read())
+   c,fd,=sqlite3_ro_cursor(app.config['PHENOPOLIS_DB'])
+   #python3
+   #conn=sqlite3.connect('file:/media/pontikos_nas/pontikos/phenopolis/genes.db?mode=ro', uri=True)
+   print variant_id.split('-')
+   c.execute('select * from variants where "#CHROM"=? and POS=? and REF=? and ALT=?',variant_id.split('-'))
+   headers=[h[0] for h in c.description]
+   var=[dict(zip(headers,r)) for r in c.fetchall()]
+   process_for_display(var)
+   var=var[0]
+   print json.dumps(var)
+   x[0]['metadata']['data']=[var]
+   x[0]['individuals']['data']=[var]
+   x[0]['frequency']['data']=[var]
+   x[0]['consequence']['data']=[var]
    if subset=='all': return json.dumps(x)
    else: return json.dumps([{subset:y[subset]} for y in x])
+
+
+# AJAX
+# Not finished
+@app.route('/chisqu/<variant_str>',methods=['GET','POST'])
+@requires_auth
+def chisq(variant_str):
+    if request.method=='POST':
+        hpo_patients=request.form['patients'].strip().split(',')
+    else:
+        hpo_patients=request.args.get('patients').strip().split(',')
+    print('hpo_patients',hpo_patients,)
+    variant_str=str(variant_str).strip().replace('_','-')
+    chrom, pos, ref, alt = variant_str.split('-')
+    tb=pysam.TabixFile('chr%s.vcf.gz' % chrom,)
+    region=str('%s:%s-%s'%(chrom, pos, int(pos),))
+    headers=[h for h in tb.header]
+    headers=(headers[len(headers)-1]).strip().split('\t')
+    print(region)
+    records=tb.fetch(region=region)
+    geno=dict(zip(headers, [r.split('\t') for r in records][0]))
+    samples=[h for h in geno if geno[h].split(':')[0]=='0/1' or geno[h].split(':')[0]=='1/1']
+    res=jsonify(result=hpo_patients)
+    return res
+
+
+
+def response(POS, REF, ALT, index, geno, chrom, pos):
+    homozygous_genotype='/'.join([str(index),str(index)])
+    heterozygous_genotype='/'.join(['0',str(index)])
+    variant=dict()
+    variant['pos']=POS
+    variant['ref']=REF
+    variant['alt']=ALT
+    variant['hom_samples']=[h for h in geno if geno[h].split(':')[0]==homozygous_genotype][0:100]
+    variant['HOM_COUNT']=len(variant['hom_samples'])
+    variant['het_samples']=[h for h in geno if geno[h].split(':')[0]==heterozygous_genotype][0:100]
+    variant['HET_COUNT']=len(variant['het_samples'])
+    variant['wt_samples']=[h for h in geno if geno[h].split(':')[0]=='0/0'][1:100]
+    variant['WT_COUNT']=len([h for h in geno if geno[h].split(':')[0]=='0/0'])
+    variant['MISS_COUNT']=len([h for h in geno if geno[h].split(':')[0]=='./.'])
+    variant['allele_num']= 2*(variant['HOM_COUNT'] + variant['HET_COUNT']+variant['WT_COUNT'])
+    variant['allele_count']=2*variant['HOM_COUNT'] + variant['HET_COUNT']
+    #variant['site_quality'] = variant['QUAL']
+    #variant['filter'] = variant['FILTER']
+    if variant['WT_COUNT']==0:
+        variant['allele_freq'] = None
+    else:
+        variant['allele_freq'] = float(variant['HET_COUNT']+2*variant['HOM_COUNT']) / float(2*variant['WT_COUNT'])
+    var2='-'.join([str(chrom),str(pos),variant['ref'],variant['alt']])
+    variant['variant_id']=var2
+    samples=variant['het_samples']+variant['hom_samples']
+    print(samples)
+    variant['hpo']=[p for p in get_db(app.config['DB_NAME_PATIENTS']).patients.find({'external_id':{'$in':samples}},{'_id':0,'features':1,'external_id':1})]
+    return(jsonify(result=variant))
+
 
     
 @app.route('/variant/<variant_str>')

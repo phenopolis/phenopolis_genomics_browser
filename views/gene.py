@@ -11,21 +11,26 @@ from bson.json_util import dumps
 @requires_auth
 def gene(gene_id, subset='all'):
    x=json.loads(file(app.config['GENE_JSON'],'r').read())
-   c,fd,=sqlite3_ro_cursor(app.config['GENES_DB'])
+   c,fd,=sqlite3_ro_cursor(app.config['PHENOPOLIS_DB'])
    #python3
    #conn=sqlite3.connect('file:/media/pontikos_nas/pontikos/phenopolis/genes.db?mode=ro', uri=True)
    if gene_id.startswith('ENSG'):
       c.execute('select * from genes where gene_id=?',(gene_id,))
+      data=c.fetchall()
    else:
       c.execute('select * from genes where gene_name=?',(gene_id,))
+      data=c.fetchall()
+   if not data:
+      c.execute('select * from genes where other_names like ?',('%'+gene_id+'%',))
+      data=c.fetchall()
    headers=[h[0] for h in c.description]
-   x[0]['metadata']['data']=[dict(zip(headers,r)) for r in c.fetchall()]
+   x[0]['metadata']['data']=[dict(zip(headers,r)) for r in data]
+   print x[0]['metadata']['data']
    chrom=x[0]['metadata']['data'][0]['chrom']
    start=x[0]['metadata']['data'][0]['start']
    stop=x[0]['metadata']['data'][0]['stop']
    gene_id=x[0]['metadata']['data'][0]['gene_id']
    gene_name=x[0]['metadata']['data'][0]['gene_name']
-   sqlite3_ro_close(c,fd)
    for d in x[0]['metadata']['data']:
        #d['pLI']=1
        d["external_services"]=[
@@ -43,22 +48,15 @@ def gene(gene_id, subset='all'):
                 {"display": "GTEx (expression)","href": "http://www.gtexportal.org/home/gene/"+gene_name}
                ]
        d["related_hpo"]=[{"display": "", "href":""}]
-   #python3
-   #conn=sqlite3.connect('file:/media/pontikos_nas/pontikos/phenopolis/variants.db?mode=ro', uri=True)
-   c,fd,=sqlite3_ro_cursor(app.config['VARIANTS_DB'])
-   c.execute('select * from variants where gene_symbol=?',(x[0]['metadata']['data'][0]['gene_name'],))
+   c.execute(file(app.config['VARIANTS_QUERY'].format(session['user']),'r').read().strip(),(x[0]['metadata']['data'][0]['gene_name'],))
    headers=[h[0] for h in c.description]
+   x[0]['variants']['colNames']=json.load(file(app.config['VARIANTS_COLNAMES'].format(session['user']),'r'))
    x[0]['variants']['data']=[dict(zip(headers,r)) for r in c.fetchall()]
-   print(len(x[0]['variants']['data']))
+   x[0]['preview']=[['Number of variants',len(x[0]['variants']['data'])]]
    sqlite3_ro_close(c,fd)
-   for d in x[0]['metadata']['data']:
-       d['number_of_variants']=len(x[0]['variants']['data'])
-   for y in x:
-       for x2 in y['variants']['data']:
-           x2['HET']=json.loads(x2['HET'])
-           x2['HET']=[x3 for x3 in x2['HET'] if x3['display']]
-           x2['HOM']=json.loads(x2['HOM'])
-           x2['HOM']=[x3 for x3 in x2['HOM'] if x3['display']]
+   for d in x[0]['metadata']['data']: d['number_of_variants']=len(x[0]['variants']['data'])
+   process_for_display(x[0]['variants']['data'])
+   print x[0]['preview']
    if subset=='all': return json.dumps(x)
    else: return json.dumps([{subset:y[subset]} for y in x])
     
