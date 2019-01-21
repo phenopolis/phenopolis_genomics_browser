@@ -10,7 +10,7 @@ from bson.json_util import dumps
 @app.route('/gene/<gene_id>/<subset>')
 @requires_auth
 def gene(gene_id, subset='all'):
-   x=json.loads(file(app.config['GENE_JSON'],'r').read())
+   x=json.loads(file(app.config['USER_CONFIGURATION'].format(session['user'],'gene') ,'r').read())
    c,fd,=sqlite3_ro_cursor(app.config['PHENOPOLIS_DB'])
    #python3
    #conn=sqlite3.connect('file:/media/pontikos_nas/pontikos/phenopolis/genes.db?mode=ro', uri=True)
@@ -50,7 +50,7 @@ def gene(gene_id, subset='all'):
        d["related_hpo"]=[{"display": "", "href":""}]
    c.execute(file(app.config['VARIANTS_QUERY'].format(session['user']),'r').read().strip(),(x[0]['metadata']['data'][0]['gene_name'],))
    headers=[h[0] for h in c.description]
-   x[0]['variants']['colNames']=json.load(file(app.config['VARIANTS_COLNAMES'].format(session['user']),'r'))
+   #x[0]['variants']['colNames']=json.load(file(app.config['VARIANTS_COLNAMES'].format(session['user']),'r'))
    x[0]['variants']['data']=[dict(zip(headers,r)) for r in c.fetchall()]
    x[0]['preview']=[['Number of variants',len(x[0]['variants']['data'])]]
    sqlite3_ro_close(c,fd)

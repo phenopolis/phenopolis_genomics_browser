@@ -10,7 +10,7 @@ import csv
 @app.route('/hpo/<hpo_id>/<subset>')
 @requires_auth
 def hpo(hpo_id='HP:0000001',subset='all'):
-   x=json.loads(file(app.config['HPO_JSON'],'r').read())
+   x=json.loads(file(app.config['USER_CONFIGURATION'].format(session['user'],'hpo') ,'r').read())
    c,fd,=sqlite3_ro_cursor(app.config['PHENOPOLIS_DB'])
    if not hpo_id.startswith('HP:'):
        c.execute("select * from hpo where hpo_name=? limit 1",(hpo_id,))
@@ -18,14 +18,16 @@ def hpo(hpo_id='HP:0000001',subset='all'):
        c.execute("select * from hpo where hpo_id=? limit 1",(hpo_id,))
    headers=[h[0] for h in c.description]
    res=[dict(zip(headers,r)) for r in c.fetchall()][0]
+   sqlite3_ro_close(c, fd)
    print(res)
    hpo_id=res['hpo_id']
    hpo_name=res['hpo_name']
-   patients_db=app.config['PATIENTS_DB'].format(session['user'])
-   c,fd,=sqlite3_ro_cursor(patients_db)
+   parent_phenotypes=[{'display':i, 'end_href':j} for i,j, in zip(res['hpo_ancestor_names'].split(';'), res['hpo_ancestor_ids'].split(';')) ]
+   c,fd,=sqlite3_ro_cursor(app.config['PATIENTS_DB'].format(session['user']))
    c.execute("select * from individuals where ancestor_observed_features like ?",('%'+hpo_id+'%',))
    headers=[h[0] for h in c.description]
    individuals=[dict(zip(headers,r)) for r in c.fetchall()]
+   sqlite3_ro_close(c, fd)
    print(len(individuals))
    x[0]["preview"]=[["Number of Individuals",len(individuals)]]
    if subset=='preview': return json.dumps([{subset:y['preview']} for y in x])
@@ -34,7 +36,8 @@ def hpo(hpo_id='HP:0000001',subset='all'):
      ind['simplified_observed_features_names']=[{'display':i, 'end_href':j} for i,j, in zip(ind['simplified_observed_features_names'].split(';'),ind['simplified_observed_features'].split(','))]
      if ind['genes']: ind['genes']=[{'display':i} for i in ind.get('genes','').split(',')]
    x[0]['individuals']['data']=individuals
-   x[0]['metadata']['data']=[{'name':hpo_name,'id':hpo_id, 'count':len(individuals)}]
+   x[0]['metadata']['data']=[{'name':hpo_name,'id':hpo_id, 'count':len(individuals), 'parent_phenotypes':parent_phenotypes}]
+   process_for_display(x[0]['metadata']['data'])
    if subset=='all': return json.dumps(x)
    else: return json.dumps([{subset:y[subset]} for y in x])
 

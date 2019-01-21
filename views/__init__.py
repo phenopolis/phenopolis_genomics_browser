@@ -134,11 +134,13 @@ def phenopolis_statistics():
 def process_for_display(data):
    for x2 in data:
        if 'gene_symbol' in x2:
-           x2['gene_symbol']=[{'display':g} for g in x2['gene_symbol'].split(',')]
+           x2['gene_symbol']=[{'display':x3} for x3 in x2['gene_symbol'].split(',') if x3]
        if 'HET' in x2:
            x2['HET']=[{'display':x3} for x3 in json.loads(x2['HET'])]
        if 'HOM' in x2:
            x2['HOM']=[{'display':x3} for x3 in json.loads(x2['HOM'])]
+       if 'hpo_ancestors' in x2:
+           x2['hpo_ancestors']=[{'display':x3} for x3 in x2['hpo_ancestors'].split(';') if x3]
 
 
 def check_auth(username, password):
@@ -342,6 +344,7 @@ import views.individual
 import views.hpo
 import views.users
 import views.autocomplete
+import views.save_configuration
 
 
 
