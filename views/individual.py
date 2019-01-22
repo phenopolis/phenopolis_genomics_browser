@@ -68,6 +68,7 @@ def individual(individual_id, subset='all'):
    # rare_comp_hets
    gene_counter=Counter([v['gene_symbol'] for v in x[0]['rare_variants']['data']])
    x[0]['rare_comp_hets']['data']=[v for v in x[0]['rare_variants']['data'] if gene_counter[v['gene_symbol']]>1]
+   if not x[0]['metadata']['data']: x[0]['metadata']['data']=[dict()]
    x[0]['metadata']['data'][0]['sex']=ind['sex']
    x[0]['metadata']['data'][0]['external_id']=[{'display':ind['external_id']}]
    x[0]['metadata']['data'][0]['simplified_observed_features']=[{'display':i, 'end_href':j} for i,j, in zip(ind['simplified_observed_features_names'].split(';'),ind['simplified_observed_features'].split(','))]
