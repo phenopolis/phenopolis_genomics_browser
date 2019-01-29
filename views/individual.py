@@ -14,12 +14,14 @@ from collections import defaultdict, Counter
 import lookups
 from orm import Patient
 
+@app.route('/<language>/individual/<individual_id>')
+@app.route('/<language>/individual/<individual_id>/<subset>')
 @app.route('/individual/<individual_id>')
 @app.route('/individual/<individual_id>/<subset>')
 @requires_auth
-def individual(individual_id, subset='all'):
+def individual(individual_id, subset='all', language='en'):
    patients_db=app.config['PATIENTS_DB'].format(session['user'])
-   x=json.loads(file(app.config['USER_CONFIGURATION'].format(session['user'],'individual') ,'r').read())
+   x=json.loads(file(app.config['USER_CONFIGURATION'].format(session['user'],language,'individual') ,'r').read())
    c,fd,=sqlite3_ro_cursor(patients_db)
    c.execute("select * from individuals where external_id=?",(individual_id,))
    headers=[h[0] for h in c.description]
