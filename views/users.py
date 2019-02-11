@@ -24,7 +24,7 @@ def register():
 @app.route('/change_password', methods=['POST'])
 @requires_auth
 def change_password():
-    username = request.form['change_pwd_name']
+    username=session['user']
     password = request.form['current_password']
     new_password_1 = request.form['new_password_1']
     if username == 'demo': 
@@ -35,14 +35,7 @@ def change_password():
     else:
         print('LOGIN SUCCESS, CHANGING PASSWORD')
         argon_password = argon2.hash(new_password_1)
-        db_users = get_db(app.config['DB_NAME_USERS'])
-        #db_users.users.update_one({'user':username},{'$set':{'password':hash}})
-        q={'query':'MATCH (u:User {user: $user}) SET u.password=$password','parameters':{'user':username,'password':password}}
-        resp=requests.post('http://localhost:57474/db/data/cypher',auth=('neo4j', '1'),json=q)
-        print(resp.json())
-        #db_users.users.update_one({'user':username},{'$set':{'argon_password':hash}})
-        q={'query':'MATCH (u:User {user: $user}) SET u.argon_password=$password','parameters':{'user':username,'password':argon_password}}
-        resp=requests.post('http://localhost:57474/db/data/cypher',auth=('neo4j', '1'),json=q)
+        file(app.config['USER_PASS'].format(username),'w').write(argon_password)
         msg = 'Password for username \''+username+'\' changed. You are logged in as \''+username+'\'.' 
         return jsonify(success=msg), 200
 
