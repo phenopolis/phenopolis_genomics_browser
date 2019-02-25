@@ -16,6 +16,38 @@ METRICS = [
 ]
 
 
+def find_item(obj, key):
+    if key in obj:
+        return obj[key]
+    if isinstance(obj, dict):
+        for k in obj:
+            if isinstance(obj[k], dict):
+                item = find_item(obj[k], key)
+                if item is not None:
+                    return item
+            elif isinstance(obj[k], list):
+                for i in obj[k]:
+                    if isinstance(i, str):
+                        continue
+                    item = find_item(i, key)
+                    if item is not None:
+                        return item
+    elif isinstance(obj, list):
+        for k in obj:
+            if isinstance(k, dict):
+                item = find_item(k, key)
+                if item is not None:
+                    return item
+            elif isinstance(k, list):
+                for i in k:
+                    if isinstance(i, str):
+                        continue
+                    item = find_item(i, key)
+                    if item is not None:
+                        return item
+
+
+
 def add_transcript_coordinate_to_variants(db, variant_list, transcript_id):
     """
     Each variant has a 'xpos' and 'pos' positional attributes.
@@ -102,5 +134,16 @@ def get_xpos(chrom, pos):
         chrom = 'chr{}'.format(chrom)
     return get_single_location(chrom, int(pos))
 
+'''
+to check if an iterable is empty
+'''
+def peek(iterable):
+    try:
+        first = next(iterable)
+    except RuntimeError:
+        return None
+    except StopIteration:
+        return None
+    return first, itertools.chain([first], iterable)
 
 

@@ -6,11 +6,13 @@ from utils import *
 import itertools
 import csv
 
+@app.route('/<language>/hpo/<hpo_id>')
+@app.route('/<language>/hpo/<hpo_id>/<subset>')
 @app.route('/hpo/<hpo_id>')
 @app.route('/hpo/<hpo_id>/<subset>')
 @requires_auth
-def hpo(hpo_id='HP:0000001',subset='all'):
-   x=json.loads(file(app.config['USER_CONFIGURATION'].format(session['user'],'hpo') ,'r').read())
+def hpo(hpo_id='HP:0000001',subset='all',language='en'):
+   x=json.loads(file(app.config['USER_CONFIGURATION'].format(session['user'],language,'hpo') ,'r').read())
    c,fd,=sqlite3_ro_cursor(app.config['PHENOPOLIS_DB'])
    if not hpo_id.startswith('HP:'):
        c.execute("select * from hpo where hpo_name=? limit 1",(hpo_id,))

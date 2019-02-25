@@ -6,7 +6,7 @@
             {"default": "true","name":"Full name", "key": "full_gene_name"},
             {"default": "true","name":"Gene name", "key": "gene_name"},
             {"default": "true","name":"Gene ID", "key": "gene_id"},
-            {"default": "true","name":"Chromosome", "key": "chrom"},
+            {"default": "true","name":"染色体", "key": "chrom"},
             {"default": "true","name":"Start", "key": "start"},
             {"default": "true","name":"End", "key": "stop"},
             {"default": "true","name":"pLI", "key": "pLI"},

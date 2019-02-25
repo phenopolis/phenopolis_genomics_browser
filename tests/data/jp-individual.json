@@ -3,7 +3,7 @@
      "preview":[["Sorry","You are not authorised to see this individual"]],
      "metadata": {
          "colNames" : [
-{"default": "true","name":"Gender", "key": "sex"}, {"default": "true","name":"Features", "key": "simplified_observed_features", "type":"links", "base_href":"/hpo/", "class":"preview_onhover"}, {"default": "true","name":"Consanguinity", "key": "consanguinity"}, {"default": "true","name":"Candidate Genes", "key": "genes", "type":"links", "href":"/gene/"}
+{"default": "true","name":"性別", "key": "sex"}, {"default": "true","name":"患者の特徴", "key": "simplified_observed_features", "type":"links", "base_href":"/hpo/", "class":"preview_onhover"}, {"default": "true","name":"同族性", "key": "consanguinity"}, {"default": "true","name":"Candidate Genes", "key": "genes", "type":"links", "href":"/gene/"}
          ],
          "data": [{
              "gender":"U",

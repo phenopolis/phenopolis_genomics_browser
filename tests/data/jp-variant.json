@@ -1,0 +1,63 @@
+[
+  {
+     "preview":[],
+     "metadata": {
+         "colNames" : [
+            {"default":"true", "name":"Filter Status", "key":"FILTER"},
+            {"default":"true", "name":"Gene", "key":"gene_symbol", "type": "links", "base_href":"/gene/"},
+            {"default":"true", "name":"Consequence", "key":"most_severe_consequence"},
+            {"default":"true", "name":"HGVSc", "key":"hgvsc"},
+            {"default":"true", "name":"HGVSp", "key":"hgvsp"},
+            {"default":"true", "name":"dbSNP", "key":"dbsnp"},
+            {"default":"true", "name":"Allele Frequency", "key":"AF"},
+            {"default":"true", "name":"Kaviar", "key":"af_kaviar"},
+            {"default":"true", "name":"Allele Count", "key":"AC"}
+         ],
+         "data": []
+     },
+     "frequency" : {
+         "colNames" : [
+            {"default":"true","name":"AC", "key":"AC"},
+            {"default":"true","name":"AF", "key":"AF"},
+            {"default":"true", "name":"AN", "key":"an"},
+            {"default":"true", "name":"Het", "key":"HET_COUNT"},
+            {"default":"true", "name":"Hom", "key":"HOM_COUNT"},
+            {"default":true, "name":"AF Kaviar", "key":"af_kaviar"},
+            {"default":"true", "name":"AF Gnomad", "key":"af_gnomad_genomes"},
+            {"default":"true", "name":"AF HGVD", "key":"af_hgvd"},
+            {"default":"true", "name":"AF KRGDB", "key":"af_krgdb"},
+            {"default":"true", "name":"AF JIRDC", "key":"af_jirdc"},
+            {"default":"true", "name":"AF TOMMO", "key":"af_tommo"}
+         ],
+         "data" : [ ]
+     },
+     "consequence" : {
+         "colNames" : [
+            {"default":"true", "name":"HGVSc", "key":"hgvsc"},
+            {"default":"true", "name":"HGVSp", "key":"hgvsp"},
+            {"default":"true", "name":"DANN", "key":"dann"},
+            {"default":"true", "name":"strand", "key":"FS"},
+            {"default":"true", "name":"transcript", "key":"transcript"},
+            {"default":"true", "name":"protein", "key":"protein"},
+            {"default":"true", "name":"consequence terms", "key":"consequence_terms"},
+            {"default":"true", "name":"impact", "key":"impact"},
+            {"default":"true", "name":"cadd", "key":"cadd"},
+            {"default":"true", "name":"polyphen", "key":"polyphen"},
+            {"default":"true", "name":"sift", "key":"sift"},
+            {"default":"true", "name":"carol", "key":"carol"}
+         ],
+         "data" : [ ]
+     },
+     "quality" : {
+         "colNames": [ ],
+         "data" : [ ]
+     },
+     "individuals" : {
+         "colNames":[
+            {"default":"true", "name":"HOM", "key":"HOM", "class":"preview_onhover", "type":"links", "description":"", "base_href":"/individual/"},
+            {"default":"true", "name":"HET", "key":"HET", "class":"preview_onhover", "type":"links", "description":"", "base_href":"/individual/"}
+         ],
+         "data" : [ ]
+     }
+  }
+]

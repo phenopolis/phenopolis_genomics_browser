@@ -3,53 +3,53 @@
      "preview":[["Number of Individuals",10]],
      "metadata": {
          "colNames" : [
-            {"default": "true","name":"Name", "key": "name", "description":""},
-            {"default": "true","name":"ID", "key": "id", "description":""},
-            {"default": "true","name":"Count", "key": "count", "description":""},
+            {"default": "true","name":"Name", "key": "name", "description":"Name of phenotype"},
+            {"default": "true","name":"ID", "key": "id", "description":"Human Phenotype Ontology identifier of phenotype"},
+            {"default": "true","name":"Count", "key": "count", "description":"Number of individuals with this phenotype in the database"},
             {"default": "true","name":"Parent Phenotypes", "key": "parent_phenotypes", "type":"links", "base_href":"/hpo", "class":"preview_onhover", "description":"Phenotypes of parent Human Phenotype Ontology terms"}
          ],
          "data" : [ ]
     },
     "individuals" : {
          "colNames" : [
-            {"default": "true","name":"Individual", "key": "external_id", "class":"preview_onhover", "type":"links", "base_href": "/individual", "description":""},
-            {"default": "true","name":"Gender", "key": "sex", "description":"Self-reported gendner"},
-            {"default": "true","name":"Phenotype", "key": "simplified_observed_features_names", "class":"preview_onhover", "type":"links", "base_href":"/hpo/", "description":""},
-            {"default": "true","name":"Candidate Genes", "key": "genes","class":"preview_onhover", "type":"links", "base_href":"/gene/", "description":""}
+            {"default": "true","name":"Individual", "key": "external_id", "class":"preview_onhover", "type":"links", "base_href": "/individual", "description":"Id of individual"},
+            {"default": "true","name":"Gender", "key": "sex", "description":"Self-reported gender"},
+            {"default": "true","name":"Phenotype", "key": "simplified_observed_features_names", "class":"preview_onhover", "type":"links", "base_href":"/hpo/", "description":"Phenotype Human Phenotype Ontology terms seen in patient"},
+            {"default": "true","name":"Candidate Genes", "key": "genes","class":"preview_onhover", "type":"links", "base_href":"/gene/", "description":"Candidate genes thought to be responsible for the patient's phenotype"}
          ],
          "data" : [ ]
     },
     "literature_genes" : {
          "colNames" : [
-               {"default": "true","name":"Gene", "key": "gene", "class":"preview_onhover", "type":"links",  "base_href":"/gene/"},
-               {"default": "true","name":"Phenogenon Dominant P-Value", "key": "phenogenon_dominant_pvalue"},
-               {"default": "true","name":"Phenogenon Recessive P-Value", "key": "phenogenon_recessive_pvalue"}
+               {"default": "true","name":"Gene", "key": "gene", "class":"preview_onhover", "type":"links",  "base_href":"/gene/", "description":"Gene symbol"},
+               {"default": "true","name":"Phenogenon Dominant P-Value", "key": "phenogenon_dominant_pvalue", "description":""},
+               {"default": "true","name":"Phenogenon Recessive P-Value", "key": "phenogenon_recessive_pvalue", "description":""}
          ],
          "data" : [ ] 
     },
     "phenogenon_recessive" : {
          "colNames" : [
-               {"default": "true","name":"Recessive genes", "key": "gene_id", "class":"preview_onhover", "type":"links",  "base_href":"/gene/"},
-               {"default": "true","name":"P Value", "key": "pvalue"}
+               {"default": "true","name":"Recessive genes", "key": "gene_id", "class":"preview_onhover", "type":"links",  "base_href":"/gene/", "description":""},
+               {"default": "true","name":"P Value", "key": "pvalue", "description":""}
          ],
          "data" : [ ]
      },
     "phenogenon_dominant" : {
          "colNames" : [
-               {"default": "true","name":"Dominant genes", "key": "gene_id", "class":"preview_onhover", "type":"links",  "base_href":"/gene/"},
-               {"default": "true","name":"P Value", "key": "pvalue"}
+               {"default": "true","name":"Dominant genes", "key": "gene_id", "class":"preview_onhover", "type":"links",  "base_href":"/gene/", "description":""},
+               {"default": "true","name":"P Value", "key": "pvalue", "description":""}
          ],
          "data" : [ ]
     },
     "skat" : {
          "colNames" : [
                {"default": "true","name":"Gene", "key": "gene_id", "class":"preview_onhover", "type":"links",  "base_href":"/gene/"},
-               {"default": "true","name":"pLI", "key": "pli"},
-               {"default": "true","name":"Mode", "key": "mode"},
-               {"default": "true","name":"Fisher P Value", "key": "fisher_p_value"},
-               {"default": "true","name":"SKATO", "key": "skato"},
-               {"default": "true","name":"Odds Ratio", "key": "odds_ratio"},
-               {"default": "true","name":"Variants", "key": "variants", "class":"preview_onhover", "type":"links",  "base_href":"/variant/"}
+               {"default": "true","name":"pLI", "key": "pli", "description":"Probability of gene being loss intolerant according to ExAC"},
+               {"default": "true","name":"Mode of Inheritance", "key": "mode", "description":"Assumed mode of inheritance"},
+               {"default": "true","name":"Fisher P Value", "key": "fisher_p_value", "description":""},
+               {"default": "true","name":"SKATO", "key": "skato", "description":"Sequence Kernel Association Test (SKAT) score"},
+               {"default": "true","name":"Odds Ratio", "key": "odds_ratio", "description":""},
+               {"default": "true","name":"Variants", "key": "variants", "class":"preview_onhover", "type":"links",  "base_href":"/variant/", "description":""}
          ],
          "data" : [ ]
     }

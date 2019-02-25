@@ -26,13 +26,6 @@ def get_gene(db, gene_id):
     return db.genes.find_one({'gene_id': gene_id}, projection={'_id': False})
 
 
-def get_gene_by_name(db, gene_name):
-    # try gene_name field first
-    gene = db.genes.find_one({'gene_name': gene_name}, projection={'_id': False})
-    if gene: return gene
-    # if not, try gene['other_names']
-    return db.genes.find_one({'other_names': gene_name}, projection={'_id': False})
-
 
 def get_transcript(db, transcript_id):
     transcript = db.transcripts.find_one({'transcript_id': transcript_id}, projection={'_id': False})

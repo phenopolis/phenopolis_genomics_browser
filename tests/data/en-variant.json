@@ -3,48 +3,48 @@
      "preview":[],
      "metadata": {
          "colNames" : [
-            {"default":"true", "name":"Filter Status", "key":"FILTER"},
-            {"default":"true", "name":"Gene", "key":"gene_symbol", "type": "links", "base_href":"/gene/"},
-            {"default":"true", "name":"Consequence", "key":"most_severe_consequence"},
-            {"default":"true", "name":"HGVSc", "key":"hgvsc"},
-            {"default":"true", "name":"HGVSp", "key":"hgvsp"},
-            {"default":"true", "name":"dbSNP", "key":"dbsnp"},
-            {"default":"true", "name":"Allele Frequency", "key":"AF"},
-            {"default":"true", "name":"Kaviar", "key":"af_kaviar"},
-            {"default":"true", "name":"Allele Count", "key":"AC"}
+            {"default":"true", "name":"Filter Status", "key":"FILTER", "description":""},
+            {"default":"true", "name":"Gene", "key":"gene_symbol", "type": "links", "base_href":"/gene/", "description":""},
+            {"default":"true", "name":"Consequence", "key":"most_severe_consequence", "description":""},
+            {"default":"true", "name":"HGVSc", "key":"hgvsc", "description":"HGVS cDNA mutation"},
+            {"default":"true", "name":"HGVSp", "key":"hgvsp", "description":"HGVS protein mutation"},
+            {"default":"true", "name":"dbSNP", "key":"dbsnp", "description":"SNP in db"},
+            {"default":"true", "name":"Allele Frequency", "key":"AF", "description":"Allele frequency in Phenopolis"},
+            {"default":"true", "name":"Allele Count", "key":"AC", "description":"Allele count in Phenopolis"},
+            {"default":"true", "name":"Kaviar", "key":"af_kaviar", "description":"Allele frequency in KAVIAR"}
          ],
          "data": []
      },
      "frequency" : {
          "colNames" : [
-            {"default":"true","name":"AC", "key":"AC"},
-            {"default":"true","name":"AF", "key":"AF"},
-            {"default":"true", "name":"AN", "key":"an"},
-            {"default":"true", "name":"Het", "key":"HET_COUNT"},
-            {"default":"true", "name":"Hom", "key":"HOM_COUNT"},
-            {"default":true, "name":"AF Kaviar", "key":"af_kaviar"},
-            {"default":"true", "name":"AF Gnomad", "key":"af_gnomad_genomes"},
-            {"default":"true", "name":"AF HGVD", "key":"af_hgvd"},
-            {"default":"true", "name":"AF KRGDB", "key":"af_krgdb"},
-            {"default":"true", "name":"AF JIRDC", "key":"af_jirdc"},
-            {"default":"true", "name":"AF TOMMO", "key":"af_tommo"}
+            {"default":"true","name":"AC", "key":"AC", "description":"Allele count in Phenopolis"},
+            {"default":"true","name":"AF", "key":"AF", "description":"Allele frequency in Phenopolis"},
+            {"default":"true", "name":"AN", "key":"an", "description":"Number of alleles in Phenopolis"},
+            {"default":"true", "name":"Het Count", "key":"HET_COUNT", "description":"Number of heterozygote individuals in Phenopolis"},
+            {"default":"true", "name":"Hom Count", "key":"HOM_COUNT", "description":"Number of homozygote individuals in Phenopolis"},
+            {"default":true, "name":"AF Kaviar", "key":"af_kaviar", "description":"Allele frequency in the KAVIAR database"},
+            {"default":"true", "name":"AF Gnomad", "key":"af_gnomad_genomes", "description":"Allele frequency in the GnomAD database"},
+            {"default":"true", "name":"AF HGVD", "key":"af_hgvd", "description":"Allele frequency in HGVD database"},
+            {"default":"true", "name":"AF KRGDB", "key":"af_krgdb", "description":"Allele frequency in KRGDB database"},
+            {"default":"true", "name":"AF JIRDC", "key":"af_jirdc", "description":"Allele frequency in the Japanese Inherited Retinal Disease Consortium"},
+            {"default":"true", "name":"AF TOMMO", "key":"af_tommo", "description":"Allele frequency in the Tommo database"}
          ],
          "data" : [ ]
      },
      "consequence" : {
          "colNames" : [
-            {"default":"true", "name":"HGVSc", "key":"hgvsc"},
-            {"default":"true", "name":"HGVSp", "key":"hgvsp"},
-            {"default":"true", "name":"DANN", "key":"dann"},
-            {"default":"true", "name":"strand", "key":"FS"},
-            {"default":"true", "name":"transcript", "key":"transcript"},
-            {"default":"true", "name":"protein", "key":"protein"},
-            {"default":"true", "name":"consequence terms", "key":"consequence_terms"},
-            {"default":"true", "name":"impact", "key":"impact"},
-            {"default":"true", "name":"cadd", "key":"cadd"},
-            {"default":"true", "name":"polyphen", "key":"polyphen"},
-            {"default":"true", "name":"sift", "key":"sift"},
-            {"default":"true", "name":"carol", "key":"carol"}
+            {"default":"true", "name":"HGVSc", "key":"hgvsc", "description":"HGVS cDNA mutation"},
+            {"default":"true", "name":"HGVSp", "key":"hgvsp", "description":"HGVS protein mutation"},
+            {"default":"true", "name":"DANN", "key":"dann", "description":"DANN score"},
+            {"default":"true", "name":"strand", "key":"FS", "description":"Strand on which lies variant"},
+            {"default":"true", "name":"transcript", "key":"transcript", "description":"Transcript on which lies variant"},
+            {"default":"true", "name":"protein", "key":"protein", "description":"Protein encoded by transcript"},
+            {"default":"true", "name":"consequence terms", "key":"consequence_terms", "description":"Consequence of variant on transcript"},
+            {"default":"true", "name":"impact", "key":"impact", "description":"Impact of variant on transcript"},
+            {"default":"true", "name":"cadd", "key":"cadd", "description":"Combined Annotation Dependent Depletion"},
+            {"default":"true", "name":"polyphen", "key":"polyphen", "description":"Polyphn score"},
+            {"default":"true", "name":"sift", "key":"sift", "description":"SIFT score"},
+            {"default":"true", "name":"carol", "key":"carol", "description":"Carol score"}
          ],
          "data" : [ ]
      },
@@ -54,8 +54,8 @@
      },
      "individuals" : {
          "colNames":[
-            {"default":"true", "name":"HOM", "key":"HOM", "class":"preview_onhover", "type":"links", "description":"", "base_href":"/individual/"},
-            {"default":"true", "name":"HET", "key":"HET", "class":"preview_onhover", "type":"links", "description":"", "base_href":"/individual/"}
+            {"default":"true", "name":"HOM", "key":"HOM", "class":"preview_onhover", "type":"links", "description":"Individuals who are homozygous", "base_href":"/individual/"},
+            {"default":"true", "name":"HET", "key":"HET", "class":"preview_onhover", "type":"links", "description":"Individuals how are heterozygous", "base_href":"/individual/"}
          ],
          "data" : [ ]
      }

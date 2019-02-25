@@ -6,11 +6,13 @@ import hashlib
 from bson.json_util import dumps
 
 
+@app.route('/<language>/gene/<gene_id>')
+@app.route('/<language>/gene/<gene_id>/<subset>')
 @app.route('/gene/<gene_id>')
 @app.route('/gene/<gene_id>/<subset>')
 @requires_auth
-def gene(gene_id, subset='all'):
-   x=json.loads(file(app.config['USER_CONFIGURATION'].format(session['user'],'gene') ,'r').read())
+def gene(gene_id, subset='all', language='en'):
+   x=json.loads(file(app.config['USER_CONFIGURATION'].format(session['user'],language,'gene') ,'r').read())
    c,fd,=sqlite3_ro_cursor(app.config['PHENOPOLIS_DB'])
    #python3
    #conn=sqlite3.connect('file:/media/pontikos_nas/pontikos/phenopolis/genes.db?mode=ro', uri=True)
@@ -52,14 +54,19 @@ def gene(gene_id, subset='all'):
    headers=[h[0] for h in c.description]
    #x[0]['variants']['colNames']=json.load(file(app.config['VARIANTS_COLNAMES'].format(session['user']),'r'))
    x[0]['variants']['data']=[dict(zip(headers,r)) for r in c.fetchall()]
+   for v in x[0]['variants']['data']:
+       v['variant_id']=[{'display':'%s-%s-%s-%s' % (v['#CHROM'], v['POS'], v['REF'], v['ALT'],)}]
    x[0]['preview']=[['Number of variants',len(x[0]['variants']['data'])]]
    sqlite3_ro_close(c,fd)
    for d in x[0]['metadata']['data']: d['number_of_variants']=len(x[0]['variants']['data'])
    process_for_display(x[0]['variants']['data'])
    print x[0]['preview']
+   print x[0]['variants']['data'][0]
+   if session['user']=='demo': x[0]['variants']['data']=[]
    if subset=='all': return json.dumps(x)
    else: return json.dumps([{subset:y[subset]} for y in x])
     
+
 '''
 defs
 '''

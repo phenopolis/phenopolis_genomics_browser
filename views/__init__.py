@@ -94,10 +94,7 @@ def sqlite3_ro_close(cursor, fd):
 
 @app.route('/phenopolis_statistics')
 def phenopolis_statistics():
-    try:
-        version_number = subprocess.check_output(['git', 'describe', '--exact-match'])
-    except:
-        version_number = None
+    version_number = None
     print('Version number is:-')
     print(version_number)
     total_patients=6048
@@ -187,8 +184,9 @@ def make_session_timeout():
     #app.permanent_session_lifetime = datetime.timedelta(seconds=2)
 
 # 
+@app.route('/<language>/login', methods=['POST'])
 @app.route('/login', methods=['POST'])
-def login():
+def login(language='en'):
     print(request.args)
     print('LOGIN form')
     print(request.form.keys())
@@ -207,8 +205,9 @@ def login():
         return jsonify(success="Authenticated", username=username), 200
 
 # 
+@app.route('/<language>/logout', methods=['POST'])
 @app.route('/logout', methods=['POST'])
-def logout():
+def logout(language='en'):
     print('DELETE SESSION')
     session.pop('user',None)
     return jsonify(success='logged out'), 200

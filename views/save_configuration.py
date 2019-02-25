@@ -1,11 +1,15 @@
 from views import *
 from lookups import *
 
+@app.route('/<language>/save_configuration/<pageType>/<pagePart>', methods=['POST'])
 @app.route('/save_configuration/<pageType>/<pagePart>', methods=['POST'])
 @requires_auth
-def save_configuration(pageType,pagePart):
+def save_configuration(pageType,pagePart,language='en'):
+    print(pageType)
+    print(pagePart)
+    print(app.config['USER_CONFIGURATION'].format(session['user'],language,pageType))
     if pageType=='my_patients': pageType='hpo'
-    with open(app.config['USER_CONFIGURATION'].format(session['user'],pageType),'r+') as config_file:
+    with open(app.config['USER_CONFIGURATION'].format(session['user'],language,pageType),'r+') as config_file:
         x=json.loads(config_file.read())
         for col in x[0][pagePart]['colNames']:
             if col['key'] in request.form.getlist('colNames[]'):

@@ -14,11 +14,13 @@ import vcf
 import subprocess
 import os
 
+@app.route('/<language>/variant/<variant_id>')
+@app.route('/<language>/variant/<variant_id>/<subset>')
 @app.route('/variant/<variant_id>')
 @app.route('/variant/<variant_id>/<subset>')
 @requires_auth
-def variant(variant_id, subset='all'):
-   x=json.loads(file(app.config['VARIANT_JSON'],'r').read())
+def variant(variant_id, subset='all', language='en'):
+   x=json.loads(file(app.config['USER_CONFIGURATION'].format(session['user'],language,'variant') ,'r').read())
    c,fd,=sqlite3_ro_cursor(app.config['PHENOPOLIS_DB'])
    #python3
    #conn=sqlite3.connect('file:/media/pontikos_nas/pontikos/phenopolis/genes.db?mode=ro', uri=True)
