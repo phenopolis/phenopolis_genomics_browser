@@ -16,6 +16,7 @@ def gene(gene_id, subset='all', language='en'):
    c,fd,=sqlite3_ro_cursor(app.config['PHENOPOLIS_DB'])
    #python3
    #conn=sqlite3.connect('file:/media/pontikos_nas/pontikos/phenopolis/genes.db?mode=ro', uri=True)
+   gene_id=gene_id.upper()
    if gene_id.startswith('ENSG'):
       c.execute('select * from genes where gene_id=?',(gene_id,))
       data=c.fetchall()
@@ -25,8 +26,7 @@ def gene(gene_id, subset='all', language='en'):
    if not data:
       c.execute('select * from genes where other_names like ?',('%'+gene_id+'%',))
       data=c.fetchall()
-   headers=[h[0] for h in c.description]
-   x[0]['metadata']['data']=[dict(zip(headers,r)) for r in data]
+   x[0]['metadata']['data']=[dict(zip([h[0] for h in c.description],r)) for r in data]
    print x[0]['metadata']['data']
    chrom=x[0]['metadata']['data'][0]['chrom']
    start=x[0]['metadata']['data'][0]['start']
@@ -61,7 +61,7 @@ def gene(gene_id, subset='all', language='en'):
    for d in x[0]['metadata']['data']: d['number_of_variants']=len(x[0]['variants']['data'])
    process_for_display(x[0]['variants']['data'])
    print x[0]['preview']
-   print x[0]['variants']['data'][0]
+   #print x[0]['variants']['data'][0]
    if session['user']=='demo': x[0]['variants']['data']=[]
    if subset=='all': return json.dumps(x)
    else: return json.dumps([{subset:y[subset]} for y in x])
