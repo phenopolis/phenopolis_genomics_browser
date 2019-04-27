@@ -13,6 +13,7 @@ import orm
 import vcf
 import subprocess
 import os
+import pysam
 
 @app.route('/<language>/variant/<variant_id>')
 @app.route('/<language>/variant/<variant_id>/<subset>')
@@ -20,14 +21,43 @@ import os
 @app.route('/variant/<variant_id>/<subset>')
 @requires_auth
 def variant(variant_id, subset='all', language='en'):
+   #c,fd,=sqlite3_ro_cursor(app.config['PHENOPOLIS_DB'])
+   #c.execute("select * from phenopolis_ids")
+   #pheno_ids=csv.DictReader(open('/media/pontikos_nas/pontikos/phenopolis/db/phenopolis_ids.csv'))
+   #pheno_ids=[dict(zip([h[0] for h in c.description],r)) for r in c.fetchall()]
+   #phenoid_mapping={ind['external_id']:ind['internal_id'] for ind in pheno_ids}
+   #sqlite3_ro_close(c, fd)
+   chrom,pos,ref,alt,=variant_id.split('-')
+   pos=int(pos)
+   variant_file=pysam.VariantFile("/media/pontikos/fast_storage/KaoruFujinami/merged2.vcf.gz")
+   samples=variant_file.header.samples
+   variant=dict()
+   for v in variant_file.fetch(chrom, pos-1, pos):
+      variant['pos']=v.pos
+      variant['start']=v.start
+      variant['stop']=v.stop
+      variant['ref']=v.ref
+      variant['alt']=alt
+      variant['alleles']=v.alleles
+      variant['alts']=v.alts
+      variant['rlen']=v.rlen
+      variant['chrom']=v.chrom
+      variant['id']=v.id
+      variant['rid']=v.rid
+      variant['qual']=v.qual
+      variant['filter']=[k for k in v.filter.keys()]
+      variant['format']=dict([(v.format[k].name,v.format[k].id,) for k in v.format.keys()])
+      variant['info']=dict(v.info)
+      #variant['genotypes']=[{'sample':{'display':phenoid_mapping[s]},'GT':v.samples[s]['GT'],'AD':v.samples[s]['AD'],'DP':v.samples[s]['DP']} for s in v.samples]
+      variant['genotypes']=[{'sample':s,'GT':v.samples[s]['GT'],'AD':v.samples[s]['AD'],'DP':v.samples[s]['DP']} for s in v.samples]
+      #variant['HET']=dict([(s,dict(zip(variant['alleles'],v.samples[s]['AD'])),) for s in v.samples if v.samples[s]['GT'].count(1)==1])
+      #variant['HOM']=dict([(s,dict(zip(variant['alleles'],v.samples[s]['AD'])),) for s in v.samples if v.samples[s]['GT'].count(1)==2])
    x=json.loads(file(app.config['USER_CONFIGURATION'].format(session['user'],language,'variant') ,'r').read())
    c,fd,=sqlite3_ro_cursor(app.config['PHENOPOLIS_DB'])
    #python3
    #conn=sqlite3.connect('file:/media/pontikos_nas/pontikos/phenopolis/genes.db?mode=ro', uri=True)
-   print variant_id.split('-')
    c.execute('select * from variants where "#CHROM"=? and POS=? and REF=? and ALT=?',variant_id.split('-'))
-   headers=[h[0] for h in c.description]
-   var=[dict(zip(headers,r)) for r in c.fetchall()]
+   var=[dict(zip([h[0] for h in c.description] ,r)) for r in c.fetchall()]
    process_for_display(var)
    var=var[0]
    print json.dumps(var)
@@ -35,6 +65,7 @@ def variant(variant_id, subset='all', language='en'):
    x[0]['individuals']['data']=[var]
    x[0]['frequency']['data']=[var]
    x[0]['consequence']['data']=[var]
+   x[0]['genotypes']['data']=variant['genotypes']
    if subset=='all': return json.dumps(x)
    else: return json.dumps([{subset:y[subset]} for y in x])
 

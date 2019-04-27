@@ -18,19 +18,21 @@ def hpo(hpo_id='HP:0000001',subset='all',language='en'):
        c.execute("select * from hpo where hpo_name=? limit 1",(hpo_id,))
    else:
        c.execute("select * from hpo where hpo_id=? limit 1",(hpo_id,))
-   headers=[h[0] for h in c.description]
-   res=[dict(zip(headers,r)) for r in c.fetchall()][0]
+   res=[dict(zip([h[0] for h in c.description],r)) for r in c.fetchall()][0]
+   c.execute("select * from phenopolis_ids")
+   pheno_ids=[dict(zip([h[0] for h in c.description],r)) for r in c.fetchall()]
    sqlite3_ro_close(c, fd)
-   print(res)
+   phenoid_mapping={ind['external_id']:ind['internal_id'] for ind in pheno_ids}
    hpo_id=res['hpo_id']
    hpo_name=res['hpo_name']
    parent_phenotypes=[{'display':i, 'end_href':j} for i,j, in zip(res['hpo_ancestor_names'].split(';'), res['hpo_ancestor_ids'].split(';')) ]
    c,fd,=sqlite3_ro_cursor(app.config['PATIENTS_DB'].format(session['user']))
    c.execute("select * from individuals where ancestor_observed_features like ?",('%'+hpo_id+'%',))
-   headers=[h[0] for h in c.description]
-   individuals=[dict(zip(headers,r)) for r in c.fetchall()]
+   individuals=[dict(zip([h[0] for h in c.description],r)) for r in c.fetchall()]
    sqlite3_ro_close(c, fd)
    print(len(individuals))
+   for ind in individuals:
+       ind['external_id']=phenoid_mapping[ind['external_id']]
    x[0]["preview"]=[["Number of Individuals",len(individuals)]]
    if subset=='preview': return json.dumps([{subset:y['preview']} for y in x])
    for ind in individuals:

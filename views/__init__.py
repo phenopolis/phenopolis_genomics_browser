@@ -269,35 +269,6 @@ def parse_tabix_file_subset(tabix_filenames, subset_i, subset_n, record_parser):
     print("Finished loading subset %(subset_i)s from  %(short_filenames)s (%(counter)s records)" % locals())
 
 
-def create_cache():
-    """
-    This is essentially a compile step that generates all cached resources.
-    Creates files like autocomplete_entries.txt
-    Should be run on every redeploy.
-    """
-    # create autocomplete_entries.txt
-    autocomplete_strings = []
-    for gene in get_db().genes.find():
-        autocomplete_strings.append(gene['gene_name'])
-        if 'other_names' in gene:
-            autocomplete_strings.extend(gene['other_names'])
-    f = open(os.path.join(app.config['UCLEX_FILES_DIRECTORY'],'autocomplete_strings.txt'), 'w')
-    for s in sorted(autocomplete_strings):
-        f.write(s+'\n')
-    f.close()
-    # create static gene pages for genes in
-    if not os.path.exists(app.config['GENE_CACHE_DIR']): os.makedirs(app.config['GENE_CACHE_DIR'])
-    # get list of genes ordered by num_variants
-    for gene_id in app.config['GENES_TO_CACHE']:
-        try:
-            page_content = get_gene_page_content(gene_id)
-        except Exception as e:
-            print(e)
-            continue
-        f = open(os.path.join(app.config['GENE_CACHE_DIR'], '{}.html'.format(gene_id)), 'w')
-        f.write(page_content)
-        f.close()
-
 #@app.route('/patient/<patient_str>')
 #def get_patient(patient_str): return patient_str
 def generate_patient_table():

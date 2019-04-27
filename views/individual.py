@@ -20,16 +20,24 @@ from orm import Patient
 @app.route('/individual/<individual_id>/<subset>')
 @requires_auth
 def individual(individual_id, subset='all', language='en'):
+   c,fd,=sqlite3_ro_cursor(app.config['PHENOPOLIS_DB'])
+   c.execute("select * from phenopolis_ids")
+   pheno_ids=[dict(zip([h[0] for h in c.description],r)) for r in c.fetchall()]
+   phenoid_mapping={ind['internal_id']:ind['external_id'] for ind in pheno_ids}
+   sqlite3_ro_close(c, fd)
+   individual_id=phenoid_mapping[individual_id]
    patients_db=app.config['PATIENTS_DB'].format(session['user'])
    x=json.loads(file(app.config['USER_CONFIGURATION'].format(session['user'],language,'individual') ,'r').read())
    c,fd,=sqlite3_ro_cursor(patients_db)
    c.execute("select * from individuals where external_id=?",(individual_id,))
    headers=[h[0] for h in c.description]
    hits=c.fetchall()
+   print(hits)
    if not hits:
        x[0]['preview']=[['Sorry', 'You are not permitted to see this patient']]
        return json.dumps(x)
    individual=[dict(zip(headers,r)) for r in hits]
+   print(individual)
    if individual:
        individual=individual[0]
    else:
@@ -130,6 +138,7 @@ def update_patient_data(individual):
     print('GENES',genes)
     print('FEATURES',features)
     print(individual)
+    return jsonify({'success': True}), 200
     external_id=individual
     individual=get_db(app.config['DB_NAME_PATIENTS']).patients.find_one({'external_id':external_id})
     print('edit patient gender')
