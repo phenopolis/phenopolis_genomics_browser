@@ -11,8 +11,6 @@ import re
 import itertools
 from collections import defaultdict, Counter
 #import rest as annotation
-import lookups
-from orm import Patient
 
 @app.route('/<language>/individual/<individual_id>')
 @app.route('/<language>/individual/<individual_id>/<subset>')

@@ -130,6 +130,7 @@ def phenopolis_statistics():
 # rather do the conversion on the fly
 def process_for_display(data):
    for x2 in data:
+       x2['variant_id']=[{'display':'%s-%s-%s-%s' % (x2['#CHROM'], x2['POS'], x2['REF'], x2['ALT'],)}]
        if 'gene_symbol' in x2:
            x2['gene_symbol']=[{'display':x3} for x3 in x2['gene_symbol'].split(',') if x3]
        if 'HET' in x2:
