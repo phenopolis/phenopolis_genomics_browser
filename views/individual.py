@@ -11,8 +11,6 @@ import re
 import itertools
 from collections import defaultdict, Counter
 #import rest as annotation
-import lookups
-from orm import Patient
 
 @app.route('/<language>/individual/<individual_id>')
 @app.route('/<language>/individual/<individual_id>/<subset>')
@@ -26,17 +24,16 @@ def individual(individual_id, subset='all', language='en'):
    phenoid_mapping={ind['internal_id']:ind['external_id'] for ind in pheno_ids}
    sqlite3_ro_close(c, fd)
    individual_id=phenoid_mapping[individual_id]
-   patients_db=app.config['PATIENTS_DB'].format(session['user'])
    x=json.loads(file(app.config['USER_CONFIGURATION'].format(session['user'],language,'individual') ,'r').read())
-   c,fd,=sqlite3_ro_cursor(patients_db)
+   c,fd,=sqlite3_ro_cursor(app.config['PATIENTS_DB'].format(session['user']))
    c.execute("select * from individuals where external_id=?",(individual_id,))
-   headers=[h[0] for h in c.description]
    hits=c.fetchall()
+   sqlite3_ro_close(c,fd)
    print(hits)
    if not hits:
        x[0]['preview']=[['Sorry', 'You are not permitted to see this patient']]
        return json.dumps(x)
-   individual=[dict(zip(headers,r)) for r in hits]
+   individual=[dict(zip( [h[0] for h in c.description],r)) for r in hits]
    print(individual)
    if individual:
        individual=individual[0]
@@ -91,94 +88,79 @@ def individual(individual_id, subset='all', language='en'):
    else:
        return json.dumps([{subset:y[subset]} for y in x])
     
-def individuals_update(external_ids):
-    patients_db=get_db(app.config['DB_NAME_PATIENTS'])
-    users_db=get_db(app.config['DB_NAME_USERS'])
-    def f(eid):
-        p=patients_db.patients.find_one({'external_id':eid},{'_id':False})
-        print p['external_id']
-        p['features']=[f for f in p.get('features',[]) if f['observed']=='yes']
-        if 'solved' in p:
-            if 'gene' in p['solved']:
-                p['solved']=[p['solved']['gene']]
-            else:
-                p['solved']=[]
-        else: p['solved']=[]
-        if 'genes' in p: p['genes']=[x['gene'] for x in p['genes'] if 'gene' in x]
-        else: p['genes']=[]
-        p['genes']=list(frozenset(p['genes']+p['solved']))
-        p2=get_db().patients.find_one({'external_id':p['external_id']},{'rare_homozygous_variants_count':1,'rare_compound_hets_count':1, 'rare_variants_count':1,'total_variant_count':1})
-        if not p2: return p
-        p['rare_homozygous_variants_count']=p2.get('rare_homozygous_variants_count','')
-        p['rare_compound_hets_count']=p2.get('rare_compound_hets_count','')
-        p['rare_variants_count']=p2.get('rare_variants_count','')
-        p['total_variant_count']=p2.get('total_variant_count','')
-        if '_id' in p: del p['_id']
-        return p
-    new_individuals=[f(eid) for eid in external_ids]
-    old_individuals=users_db.users.find_one({'user':session['user']}).get('individuals',[])
-    old_individuals=[ind for ind in old_individuals if ind['external_id'] not in external_ids]
-    individuals=new_individuals+old_individuals
-    users_db.users.update_one({'user':session['user']},{'$set':{'individuals':individuals}})
-    return individuals
-
-
-@app.route('/update_patient_data/<individual>',methods=['POST'])
+@app.route('/<language>/update_patient_data/<individual_id>',methods=['POST'])
+@app.route('/update_patient_data/<individual_id>',methods=['POST'])
 @requires_auth
-def update_patient_data(individual):
-    if session['user']=='demo': return 'not permitted'
-    print(request.form)
-    consanguinity=request.form.getlist('consanguinity_edit[]')[0]
-    gender=request.form.getlist('gender_edit[]')[0]
-    genes=request.form.getlist('genes[]')
-    features=request.form.getlist('feature[]')
-    print('INDIVIDUAL',individual)
-    print('GENDER',gender)
-    print('CONSANGUINITY',consanguinity)
-    print('GENES',genes)
-    print('FEATURES',features)
-    print(individual)
-    return jsonify({'success': True}), 200
-    external_id=individual
-    individual=get_db(app.config['DB_NAME_PATIENTS']).patients.find_one({'external_id':external_id})
-    print('edit patient gender')
-    print(get_db(app.config['DB_NAME_PATIENTS']).patients.update_one({'external_id':external_id},{'$set':{'sex':{'female':'F','male':'M','unknown':'U'}[gender]}}))
-    print('edit patient genes')
-    individual['genes']=[]
-    for g in genes:
-        gene=get_db(app.config['DB_NAME']).genes.find_one({'gene_name_upper':g})
-        print(gene)
-        if gene in [g['gene'] for g in individual['genes']]: continue
-        if not gene: continue
-        individual['genes'].append({'gene':g, 'status':'candidate'})
-    print(individual['genes'])
-    print(get_db(app.config['DB_NAME_PATIENTS']).patients.update_one({'external_id':external_id},{'$set':{'genes':individual['genes']}}))
-    print('edit patient features')
-    individual['features']=[]
-    for f in features:
-        hpo=get_db(app.config['DB_NAME_HPO']).hpo.find_one({'name':re.compile('^'+f+'$',re.IGNORECASE)})
-        if not hpo: continue
-        if hpo in [h['label'] for h in individual['features']]: continue
-        individual['features'].append({'id':hpo['id'][0], 'label':hpo['name'][0], 'observed':'yes'})
-    print(get_db(app.config['DB_NAME_PATIENTS']).patients.update_one({'external_id':external_id},{'$set':{'features':individual['features']}}))
-    print(get_db(app.config['DB_NAME_PATIENTS']).patients.update_one({'external_id':external_id},{'$set':{'observed_features':[f for f in individual['features'] if f['observed']=='yes']}}))
-    print('edit patient consanguinity')
-    individual['family_history']=individual.get('family_history',{})
-    if (consanguinity)=='unknown':
-        individual['family_history']['consanguinity']=None
-    elif consanguinity.lower()=='yes':
-        individual['family_history']['consanguinity']=True
-    elif consanguinity.lower()=='no':
-        individual['family_history']['consanguinity']=False
-    print(get_db(app.config['DB_NAME_PATIENTS']).patients.update_one({'external_id':external_id},{'$set':{'family_history':individual['family_history']}}))
-    # also trigger refresh of that individual for individuals summary page
-    patient=Patient(external_id,get_db(app.config['DB_NAME_PATIENTS']))
-    print(patient.consanguinity)
-    print(patient.observed_features)
-    print(patient.genes)
-    print(patient.gender)
-    individuals_update([external_id])
-    return jsonify({'success': True}), 200
+def update_patient_data(individual_id,language='en'):
+   if session['user']=='demo': return 'not permitted'
+   print(request.form)
+   consanguinity=request.form.getlist('consanguinity_edit[]')[0]
+   gender=request.form.getlist('gender_edit[]')[0]
+   genes=request.form.getlist('genes[]')
+   features=request.form.getlist('feature[]')
+   print('INDIVIDUAL',individual_id)
+   print('GENDER',gender)
+   print('CONSANGUINITY',consanguinity)
+   print('GENES',genes)
+   print('FEATURES',features)
+   print(individual_id)
+   c,fd,=sqlite3_ro_cursor(app.config['PHENOPOLIS_DB'])
+   hpo=[dict(zip(['hpo_id','hpo_name','hpo_ancestor_ids','hpo_ancestor_names'] ,c.execute("select * from hpo where hpo_name=? limit 1",(x,)).fetchone())) for x in features]
+   print hpo
+   c.execute("select * from phenopolis_ids")
+   pheno_ids=[dict(zip([h[0] for h in c.description],r)) for r in c.fetchall()]
+   phenoid_mapping={ind['internal_id']:ind['external_id'] for ind in pheno_ids}
+   sqlite3_ro_close(c, fd)
+   individual_id=phenoid_mapping[individual_id]
+   x=json.loads(file(app.config['USER_CONFIGURATION'].format(session['user'],language,'individual') ,'r').read())
+   c,fd,=sqlite3_ro_cursor(app.config['PATIENTS_DB'].format(session['user']))
+   c.execute("select * from individuals where external_id=?",(individual_id,))
+   hits=c.fetchall()
+   sqlite3_ro_close(c,fd,)
+   print(hits)
+   if not hits:
+       x[0]['preview']=[['Sorry', 'You are not permitted to see this patient']]
+       return json.dumps(x)
+   individual=[dict(zip( [h[0] for h in c.description],r)) for r in hits]
+   print(individual)
+   if individual:
+       p=individual[0]
+   #update
+   #features to hpo ids
+   p['sex']=gender
+   p['observed_features']=','.join([h['hpo_id'] for h in hpo])
+   p['observed_features_names']=';'.join([h['hpo_name'] for h in hpo])
+   p['simplified_observed_features']=p['observed_features']
+   p['simplified_observed_features_names']=p['observed_features_names']
+   p['unobserved_features']=','.join([h['hpo_ancestor_ids'] for h in hpo])
+   p['ancestor_observed_features']=';'.join([h['hpo_ancestor_names'] for h in hpo])
+   p['genes']=','.join([x for x in genes])
+   print 'UPDATE:', p
+   conn,c,=sqlite3_cursor(app.config['PATIENTS_DB'].format(session['user']))
+   c.execute("""update individuals set
+           sex=?,
+           observed_features=?,
+           observed_features_names=?,
+           simplified_observed_features=?,
+           simplified_observed_features_names=?,
+           ancestor_observed_features=?,
+           unobserved_features=?,
+           genes=?
+           where external_id=?""",
+           (p['sex'],
+            p['observed_features'],
+            p['observed_features'],
+            p['simplified_observed_features'],
+            p['simplified_observed_features_names'],
+            p['ancestor_observed_features'],
+            p['unobserved_features'],
+            p['genes'],
+            individual_id,))
+   c.execute("select * from individuals where external_id=?",(individual_id,))
+   hits=c.fetchall()
+   print hits
+   sqlite3_close(conn,c)
+   return jsonify({'success': True}), 200
 
 
 def get_feature_venn(patient):
