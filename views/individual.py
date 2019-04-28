@@ -83,6 +83,8 @@ def individual(individual_id, subset='all', language='en'):
    process_for_display(x[0]['rare_variants']['data'])
    if ind['genes']:
        x[0]['metadata']['data'][0]['genes']=[{'display':i} for i in ind.get('genes','').split(',')]
+   else:
+       x[0]['metadata']['data'][0]['genes']=[]
    if subset=='all':
        return json.dumps(x)
    else:
