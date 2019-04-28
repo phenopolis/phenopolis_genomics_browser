@@ -134,8 +134,8 @@ def update_patient_data(individual_id,language='en'):
    p['observed_features_names']=';'.join([h['hpo_name'] for h in hpo])
    p['simplified_observed_features']=p['observed_features']
    p['simplified_observed_features_names']=p['observed_features_names']
-   p['unobserved_features']=','.join([h['hpo_ancestor_ids'] for h in hpo])
-   p['ancestor_observed_features']=';'.join([h['hpo_ancestor_names'] for h in hpo])
+   p['unobserved_features']=''
+   p['ancestor_observed_features']=','.join([h['hpo_ancestor_ids'] for h in hpo])
    p['genes']=','.join([x for x in genes])
    print 'UPDATE:', p
    conn,c,=sqlite3_cursor(app.config['PATIENTS_DB'].format(session['user']))
