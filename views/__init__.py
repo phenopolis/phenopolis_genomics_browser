@@ -84,6 +84,7 @@ sess.init_app(app)
 def sqlite3_ro_cursor(dbname):
    fd = os.open(dbname, os.O_RDONLY)
    conn = sqlite3.connect('/dev/fd/%d' % fd)
+   conn = sqlite3.connect(dbname)
    c=conn.cursor()
    return (c, fd)
 
@@ -91,6 +92,14 @@ def sqlite3_ro_close(cursor, fd):
    cursor.close()
    os.close(fd)
 
+def sqlite3_cursor(dbname):
+   conn = sqlite3.connect(dbname)
+   c=conn.cursor()
+   return (conn, c,)
+
+def sqlite3_close(conn,cursor):
+    conn.commit()
+    cursor.close()
 
 @app.route('/phenopolis_statistics')
 def phenopolis_statistics():
@@ -130,7 +139,8 @@ def phenopolis_statistics():
 # rather do the conversion on the fly
 def process_for_display(data):
    for x2 in data:
-       x2['variant_id']=[{'display':'%s-%s-%s-%s' % (x2['#CHROM'], x2['POS'], x2['REF'], x2['ALT'],)}]
+       if '#CHROM' in x2 and 'POS' in x2 and 'REF' in x2 and 'ALT' in x2:
+           x2['variant_id']=[{'display':'%s-%s-%s-%s' % (x2['#CHROM'], x2['POS'], x2['REF'], x2['ALT'],)}]
        if 'gene_symbol' in x2:
            x2['gene_symbol']=[{'display':x3} for x3 in x2['gene_symbol'].split(',') if x3]
        if 'HET' in x2:

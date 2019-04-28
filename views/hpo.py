@@ -97,58 +97,6 @@ def hpo_skat_json(hpo_id):
     skat_genes=skat(hpo_id)
     return jsonify( result={ 'individuals':skat_genes }, allow_nan=False )
 
-def get_hpo_individuals(hpo_id):
-    db=get_db()
-    hpo_db=get_db(app.config['DB_NAME_HPO'])
-    patients_db=get_db(app.config['DB_NAME_PATIENTS'])
-    patients=lookups.get_hpo_patients(hpo_db,patients_db,hpo_id,cached=True)
-    print('num patients', len(patients))
-    # candidate genes
-    candidate_genes = [p.get('genes',[]) for p in patients]
-    # solved genes
-    solved_genes = [p.get('solved',[]) for p in patients]
-    hpo_db=get_db(app.config['DB_NAME_HPO'])
-    def f(p):
-        print p['external_id']
-        if session['user']=='demo': p['external_id']='hidden'
-        del p['_id']
-        p['features']=[f for f in p.get('features',[]) if f['observed']=='yes']
-        if 'solved' in p:
-            if 'gene' in p['solved']:
-                p['solved']=[p['solved']['gene']]
-            else:
-                p['solved']=[]
-        else: p['solved']=[]
-        if 'genes' in p: p['genes']=[x['gene'] for x in p['genes'] if 'gene' in x]
-        else: p['genes']=[]
-        p['genes']=list(frozenset(p['genes']+p['solved']))
-        p2=db.patients.find_one({'external_id':p['external_id']},{'rare_homozygous_variants_count':1,'rare_compound_hets_count':1, 'rare_variants_count':1,'total_variant_count':1})
-        if not p2: return p
-        p['rare_homozygous_variants_count']=p2.get('rare_homozygous_variants_count','')
-        p['rare_compound_hets_count']=p2.get('rare_compound_hets_count','')
-        p['rare_variants_count']=p2.get('rare_variants_count','')
-        p['total_variant_count']=p2.get('total_variant_count','')
-        solved_patient=db.solved_patients.find_one({'external_id':p['external_id']})
-        if solved_patient and session['user']!='demo': p['solved_variants']=solved_patient.get('genes',{})
-        return p
-    patients=[f(p) for p in patients if 'external_id' in p]
-    return patients
-
-
-
-@app.route('/hpo_individuals_json/<hpo_id>')
-@requires_auth
-def hpo_individuals_json(hpo_id):
-    patients=get_hpo_individuals(hpo_id)
-    return jsonify( result={ 'individuals':patients } )
-
-
-@app.route('/hpo_individuals_csv/<hpo_id>')
-@requires_auth
-def hpo_individuals_csv(hpo_id):
-    patients=get_hpo_individuals(hpo_id)
-    return '\n'.join([','.join([p['external_id'],';'.join([str(g) for g in p['genes']])]) for p in patients if 'external_id' in p])
-
 
 @app.route('/phenogenon_json/<hpo_id>')
 @requires_auth
