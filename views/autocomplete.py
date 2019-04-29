@@ -24,7 +24,7 @@ def autocomplete(query, query_type=''):
        if query_type=='gene:':
            gene_results = [x['gene_name_upper'] for x in gene_hits]
        else:
-           gene_results = [query_type+x['gene_name_upper'] for x in gene_hits]
+           gene_results = ['gene:'+x['gene_name_upper'] for x in gene_hits]
    if query_type in ['phenotype:','']: 
        c.execute("select * from hpo where hpo_name like '%s' limit 20"%regex)
        headers=[h[0] for h in c.description]
@@ -32,7 +32,7 @@ def autocomplete(query, query_type=''):
        if query_type=='phenotype:':
            hpo_results = [x['hpo_name'] for x in hpo_hits]
        else:
-           hpo_results = [query_type+x['hpo_name'] for x in hpo_hits]
+           hpo_results = ['phenotype:'+x['hpo_name'] for x in hpo_hits]
    if query_type in ['patient:','']:
        #c,fd,=sqlite3_ro_cursor(app.config['PATIENTS_DB'].format(session['user']))
        c.execute("select * from phenopolis_ids where internal_id like '%s' limit 20"%regex)
@@ -41,7 +41,7 @@ def autocomplete(query, query_type=''):
        if query_type=='patient:':
            patient_results = [x['internal_id'] for x in patient_hits]
        else:
-           patient_results = [query_type+x['internal_id'] for x in patient_hits]
+           patient_results = ['patient:'+x['internal_id'] for x in patient_hits]
        #sqlite3_ro_close(c,fd)
    sqlite3_ro_close(c,fd)
    #c,fd,=sqlite3_ro_cursor(app.config['PHENOPOLIS_DB'])

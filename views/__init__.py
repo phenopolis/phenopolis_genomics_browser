@@ -140,7 +140,8 @@ def phenopolis_statistics():
 def process_for_display(data):
    for x2 in data:
        if '#CHROM' in x2 and 'POS' in x2 and 'REF' in x2 and 'ALT' in x2:
-           x2['variant_id']=[{'display':'%s-%s-%s-%s' % (x2['#CHROM'], x2['POS'], x2['REF'], x2['ALT'],)}]
+           variant_id='%s-%s-%s-%s' % (x2['#CHROM'], x2['POS'], x2['REF'], x2['ALT'],)
+           x2['variant_id']=[{'end_href':variant_id,'display':variant_id[:60]}]
        if 'gene_symbol' in x2:
            x2['gene_symbol']=[{'display':x3} for x3 in x2['gene_symbol'].split(',') if x3]
        if 'HET' in x2:
@@ -155,15 +156,16 @@ def check_auth(username, password):
     """
     This function is called to check if a username / password combination is valid.
     """
-    argon_password=file(app.config['USER_PASS'].format(username),'r').read().strip()
-    #c,fd,=sqlite3_ro_cursor(app.config['USERS_DB'])
-    #c.execute('select * from users where user=?',(username,))
-    #headers=[h[0] for h in c.description]
-    #user=[dict(zip(headers,r)) for r in c.fetchall()]
-    #print(user)
-    #if len(user)==0: return False
-    #return argon2.verify(password, user[0]['argon_password'])
-    return argon2.verify(password, argon_password)
+    c,fd,=sqlite3_ro_cursor(app.config['PHENOPOLIS_DB'])
+    c.execute('select * from users where user=?',(username,))
+    user=[ dict(zip( [h[0] for h in c.description] ,r)) for r in c.fetchall() ]
+    print(user)
+    print(password)
+    print(argon2.hash(password))
+    print user[0]['argon_password']
+    print argon2.verify(password, user[0]['argon_password'])
+    if len(user)==0: return False
+    return argon2.verify(password, user[0]['argon_password'])
 
 
 def requires_auth(f):
