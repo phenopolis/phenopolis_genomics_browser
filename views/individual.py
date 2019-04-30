@@ -145,7 +145,7 @@ def update_patient_data(individual_id,language='en'):
    ind['simplified_observed_features']=ind['observed_features']
    ind['simplified_observed_features_names']=ind['observed_features_names']
    ind['unobserved_features']=''
-   ind['ancestor_observed_features']=','.join([h['hpo_ancestor_ids'] for h in hpo])
+   ind['ancestor_observed_features']=';'.join(sorted(list(set(list(itertools.chain.from_iterable([h['hpo_ancestor_ids'].split(';') for h in hpo]))))))
    ind['genes']=','.join([x for x in genes])
    print 'UPDATE:', ind
    conn,c,=sqlite3_cursor(app.config['PHENOPOLIS_DB'])

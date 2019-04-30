@@ -14,9 +14,6 @@ def autocomplete(query, query_type=''):
    hpo_results=[]
    regex="%"+re.escape(query)+"%"
    c,fd,=sqlite3_ro_cursor(app.config['PHENOPOLIS_DB'])
-   #c.execute("select * from phenopolis_ids")
-   #pheno_ids=[dict(zip([h[0] for h in c.description],r)) for r in c.fetchall()]
-   #phenoid_mapping={ind['internal_id']:ind['external_id'] for ind in pheno_ids}
    if query_type in ['gene:','']: 
        c.execute("select * from genes where gene_name_upper like '%s' limit 20"%regex)
        headers=[h[0] for h in c.description]
@@ -34,9 +31,18 @@ def autocomplete(query, query_type=''):
        else:
            hpo_results = ['phenotype:'+x['hpo_name'] for x in hpo_hits]
    if query_type in ['patient:','']:
-       #c,fd,=sqlite3_ro_cursor(app.config['PATIENTS_DB'].format(session['user']))
-       c.execute("select * from phenopolis_ids where internal_id like '%s' limit 20"%regex)
-       #c.execute("select * from individuals where external_id like '%s' limit 20"%regex)
+       c.execute("""
+               select
+               i.external_id, i.internal_id
+               from individuals i,
+               users_individuals ui
+               where
+               ui.internal_id=i.internal_id
+               and
+               ui.user='%s'
+               and
+               i.internal_id like '%s' limit 20
+               """%(session['user'],regex,))
        patient_hits=[dict(zip([h[0] for h in c.description],r)) for r in c.fetchall()]
        if query_type=='patient:':
            patient_results = [x['internal_id'] for x in patient_hits]
@@ -59,7 +65,7 @@ def autocomplete(query, query_type=''):
 def best_guess():
      query = str(request.args.get('query'))
      if query.startswith('gene:'): return jsonify(redirect='/gene/{}'.format(query.replace('gene:','')))
-     elif query.startswith('individual:') or query.startswith('PH'): return jsonify(redirect='/individual/{}'.format(query.replace('individual:','')))
+     elif query.startswith('patient:') or query.startswith('PH'): return jsonify(redirect='/individual/{}'.format(query.replace('patient:','')))
      elif query.startswith('phenotype:'): return jsonify(redirect='/hpo/{}'.format(query.replace('phenotype:','')))
      elif query.startswith('variant:'): return jsonify(redirect='/variant/{}'.format(query.replace('variant:','')))
      elif '-' in query and len(query.split('-'))==4: return jsonify(redirect='/variant/{}'.format(query.replace('variant:','')))
