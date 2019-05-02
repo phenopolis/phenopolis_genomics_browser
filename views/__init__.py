@@ -73,9 +73,11 @@ Compress(app)
 cache = Cache(app,config={'CACHE_TYPE': 'simple'})
 
 # Check Configuration section for more details
+#SESSION_TYPE = 'redis'
+#SESSION_TYPE='memcached'
+#SESSION_TYPE = 'mongodb'
 SESSION_TYPE='filesystem'
-SESSION_TYPE='memcached'
-SESSION_TYPE = 'mongodb'
+SESSION_FILE_DIR=app.config['USER_SESSION']
 app.config.from_object(__name__)
 sess=Session()
 sess.init_app(app)
