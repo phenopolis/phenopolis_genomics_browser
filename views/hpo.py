@@ -1,10 +1,4 @@
 from views import *
-from lookups import *
-from flask import request
-import re
-from utils import *
-import itertools
-import csv
 
 @app.route('/<language>/hpo/<hpo_id>')
 @app.route('/<language>/hpo/<hpo_id>/<subset>')
