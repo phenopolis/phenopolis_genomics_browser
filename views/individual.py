@@ -1,5 +1,4 @@
 from views import *
-from utils import *
 import json
 from collections import defaultdict, Counter
 
