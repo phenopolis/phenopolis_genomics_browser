@@ -1,9 +1,4 @@
 from views import *
-from lookups import *
-from orm import *
-import requests
-import hashlib
-from bson.json_util import dumps
 
 
 @app.route('/<language>/gene/<gene_id>')
