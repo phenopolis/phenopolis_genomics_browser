@@ -1,10 +1,6 @@
 from views import *
-from lookups import *
 from flask import request
-import re
-from utils import *
 import itertools
-import csv
 
 
 @app.route('/register',methods=['POST'])

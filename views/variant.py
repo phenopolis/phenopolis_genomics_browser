@@ -1,14 +1,4 @@
-import flask
 from views import *
-from lookups import *
-import requests
-import myvariant
-import re
-from utils import *
-import itertools
-import vcf
-import subprocess
-import os
 import pysam
 
 @app.route('/<language>/variant/<variant_id>')
@@ -58,30 +48,6 @@ def variant(variant_id, subset='all', language='en'):
    x[0]['genotypes']['data']=variant['genotypes']
    if subset=='all': return json.dumps(x)
    else: return json.dumps([{subset:y[subset]} for y in x])
-
-
-# AJAX
-# Not finished
-@app.route('/chisqu/<variant_str>',methods=['GET','POST'])
-@requires_auth
-def chisq(variant_str):
-    if request.method=='POST':
-        hpo_patients=request.form['patients'].strip().split(',')
-    else:
-        hpo_patients=request.args.get('patients').strip().split(',')
-    print('hpo_patients',hpo_patients,)
-    variant_str=str(variant_str).strip().replace('_','-')
-    chrom, pos, ref, alt = variant_str.split('-')
-    tb=pysam.TabixFile('chr%s.vcf.gz' % chrom,)
-    region=str('%s:%s-%s'%(chrom, pos, int(pos),))
-    headers=[h for h in tb.header]
-    headers=(headers[len(headers)-1]).strip().split('\t')
-    print(region)
-    records=tb.fetch(region=region)
-    geno=dict(zip(headers, [r.split('\t') for r in records][0]))
-    samples=[h for h in geno if geno[h].split(':')[0]=='0/1' or geno[h].split(':')[0]=='1/1']
-    res=jsonify(result=hpo_patients)
-    return res
 
 
 
