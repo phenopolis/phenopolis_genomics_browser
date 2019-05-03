@@ -1,6 +1,4 @@
 from views import *
-import json
-from collections import defaultdict, Counter
 
 @app.route('/<language>/individual/<individual_id>')
 @app.route('/<language>/individual/<individual_id>/<subset>')
