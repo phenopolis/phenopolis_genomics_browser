@@ -4,7 +4,7 @@ The Phenopolis API provides endpoints (see `views/` dir) which query the sqlite 
 The templates for the JSON response are stored under `response_templates/`.
 These are language specific as they are prefixed with en, cn and jp.
 These JSON files provide the headers which map to what gets displayed on the fronentd (see [phenopolis_frontend](https://github.com/phenopolis/phenopolis_frontend)).
-The actual data in the JSON gets populated by the endpoints as explained later in the [endpoints](#enpoints) section.
+The actual data fields in the JSON gets populated by the endpoints as explained later in the [endpoints](#enpoints) section.
 
 Endpoints are called by [phenopolis_frontend](https://github.com/phenopolis/phenopolis_frontend]) which also takes care of the rendering.
 
