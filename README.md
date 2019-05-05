@@ -265,8 +265,10 @@ CREATE INDEX i_internal_id2 on users_individuals (internal_id)
 
 The [phenopolis_frontend](https://github.com/phenopolis/phenopolis_frontend]) is the main way of interacting with the API.  It defines the following pages which each call endpoints in the API:
 
-* https://phenopolis.org/gene/ENSG00000119685
-* https://phenopolis.org/hpo/HP:0000639
+* The gene page: https://phenopolis.org/gene/ENSG00000119685
+* The phenotype page: https://phenopolis.org/hpo/HP:0000639
+* The individual (aka patient) page: 
+* The variant page: 
 
 
 The JSON config files are user-specific files which allow the user to save their display preferences for each page.  They are stored under `response_templates/` dir.
@@ -298,17 +300,18 @@ __init__.py:@app.route('/login', methods=['POST'])
 __init__.py:@app.route('/phenopolis_statistics')
 ```
 
-
+#### /logout
 ```
 __init__.py:@app.route('/<language>/logout', methods=['POST'])
 __init__.py:@app.route('/logout', methods=['POST'])
 ```
 
+#### /is_logged_in
 ```
 __init__.py:@app.route('/is_logged_in')
 ```
 
-
+#### /autocomplete and /best_guess
 ```
 autocomplete.py:@app.route('/<language>/autocomplete/<query_type>/<query>')
 autocomplete.py:@app.route('/<language>/autocomplete/<query>')
@@ -318,6 +321,9 @@ autocomplete.py:@app.route('/autocomplete/<query>')
 ```
 autocomplete.py:@app.route('/best_guess')
 ```
+
+#### /gene
+
 ```
 gene.py:@app.route('/<language>/gene/<gene_id>')
 gene.py:@app.route('/<language>/gene/<gene_id>/<subset>')
@@ -336,7 +342,7 @@ hpo.py:@app.route('/hpo/<hpo_id>')
 hpo.py:@app.route('/hpo/<hpo_id>/<subset>')
 ```
 
-
+#### /individual
 ```
 individual.py:@app.route('/<language>/individual/<individual_id>')
 individual.py:@app.route('/<language>/individual/<individual_id>/<subset>')
@@ -344,7 +350,7 @@ individual.py:@app.route('/individual/<individual_id>')
 individual.py:@app.route('/individual/<individual_id>/<subset>')
 ```
 
-This endpoint updates the sqlite db.
+There's also the edit button the individual page which calls this endpoint to update `individuals` table in sqlite:
 ```
 individual.py:@app.route('/<language>/update_patient_data/<individual_id>',methods=['POST'])
 individual.py:@app.route('/update_patient_data/<individual_id>',methods=['POST'])
@@ -356,14 +362,15 @@ save_configuration.py:@app.route('/<language>/save_configuration/<pageType>/<pag
 save_configuration.py:@app.route('/save_configuration/<pageType>/<pagePart>', methods=['POST'])
 ```
 
+#### /change_password
 ```
 users.py:@app.route('/change_password', methods=['POST'])
 ```
 
+#### /variant
 ```
 variant.py:@app.route('/<language>/variant/<variant_id>')
 variant.py:@app.route('/<language>/variant/<variant_id>/<subset>')
-```
 variant.py:@app.route('/variant/<variant_id>')
 variant.py:@app.route('/variant/<variant_id>/<subset>')
 ```
