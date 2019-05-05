@@ -1,5 +1,4 @@
 from views import *
-import pysam
 
 @app.route('/<language>/variant/<variant_id>')
 @app.route('/<language>/variant/<variant_id>/<subset>')
@@ -33,7 +32,6 @@ def variant(variant_id, subset='all', language='en'):
       variant['filter']=[k for k in v.filter.keys()]
       variant['format']=dict([(v.format[k].name,v.format[k].id,) for k in v.format.keys()])
       variant['info']=dict(v.info)
-      #variant['genotypes']=[{'sample':{'display':phenoid_mapping[s]},'GT':v.samples[s]['GT'],'AD':v.samples[s]['AD'],'DP':v.samples[s]['DP']} for s in v.samples]
       variant['genotypes']=[{'sample':[{'display':phenoid_mapping[s]}],'GT':v.samples[s].get('GT',''),'AD':v.samples[s].get('AD',''),'DP':v.samples[s].get('DP','')} for s in v.samples]
    x=json.loads(file(app.config['USER_CONFIGURATION'].format(session['user'],language,'variant') ,'r').read())
    c.execute('select * from variants where "#CHROM"=? and POS=? and REF=? and ALT=?',variant_id.split('-'))

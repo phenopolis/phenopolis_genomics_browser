@@ -1,0 +1,58 @@
+[
+  {
+     "preview":[["Number of Individuals",10]],
+     "metadata": {
+         "colNames" : [
+            {"default": "true","name":"Name", "key": "name"},
+            {"default": "true","name":"ID", "key": "id"},
+            {"default": "true","name":"Count", "key": "count"},
+            {"default": "true","name":"Parent Phenotypes", "key": "parent_phenotypes", "type":"links", "base_href":"/hpo", "class":"preview_onhover"}
+         ],
+         "data" : [ ]
+    },
+    "individuals" : {
+         "colNames" : [
+            {"default": "true","name":"Public Id", "key": "internal_id", "class":"preview_onhover", "type":"links", "base_href": "/individual"},
+            {"default": "true","name":"Private Id", "key": "external_id", "class":"preview_onhover", "type":"links", "base_href": "/individual"},
+            {"default": "true","name":"Gender", "key": "sex"},
+            {"default": "true","name":"Phenotype", "key": "simplified_observed_features_names", "class":"preview_onhover", "type":"links", "base_href":"/hpo/"},
+            {"default": "true","name":"Candidate Genes", "key": "genes","class":"preview_onhover", "type":"links", "base_href":"/gene/"}
+         ],
+         "data" : [ ]
+    },
+    "literature_genes" : {
+         "colNames" : [
+               {"default": "true","name":"Gene", "key": "gene", "class":"preview_onhover", "type":"links",  "base_href":"/gene/"},
+               {"default": "true","name":"Phenogenon Dominant P-Value", "key": "phenogenon_dominant_pvalue"},
+               {"default": "true","name":"Phenogenon Recessive P-Value", "key": "phenogenon_recessive_pvalue"}
+         ],
+         "data" : [ ] 
+    },
+    "phenogenon_recessive" : {
+         "colNames" : [
+               {"default": "true","name":"Recessive genes", "key": "gene_id", "class":"preview_onhover", "type":"links",  "base_href":"/gene/"},
+               {"default": "true","name":"P Value", "key": "pvalue"}
+         ],
+         "data" : [ ]
+     },
+    "phenogenon_dominant" : {
+         "colNames" : [
+               {"default": "true","name":"Dominant genes", "key": "gene_id", "class":"preview_onhover", "type":"links",  "base_href":"/gene/"},
+               {"default": "true","name":"P Value", "key": "pvalue"}
+         ],
+         "data" : [ ]
+    },
+    "skat" : {
+         "colNames" : [
+               {"default": "true","name":"Gene", "key": "gene_id", "class":"preview_onhover", "type":"links",  "base_href":"/gene/"},
+               {"default": "true","name":"pLI", "key": "pli"},
+               {"default": "true","name":"Mode", "key": "mode"},
+               {"default": "true","name":"Fisher P Value", "key": "fisher_p_value"},
+               {"default": "true","name":"SKATO", "key": "skato"},
+               {"default": "true","name":"Odds Ratio", "key": "odds_ratio"},
+               {"default": "true","name":"Variants", "key": "variants", "class":"preview_onhover", "type":"links",  "base_href":"/variant/"}
+         ],
+         "data" : [ ]
+    }
+  }
+]

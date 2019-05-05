@@ -1,6 +1,4 @@
 from views import *
-from flask import request
-import itertools
 
 
 @app.route('/register',methods=['POST'])
@@ -16,7 +14,6 @@ def register():
     return jsonify(message=user.status['message']), user.status['http_code']
 
 
-# 
 @app.route('/change_password', methods=['POST'])
 @requires_auth
 def change_password():

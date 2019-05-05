@@ -45,7 +45,6 @@ def gene(gene_id, subset='all', language='en'):
        d["related_hpo"]=[{"display": "", "href":""}]
    c.execute(file(app.config['VARIANTS_QUERY'].format(session['user']),'r').read().strip(),(x[0]['metadata']['data'][0]['gene_name'],))
    headers=[h[0] for h in c.description]
-   #x[0]['variants']['colNames']=json.load(file(app.config['VARIANTS_COLNAMES'].format(session['user']),'r'))
    x[0]['variants']['data']=[dict(zip(headers,r)) for r in c.fetchall()]
    for v in x[0]['variants']['data']:
        v['variant_id']=[{'display':'%s-%s-%s-%s' % (v['#CHROM'], v['POS'], v['REF'], v['ALT'],)}]

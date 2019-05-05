@@ -107,6 +107,7 @@ def update_patient_data(individual_id,language='en'):
    gender=request.form.getlist('gender_edit[]')[0]
    genes=request.form.getlist('genes[]')
    features=request.form.getlist('feature[]')
+   if not len(features): features=['All']
    gender={'male':'M','female':'F','unknown':'U'}.get(gender,'unknown')
    print('INDIVIDUAL',individual_id)
    print('GENDER',gender)
