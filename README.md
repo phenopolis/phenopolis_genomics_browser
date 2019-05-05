@@ -3,7 +3,7 @@
 The Phenopolis API provides endpoints (see `views/` dir) which query the sqlite database and return JSON (see `exemplar_data` for examples of responses).
 The templates for the JSON response are stored under `response_templates/`.
 These are language specific as they are prefixed with en, cn and jp.
-These JSON files provide the headers which map to what gets displayed on the fronentd (see [phenopolis_frontend](https://github.com/phenopolis/phenopolis_frontend)).
+These JSON files provide the headers which map to table headers on the [phenopolis_frontend](https://github.com/phenopolis/phenopolis_frontend).
 The actual data fields in the JSON gets populated by the endpoints as explained later in the [endpoints](#enpoints) section.
 
 Endpoints are called by [phenopolis_frontend](https://github.com/phenopolis/phenopolis_frontend]) which also takes care of the rendering.
@@ -42,7 +42,7 @@ The sqlite database  is composed of the following 8 tables:
 These tables are not going to be updated.
 
 Our actual genetic and phenotypic data is loaded in `variants` and `individuals`.
-These tables will change when we get new data.  Also `indivdiuals` can be changed throught the website trough the `update_patient_data` endpoint.  This endpoint allows users of Phenopolis to update the `phenotypes' of individuals.
+These tables are updated when we get new data.  Also rows in `individuals` can be updated through the `update_patient_data` endpoint.  This endpoint allows users of the [phenopolis_frontend](https://github.com/phenopolis/phenopolis_frontend]) to update the `phenotypes` of individuals.
 
 `users` contains all users of our system who contribute the genetic and phenotypic data.
 
@@ -82,11 +82,11 @@ CREATE INDEX i_full_gene_name on genes (full_gene_name);
 
 ##### variants
 
-* Stores all variants in our dataset. Each variants is present in at least on individuals in either HET or HOM format (see `het_variant` and `hom_variant` tables.
+* Stores all variants in our dataset. Each variants is present in at least on individual in either HET or HOM format (see `het_variant` and `hom_variant` join tables.
 * n=4859970
 * The PK is `variant_id` defined as `("#CHROM","POS", "REF","ALT")`. We could define new field with theses fields joined.
 * FK `gene_symbol` to `gene` table.
-* This table is updated by fresh import of genetict data. Note that the columns in this table might change in the future.
+* This table is updated by fresh import of genetic data. Note that the columns in this table might change in the future so it's important the code is generic.
 
 ```
 CREATE TABLE variants(
@@ -263,9 +263,15 @@ CREATE INDEX i_internal_id2 on users_individuals (internal_id)
 
 ## endpoints and JSON files
 
-### JSON config files
+The [phenopolis_frontend](https://github.com/phenopolis/phenopolis_frontend]) is the main way of interacting with the API.  It defines the following pages which each call endpoints in the API:
 
-The JSON config files are user-specific files which allow the user to save their display preferences for each page.  Seee the "Save configuration" button on the website, which allows the user to select which columns they want displayed.  This triggers the `update_configuration` endpoint which will set the visible to true/false depending on which columns the user wants displayed.
+* https://phenopolis.org/gene/ENSG00000119685
+* https://phenopolis.org/hpo/HP:0000639
+
+
+The JSON config files are user-specific files which allow the user to save their display preferences for each page.  They are stored under `response_templates/` dir.
+
+The "Save configuration" button on the website, which allows the user to select which columns they want displayed.  This triggers the `update_configuration` endpoint which will set the visible to true/false depending on which columns the user wants displayed.
 
 
 All endpoints are defined under `views/`.
