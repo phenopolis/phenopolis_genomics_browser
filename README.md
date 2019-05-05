@@ -17,11 +17,8 @@ python run_server.py
 
 `run_server.py` needs the `local.cfg` file which provides the path to:
 * the sqlite database
-* the JSON config files which determine what gets displayed to the logged-in user
+* the JSON config files which determine what gets displayed to the logged-in user, these are used by the endpoints
 
-## JSON config files
-
-The JSON config files are user-specific files which allow the user to save their display preferences for each page.  Seee the "Save configuration" button on the website, which allows the user to select which columns they want displayed.  This triggers the `update_configuration` endpoint which will set the visible to true/false depending on which columns the user wants displayed.
 
 
 ## The sqlite database tables
@@ -51,8 +48,9 @@ These tables will change when we get new data.  Also `indivdiuals` can be change
 
 The other tables are join tables.
 
+### Tables
 
-### genes
+##### genes
 
 * Defines all known genes.
 * n=57820
@@ -82,7 +80,7 @@ CREATE INDEX i_other_names on genes (other_names);
 CREATE INDEX i_full_gene_name on genes (full_gene_name);
 ```
 
-### variants
+##### variants
 
 * Stores all variants in our dataset. Each variants is present in at least on individuals in either HET or HOM format (see `het_variant` and `hom_variant` tables.
 * n=4859970
@@ -137,7 +135,7 @@ CREATE INDEX p_AF on variants (AF);
 CREATE INDEX p_AC on variants (AC);
 ```
 
-# hom_variants and het_variants
+##### hom_variants and het_variants
 
 * Join tables linking `individual` to `variant`. Variants in HET state are stored in `het_variants`, HOM in `hom_variants`.
 * n=5323761 (`het_variants`), n=336255 (`hom_variants`)
@@ -169,9 +167,9 @@ CREATE INDEX p_vid_het_variants on het_variants ("#CHROM","POS", "REF","ALT");
 CREATE INDEX p_individual_het_variants on het_variants (individual);
 ```
 
-# hpo
+##### hpo
 
-* Defines the Human Phenotype Ontology, these are stored in the individuals table (features columns).
+* Defines the Human Phenotype Ontology (HPO), these are stored in the individuals table (features columns).
 * n=13941
 * PK `hpo_id`
 * FK none
@@ -189,7 +187,7 @@ CREATE INDEX i_hpo_id on hpo (hpo_id);
 CREATE INDEX i_hpo_name on hpo (hpo_name);
 ```
 
-# users
+##### users
 
 * Users of Phenopolis (i.e customers) have their data stored here (could also potentially store configs here). Users conntribute genetic patients stored in the `individuals` table. 
 * n=7
@@ -206,7 +204,7 @@ CREATE TABLE users(
 CREATE INDEX i_user on users (user)
 ```
 
-# individuals
+##### individuals
  
 * Individuals with genetic data. These have Phenpolis id (`internal_id`) and an `external_id` which is the name the customer (user) has given to us. The ownership of `individuals` by `users` is stored in the join table `users_individuals`.
 * n=8659
@@ -248,9 +246,7 @@ CREATE INDEX i_unobserved_features on individuals (unobserved_features);
 CREATE INDEX i_genes on individuals(genes);
 ```
 
-
-
-# users_individuals
+##### users_individuals
 
 * Join table for `users` and `individuals` for which we have genetic data stored in our db.
 * n=11712
@@ -265,27 +261,32 @@ CREATE INDEX i_internal_id2 on users_individuals (internal_id)
 ```
 
 
+## endpoints and JSON files
 
-## The endpoints
+### JSON config files
 
-All endpoints are defined under `views.
-
-They nearly all rely on the user being logged-in (see the `@requires_auth` decorator).
-
-They are language-specific (english "en", chinese "cn", japanese "jp") but currently only english is supported.
+The JSON config files are user-specific files which allow the user to save their display preferences for each page.  Seee the "Save configuration" button on the website, which allows the user to select which columns they want displayed.  This triggers the `update_configuration` endpoint which will set the visible to true/false depending on which columns the user wants displayed.
 
 
-### /login
+All endpoints are defined under `views/`.
+
+They  all rely on the user being logged-in (i.e all annotated with the `@requires_auth` decorator) except for `/phenopolis_statistics` and `/login`.
+
+They are language-specific (english "en", chinese "cn", japanese "jp").
 
 
-This will query the users `users` table and check the `argon2` password matches:
+#### /login
+
+
+This will query the users `users` table and check the `argon2` password POST-param get matches.
+If they do the Flask session object is set with the username (`session['user']`).
 
 ```
 __init__.py:@app.route('/<language>/login', methods=['POST'])
 __init__.py:@app.route('/login', methods=['POST'])
 ```
 
-### /statistics
+#### /phenopolis_statistics
 
 ```
 __init__.py:@app.route('/phenopolis_statistics')
@@ -318,12 +319,17 @@ gene.py:@app.route('/gene/<gene_id>')
 gene.py:@app.route('/gene/<gene_id>/<subset>')
 ```
 
+#### /hpo
+
+Endpoint called by the [phenotype](https://phenopolis.org/hpo/HP:0000639]) page.
+
 ```
 hpo.py:@app.route('/<language>/hpo/<hpo_id>')
 hpo.py:@app.route('/<language>/hpo/<hpo_id>/<subset>')
 hpo.py:@app.route('/hpo/<hpo_id>')
 hpo.py:@app.route('/hpo/<hpo_id>/<subset>')
 ```
+
 
 ```
 individual.py:@app.route('/<language>/individual/<individual_id>')
