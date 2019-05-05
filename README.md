@@ -1,4 +1,4 @@
-### Phenopolis API
+# Phenopolis API
 
 The Phenopolis API provides endpoints (see `views` dir) which query the sqlite database and return JSON (see `exemplar_data` for examples of responses).  The templates for the JSON response are stored under `response_templates`. These are going to be language specific.
 
