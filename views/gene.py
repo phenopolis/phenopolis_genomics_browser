@@ -43,7 +43,7 @@ def gene(gene_id, subset='all', language='en'):
                 {"display": "GTEx (expression)","href": "http://www.gtexportal.org/home/gene/"+gene_name}
                ]
        d["related_hpo"]=[{"display": "", "href":""}]
-   c.execute(file(app.config['VARIANTS_QUERY'].format(session['user']),'r').read().strip(),(x[0]['metadata']['data'][0]['gene_name'],))
+   c.execute("select * from variants where gene_symbol=?",(x[0]['metadata']['data'][0]['gene_name'],))
    headers=[h[0] for h in c.description]
    x[0]['variants']['data']=[dict(zip(headers,r)) for r in c.fetchall()]
    for v in x[0]['variants']['data']:
