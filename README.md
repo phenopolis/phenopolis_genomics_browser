@@ -1,10 +1,15 @@
 # Phenopolis API
 
-The Phenopolis API provides endpoints (see `views` dir) which query the sqlite database and return JSON (see `exemplar_data` for examples of responses).  The templates for the JSON response are stored under `response_templates`. These are going to be language specific.
+The Phenopolis API provides endpoints (see `views/` dir) which query the sqlite database and return JSON (see `exemplar_data` for examples of responses).
+The templates for the JSON response are stored under `response_templates/`.
+These are language specific as they are prefixed with en, cn and jp.
+These JSON files provide the headers which map to what gets displayed on the fronentd (see [phenopolis_frontend](https://github.com/phenopolis/phenopolis_frontend)).
+The actual data in the JSON gets populated by the endpoints as explained later in the [endpoints](#enpoints) section.
 
-These endpoints are queried and rendered by `phenopolis_frontend`.
+Endpoints are called by [phenopolis_frontend](https://github.com/phenopolis/phenopolis_frontend]) which also takes care of the rendering.
 
-##  How to run the API
+
+##  How to start the API srver
 
 ```
 python run_server.py
@@ -14,20 +19,38 @@ python run_server.py
 * the sqlite database
 * the JSON config files which determine what gets displayed to the logged-in user
 
+## JSON config files
+
+The JSON config files are user-specific files which allow the user to save their display preferences for each page.  Seee the "Save configuration" button on the website, which allows the user to select which columns they want displayed.  This triggers the `update_configuration` endpoint which will set the visible to true/false depending on which columns the user wants displayed.
 
 
 ## The sqlite database tables
 
+
+### Overview
+
+The sqlite database  is composed of the following 8 tables:
 ```
-genes
-variants
-hom_variants
-het_variants
-hpo
-users
-users_individuals
-individuals
+1. genes
+2. variants
+3. hom_variants
+4. het_variants
+5. hpo
+6. users
+7. users_individuals
+8. individuals
 ```
+
+`genes` and `hpo` tables are definition tables describing all known phenotypes and genes.
+These tables are not going to be updated.
+
+Our actual genetic and phenotypic data is loaded in `variants` and `individuals`.
+These tables will change when we get new data.  Also `indivdiuals` can be changed throught the website trough the `update_patient_data` endpoint.  This endpoint allows users of Phenopolis to update the `phenotypes' of individuals.
+
+`users` contains all users of our system who contribute the genetic and phenotypic data.
+
+The other tables are join tables.
+
 
 ### genes
 
@@ -65,7 +88,7 @@ CREATE INDEX i_full_gene_name on genes (full_gene_name);
 * n=4859970
 * The PK is `variant_id` defined as `("#CHROM","POS", "REF","ALT")`. We could define new field with theses fields joined.
 * FK `gene_symbol` to `gene` table.
-* This table is updated by fresh import of sequencing data. Note that the columns in this table might change in the future.
+* This table is updated by fresh import of genetict data. Note that the columns in this table might change in the future.
 
 ```
 CREATE TABLE variants(
@@ -245,17 +268,29 @@ CREATE INDEX i_internal_id2 on users_individuals (internal_id)
 
 ## The endpoints
 
-These are all defined under `views`:
+All endpoints are defined under `views.
+
+They nearly all rely on the user being logged-in (see the `@requires_auth` decorator).
+
+They are language-specific (english "en", chinese "cn", japanese "jp") but currently only english is supported.
+
+
+### /login
+
+
+This will query the users `users` table and check the `argon2` password matches:
 
 ```
 __init__.py:@app.route('/<language>/login', methods=['POST'])
 __init__.py:@app.route('/login', methods=['POST'])
 ```
 
+### /statistics
 
 ```
 __init__.py:@app.route('/phenopolis_statistics')
 ```
+
 
 ```
 __init__.py:@app.route('/<language>/logout', methods=['POST'])
