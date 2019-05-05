@@ -276,15 +276,35 @@ The JSON config files are user-specific files which allow the user to save their
 The "Save configuration" button on the website, which allows the user to select which columns they want displayed.  This triggers the `update_configuration` endpoint which will set the visible to true/false depending on which columns the user wants displayed.
 
 
-All endpoints are defined under `views/`.
+All endpoints are defined under `views/`. There are 13 enpoints:
+```
+1. /phenopolis_statistics
+2. /login
+3. /logout
+4. /is_logged_in
+5. /change_password
+6. /autocomplete
+7. /best_guess
+8. /gene/
+9. /hpo
+10. /individual
+11. /update_individual
+12. /variant
+13. /save_configuration
+```
 
 They  all rely on the user being logged-in (i.e all annotated with the `@requires_auth` decorator) except for `/phenopolis_statistics` and `/login`.
 
 They are language-specific (english "en", chinese "cn", japanese "jp").
 
 
-#### /login
+#### /phenopolis_statistics
 
+```
+__init__.py:@app.route('/phenopolis_statistics')
+```
+
+#### /login
 
 This will query the users `users` table and check the `argon2` password POST-param get matches.
 If they do the Flask session object is set with the username (`session['user']`).
@@ -292,12 +312,6 @@ If they do the Flask session object is set with the username (`session['user']`)
 ```
 __init__.py:@app.route('/<language>/login', methods=['POST'])
 __init__.py:@app.route('/login', methods=['POST'])
-```
-
-#### /phenopolis_statistics
-
-```
-__init__.py:@app.route('/phenopolis_statistics')
 ```
 
 #### /logout
@@ -309,6 +323,11 @@ __init__.py:@app.route('/logout', methods=['POST'])
 #### /is_logged_in
 ```
 __init__.py:@app.route('/is_logged_in')
+```
+
+#### /change_password
+```
+users.py:@app.route('/change_password', methods=['POST'])
 ```
 
 #### /autocomplete and /best_guess
@@ -350,21 +369,11 @@ individual.py:@app.route('/individual/<individual_id>')
 individual.py:@app.route('/individual/<individual_id>/<subset>')
 ```
 
+#### /update_individual
 There's also the edit button the individual page which calls this endpoint to update `individuals` table in sqlite:
 ```
 individual.py:@app.route('/<language>/update_patient_data/<individual_id>',methods=['POST'])
 individual.py:@app.route('/update_patient_data/<individual_id>',methods=['POST'])
-```
-
-Save JSON configuration for display.  This updates a JSON file, does not write to the db.
-```
-save_configuration.py:@app.route('/<language>/save_configuration/<pageType>/<pagePart>', methods=['POST'])
-save_configuration.py:@app.route('/save_configuration/<pageType>/<pagePart>', methods=['POST'])
-```
-
-#### /change_password
-```
-users.py:@app.route('/change_password', methods=['POST'])
 ```
 
 #### /variant
@@ -373,6 +382,13 @@ variant.py:@app.route('/<language>/variant/<variant_id>')
 variant.py:@app.route('/<language>/variant/<variant_id>/<subset>')
 variant.py:@app.route('/variant/<variant_id>')
 variant.py:@app.route('/variant/<variant_id>/<subset>')
+```
+
+#### /save_configuration
+Save JSON configuration for display.  This updates a JSON file, does not write to the db.
+```
+save_configuration.py:@app.route('/<language>/save_configuration/<pageType>/<pagePart>', methods=['POST'])
+save_configuration.py:@app.route('/save_configuration/<pageType>/<pagePart>', methods=['POST'])
 ```
 
 
