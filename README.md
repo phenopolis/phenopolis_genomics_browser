@@ -60,7 +60,7 @@ The other tables are join tables.
 
 ```
 CREATE TABLE genes(
-  "stop" TEXT,
+  "stop" INT,
   "gene_id" TEXT,
   "chrom" TEXT,
   "strand" TEXT,
@@ -68,9 +68,9 @@ CREATE TABLE genes(
   "gene_name_upper" TEXT,
   "other_names" TEXT,
   "canonical_transcript" TEXT,
-  "start" TEXT,
-  "xstop" TEXT,
-  "xstart" TEXT,
+  "start" INT,
+  "xstop" INT,
+  "xstart" INT,
   "gene_name" TEXT
 );
 CREATE INDEX i_gene_id on genes (gene_id);
@@ -146,7 +146,7 @@ CREATE INDEX p_AC on variants (AC);
 ```
 CREATE TABLE hom_variants(
   "#CHROM" TEXT,
-  "POS" TEXT,
+  "POS" INT,
   "REF" TEXT,
   "ALT" TEXT,
   "individual" TEXT
@@ -158,7 +158,7 @@ CREATE INDEX p_individual_hom_variants on hom_variants (individual);
 ```
 CREATE TABLE het_variants(
   "#CHROM" TEXT,
-  "POS" TEXT,
+  "POS" INT,
   "REF" TEXT,
   "ALT" TEXT,
   "individual" TEXT
@@ -198,7 +198,6 @@ CREATE INDEX i_hpo_name on hpo (hpo_name);
 ```
 CREATE TABLE users(
   "user" TEXT,
-  "password" TEXT,
   "argon_password" TEXT
 );
 CREATE INDEX i_user on users (user)
@@ -328,6 +327,7 @@ __init__.py:@app.route('/is_logged_in')
 ```
 
 #### /change_password
+
 Updates the password in `users`.
 ```
 users.py:@app.route('/change_password', methods=['POST'])
