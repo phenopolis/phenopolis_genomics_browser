@@ -90,37 +90,37 @@ CREATE INDEX i_full_gene_name on genes (full_gene_name);
 
 ```
 CREATE TABLE variants(
-  "#CHROM" TEXT,
-  "POS" TEXT,
-  "ID" TEXT,
-  "REF" TEXT,
-  "ALT" TEXT,
-  "AF" TEXT,
-  "AC" TEXT,
-  "AN" TEXT,
-  "HET_COUNT" TEXT,
-  "HOM_COUNT" TEXT,
-  "DP" TEXT,
-  "FS" TEXT,
-  "MLEAC" TEXT,
-  "MLEAF" TEXT,
-  "MQ" TEXT,
-  "FILTER" TEXT,
-  "HET" TEXT,
-  "HOM" TEXT,
-  "most_severe_consequence" TEXT,
-  "af_kaviar" TEXT,
-  "af_gnomad_genomes" TEXT,
-  "af_jirdc" TEXT,
-  "af_tommo" TEXT,
-  "af_krgdb" TEXT,
-  "af_converge" TEXT,
-  "af_hgvd" TEXT,
-  "gene_symbol" TEXT,
-  "hgvsc" TEXT,
-  "hgvsp" TEXT,
-  "dann" TEXT,
-  "cadd_phred" TEXT
+  `#CHROM` TEXT,
+  `POS` INTEGER,
+  `ID` TEXT,
+  `REF` TEXT,
+  `ALT` TEXT,
+  `AF` REAL,
+  `AC` INTEGER,
+  `AN` INTEGER,
+  `HET_COUNT` INTEGER,
+  `HOM_COUNT` INTEGER,
+  `DP` INTEGER,
+  `FS` INTEGER,
+  `MLEAC` INTEGER,
+  `MLEAF` INTEGER,
+  `MQ` INTEGER,
+  `FILTER` TEXT,
+  `HET` TEXT,
+  `HOM` TEXT,
+  `most_severe_consequence` TEXT,
+  `af_kaviar` REAL,
+  `af_gnomad_genomes` REAL,
+  `af_jirdc` REAL,
+  `af_tommo` REAL,
+  `af_krgdb` REAL,
+  `af_converge` REAL,
+  `af_hgvd` REAL,
+  `gene_symbol` TEXT,
+  `hgvsc` TEXT,
+  `hgvsp` TEXT,
+  `dann` REAL,
+  `cadd_phred` REAL
 );
 CREATE INDEX p_gene_symbol_variants on variants (gene_symbol);
 CREATE INDEX p_vid_variants on variants ("#CHROM","POS", "REF","ALT");
@@ -315,33 +315,41 @@ __init__.py:@app.route('/login', methods=['POST'])
 ```
 
 #### /logout
+
 ```
 __init__.py:@app.route('/<language>/logout', methods=['POST'])
 __init__.py:@app.route('/logout', methods=['POST'])
 ```
 
 #### /is_logged_in
+
 ```
 __init__.py:@app.route('/is_logged_in')
 ```
 
 #### /change_password
+Updates the password in `users`.
 ```
 users.py:@app.route('/change_password', methods=['POST'])
 ```
 
 #### /autocomplete and /best_guess
+
+This suggests search terms:
 ```
 autocomplete.py:@app.route('/<language>/autocomplete/<query_type>/<query>')
 autocomplete.py:@app.route('/<language>/autocomplete/<query>')
 autocomplete.py:@app.route('/autocomplete/<query_type>/<query>')
 autocomplete.py:@app.route('/autocomplete/<query>')
 ```
+Will try and figure out which table (`variants`, `gene` or `individuals`) to search in:
 ```
 autocomplete.py:@app.route('/best_guess')
 ```
 
 #### /gene
+
+Endpoint called by the [gene](https://phenopolis.org/gene/TTLL5]) page, will return all variants in a gene.
 
 ```
 gene.py:@app.route('/<language>/gene/<gene_id>')
@@ -362,6 +370,9 @@ hpo.py:@app.route('/hpo/<hpo_id>/<subset>')
 ```
 
 #### /individual
+
+Endpoint called by the [individual](https://phenopolis.org/individual/PH00008268]) page.
+
 ```
 individual.py:@app.route('/<language>/individual/<individual_id>')
 individual.py:@app.route('/<language>/individual/<individual_id>/<subset>')
@@ -370,13 +381,18 @@ individual.py:@app.route('/individual/<individual_id>/<subset>')
 ```
 
 #### /update_individual
+
 There's also the edit button the individual page which calls this endpoint to update `individuals` table in sqlite:
+
 ```
 individual.py:@app.route('/<language>/update_patient_data/<individual_id>',methods=['POST'])
 individual.py:@app.route('/update_patient_data/<individual_id>',methods=['POST'])
 ```
 
 #### /variant
+
+Endpoint called by the [variant](https://phenopolis.org/variant/22-38212762-A-G]) page.
+
 ```
 variant.py:@app.route('/<language>/variant/<variant_id>')
 variant.py:@app.route('/<language>/variant/<variant_id>/<subset>')
