@@ -4,61 +4,25 @@ from flask import Flask
 from flask import session
 from flask.ext.session import Session
 from flask import Response
-from flask import stream_with_context
 from flask import request
-from flask import make_response
-from flask import request
-from flask import send_file
-from flask import g
 from flask import redirect
-from flask import url_for
-from flask import abort
-from flask import flash
 from flask import jsonify
-from flask import send_from_directory
 from flask.ext.compress import Compress
-from flask.ext.runner import Runner
-from flask_debugtoolbar import DebugToolbarExtension 
 from flask.ext.cache import Cache
-import sys
-import StringIO
-import urllib, base64 
-import itertools
 import json
 import os
-import gzip
 import logging
-import lookups
-import random
-from utils import * 
-from collections import defaultdict, Counter
-from collections import OrderedDict
-from werkzeug.contrib.cache import SimpleCache 
-from multiprocessing import Process
-import glob
+from collections import defaultdict, Counter, OrderedDict
 import sqlite3
-import time 
 from functools import wraps 
-#from werkzeug.exceptions import default_exceptions, HTTPException 
-import pandas
-import csv
 import time
-import StringIO 
-from urlparse import urlparse
-import pickle 
-import numpy
-import subprocess
 import datetime
-from Crypto.Cipher import DES
-import base64
-from binascii import b2a_base64, a2b_base64
-from werkzeug.security import generate_password_hash, check_password_hash
 from passlib.hash import argon2
-import orm
-from lookups import *
-import regex
-import requests
-import phizz
+import re
+import itertools
+import pysam
+
+
 
 logging.getLogger().addHandler(logging.StreamHandler())
 logging.getLogger().setLevel(logging.INFO)
@@ -93,6 +57,7 @@ def sqlite3_ro_cursor(dbname):
 def sqlite3_ro_close(cursor, fd):
    cursor.close()
    os.close(fd)
+
 
 def sqlite3_cursor(dbname):
    conn = sqlite3.connect(dbname)
@@ -232,84 +197,6 @@ def logout(language='en'):
 @requires_auth
 def is_logged_in():
     return jsonify(username=session['user']), 200
-
-def get_db(dbname=None):
-    """
-    Opens a new database connection if there is none yet for the
-    current application context.
-    """
-    if dbname is None: dbname=app.config['DB_NAME']
-    if not hasattr(g, 'db_conn'):
-        g.db_conn=dict()
-        g.db_conn[dbname] = connect_db(dbname)
-    elif dbname not in g.db_conn:
-        g.db_conn[dbname] = connect_db(dbname)
-    return g.db_conn[dbname]
-
-
-
-
-def parse_tabix_file_subset(tabix_filenames, subset_i, subset_n, record_parser):
-    """
-    Returns a generator of parsed record objects (as returned by record_parser) for the i'th out n subset of records
-    across all the given tabix_file(s). The records are split by files and contigs within files, with 1/n of all contigs
-    from all files being assigned to this the i'th subset.
-
-    Args:
-        tabix_filenames: a list of one or more tabix-indexed files. These will be opened using pysam.Tabixfile
-        subset_i: zero-based number
-        subset_n: total number of subsets
-        record_parser: a function that takes a file-like object and returns a generator of parsed records
-    """
-    start_time = time.time()
-    print(tabix_filenames)
-    open_tabix_files = [pysam.Tabixfile(tabix_filename) for tabix_filename in tabix_filenames]
-    tabix_file_contig_pairs = [(tabix_file, contig) for tabix_file in open_tabix_files for contig in tabix_file.contigs]
-    # get every n'th tabix_file/contig pair
-    tabix_file_contig_subset = tabix_file_contig_pairs[subset_i : : subset_n]
-    short_filenames = ", ".join(map(os.path.basename, tabix_filenames))
-    print(short_filenames)
-    num_file_contig_pairs = len(tabix_file_contig_subset)
-    print(("Loading subset %(subset_i)s of %(subset_n)s total: %(num_file_contig_pairs)s contigs from %(short_filenames)s") % locals())
-    counter = 0
-    for tabix_file, contig in tabix_file_contig_subset:
-        header_iterator = tabix_file.header
-        records_iterator = tabix_file.fetch(contig, 0, 10**9, multiple_iterators=True)
-        for parsed_record in record_parser(itertools.chain(header_iterator, records_iterator)):
-            counter += 1
-            yield parsed_record
-            if counter % 100000 == 0:
-                seconds_elapsed = int(time.time()-start_time)
-                print(("Loaded %(counter)s records from subset %(subset_i)s of %(subset_n)s from %(short_filenames)s " "(%(seconds_elapsed)s seconds)") % locals())
-    print("Finished loading subset %(subset_i)s from  %(short_filenames)s (%(counter)s records)" % locals())
-
-
-#@app.route('/patient/<patient_str>')
-#def get_patient(patient_str): return patient_str
-def generate_patient_table():
-    def get_variants(variant_ids):
-        for vid in db.variants.find({'variant_id':{'$in':variant_ids}}):
-            yield 
-
-def encrypt(s):
-    obj=DES.new(session['password'][:8], DES.MODE_ECB)
-    s=s+(8-(len(s) % 8))*' '
-    s=obj.encrypt(s)
-    s=base64.urlsafe_b64encode(s)
-    return s
-
-def decrypt(s):
-    obj=DES.new(session['password'][:8], DES.MODE_ECB)
-    s=base64.urlsafe_b64decode(str(s))
-    s=obj.decrypt(s)
-    s=s.replace(' ','')
-    return s
-
-@app.route('/Exomiser/<path:path>')
-@requires_auth
-def exomiser_page(path):
-    #is this user authorized to see this patient?
-    return send_from_directory('Exomiser', path)
 
 @app.after_request
 def apply_caching(response):

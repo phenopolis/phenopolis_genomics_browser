@@ -1,8 +1,5 @@
 from views import *
-from lookups import *
-import re
-from utils import *
-import csv
+
 
 @app.route('/<language>/hpo/<hpo_id>')
 @app.route('/<language>/hpo/<hpo_id>/<subset>')

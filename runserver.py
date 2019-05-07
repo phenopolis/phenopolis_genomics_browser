@@ -1,4 +1,3 @@
-import sys
 from views import *
 
 # Load default config and override config from an environment variable

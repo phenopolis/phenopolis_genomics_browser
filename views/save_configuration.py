@@ -1,5 +1,4 @@
 from views import *
-from lookups import *
 
 @app.route('/<language>/save_configuration/<pageType>/<pagePart>', methods=['POST'])
 @app.route('/save_configuration/<pageType>/<pagePart>', methods=['POST'])
