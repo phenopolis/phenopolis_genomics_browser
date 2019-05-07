@@ -1,5 +1,6 @@
 from views import *
 
+
 @app.route('/<language>/variant/<variant_id>')
 @app.route('/<language>/variant/<variant_id>/<subset>')
 @app.route('/variant/<variant_id>')
