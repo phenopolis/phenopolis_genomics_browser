@@ -266,8 +266,8 @@ The [phenopolis_frontend](https://github.com/phenopolis/phenopolis_frontend]) is
 
 * The gene page: https://phenopolis.org/gene/ENSG00000119685
 * The phenotype page: https://phenopolis.org/hpo/HP:0000639
-* The individual (aka patient) page: 
-* The variant page: 
+* The individual (aka patient) page: https://phenopolis.org/individual/PH00000001
+* The variant page: https://phenopolis.org/variant/2-112614429-G-A
 
 
 The JSON config files are user-specific files which allow the user to save their display preferences for each page.  They are stored under `response_templates/` dir.
@@ -349,7 +349,7 @@ autocomplete.py:@app.route('/best_guess')
 
 #### /gene
 
-Endpoint called by the [gene](https://phenopolis.org/gene/TTLL5]) page, will return all variants in a gene.
+Endpoint called by the [gene](https://phenopolis.org/gene/TTLL5]) page, will return all variants in a gene (see [examplar_data](https://github.com/phenopolis/phenopolis_api/blob/master/exemplar_data/gene-ENSG00000119685.json)):
 
 ```
 gene.py:@app.route('/<language>/gene/<gene_id>')
@@ -361,6 +361,7 @@ gene.py:@app.route('/gene/<gene_id>/<subset>')
 #### /hpo
 
 Endpoint called by the [phenotype](https://phenopolis.org/hpo/HP:0000639]) page.
+Will return all individuals with that HPO term (appearing in the ancestor terms) (see [examplar_data](https://github.com/phenopolis/phenopolis_api/blob/master/exemplar_data/hpo-HP:0000550.json)):
 
 ```
 hpo.py:@app.route('/<language>/hpo/<hpo_id>')
@@ -372,6 +373,7 @@ hpo.py:@app.route('/hpo/<hpo_id>/<subset>')
 #### /individual
 
 Endpoint called by the [individual](https://phenopolis.org/individual/PH00008268]) page.
+Will return all variants for that individual (see [examplar_data](https://github.com/phenopolis/phenopolis_api/blob/master/exemplar_data/individual-PH00000001.json)):
 
 ```
 individual.py:@app.route('/<language>/individual/<individual_id>')
@@ -392,6 +394,7 @@ individual.py:@app.route('/update_patient_data/<individual_id>',methods=['POST']
 #### /variant
 
 Endpoint called by the [variant](https://phenopolis.org/variant/22-38212762-A-G]) page.
+See [examplar_data](https://github.com/phenopolis/phenopolis_api/blob/master/exemplar_data/variant-14-76127692-C-G.json) for example response.
 
 ```
 variant.py:@app.route('/<language>/variant/<variant_id>')
