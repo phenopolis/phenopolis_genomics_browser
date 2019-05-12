@@ -46,7 +46,7 @@ def individual(individual_id, subset='all', language='en'):
        x[0]['preview']=[
                ['External_id', ind['external_id']],
                ['Sex', ind['sex']],
-               ['Genes', [g for g in ind.get('genes','').split(',')]],
+               ['Genes', [{'display':g} for g in ind.get('genes','').split(',')]],
                ['Features',[f for f in ind['simplified_observed_features_names'].split(',')]],
                ['Number of hom variants',hom_count],
                ['Number of compound hets',comp_het_count],
