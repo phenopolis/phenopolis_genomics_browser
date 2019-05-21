@@ -214,6 +214,7 @@ import views.gene
 import views.variant
 import views.individual
 import views.hpo
+import views.hpo_app
 import views.users
 import views.autocomplete
 import views.save_configuration
