@@ -1,5 +1,16 @@
 from views import *
 
+def get_hpo_ids_per_gene(variants,ind):
+   c,fd,=sqlite3_ro_cursor(app.config['PHENOPOLIS_DB'])
+   for y in variants:
+       query=""" select * from gene_hpo where gene_symbol='%s' """ % (y['gene_symbol'])
+       c.execute(query)
+       gene_hpo_ids=[dict(zip( [h[0] for h in c.description] ,r)) for r in c.fetchall()]
+       y['hpo_terms']=[{'display': c.execute("select hpo_name from hpo where hpo_id=? limit 1",(gh['hpo_id'],)).fetchone()[0], 'end_href':gh['hpo_id']} for gh in gene_hpo_ids if gh['hpo_id'] in ind['ancestor_observed_features'].split(';')]
+       #print y['hpo_terms']
+   sqlite3_ro_close(c,fd)
+   return variants
+
 @app.route('/<language>/individual/<individual_id>')
 @app.route('/<language>/individual/<individual_id>/<subset>')
 @app.route('/individual/<individual_id>')
@@ -64,6 +75,7 @@ def individual(individual_id, subset='all', language='en'):
    print query
    c.execute(query)
    hom_variants=[dict(zip( [h[0] for h in c.description] ,r)) for r in c.fetchall()]
+   hom_variants=get_hpo_ids_per_gene(hom_variants,ind)
    x[0]['rare_homs']['data']=hom_variants
    # rare variants
    query=""" select v.*
@@ -72,15 +84,19 @@ def individual(individual_id, subset='all', language='en'):
       hv."#CHROM"=v."#CHROM"
       and hv."POS"=v."POS"
       and hv."REF"=v."REF"
-      and hv."ALT"=v."ALT" and hv.individual='%s' """ % (ind['external_id'],)
+      and hv."ALT"=v."ALT"
+      and hv.individual='%s' """ % (ind['external_id'],)
    print query
    c.execute(query)
    rare_variants=[dict(zip( [h[0] for h in c.description],r)) for r in c.fetchall()]
+   rare_variants=get_hpo_ids_per_gene(rare_variants,ind)
    sqlite3_ro_close(c,fd)
    x[0]['rare_variants']['data']=rare_variants
    # rare_comp_hets
    gene_counter=Counter([v['gene_symbol'] for v in x[0]['rare_variants']['data']])
-   x[0]['rare_comp_hets']['data']=[v for v in x[0]['rare_variants']['data'] if gene_counter[v['gene_symbol']]>1]
+   rare_comp_hets_variants=[v for v in x[0]['rare_variants']['data'] if gene_counter[v['gene_symbol']]>1]
+   rare_comp_hets_variants=get_hpo_ids_per_gene(rare_comp_hets_variants,ind)
+   x[0]['rare_comp_hets']['data']=rare_comp_hets_variants
    if not x[0]['metadata']['data']: x[0]['metadata']['data']=[dict()]
    x[0]['metadata']['data'][0]['sex']=ind['sex']
    x[0]['metadata']['data'][0]['internal_id']=[{'display':ind['internal_id']}]
