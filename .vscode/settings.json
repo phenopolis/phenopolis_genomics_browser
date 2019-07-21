@@ -1,0 +1,7 @@
+{
+    "prettier.breakProperty": true,
+    "prettier.jsxBracketSameLine": true,
+    "prettier.jsxSingleQuote": true,
+    "prettier.tabWidth": 2,
+    "editor.tabSize": 2
+}
