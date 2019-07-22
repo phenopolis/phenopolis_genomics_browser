@@ -1,5 +1,6 @@
 import React from 'react';
 import LearnReact from './page/LearnReact';
+import HomeAppBar from './components/Home/HomeAppBar';
 import Home from './page/Home';
 import { BrowserRouter as Router, Route, Link } from 'react-router-dom';
 
@@ -10,6 +11,7 @@ function App() {
 	return (
 		<Router>
 			<div>
+				<HomeAppBar />
 				<Route exact path='/' component={Home} />
 				<Route path='/about' component={About} />
 				<Route path='/topics' component={Topics} />
