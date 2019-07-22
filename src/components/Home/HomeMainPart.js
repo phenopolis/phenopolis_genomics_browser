@@ -24,13 +24,13 @@ class HomeMainPart extends React.Component {
 			<div>
 				<Parallax
 					bgImage={
-						'https://images.unsplash.com/photo-1498092651296-641e88c3b057?auto=format&fit=crop&w=1778&q=60&ixid=dW5zcGxhc2guY29tOzs7Ozs%3D'
+						'https://phenopolis.org/img/background_home_huba354509b6d67923f1003b5d2066e375_1005018_2560x0_resize_q75_box.jpg'
 					}
 					strength={500}>
 					<div style={{ height: 500 }}>
 						<Grid container justify='center'>
 							<Box display='flex' alignItems='center' css={{ height: 500 }}>
-								<div style={{ 'text-align': 'center' }}>
+								<div style={{ 'text-align': 'center', color: 'white' }}>
 									<Typography variant='h2' align='center' gutterBottom>
 										Phenopolis
 									</Typography>
