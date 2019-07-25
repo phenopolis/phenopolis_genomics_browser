@@ -19,6 +19,10 @@ import MenuIcon from '@material-ui/icons/Menu';
 import DescriptionIcon from '@material-ui/icons/Description';
 import AccountCircleIcon from '@material-ui/icons/AccountCircle';
 
+import Dialog from '@material-ui/core/Dialog';
+
+import LoginBox from '../AppBar/LoginBox';
+
 const styles = (theme) => ({
 	appbar: {
 		backgroundColor: '#2E84CF'
@@ -42,9 +46,16 @@ class HomeAppBar extends React.Component {
 	constructor(props) {
 		super(props);
 		this.state = {
-			value: null
+			openLoginDialog: false
 		};
 	}
+
+	OpenDialog() {
+		this.setState({
+			openLoginDialog: !this.state.openLoginDialog
+		});
+	}
+
 	render() {
 		const { classes } = this.props;
 
@@ -83,6 +94,7 @@ class HomeAppBar extends React.Component {
 									label='Login'
 									showLabel
 									icon={<AccountCircleIcon />}
+									onClick={() => this.OpenDialog()}
 								/>
 							</Grid>
 						</Hidden>
@@ -90,6 +102,14 @@ class HomeAppBar extends React.Component {
 						<Grid item />
 					</Grid>
 				</Toolbar>
+
+				<Dialog
+					open={this.state.openLoginDialog}
+					onClose={() => this.OpenDialog()}
+					aria-labelledby='alert-dialog-title'
+					aria-describedby='alert-dialog-description'>
+					<LoginBox />
+				</Dialog>
 			</AppBar>
 		);
 	}

@@ -4,7 +4,7 @@ import { withStyles } from '@material-ui/core/styles';
 import withWidth from '@material-ui/core/withWidth';
 import compose from 'recompose/compose';
 
-import Grid from '@material-ui/core/Grid';
+import Container from '@material-ui/core/Container';
 import Box from '@material-ui/core/Box';
 import Typography from '@material-ui/core/Typography';
 
@@ -36,39 +36,37 @@ class PublicationList extends React.Component {
 
 		return (
 			<div className={classes.root}>
-				<Grid container justify='center'>
-					<Grid item xs={12} md={8}>
-						{pl.map((section) => {
-							return (
-								<Typography component='div'>
-									<Box fontWeight='fontWeightBold' fontSize='h4.fontSize' m={1}>
-										{section.title}
-									</Box>
-									{section.data.map((subsection) => {
-										return (
-											<div>
-												<Box fontWeight='fontWeightBold' fontSize='h5.fontSize' m={1}>
-													{subsection.subtitle}
-												</Box>
-												{subsection.publications.map((paper, index) => {
-													return (
-														<Box className={classes.paperbox} fontSize='subtitle1.fontSize' m={1}>
-															{index + 1} .{' '}
-															<a className={classes.paperlink} href={paper.link}>
-																{paper.title}
-															</a>
-															{paper.display}
-														</Box>
-													);
-												})}
-											</div>
-										);
-									})}
-								</Typography>
-							);
-						})}
-					</Grid>
-				</Grid>
+				<Container maxWidth='md'>
+					{pl.map((section) => {
+						return (
+							<Typography component='div'>
+								<Box fontWeight='fontWeightBold' fontSize='h4.fontSize' m={1}>
+									{section.title}
+								</Box>
+								{section.data.map((subsection) => {
+									return (
+										<div>
+											<Box fontWeight='fontWeightBold' fontSize='h5.fontSize' m={1}>
+												{subsection.subtitle}
+											</Box>
+											{subsection.publications.map((paper, index) => {
+												return (
+													<Box className={classes.paperbox} fontSize='subtitle1.fontSize' m={1}>
+														{index + 1} .{' '}
+														<a className={classes.paperlink} href={paper.link}>
+															{paper.title}
+														</a>
+														{paper.display}
+													</Box>
+												);
+											})}
+										</div>
+									);
+								})}
+							</Typography>
+						);
+					})}
+				</Container>
 			</div>
 		);
 	}
