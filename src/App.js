@@ -2,6 +2,7 @@ import React from 'react';
 import LearnReact from './page/LearnReact';
 import HomeAppBar from './components/Home/HomeAppBar';
 import Home from './page/Home';
+import Publication from './page/Publication';
 import { BrowserRouter as Router, Route, Link } from 'react-router-dom';
 
 // ***********************************************
@@ -13,7 +14,7 @@ function App() {
 			<div>
 				<HomeAppBar />
 				<Route exact path='/' component={Home} />
-				<Route path='/about' component={About} />
+				<Route path='/publication' component={Publication} />
 				<Route path='/topics' component={Topics} />
 				<Route path='/LearnReact' component={LearnReact} />
 			</div>
@@ -24,10 +25,6 @@ function App() {
 // function Home() {
 //   return <h2>Home</h2>;
 // }
-
-function About() {
-	return <h2>About</h2>;
-}
 
 function Topic({ match }) {
 	return <h3>Requested Param: {match.params.id}</h3>;

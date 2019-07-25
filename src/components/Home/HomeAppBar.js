@@ -3,6 +3,7 @@ import PropTypes from 'prop-types';
 import { withStyles } from '@material-ui/core/styles';
 import withWidth from '@material-ui/core/withWidth';
 import compose from 'recompose/compose';
+import { Link } from 'react-router-dom';
 
 import AppBar from '@material-ui/core/AppBar';
 import Grid from '@material-ui/core/Grid';
@@ -71,6 +72,8 @@ class HomeAppBar extends React.Component {
 									label='Publication'
 									showLabel
 									icon={<DescriptionIcon />}
+									component={Link}
+									to='/Publication'
 								/>
 								<BottomNavigationAction
 									className={classes.navigationbutton}

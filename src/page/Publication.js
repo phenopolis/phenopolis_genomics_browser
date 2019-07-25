@@ -1,6 +1,5 @@
 import React from 'react';
 import CssBaseline from '@material-ui/core/CssBaseline';
-import HomeMainPart from '../components/Home/HomeMainPart';
 import HomeBanner from '../components/Home/HomeBanner';
 
 class Home extends React.Component {
@@ -9,7 +8,6 @@ class Home extends React.Component {
 			<React.Fragment>
 				<CssBaseline />
 				<HomeBanner />
-				<HomeMainPart />
 			</React.Fragment>
 		);
 	}
