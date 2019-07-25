@@ -19,6 +19,13 @@ const styles = (theme) => ({
 });
 
 class HomeBanner extends React.Component {
+	constructor(props) {
+		super(props);
+		this.state = {
+			BannerText: null
+		};
+	}
+
 	render() {
 		const { classes } = this.props;
 
@@ -34,7 +41,7 @@ class HomeBanner extends React.Component {
 							<Box display='flex' alignItems='center' css={{ height: 500 }}>
 								<div className={classes.bannertext}>
 									<Typography variant='h2' align='center' gutterBottom>
-										Phenopolis
+										{this.props.BannerText}
 									</Typography>
 									<Typography variant='h6' align='center' gutterBottom>
 										Harmonization & Analysis of Sequencing & Phenotype Data

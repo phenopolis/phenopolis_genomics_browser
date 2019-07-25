@@ -7,7 +7,7 @@ class Home extends React.Component {
 		return (
 			<React.Fragment>
 				<CssBaseline />
-				<HomeBanner />
+				<HomeBanner BannerText='Publications' />
 			</React.Fragment>
 		);
 	}
