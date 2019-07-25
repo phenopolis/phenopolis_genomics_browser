@@ -1,6 +1,7 @@
 import React from 'react';
 import CssBaseline from '@material-ui/core/CssBaseline';
 import HomeBanner from '../components/Home/HomeBanner';
+import PublicationList from '../components/Publication/PublicationList';
 
 class Home extends React.Component {
 	render() {
@@ -8,6 +9,7 @@ class Home extends React.Component {
 			<React.Fragment>
 				<CssBaseline />
 				<HomeBanner BannerText='Publications' />
+				<PublicationList />
 			</React.Fragment>
 		);
 	}

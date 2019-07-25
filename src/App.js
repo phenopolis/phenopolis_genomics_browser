@@ -14,7 +14,7 @@ function App() {
 			<div>
 				<HomeAppBar />
 				<Route exact path='/' component={Home} />
-				<Route path='/publication' component={Publication} />
+				<Route path='/publications' component={Publication} />
 				<Route path='/topics' component={Topics} />
 				<Route path='/LearnReact' component={LearnReact} />
 			</div>

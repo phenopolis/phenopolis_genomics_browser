@@ -26,6 +26,9 @@ const styles = (theme) => ({
 	menuicon: {
 		color: 'white'
 	},
+	Homelabel: {
+		textDecoration: 'none'
+	},
 	root: {
 		width: 100,
 		backgroundColor: '#2E84CF'
@@ -60,7 +63,7 @@ class HomeAppBar extends React.Component {
 							<Grid item />
 						</Hidden>
 						<Grid item>
-							<Typography variant='h6' color='inherit' noWrap>
+							<Typography className={classes.Homelabel} variant='h6' color='inherit' noWrap component={Link} to='/'>
 								Phenopolis
 							</Typography>
 						</Grid>
@@ -73,7 +76,7 @@ class HomeAppBar extends React.Component {
 									showLabel
 									icon={<DescriptionIcon />}
 									component={Link}
-									to='/Publication'
+									to='/publications'
 								/>
 								<BottomNavigationAction
 									className={classes.navigationbutton}

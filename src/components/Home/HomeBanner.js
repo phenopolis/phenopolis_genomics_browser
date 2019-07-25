@@ -31,11 +31,7 @@ class HomeBanner extends React.Component {
 
 		return (
 			<div>
-				<Parallax
-					bgImage={
-						'https://phenopolis.org/img/background_home_huba354509b6d67923f1003b5d2066e375_1005018_2560x0_resize_q75_box.jpg'
-					}
-					strength={500}>
+				<Parallax bgImage={require('../../assets/image/Homebanner.jpg')} strength={500}>
 					<div style={{ height: 500 }}>
 						<Grid container justify='center'>
 							<Box display='flex' alignItems='center' css={{ height: 500 }}>
