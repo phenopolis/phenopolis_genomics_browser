@@ -21,7 +21,12 @@ import AccountCircleIcon from '@material-ui/icons/AccountCircle';
 
 import Dialog from '@material-ui/core/Dialog';
 
-import LoginBox from '../AppBar/LoginBox';
+import LoginBox from '../components/AppBar/LoginBox';
+
+import { connect } from 'react-redux';
+import { getUsername } from '../redux/selectors';
+
+const mapStateToProps = (state) => ({ reduxName: getUsername(state) });
 
 const styles = (theme) => ({
 	appbar: {
@@ -50,6 +55,10 @@ class HomeAppBar extends React.Component {
 		};
 	}
 
+	getReduxName() {
+		return this.props.reduxName;
+	}
+
 	OpenDialog() {
 		this.setState({
 			openLoginDialog: !this.state.openLoginDialog
@@ -75,7 +84,7 @@ class HomeAppBar extends React.Component {
 						</Hidden>
 						<Grid item>
 							<Typography className={classes.Homelabel} variant='h6' color='inherit' noWrap component={Link} to='/'>
-								Phenopolis
+								{this.props.reduxName === '' ? 'Phenopolis' : this.props.reduxName}
 							</Typography>
 						</Grid>
 
@@ -108,7 +117,7 @@ class HomeAppBar extends React.Component {
 					onClose={() => this.OpenDialog()}
 					aria-labelledby='alert-dialog-title'
 					aria-describedby='alert-dialog-description'>
-					<LoginBox />
+					<LoginBox onLoginSuccess={() => this.OpenDialog()} />
 				</Dialog>
 			</AppBar>
 		);
@@ -120,4 +129,4 @@ HomeAppBar.propTypes = {
 	width: PropTypes.oneOf([ 'lg', 'md', 'sm', 'xl', 'xs' ]).isRequired
 };
 
-export default compose(withStyles(styles), withWidth())(HomeAppBar);
+export default compose(withStyles(styles), withWidth(), connect(mapStateToProps))(HomeAppBar);

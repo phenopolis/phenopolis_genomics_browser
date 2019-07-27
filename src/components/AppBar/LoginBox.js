@@ -1,6 +1,11 @@
 import React from 'react';
 import PropTypes from 'prop-types';
+import compose from 'recompose/compose';
 import { withStyles } from '@material-ui/core/styles';
+import Cookies from 'universal-cookie';
+
+import { connect } from 'react-redux';
+import { setUser } from '../../redux/actions';
 
 import Avatar from '@material-ui/core/Avatar';
 import Button from '@material-ui/core/Button';
@@ -9,6 +14,9 @@ import TextField from '@material-ui/core/TextField';
 import LockOutlinedIcon from '@material-ui/icons/LockOutlined';
 import Typography from '@material-ui/core/Typography';
 import Container from '@material-ui/core/Container';
+
+// import axios from 'axios';
+const qs = require('querystring');
 
 const styles = (theme) => ({
 	paper: {
@@ -30,13 +38,107 @@ const styles = (theme) => ({
 	},
 	textfild: {
 		color: '#2E84CF'
-	},
-	palette: {
-		primary: '#2E84CF'
 	}
 });
 
+const CssTextField = withStyles({
+	root: {
+		'& label.Mui-focused': {
+			color: '#2E84CF'
+		},
+		'& .MuiInput-underline:after': {
+			borderBottomColor: 'green'
+		},
+		'& .MuiOutlinedInput-root': {
+			'& fieldset': {
+				borderColor: 'lightgray'
+			},
+			'&:hover fieldset': {
+				borderColor: 'black'
+			},
+			'&.Mui-focused fieldset': {
+				borderColor: '#2E84CF'
+			}
+		}
+	}
+})(TextField);
+
 class LoginBox extends React.Component {
+	constructor(props) {
+		super(props);
+		this.state = {
+			name: '',
+			password: ''
+		};
+	}
+
+	handleSubmit = (event) => {
+		event.preventDefault();
+
+		const cookies = new Cookies();
+
+		const loginData = qs.stringify({
+			name: this.state.name,
+			password: this.state.password
+		});
+
+		// const config = {
+		// 	headers: {
+		// 		'Content-Type': 'application/x-www-form-urlencoded'
+		// 	}
+		// };
+
+		// axios
+		// 	.post('https://api.phenopolis.org/login', loginData, { withCredentials: true })
+		// 	.then((res) => {
+		// 		let respond = res.data;
+		// 		if (respond.success === 'Authenticated') {
+		// 			window.alert('Login Success!');
+		// 			cookies.set('username', respond.username, { path: '/', maxAge: 86400 * 60 * 24 * 30 });
+		// 			this.props.setUser(respond.username);
+		// 			this.props.onLoginSuccess();
+		// 		} else {
+		// 			window.alert('Login Failed.');
+		// 		}
+		// 	})
+		// 	.catch((err) => {
+		// 		window.alert('Login Failed.');
+		// 	});
+
+		fetch('https://api.phenopolis.org/login', {
+			method: 'POST',
+			body: loginData,
+			credentials: 'include',
+			headers: {
+				'Content-Type': 'application/x-www-form-urlencoded'
+			}
+		})
+			.then(function(response) {
+				if (response.status !== 200) {
+					console.log('Looks like there was a problem. Status Code: ' + response.status);
+					window.alert('Login Failed.');
+					return;
+				}
+				response.json().then(function(data) {
+					console.log(data.username);
+					window.alert('Login Success!');
+					cookies.set('username', data.username, { path: '/', maxAge: 86400 * 60 * 24 * 30 });
+				});
+			})
+			.catch(function(err) {
+				console.log('Fetch Error :-S', err);
+				window.alert('Login Error.');
+			});
+	};
+
+	handleNameChange = (event) => {
+		this.setState({ name: event.target.value });
+	};
+
+	handlePasswordChange = (event) => {
+		this.setState({ password: event.target.value });
+	};
+
 	render() {
 		const { classes } = this.props;
 
@@ -50,9 +152,12 @@ class LoginBox extends React.Component {
 					<Typography component='h1' variant='h6'>
 						Sign in
 					</Typography>
-					<form className={classes.form} noValidate>
-						<TextField
+
+					<form className={classes.form} noValidate onSubmit={this.handleSubmit}>
+						<CssTextField
 							className={classes.textfild}
+							value={this.state.name}
+							onChange={this.handleNameChange}
 							variant='outlined'
 							margin='normal'
 							required
@@ -62,8 +167,10 @@ class LoginBox extends React.Component {
 							name='name'
 							autoFocus
 						/>
-						<TextField
+						<CssTextField
 							className={classes.textfild}
+							value={this.state.password}
+							onChange={this.handlePasswordChange}
 							variant='outlined'
 							margin='normal'
 							required
@@ -74,7 +181,7 @@ class LoginBox extends React.Component {
 							id='password'
 						/>
 						<Button
-							type='button'
+							type='submit'
 							fullWidth
 							variant='contained'
 							className={classes.submit}
@@ -92,4 +199,4 @@ LoginBox.propTypes = {
 	classes: PropTypes.object.isRequired
 };
 
-export default withStyles(styles)(LoginBox);
+export default compose(withStyles(styles), connect(null, { setUser }))(LoginBox);

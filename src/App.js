@@ -1,24 +1,27 @@
 import React from 'react';
 import LearnReact from './page/LearnReact';
-import HomeAppBar from './components/Home/HomeAppBar';
+import HomeAppBar from './page/HomeAppBar';
 import Home from './page/Home';
 import Publication from './page/Publication';
 import { BrowserRouter as Router, Route, Link } from 'react-router-dom';
+import { CookiesProvider } from 'react-cookie';
 
 // ***********************************************
 // Router for each page, now I need to learn how to create various js vendor for each page.
 // ***********************************************
 function App() {
 	return (
-		<Router>
-			<div>
-				<HomeAppBar />
-				<Route exact path='/' component={Home} />
-				<Route path='/publications' component={Publication} />
-				<Route path='/topics' component={Topics} />
-				<Route path='/LearnReact' component={LearnReact} />
-			</div>
-		</Router>
+		<CookiesProvider>
+			<Router>
+				<div>
+					<HomeAppBar />
+					<Route exact path='/' component={Home} />
+					<Route path='/publications' component={Publication} />
+					<Route path='/topics' component={Topics} />
+					<Route path='/LearnReact' component={LearnReact} />
+				</div>
+			</Router>
+		</CookiesProvider>
 	);
 }
 
