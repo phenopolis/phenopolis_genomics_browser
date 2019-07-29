@@ -1,0 +1,10 @@
+[build]
+  publish = "build"
+  command = "npm run build"
+
+[[redirects]]
+  from = "/api/*"
+  to = "https://api.phenopolis.org/:splat"
+  status = 200
+  force = true
+  headers = {X-From = "Netlify"}
