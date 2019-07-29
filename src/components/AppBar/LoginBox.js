@@ -105,7 +105,7 @@ class LoginBox extends React.Component {
 		// 		window.alert('Login Failed.');
 		// 	});
 
-		fetch('https://api.phenopolis.org/login', {
+		fetch('/api/login', {
 			method: 'POST',
 			body: loginData,
 			credentials: 'include',
