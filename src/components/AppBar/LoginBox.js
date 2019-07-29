@@ -15,7 +15,7 @@ import LockOutlinedIcon from '@material-ui/icons/LockOutlined';
 import Typography from '@material-ui/core/Typography';
 import Container from '@material-ui/core/Container';
 
-// import axios from 'axios';
+import axios from 'axios';
 const qs = require('querystring');
 
 const styles = (theme) => ({
@@ -82,53 +82,49 @@ class LoginBox extends React.Component {
 			password: this.state.password
 		});
 
-		// const config = {
+		axios
+			.post('/api/login', loginData, { withCredentials: true })
+			.then((res) => {
+				let respond = res.data;
+				if (respond.success === 'Authenticated') {
+					window.alert('Login Success!');
+					cookies.set('username', respond.username, { path: '/', maxAge: 86400 * 60 * 24 * 30 });
+					this.props.setUser(respond.username);
+					this.props.onLoginSuccess();
+				} else {
+					window.alert('Login Failed.');
+				}
+			})
+			.catch((err) => {
+				window.alert('Login Failed.');
+			});
+
+		// fetch('/api/login', {
+		// 	method: 'POST',
+		// 	body: loginData,
+		// 	credentials: 'include',
 		// 	headers: {
 		// 		'Content-Type': 'application/x-www-form-urlencoded'
 		// 	}
-		// };
-
-		// axios
-		// 	.post('https://api.phenopolis.org/login', loginData, { withCredentials: true })
-		// 	.then((res) => {
-		// 		let respond = res.data;
-		// 		if (respond.success === 'Authenticated') {
-		// 			window.alert('Login Success!');
-		// 			cookies.set('username', respond.username, { path: '/', maxAge: 86400 * 60 * 24 * 30 });
-		// 			this.props.setUser(respond.username);
-		// 			this.props.onLoginSuccess();
-		// 		} else {
+		// })
+		// 	.then(function(response) {
+		// 		if (response.status !== 200) {
+		// 			console.log('Looks like there was a problem. Status Code: ' + response.status);
 		// 			window.alert('Login Failed.');
+		// 			return;
 		// 		}
+		// 		response.json().then(function(data) {
+		// 			console.log(data.username);
+		// 			window.alert('Login Success!');
+		// 			cookies.set('username', data.username, { path: '/', maxAge: 86400 * 60 * 24 * 30 });
+		// 			this.props.setUser(data.username);
+		// 			this.props.onLoginSuccess();
+		// 		});
 		// 	})
-		// 	.catch((err) => {
-		// 		window.alert('Login Failed.');
+		// 	.catch(function(err) {
+		// 		console.log('Fetch Error :-S', err);
+		// 		window.alert('Login Error.');
 		// 	});
-
-		fetch('/api/login', {
-			method: 'POST',
-			body: loginData,
-			credentials: 'include',
-			headers: {
-				'Content-Type': 'application/x-www-form-urlencoded'
-			}
-		})
-			.then(function(response) {
-				if (response.status !== 200) {
-					console.log('Looks like there was a problem. Status Code: ' + response.status);
-					window.alert('Login Failed.');
-					return;
-				}
-				response.json().then(function(data) {
-					console.log(data.username);
-					window.alert('Login Success!');
-					cookies.set('username', data.username, { path: '/', maxAge: 86400 * 60 * 24 * 30 });
-				});
-			})
-			.catch(function(err) {
-				console.log('Fetch Error :-S', err);
-				window.alert('Login Error.');
-			});
 	};
 
 	handleNameChange = (event) => {

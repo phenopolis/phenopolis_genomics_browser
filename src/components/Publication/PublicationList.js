@@ -37,21 +37,21 @@ class PublicationList extends React.Component {
 		return (
 			<div className={classes.root}>
 				<Container maxWidth='md'>
-					{pl.map((section) => {
+					{pl.map((section, sid) => {
 						return (
-							<Typography component='div'>
+							<Typography component='div' key={sid}>
 								<Box fontWeight='fontWeightBold' fontSize='h4.fontSize' m={1}>
 									{section.title}
 								</Box>
-								{section.data.map((subsection) => {
+								{section.data.map((subsection, ssid) => {
 									return (
-										<div>
+										<div key={ssid}>
 											<Box fontWeight='fontWeightBold' fontSize='h5.fontSize' m={1}>
 												{subsection.subtitle}
 											</Box>
 											{subsection.publications.map((paper, index) => {
 												return (
-													<Box className={classes.paperbox} fontSize='subtitle1.fontSize' m={1}>
+													<Box className={classes.paperbox} key={index} fontSize='subtitle1.fontSize' m={1}>
 														{index + 1} .{' '}
 														<a className={classes.paperlink} href={paper.link}>
 															{paper.title}
