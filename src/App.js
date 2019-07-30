@@ -3,6 +3,7 @@ import LearnReact from './page/LearnReact';
 import HomeAppBar from './page/HomeAppBar';
 import Home from './page/Home';
 import Publication from './page/Publication';
+import Search from './page/Search';
 import { BrowserRouter as Router, Route, Link } from 'react-router-dom';
 import { CookiesProvider } from 'react-cookie';
 
@@ -17,6 +18,8 @@ function App() {
 					<HomeAppBar />
 					<Route exact path='/' component={Home} />
 					<Route path='/publications' component={Publication} />
+					<Route path='/search' component={Search} />
+
 					<Route path='/topics' component={Topics} />
 					<Route path='/LearnReact' component={LearnReact} />
 				</div>

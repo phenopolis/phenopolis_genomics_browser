@@ -3,7 +3,7 @@ import CssBaseline from '@material-ui/core/CssBaseline';
 import HomeBanner from '../components/Home/HomeBanner';
 import PublicationList from '../components/Publication/PublicationList';
 
-class Home extends React.Component {
+class Publication extends React.Component {
 	render() {
 		return (
 			<React.Fragment>
@@ -15,4 +15,4 @@ class Home extends React.Component {
 	}
 }
 
-export default Home;
+export default Publication;
