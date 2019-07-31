@@ -3,6 +3,7 @@ import PropTypes from 'prop-types';
 import compose from 'recompose/compose';
 import { withStyles } from '@material-ui/core/styles';
 import Cookies from 'universal-cookie';
+import { Redirect } from 'react-router';
 
 import { connect } from 'react-redux';
 import { setUser } from '../../redux/actions';
@@ -68,7 +69,8 @@ class LoginBox extends React.Component {
 		super(props);
 		this.state = {
 			name: '',
-			password: ''
+			password: '',
+			redirect: false
 		};
 	}
 
@@ -87,8 +89,8 @@ class LoginBox extends React.Component {
 			.then((res) => {
 				let respond = res.data;
 				if (respond.success === 'Authenticated') {
-					window.alert('Login Success!');
 					cookies.set('username', respond.username, { path: '/', maxAge: 86400 * 60 * 24 * 30 });
+					this.setState({ redirect: true });
 					this.props.setUser(respond.username);
 					this.props.onLoginSuccess();
 				} else {
@@ -137,6 +139,10 @@ class LoginBox extends React.Component {
 
 	render() {
 		const { classes } = this.props;
+
+		if (this.state.redirect) {
+			return <Redirect to='/search' />;
+		}
 
 		return (
 			<Container component='main' maxWidth='xs'>

@@ -3,6 +3,7 @@ import PropTypes from 'prop-types';
 import { withStyles } from '@material-ui/core/styles';
 import withWidth from '@material-ui/core/withWidth';
 import compose from 'recompose/compose';
+import { Redirect } from 'react-router';
 
 import AppBar from '@material-ui/core/AppBar';
 
@@ -11,9 +12,6 @@ import LoginBar from '../components/AppBar/LoginBar';
 
 import { connect } from 'react-redux';
 import { getUsername } from '../redux/selectors';
-import { setUser } from '../redux/actions';
-
-import axios from 'axios';
 
 const mapStateToProps = (state) => ({ reduxName: getUsername(state) });
 
@@ -43,18 +41,9 @@ class HomeAppBar extends React.Component {
 	constructor(props) {
 		super(props);
 		this.state = {
-			openLoginDialog: false
+			openLoginDialog: false,
+			redirect: false
 		};
-	}
-
-	componentDidMount() {
-		axios
-			.get('/api/is_logged_in', { withCredentials: true })
-			.then((res) => {
-				let respond = res.data;
-				this.props.setUser(respond.username);
-			})
-			.catch((err) => {});
 	}
 
 	getReduxName() {
@@ -70,6 +59,10 @@ class HomeAppBar extends React.Component {
 	render() {
 		const { classes } = this.props;
 
+		if (this.state.redirect) {
+			return <Redirect to='/' />;
+		}
+
 		return (
 			<AppBar position='relative' className={classes.appbar}>
 				{this.props.reduxName === '' ? <NoLoginBar /> : <LoginBar username={this.props.reduxName} />}
@@ -83,4 +76,4 @@ HomeAppBar.propTypes = {
 	width: PropTypes.oneOf([ 'lg', 'md', 'sm', 'xl', 'xs' ]).isRequired
 };
 
-export default compose(withStyles(styles), withWidth(), connect(mapStateToProps, { setUser }))(HomeAppBar);
+export default compose(withStyles(styles), withWidth(), connect(mapStateToProps, {}))(HomeAppBar);

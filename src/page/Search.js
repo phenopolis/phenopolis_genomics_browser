@@ -4,6 +4,8 @@ import CssBaseline from '@material-ui/core/CssBaseline';
 import SearchBox from '../components/Search/SearchBox';
 
 class Search extends React.Component {
+	componentDidMount() {}
+
 	render() {
 		return (
 			<React.Fragment>
