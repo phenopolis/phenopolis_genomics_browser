@@ -50,7 +50,7 @@ class Gene extends React.Component {
 					<CssBaseline />
 					<div className={classes.root}>
 						<MetaData metadata={this.state.geneInfo.metadata} />
-						<Variants />
+						<Variants variants={this.state.geneInfo.variants} />
 					</div>
 				</React.Fragment>
 			);
