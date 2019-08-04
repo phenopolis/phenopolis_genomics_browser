@@ -92,6 +92,13 @@ class Variant extends React.Component {
 		this.state = {
 			variants: JSON.parse(JSON.stringify(this.props.variants.data)),
 			header: JSON.parse(JSON.stringify(this.props.variants.colNames)),
+			filter: JSON.parse(
+				JSON.stringify(
+					this.props.variants.colNames.map((element) => {
+						return { column: element.key, operation: null, filter: '' };
+					})
+				)
+			),
 			rowsPerPage: 10,
 			page: 0,
 			order: 'asc',
@@ -112,6 +119,75 @@ class Variant extends React.Component {
 		const isDesc = this.state.orderBy === property && this.state.order === 'desc';
 		this.setState({ order: isDesc ? 'asc' : 'desc' });
 		this.setState({ orderBy: property });
+	};
+
+	handleUpdateFilter = (operation, filter, index) => {
+		const newFilter = [ ...this.state.filter ];
+		newFilter[index].operation = operation;
+		newFilter[index].filter = filter;
+		this.setState({ filter: newFilter });
+	};
+
+	columnFilter = (data, filters) => {
+		var filtered = data.filter((item) => {
+			var judge = true;
+			Array.prototype.forEach.call(filters, (filter, index) => {
+				switch (filter.operation) {
+					case '>':
+						if (Number(item[filter.column]) > filter.filter) {
+							break;
+						} else {
+							judge = false;
+							break;
+						}
+					case '>=':
+						if (Number(item[filter.column]) >= filter.filter) {
+							break;
+						} else {
+							judge = false;
+							break;
+						}
+					case '<':
+						if (Number(item[filter.column]) < filter.filter) {
+							break;
+						} else {
+							judge = false;
+							break;
+						}
+					case '<=':
+						if (Number(item[filter.column]) <= filter.filter) {
+							break;
+						} else {
+							judge = false;
+							break;
+						}
+					case 'search':
+						if (typeof item[filter.column] === 'string') {
+							if (RegExp(filter.filter).test(item[filter.column])) {
+								break;
+							} else {
+								judge = false;
+								break;
+							}
+						} else {
+							let displays = item[filter.column].filter((i) => {
+								RegExp(filter.filter).test(i.display);
+							});
+							if (displays.length > 0) {
+								break;
+							} else {
+								judge = false;
+								break;
+							}
+						}
+
+					default:
+						break;
+				}
+			});
+			return judge;
+		});
+		return filtered;
 	};
 
 	render() {
@@ -153,12 +229,17 @@ class Variant extends React.Component {
 										<Table className={classes.table}>
 											<TableHeader
 												header={this.state.header}
+												filter={this.state.filter}
 												order={this.state.order}
 												orderBy={this.state.orderBy}
 												onRequestSort={this.handleRequestSort}
+												onUpdateFilter={this.handleUpdateFilter}
 											/>
 											<TableBody>
-												{stableSort(this.state.variants, getSorting(this.state.order, this.state.orderBy))
+												{stableSort(
+													this.columnFilter(this.state.variants, this.state.filter),
+													getSorting(this.state.order, this.state.orderBy)
+												)
 													.slice(
 														this.state.page * this.state.rowsPerPage,
 														this.state.page * this.state.rowsPerPage + this.state.rowsPerPage
@@ -176,7 +257,7 @@ class Variant extends React.Component {
 																					row[h.key].map((chip, j) => {
 																						return (
 																							<Chip
-																								key={m}
+																								key={j}
 																								size='small'
 																								label={chip.display}
 																								className={classes.chip}
@@ -190,7 +271,7 @@ class Variant extends React.Component {
 																			</TableCell>
 																		);
 																	} else {
-																		return <div />;
+																		return null;
 																	}
 																})}
 															</TableRow>
