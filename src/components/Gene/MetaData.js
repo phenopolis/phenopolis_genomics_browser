@@ -49,7 +49,7 @@ class MetaData extends React.Component {
 		return (
 			<React.Fragment>
 				<CssBaseline />
-				<Container maxWidth='lg'>
+				<Container maxWidth='xl'>
 					<Paper className={classes.paper}>
 						<div className={classes.root}>
 							<Typography component='div'>
