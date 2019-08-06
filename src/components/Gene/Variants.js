@@ -10,6 +10,11 @@ import Box from '@material-ui/core/Box';
 import Chip from '@material-ui/core/Chip';
 import Grid from '@material-ui/core/Grid';
 
+import Collapse from '@material-ui/core/Collapse';
+import Checkbox from '@material-ui/core/Checkbox';
+import FormControlLabel from '@material-ui/core/FormControlLabel';
+import Tooltip from '@material-ui/core/Tooltip';
+
 import Table from '@material-ui/core/Table';
 import TableBody from '@material-ui/core/TableBody';
 import TableCell from '@material-ui/core/TableCell';
@@ -18,6 +23,7 @@ import TablePagination from '@material-ui/core/TablePagination';
 
 import TableHeader from '../Table/TableHeader';
 import TablePaginationActions from '../Table/TablePaginationActions';
+import Button from '@material-ui/core/Button';
 
 const styles = (theme) => ({
 	paper: {
@@ -59,8 +65,22 @@ const styles = (theme) => ({
 	pagination: {
 		float: 'right',
 		border: '0px'
+	},
+	button: {
+		margin: theme.spacing(1),
+		borderColor: '#2E84CF',
+		color: '#2E84CF'
+	},
+	tooltip: {
+		fontSize: '3em'
 	}
 });
+
+const StyledTooltip = withStyles({
+	tooltip: {
+		fontSize: '1em'
+	}
+})(Tooltip);
 
 function desc(a, b, orderBy) {
 	if (b[orderBy] < a[orderBy]) {
@@ -91,6 +111,7 @@ class Variant extends React.Component {
 		super(props);
 		this.state = {
 			variants: JSON.parse(JSON.stringify(this.props.variants.data)),
+			filtered: JSON.parse(JSON.stringify(this.props.variants.data)),
 			header: JSON.parse(JSON.stringify(this.props.variants.colNames)),
 			filter: JSON.parse(
 				JSON.stringify(
@@ -102,7 +123,9 @@ class Variant extends React.Component {
 			rowsPerPage: 10,
 			page: 0,
 			order: 'asc',
-			orderBy: 'variant_id'
+			orderBy: 'variant_id',
+			checkfilter: false,
+			checkedB: false
 		};
 	}
 
@@ -126,6 +149,21 @@ class Variant extends React.Component {
 		newFilter[index].operation = operation;
 		newFilter[index].filter = filter;
 		this.setState({ filter: newFilter });
+		this.columnFilter(this.state.variants, this.state.filter);
+	};
+
+	handleCheckFilter = () => {
+		this.setState({ checkfilter: !this.state.checkfilter });
+	};
+
+	handleCheckChange = (index) => (event) => {
+		// console.log(index);
+		// console.log(event.target.checked);
+		// this.setState({ checkedB: event.target.checked });
+
+		const newHeader = [ ...this.state.header ];
+		newHeader[index].default = event.target.checked;
+		this.setState({ header: newHeader });
 	};
 
 	columnFilter = (data, filters) => {
@@ -162,7 +200,7 @@ class Variant extends React.Component {
 							break;
 						}
 					case 'search':
-						if (typeof item[filter.column] === 'string') {
+						if (typeof item[filter.column] !== 'object') {
 							if (RegExp(filter.filter).test(item[filter.column])) {
 								break;
 							} else {
@@ -170,8 +208,8 @@ class Variant extends React.Component {
 								break;
 							}
 						} else {
-							let displays = item[filter.column].filter((i) => {
-								RegExp(filter.filter).test(i.display);
+							let displays = item[filter.column].filter((chip) => {
+								return RegExp(filter.filter).test(chip.display);
 							});
 							if (displays.length > 0) {
 								break;
@@ -187,7 +225,8 @@ class Variant extends React.Component {
 			});
 			return judge;
 		});
-		return filtered;
+		// return filtered;
+		this.setState({ filtered: filtered });
 	};
 
 	render() {
@@ -206,13 +245,48 @@ class Variant extends React.Component {
 								Here are a list of variants found within this gene.
 							</Box>
 						</Typography>
+
+						<Button
+							variant='outlined'
+							className={classes.button}
+							onClick={(event) => this.handleCheckFilter('test', event)}>
+							Select Table Column
+						</Button>
+						<div className={classes.container}>
+							<Collapse in={this.state.checkfilter}>
+								<Paper elevation={0} className={classes.paper}>
+									<Grid container>
+										{this.state.header.map((h, i) => {
+											return (
+												<Grid item xs={12} sm={6} md={3} lg={2} style={{ margin: 0, padding: 0 }}>
+													<StyledTooltip title={h.description} placement='top'>
+														<FormControlLabel
+															control={
+																<Checkbox
+																	checked={h.default}
+																	onChange={this.handleCheckChange(i)}
+																	// value='checkedB'
+																	color='primary'
+																/>
+															}
+															label={h.name}
+														/>
+													</StyledTooltip>
+												</Grid>
+											);
+										})}
+									</Grid>
+								</Paper>
+							</Collapse>
+						</div>
+
 						<div className={classes.root}>
 							<Grid container direction='column' justify='center' alignItems='stretch'>
 								<Grid item xs={12}>
 									<TablePagination
 										className={classes.pagination}
 										rowsPerPageOptions={[ 25, 50, 75, 100 ]}
-										count={this.state.variants.length}
+										count={this.state.filtered.length}
 										rowsPerPage={this.state.rowsPerPage}
 										page={this.state.page}
 										SelectProps={{
@@ -236,10 +310,7 @@ class Variant extends React.Component {
 												onUpdateFilter={this.handleUpdateFilter}
 											/>
 											<TableBody>
-												{stableSort(
-													this.columnFilter(this.state.variants, this.state.filter),
-													getSorting(this.state.order, this.state.orderBy)
-												)
+												{stableSort(this.state.filtered, getSorting(this.state.order, this.state.orderBy))
 													.slice(
 														this.state.page * this.state.rowsPerPage,
 														this.state.page * this.state.rowsPerPage + this.state.rowsPerPage
@@ -285,7 +356,7 @@ class Variant extends React.Component {
 									<TablePagination
 										rowsPerPageOptions={[ 10, 25, 50, 75, 100 ]}
 										className={classes.pagination}
-										count={this.state.variants.length}
+										count={this.state.filtered.length}
 										rowsPerPage={this.state.rowsPerPage}
 										page={this.state.page}
 										SelectProps={{
