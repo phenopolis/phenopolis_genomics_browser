@@ -4,15 +4,15 @@ import HomeMainPart from '../components/Home/HomeMainPart';
 import HomeBanner from '../components/Home/HomeBanner';
 
 class Home extends React.Component {
-	render() {
-		return (
-			<React.Fragment>
-				<CssBaseline />
-				<HomeBanner BannerText='Phenopolis' />
-				<HomeMainPart />
-			</React.Fragment>
-		);
-	}
+  render() {
+    return (
+      <React.Fragment>
+        <CssBaseline />
+        <HomeBanner BannerText='Phenopolis' />
+        <HomeMainPart />
+      </React.Fragment>
+    );
+  }
 }
 
 export default Home;

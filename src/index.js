@@ -13,10 +13,10 @@ import 'typeface-roboto';
 
 // Here by default APP.js was set as the entrence of whole App.
 ReactDOM.render(
-	<Provider store={store}>
-		<App />
-	</Provider>,
-	document.getElementById('root')
+  <Provider store={store}>
+    <App />
+  </Provider>,
+  document.getElementById('root')
 );
 
 // If you want your app to work offline and load faster, you can change

@@ -4,15 +4,15 @@ import HomeBanner from '../components/Home/HomeBanner';
 import PublicationList from '../components/Publication/PublicationList';
 
 class Publication extends React.Component {
-	render() {
-		return (
-			<React.Fragment>
-				<CssBaseline />
-				<HomeBanner BannerText='Publications' />
-				<PublicationList />
-			</React.Fragment>
-		);
-	}
+  render() {
+    return (
+      <>
+        <CssBaseline />
+        <HomeBanner BannerText='Publications' />
+        <PublicationList />
+      </>
+    );
+  }
 }
 
 export default Publication;

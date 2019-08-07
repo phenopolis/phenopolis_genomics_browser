@@ -4,16 +4,16 @@ import CssBaseline from '@material-ui/core/CssBaseline';
 import SearchBox from '../components/Search/SearchBox';
 
 class Search extends React.Component {
-	componentDidMount() {}
+  componentDidMount() {}
 
-	render() {
-		return (
-			<React.Fragment>
-				<CssBaseline />
-				<SearchBox />
-			</React.Fragment>
-		);
-	}
+  render() {
+    return (
+      <React.Fragment>
+        <CssBaseline />
+        <SearchBox />
+      </React.Fragment>
+    );
+  }
 }
 
 export default Search;
