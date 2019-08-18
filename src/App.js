@@ -1,6 +1,7 @@
 import React from 'react';
 
 import HomeAppBar from './page/HomeAppBar';
+import Footer from './page/Footer';
 import Login from './page/Login';
 import Home from './page/Home';
 import Publication from './page/Publication';
@@ -16,14 +17,17 @@ function App() {
     <CookiesProvider>
       <Router>
         <AuthCheck />
-        <>
-          <HomeAppBar />
-          <Route exact path='/' component={Home} />
-          <Route path='/login' component={Login} />
-          <Route path='/publications' component={Publication} />
-          <Route path='/search' component={Search} />
-          <Route path='/gene/:geneId' component={Gene} />
-        </>
+
+        <HomeAppBar />
+
+        <Route exact path='/' component={Home} />
+        <Route path='/login' component={Login} />
+        <Route path='/publications' component={Publication} />
+        <Route path='/search' component={Search} />
+        <Route path='/gene/:geneId' component={Gene} />
+        
+        <Footer />
+
       </Router>
     </CookiesProvider>
   );

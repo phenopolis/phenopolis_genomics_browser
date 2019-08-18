@@ -7,9 +7,11 @@ import PropTypes from 'prop-types';
 import Cookies from 'universal-cookie';
 import { fade, withStyles } from '@material-ui/core/styles';
 import axios from 'axios';
-import { withWidth, Grid, Hidden, Toolbar, Typography, IconButton,
-         InputBase, BottomNavigationAction, Menu, MenuItem, ListItemIcon,
-         ListItemText } from '@material-ui/core';
+import {
+  withWidth, Grid, Hidden, Toolbar, Typography, IconButton,
+  InputBase, BottomNavigationAction, Menu, MenuItem, ListItemIcon,
+  ListItemText
+} from '@material-ui/core';
 
 import SearchIcon from '@material-ui/icons/Search';
 import ExitToAppIcon from '@material-ui/icons/ExitToApp';
@@ -75,7 +77,7 @@ class LoginBar extends React.Component {
         <Grid
           container
           direction='row'
-          justify='space-between'
+          justify='center'
           alignItems='center'>
           <Hidden mdUp>
             <Grid item xs={2}>
@@ -85,7 +87,7 @@ class LoginBar extends React.Component {
             </Grid>
           </Hidden>
 
-          <Grid item xs={10} md={2} className={classes.grid}>
+          <Grid item xs={10} md={3} className={classes.grid}>
             <Typography
               className={classes.Homelabel}
               variant='h6'
@@ -98,7 +100,7 @@ class LoginBar extends React.Component {
           </Grid>
 
           <Hidden smDown>
-            <Grid item md={7} className={classes.gridpaper}>
+            <Grid item md={4} className={classes.gridpaper}>
               <div className={classes.search}>
                 <div className={classes.searchIcon}>
                   <SearchIcon />
@@ -118,12 +120,11 @@ class LoginBar extends React.Component {
           <Hidden smDown>
             <Grid
               item
-              md={3}
+              md={5}
               className={classes.gridpaper}
               container
               direction='row'
-              justify='flex-end'
-              alignItems='center'>
+              alignItems='flex-start'>
               <BottomNavigationAction
                 className={classes.navigationbutton}
                 label='Search'
