@@ -1,15 +1,8 @@
 import React from 'react';
-import CssBaseline from '@material-ui/core/CssBaseline';
-import Typography from '@material-ui/core/Typography';
 import { makeStyles } from '@material-ui/core/styles';
-import Container from '@material-ui/core/Container';
-
 import clsx from 'clsx';
 import { loadCSS } from 'fg-loadcss';
-import Icon from '@material-ui/core/Icon';
-
-import Grid from '@material-ui/core/Grid';
-import Box from '@material-ui/core/Box';
+import { Grid, Box, Container, CssBaseline, Typography, Icon } from '@material-ui/core'
 import { Link } from 'react-router-dom';
 
 function Copyright() {
@@ -20,44 +13,6 @@ function Copyright() {
     </Typography>
   );
 }
-
-const useStyles = makeStyles(theme => ({
-  root: {
-    display: 'flex',
-    flexDirection: 'column',
-    minHeight: '13em',
-    backgroundColor: '#0279d3',
-    color: 'white'
-  },
-  main: {
-    marginTop: theme.spacing(3),
-    marginBottom: theme.spacing(2),
-    display: 'inline-block',
-    textAlign: 'justify'
-  },
-  footer: {
-    padding: theme.spacing(2),
-    marginTop: 'auto',
-    backgroundColor: '#0474c6',
-  },
-  a: {
-    textDecoration: 'none',
-    color: 'white',
-    '&:hover': {
-      textShadow: '-0.06ex 0 white, 0.06ex 0 white',
-    }
-  },
-  paper: {
-    padding: theme.spacing(2),
-    textAlign: 'left'
-  },
-  iconHover: {
-    margin: theme.spacing(1),
-    '&:hover': {
-      cursor: 'pointer'
-    },
-  }
-}));
 
 export default function StickyFooter() {
   const classes = useStyles();
@@ -146,3 +101,41 @@ export default function StickyFooter() {
     </div>
   );
 }
+
+const useStyles = makeStyles(theme => ({
+  root: {
+    display: 'flex',
+    flexDirection: 'column',
+    minHeight: '13em',
+    backgroundColor: '#0279d3',
+    color: 'white'
+  },
+  main: {
+    marginTop: theme.spacing(3),
+    marginBottom: theme.spacing(2),
+    display: 'inline-block',
+    textAlign: 'justify'
+  },
+  footer: {
+    padding: theme.spacing(2),
+    marginTop: 'auto',
+    backgroundColor: '#0474c6',
+  },
+  a: {
+    textDecoration: 'none',
+    color: 'white',
+    '&:hover': {
+      textShadow: '-0.06ex 0 white, 0.06ex 0 white',
+    }
+  },
+  paper: {
+    padding: theme.spacing(2),
+    textAlign: 'left'
+  },
+  iconHover: {
+    margin: theme.spacing(1),
+    '&:hover': {
+      cursor: 'pointer'
+    },
+  }
+}));

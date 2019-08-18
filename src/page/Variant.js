@@ -5,14 +5,13 @@ import { withStyles } from '@material-ui/core/styles';
 import CssBaseline from '@material-ui/core/CssBaseline';
 
 import MetaData from '../components/Gene/MetaData';
-import Variants from '../components/Gene/Variants';
 import Loading from '../components/General/Loading';
 
-class Gene extends React.Component {
+class Variant extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      geneInfo: {},
+      variantInfo: {},
       loaded: false
     };
   }
@@ -20,14 +19,14 @@ class Gene extends React.Component {
   componentDidMount() {
     var self = this;
     axios
-      .get('/api/gene/' + this.props.match.params.geneId, {
+      .get('/api/variant/' + this.props.match.params.variantId, {
         withCredentials: true
       })
       .then(res => {
         let respond = res.data;
         console.log(respond[0]);
         self.setState({
-          geneInfo: respond[0],
+          variantInfo: respond[0],
           loaded: true
         });
       })
@@ -44,8 +43,7 @@ class Gene extends React.Component {
         <React.Fragment>
           <CssBaseline />
           <div className={classes.root}>
-            <MetaData metadata={this.state.geneInfo.metadata} name={this.state.geneInfo.metadata.data[0].gene_name + ' - ' + this.state.geneInfo.metadata.data[0].full_gene_name} />
-            <Variants variants={this.state.geneInfo.variants} />
+            <MetaData metadata={this.state.variantInfo.metadata} name={this.state.variantInfo.metadata.data[0].variant_id[0].display} />
           </div>
         </React.Fragment>
       );
@@ -55,7 +53,7 @@ class Gene extends React.Component {
   }
 }
 
-Gene.propTypes = {
+Variant.propTypes = {
   classes: PropTypes.object.isRequired
 };
 
@@ -66,4 +64,4 @@ const styles = theme => ({
   }
 });
 
-export default withStyles(styles)(Gene);
+export default withStyles(styles)(Variant);

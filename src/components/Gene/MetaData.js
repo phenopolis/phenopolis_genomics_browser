@@ -23,9 +23,7 @@ class MetaData extends React.Component {
             <div className={classes.root}>
               <Typography component='div'>
                 <Box fontWeight='fontWeightBold' fontSize='h4.fontSize' mb={2}>
-                  {metadata.data[0].gene_name +
-                    ' - ' +
-                    metadata.data[0].full_gene_name}
+                  {this.props.name}
                 </Box>
               </Typography>
 
