@@ -2,7 +2,7 @@ import React from 'react';
 import axios from 'axios';
 import PropTypes from 'prop-types';
 import { withStyles } from '@material-ui/core/styles';
-import CssBaseline from '@material-ui/core/CssBaseline';
+import { CssBaseline, Paper, Container } from '@material-ui/core';
 
 import MetaData from '../components/Gene/MetaData';
 import Variants from '../components/Gene/Variants';
@@ -45,7 +45,12 @@ class Gene extends React.Component {
           <CssBaseline />
           <div className={classes.root}>
             <MetaData metadata={this.state.geneInfo.metadata} name={this.state.geneInfo.metadata.data[0].gene_name + ' - ' + this.state.geneInfo.metadata.data[0].full_gene_name} />
-            <Variants variants={this.state.geneInfo.variants} />
+
+            <Container maxWidth='xl'>
+              <Paper className={classes.paper}>
+                <Variants variants={this.state.geneInfo.variants} title="Variants Analysis" subtitle="Here are a list of variants found within this gene." />
+              </Paper>
+            </Container>
           </div>
         </React.Fragment>
       );
@@ -63,6 +68,10 @@ const styles = theme => ({
   root: {
     backgroundColor: '#eeeeee',
     padding: '4em'
+  },
+  paper: {
+    padding: theme.spacing(3),
+    marginTop: theme.spacing(5)
   }
 });
 

@@ -2,9 +2,11 @@ import React from 'react';
 import PropTypes from 'prop-types';
 
 import { withStyles } from '@material-ui/core/styles';
-import { CssBaseline, Paper, Container, Typography, Box, Chip, Grid, Collapse,
-         Checkbox, FormControlLabel, Tooltip, Table, TableBody, TableCell,
-         TableRow, TablePagination, Button } from '@material-ui/core';
+import {
+  CssBaseline, Paper, Typography, Box, Chip, Grid, Collapse,
+  Checkbox, FormControlLabel, Tooltip, Table, TableBody, TableCell,
+  TableRow, TablePagination, Button
+} from '@material-ui/core';
 
 import TableHeader from '../Table/TableHeader';
 import TablePaginationActions from '../Table/TablePaginationActions';
@@ -165,155 +167,162 @@ class Variant extends React.Component {
     return (
       <React.Fragment>
         <CssBaseline />
-        <Container maxWidth='xl'>
-          <Paper className={classes.paper}>
-            <Typography component='div'>
-              <Box fontWeight='fontWeightBold' fontSize='h4.fontSize' mb={0}>
-                Variants Analysis
-              </Box>
-              <Box fontWeight='fontWeightLight' mb={2}>
-                Here are a list of variants found within this gene.
-              </Box>
-            </Typography>
+        <Typography component='div'>
+          <Box fontWeight='fontWeightBold' fontSize='h4.fontSize' mb={0}>
+            {this.props.title}
+          </Box>
+          <Box fontWeight='fontWeightLight' mb={2}>
+            {this.props.subtitle}
+          </Box>
+        </Typography>
 
-            <Button
-              variant='outlined'
-              className={classes.button}
-              onClick={event => this.handleCheckFilter('test', event)}>
-              Select Table Column
+        <Button
+          variant='outlined'
+          className={classes.button}
+          onClick={event => this.handleCheckFilter('test', event)}>
+          Select Table Column
             </Button>
-            <div className={classes.container}>
-              <Collapse in={this.state.checkfilter}>
-                <Paper elevation={0} className={classes.paper}>
-                  <Grid container>
-                    {this.state.header.map((h, i) => {
-                      return (
-                        <Grid
-                          item
-                          xs={12}
-                          sm={6}
-                          md={3}
-                          lg={2}
-                          style={{ margin: 0, padding: 0 }}>
-                          <StyledTooltip title={h.description} placement='top'>
-                            <FormControlLabel
-                              control={
-                                <Checkbox
-                                  checked={h.default}
-                                  onChange={this.handleCheckChange(i)}
-                                  // value='checkedB'
-                                  color='primary'
-                                />
-                              }
-                              label={h.name}
+        <div className={classes.container}>
+          <Collapse in={this.state.checkfilter}>
+            <Paper elevation={0} className={classes.paper}>
+              <Grid container>
+                {this.state.header.map((h, i) => {
+                  return (
+                    <Grid
+                      item
+                      xs={12}
+                      sm={6}
+                      md={3}
+                      lg={2}
+                      style={{ margin: 0, padding: 0 }}>
+                      <StyledTooltip title={h.description} placement='top'>
+                        <FormControlLabel
+                          control={
+                            <Checkbox
+                              checked={h.default}
+                              onChange={this.handleCheckChange(i)}
+                              // value='checkedB'
+                              color='primary'
                             />
-                          </StyledTooltip>
-                        </Grid>
-                      );
-                    })}
-                  </Grid>
-                </Paper>
-              </Collapse>
-            </div>
-
-            <div className={classes.root}>
-              <Grid
-                container
-                direction='column'
-                justify='center'
-                alignItems='stretch'>
-                <Grid item xs={12}>
-                  <TablePagination
-                    className={classes.pagination}
-                    rowsPerPageOptions={[25, 50, 75, 100]}
-                    count={this.state.filtered.length}
-                    rowsPerPage={this.state.rowsPerPage}
-                    page={this.state.page}
-                    SelectProps={{
-                      inputProps: { 'aria-label': 'rows per page' },
-                      native: true
-                    }}
-                    onChangePage={this.handleChangePage}
-                    onChangeRowsPerPage={this.handleChangeRowsPerPage}
-                    ActionsComponent={TablePaginationActions}
-                  />
-                </Grid>
-                <Grid item xs={12}>
-                  <div className={classes.tableWrapper}>
-                    <Table className={classes.table}>
-                      <TableHeader
-                        header={this.state.header}
-                        filter={this.state.filter}
-                        order={this.state.order}
-                        orderBy={this.state.orderBy}
-                        onRequestSort={this.handleRequestSort}
-                        onUpdateFilter={this.handleUpdateFilter}
-                      />
-                      <TableBody>
-                        {stableSort(
-                          this.state.filtered,
-                          getSorting(this.state.order, this.state.orderBy)
-                        )
-                          .slice(
-                            this.state.page * this.state.rowsPerPage,
-                            this.state.page * this.state.rowsPerPage +
-                              this.state.rowsPerPage
-                          )
-                          .map((row, m) => {
-                            return (
-                              <TableRow key={m} className={classes.tableRow}>
-                                {this.state.header.map((h, i) => {
-                                  if (h.default) {
-                                    return (
-                                      <TableCell align='center' key={i}>
-                                        {typeof row[h.key] !== 'object'
-                                          ? row[h.key]
-                                          : row[h.key].map((chip, j) => {
-                                              return (
-                                                <Chip
-                                                  key={j}
-                                                  size='small'
-                                                  label={chip.display}
-                                                  className={classes.chip}
-                                                  component='a'
-                                                  href='#chip'
-                                                  clickable
-                                                />
-                                              );
-                                            })}
-                                      </TableCell>
-                                    );
-                                  } else {
-                                    return null;
-                                  }
-                                })}
-                              </TableRow>
-                            );
-                          })}
-                      </TableBody>
-                    </Table>
-                  </div>
-                </Grid>
-                <Grid item xs={12}>
-                  <TablePagination
-                    rowsPerPageOptions={[10, 25, 50, 75, 100]}
-                    className={classes.pagination}
-                    count={this.state.filtered.length}
-                    rowsPerPage={this.state.rowsPerPage}
-                    page={this.state.page}
-                    SelectProps={{
-                      inputProps: { 'aria-label': 'rows per page' },
-                      native: true
-                    }}
-                    onChangePage={this.handleChangePage}
-                    onChangeRowsPerPage={this.handleChangeRowsPerPage}
-                    ActionsComponent={TablePaginationActions}
-                  />
-                </Grid>
+                          }
+                          label={h.name}
+                        />
+                      </StyledTooltip>
+                    </Grid>
+                  );
+                })}
               </Grid>
-            </div>
-          </Paper>
-        </Container>
+            </Paper>
+          </Collapse>
+        </div>
+
+        <div className={classes.root}>
+          <Grid
+            container
+            direction='column'
+            justify='center'
+            alignItems='stretch'>
+            <Grid item xs={12}>
+              <TablePagination
+                className={classes.pagination}
+                rowsPerPageOptions={[10, 25, 50, 75, 100]}
+                count={this.state.filtered.length}
+                rowsPerPage={this.state.rowsPerPage}
+                page={this.state.page}
+                SelectProps={{
+                  inputProps: { 'aria-label': 'rows per page' },
+                  native: true
+                }}
+                onChangePage={this.handleChangePage}
+                onChangeRowsPerPage={this.handleChangeRowsPerPage}
+                ActionsComponent={TablePaginationActions}
+              />
+            </Grid>
+            <Grid item xs={12}>
+              <div className={classes.tableWrapper}>
+                <Table className={classes.table}>
+                  <TableHeader
+                    header={this.state.header}
+                    filter={this.state.filter}
+                    order={this.state.order}
+                    orderBy={this.state.orderBy}
+                    onRequestSort={this.handleRequestSort}
+                    onUpdateFilter={this.handleUpdateFilter}
+                  />
+                  <TableBody>
+                    {stableSort(
+                      this.state.filtered,
+                      getSorting(this.state.order, this.state.orderBy)
+                    )
+                      .slice(
+                        this.state.page * this.state.rowsPerPage,
+                        this.state.page * this.state.rowsPerPage +
+                        this.state.rowsPerPage
+                      )
+                      .map((row, m) => {
+                        return (
+                          <TableRow key={m} className={classes.tableRow}>
+                            {this.state.header.map((h, i) => {
+                              if (h.default) {
+                                return (
+                                  <TableCell align='center' key={i}>
+                                    {typeof row[h.key] !== 'object'
+                                      ? row[h.key]
+                                      : row[h.key].map((chip, j) => {
+                                        if (chip !== null) {
+                                          if (typeof chip === 'object') {
+                                            return (
+                                              <Chip
+                                                key={j}
+                                                size='small'
+                                                label={chip.display}
+                                                className={classes.chip}
+                                                component='a'
+                                                href='#chip'
+                                                clickable
+                                              />
+                                            )
+                                          } else {
+                                            return (
+                                              chip.toString() + ', '
+                                            )
+                                          }
+                                        } else {
+                                          return null
+                                        }
+
+                                      })}
+                                  </TableCell>
+                                );
+                              } else {
+                                return null;
+                              }
+                            })}
+                          </TableRow>
+                        );
+                      })}
+                  </TableBody>
+                </Table>
+              </div>
+            </Grid>
+            <Grid item xs={12}>
+              <TablePagination
+                rowsPerPageOptions={[10, 25, 50, 75, 100]}
+                className={classes.pagination}
+                count={this.state.filtered.length}
+                rowsPerPage={this.state.rowsPerPage}
+                page={this.state.page}
+                SelectProps={{
+                  inputProps: { 'aria-label': 'rows per page' },
+                  native: true
+                }}
+                onChangePage={this.handleChangePage}
+                onChangeRowsPerPage={this.handleChangeRowsPerPage}
+                ActionsComponent={TablePaginationActions}
+              />
+            </Grid>
+          </Grid>
+        </div>
       </React.Fragment>
     );
   }
@@ -324,13 +333,13 @@ Variant.propTypes = {
 };
 
 const styles = theme => ({
-  paper: {
-    padding: theme.spacing(3),
-    marginTop: theme.spacing(5)
-  },
   root: {
     width: '100%',
     marginTop: theme.spacing(3)
+  },
+  paper: {
+    padding: theme.spacing(3),
+    marginTop: theme.spacing(5)
   },
   tableWrapper: {
     overflowX: 'auto'
