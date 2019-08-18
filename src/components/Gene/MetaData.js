@@ -2,8 +2,11 @@ import React from 'react';
 import PropTypes from 'prop-types';
 
 import { withStyles } from '@material-ui/core/styles';
-import { CssBaseline, Paper, Container, Grid, Chip, Typography,
-         Box } from '@material-ui/core';
+import {
+  CssBaseline, Paper, Container, Grid, Chip, Typography,
+  Box
+} from '@material-ui/core';
+import { Link } from 'react-router-dom';
 
 class MetaData extends React.Component {
   constructor(props) {
@@ -42,20 +45,32 @@ class MetaData extends React.Component {
                       {typeof metadata.data[0][item.key] !== 'object' ? (
                         <span> {metadata.data[0][item.key]} </span>
                       ) : (
-                        metadata.data[0][item.key].map((chip, m) => {
-                          return (
-                            <Chip
-                              key={m}
-                              size='small'
-                              label={chip.display}
-                              className={classes.chip}
-                              component='a'
-                              href='#chip'
-                              clickable
-                            />
-                          );
-                        })
-                      )}
+                          metadata.data[0][item.key].map((chip, m) => {
+                            return (
+                              chip.href ? (
+                                <Chip
+                                  key={m}
+                                  size='small'
+                                  label={chip.display}
+                                  className={classes.chip}
+                                  component='a'
+                                  href={chip.href}
+                                  clickable
+                                />
+                              ) : (
+                                  <Chip
+                                    key={m}
+                                    size='small'
+                                    label={chip.display}
+                                    className={classes.chip}
+                                    component={Link}
+                                    to={chip.end_href ? item.base_href + chip.end_href : item.base_href + chip.display}
+                                    clickable
+                                  />
+                                )
+                            );
+                          })
+                        )}
                     </Grid>
                   </Grid>
                 );

@@ -1,5 +1,6 @@
 import React from 'react';
 import PropTypes from 'prop-types';
+import { Link } from 'react-router-dom';
 
 import { withStyles } from '@material-ui/core/styles';
 import {
@@ -223,7 +224,7 @@ class Variant extends React.Component {
                                 />
                               }
                               label={h.name}
-                          />
+                            />
                           )
                       }
 
@@ -269,57 +270,59 @@ class Variant extends React.Component {
                     onUpdateFilter={this.handleUpdateFilter}
                   />
                   <TableBody>
-                    {stableSort(
-                      this.state.filtered,
-                      getSorting(this.state.order, this.state.orderBy)
-                    )
-                      .slice(
-                        this.state.page * this.state.rowsPerPage,
-                        this.state.page * this.state.rowsPerPage +
-                        this.state.rowsPerPage
+                    {
+                      stableSort(
+                        this.state.filtered,
+                        getSorting(this.state.order, this.state.orderBy)
                       )
-                      .map((row, m) => {
-                        return (
-                          <TableRow key={m} className={classes.tableRow}>
-                            {this.state.header.map((h, i) => {
-                              if (h.default) {
-                                return (
-                                  <TableCell align='center' key={i}>
-                                    {typeof row[h.key] !== 'object'
-                                      ? row[h.key]
-                                      : row[h.key].map((chip, j) => {
-                                        if (chip !== null) {
-                                          if (typeof chip === 'object') {
-                                            return (
-                                              <Chip
-                                                key={j}
-                                                size='small'
-                                                label={chip.display}
-                                                className={classes.chip}
-                                                component='a'
-                                                href='#chip'
-                                                clickable
-                                              />
-                                            )
-                                          } else {
-                                            return (
-                                              chip.toString() + ', '
-                                            )
-                                          }
-                                        } else {
-                                          return null
-                                        }
+                        .slice(
+                          this.state.page * this.state.rowsPerPage,
+                          this.state.page * this.state.rowsPerPage +
+                          this.state.rowsPerPage
+                        )
+                        .map((row, m) => {
+                          return (
+                            <TableRow key={m} className={classes.tableRow}>
+                              {
+                                this.state.header.map((h, i) => {
+                                  if (h.default) {
+                                    return (
+                                      <TableCell align='center' key={i}>
+                                        {typeof row[h.key] !== 'object' | row[h.key] === null
+                                          ? row[h.key]
+                                          : row[h.key].map((chip, j) => {
+                                            if (chip !== null) {
+                                              if (typeof chip === 'object') {
+                                                return (
+                                                  <Chip
+                                                    key={j}
+                                                    size='small'
+                                                    label={chip.display}
+                                                    className={classes.chip}
+                                                    component={Link}
+                                                    to={chip.end_href ? h.base_href + chip.end_href : h.base_href + chip.display}
+                                                    clickable
+                                                  />
+                                                )
+                                              } else {
+                                                return (
+                                                  chip.toString() + ', '
+                                                )
+                                              }
+                                            } else {
+                                              return null
+                                            }
 
-                                      })}
-                                  </TableCell>
-                                );
-                              } else {
-                                return null;
-                              }
-                            })}
-                          </TableRow>
-                        );
-                      })}
+                                          })}
+                                      </TableCell>
+                                    );
+                                  } else {
+                                    return null;
+                                  }
+                                })}
+                            </TableRow>
+                          );
+                        })}
                   </TableBody>
                 </Table>
               </div>
