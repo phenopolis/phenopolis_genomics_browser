@@ -195,19 +195,38 @@ class Variant extends React.Component {
                       md={3}
                       lg={2}
                       style={{ margin: 0, padding: 0 }}>
-                      <StyledTooltip title={h.description} placement='top'>
-                        <FormControlLabel
-                          control={
-                            <Checkbox
-                              checked={h.default}
-                              onChange={this.handleCheckChange(i)}
-                              // value='checkedB'
-                              color='primary'
-                            />
-                          }
-                          label={h.name}
-                        />
-                      </StyledTooltip>
+                      {
+                        h.description ?
+                          (
+                            <StyledTooltip title={h.description} placement='top'>
+                              <FormControlLabel
+                                control={
+                                  <Checkbox
+                                    checked={h.default}
+                                    onChange={this.handleCheckChange(i)}
+                                    // value='checkedB'
+                                    color='primary'
+                                  />
+                                }
+                                label={h.name}
+                              />
+                            </StyledTooltip>
+                          ) :
+                          (
+                            <FormControlLabel
+                              control={
+                                <Checkbox
+                                  checked={h.default}
+                                  onChange={this.handleCheckChange(i)}
+                                  // value='checkedB'
+                                  color='primary'
+                                />
+                              }
+                              label={h.name}
+                          />
+                          )
+                      }
+
                     </Grid>
                   );
                 })}

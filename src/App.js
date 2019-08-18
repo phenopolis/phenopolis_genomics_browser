@@ -12,6 +12,8 @@ import Search from './page/Search';
 import AuthCheck from './page/AuthCheck';
 
 import Gene from './page/Gene';
+import HPO from './page/HPO';
+import Individual from './page/Individual';
 import Variant from './page/Variant'
 
 import { BrowserRouter as Router, Route } from 'react-router-dom';
@@ -35,16 +37,18 @@ function App() {
         <AuthCheck />
 
         <ThemeProvider theme={outerTheme}>
-        <HomeAppBar />
+          <HomeAppBar />
 
-        <Route exact path='/' component={Home} />
-        <Route path='/login' component={Login} />
-        <Route path='/publications' component={Publication} />
-        <Route path='/search' component={Search} />
-        <Route path='/gene/:geneId' component={Gene} />
-        <Route path='/variant/:variantId' component={Variant} />
+          <Route exact path='/' component={Home} />
+          <Route path='/login' component={Login} />
+          <Route path='/publications' component={Publication} />
+          <Route path='/search' component={Search} />
+          <Route path='/gene/:geneId' component={Gene} />
+          <Route path='/hpo/:hpoId' component={HPO} />
+          <Route path='/individual/:individualId' component={Individual} />
+          <Route path='/variant/:variantId' component={Variant} />
 
-        <Footer />
+          <Footer />
         </ThemeProvider>
 
       </Router>

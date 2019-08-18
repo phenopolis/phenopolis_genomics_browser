@@ -144,42 +144,81 @@ class TableHeader extends React.Component {
           {this.props.header.map((h, i) => {
             if (h.default) {
               return (
-                <StyledTooltip title={h.description} placement='top'>
-                  <TableCell
-                    align='center'
-                    key={i}
-                    className={classes.headcell}>
-                    <Grid
-                      container
-                      direction='column'
-                      justify='center'
-                      alignItems='center'>
-                      <Grid item xs={12} style={{ height: '3em' }}>
-                        <TableSortLabel
-                          // className={classes.sortlabel}
-                          active={this.props.orderBy === h.key}
-                          direction={this.props.order}
-                          onClick={this.createSortHandler(h.key)}>
-                          {h.name}
-                          {this.props.orderBy === h.key ? (
-                            <span className={classes.visuallyHidden}>
-                              {this.props.order === 'desc'
-                                ? 'sorted descending'
-                                : 'sorted ascending'}
-                            </span>
-                          ) : null}
-                        </TableSortLabel>
+                h.description ?
+                  (
+                    <StyledTooltip title={h.description} placement='top'>
+                    <TableCell
+                      align='center'
+                      key={i}
+                      className={classes.headcell}>
+                      <Grid
+                        container
+                        direction='column'
+                        justify='center'
+                        alignItems='center'>
+                        <Grid item xs={12} style={{ height: '3em' }}>
+                          <TableSortLabel
+                            // className={classes.sortlabel}
+                            active={this.props.orderBy === h.key}
+                            direction={this.props.order}
+                            onClick={this.createSortHandler(h.key)}>
+                            {h.name}
+                            {this.props.orderBy === h.key ? (
+                              <span className={classes.visuallyHidden}>
+                                {this.props.order === 'desc'
+                                  ? 'sorted descending'
+                                  : 'sorted ascending'}
+                              </span>
+                            ) : null}
+                          </TableSortLabel>
+                        </Grid>
+                        <Grid item xs={12}>
+                          <FilterInput
+                            value={this.props.filter[i]}
+                            index={i}
+                            onReturnFilter={this.handleUpdateFilter}
+                          />
+                        </Grid>
                       </Grid>
-                      <Grid item xs={12}>
-                        <FilterInput
-                          value={this.props.filter[i]}
-                          index={i}
-                          onReturnFilter={this.handleUpdateFilter}
-                        />
+                    </TableCell>
+                  </StyledTooltip>
+                  ) :
+                  (
+                    <TableCell
+                      align='center'
+                      key={i}
+                      className={classes.headcell}>
+                      <Grid
+                        container
+                        direction='column'
+                        justify='center'
+                        alignItems='center'>
+                        <Grid item xs={12} style={{ height: '3em' }}>
+                          <TableSortLabel
+                            // className={classes.sortlabel}
+                            active={this.props.orderBy === h.key}
+                            direction={this.props.order}
+                            onClick={this.createSortHandler(h.key)}>
+                            {h.name}
+                            {this.props.orderBy === h.key ? (
+                              <span className={classes.visuallyHidden}>
+                                {this.props.order === 'desc'
+                                  ? 'sorted descending'
+                                  : 'sorted ascending'}
+                              </span>
+                            ) : null}
+                          </TableSortLabel>
+                        </Grid>
+                        <Grid item xs={12}>
+                          <FilterInput
+                            value={this.props.filter[i]}
+                            index={i}
+                            onReturnFilter={this.handleUpdateFilter}
+                          />
+                        </Grid>
                       </Grid>
-                    </Grid>
-                  </TableCell>
-                </StyledTooltip>
+                    </TableCell>
+                  )
               );
             } else {
               return null;

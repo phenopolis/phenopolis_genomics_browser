@@ -17,7 +17,7 @@ class SearchBox extends React.Component {
         {
           name: 'PH00008257',
           type: '(Patient)',
-          to: '/individual/WebsterURMD_Sample_GV4344'
+          to: '/individual/PH00008257'
         },
         {
           name: '22-38212762-A-G',
