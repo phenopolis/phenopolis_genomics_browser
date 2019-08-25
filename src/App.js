@@ -15,6 +15,7 @@ import Gene from './page/Gene';
 import HPO from './page/HPO';
 import Individual from './page/Individual';
 import Variant from './page/Variant'
+import MyPatient from './page/MyPatient'
 
 import { BrowserRouter as Router, Route } from 'react-router-dom';
 import { CookiesProvider } from 'react-cookie';
@@ -43,6 +44,7 @@ function App() {
           <Route path='/login' component={Login} />
           <Route path='/publications' component={Publication} />
           <Route path='/search' component={Search} />
+          <Route path='/my_patients' component={MyPatient} />
           <Route path='/gene/:geneId' component={Gene} />
           <Route path='/hpo/:hpoId' component={HPO} />
           <Route path='/individual/:individualId' component={Individual} />

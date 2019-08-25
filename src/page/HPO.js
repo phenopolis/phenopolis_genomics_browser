@@ -47,10 +47,10 @@ class HPO extends React.Component {
     };
   }
 
-  componentDidMount() {
+  getHPOinformation = (hpoId) => {
     var self = this;
     axios
-      .get('/api/hpo/' + this.props.match.params.hpoId, {
+      .get('/api/hpo/' + hpoId, {
         withCredentials: true
       })
       .then(res => {
@@ -65,6 +65,21 @@ class HPO extends React.Component {
         console.log(err);
       });
   }
+
+  componentDidMount() {
+    this.getHPOinformation(this.props.match.params.hpoId)
+  }
+
+  componentWillReceiveProps(nextProps) {
+    if (nextProps.match.params.hpoId !== this.props.match.params.hpoId) {
+      this.setState({
+        hpoInfo: [],
+        loaded: false
+      });
+      this.getHPOinformation(nextProps.match.params.hpoId)
+    }
+  }
+
 
   render() {
     const { classes } = this.props;
@@ -136,10 +151,10 @@ class HPO extends React.Component {
                       onChangeIndex={this.handleChangePhenogenonIndex}
                     >
                       <TabPanel value={this.state.phenogenonvalue} index={0} dir={this.props.theme.direction}>
-                        <Variants variants={this.state.hpoInfo.phenogenon_recessive} title="Recessive"  subtitle={[<strong>Genotype</strong>,  ": With at least two variants on a given gene that have ExAC homozygous count not higher than ", <b style={{color: '#2E84CF'}}>2</b> ,", and CADD phred score not lower than ", <b style={{color: '#2E84CF'}}>15</b> ,"."]} />
+                        <Variants variants={this.state.hpoInfo.phenogenon_recessive} title="Recessive" subtitle={[<strong>Genotype</strong>, ": With at least two variants on a given gene that have ExAC homozygous count not higher than ", <b style={{ color: '#2E84CF' }}>2</b>, ", and CADD phred score not lower than ", <b style={{ color: '#2E84CF' }}>15</b>, "."]} />
                       </TabPanel>
                       <TabPanel value={this.state.phenogenonvalue} index={1} dir={this.props.theme.direction}>
-                        <Variants variants={this.state.hpoInfo.phenogenon_dominant} title="Dominant" subtitle={[<strong>Genotype</strong>,  ": With at least one variant on a given gene that has an ExAC heterozygous count not higher than ", <b style={{color: '#2E84CF'}}>0.0001</b> ,", and CADD phred score not lower than ", <b style={{color: '#2E84CF'}}>15</b> ,"."]} />
+                        <Variants variants={this.state.hpoInfo.phenogenon_dominant} title="Dominant" subtitle={[<strong>Genotype</strong>, ": With at least one variant on a given gene that has an ExAC heterozygous count not higher than ", <b style={{ color: '#2E84CF' }}>0.0001</b>, ", and CADD phred score not lower than ", <b style={{ color: '#2E84CF' }}>15</b>, "."]} />
                       </TabPanel>
                     </SwipeableViews>
                   </TabPanel>

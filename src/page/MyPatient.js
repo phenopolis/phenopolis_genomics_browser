@@ -4,30 +4,29 @@ import PropTypes from 'prop-types';
 import { withStyles } from '@material-ui/core/styles';
 import { CssBaseline, Paper, Container } from '@material-ui/core';
 
-import MetaData from '../components/Gene/MetaData';
 import Variants from '../components/Gene/Variants';
 import Loading from '../components/General/Loading';
 
-class Gene extends React.Component {
+class MyPatient extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      geneInfo: {},
+      AllPatientInfo: {},
       loaded: false
     };
   }
 
-  getGeneInformation = (geneId) => {
+  getAllPatientInformation = () => {
     var self = this;
     axios
-      .get('/api/gene/' + geneId, {
+      .get('/api/hpo/HP:0000001', {
         withCredentials: true
       })
       .then(res => {
         let respond = res.data;
         console.log(respond[0]);
         self.setState({
-          geneInfo: respond[0],
+          AllPatientInfo: respond[0],
           loaded: true
         });
       })
@@ -37,17 +36,7 @@ class Gene extends React.Component {
   }
 
   componentDidMount() {
-    this.getGeneInformation(this.props.match.params.geneId)
-  }
-
-  componentWillReceiveProps(nextProps) {
-    if (nextProps.match.params.geneId !== this.props.match.params.geneId) {
-      this.setState({
-        geneInfo: [],
-        loaded: false
-      });
-      this.getGeneInformation(this.props.match.params.geneId)
-    }
+    this.getAllPatientInformation()
   }
 
   render() {
@@ -58,11 +47,9 @@ class Gene extends React.Component {
         <React.Fragment>
           <CssBaseline />
           <div className={classes.root}>
-            <MetaData metadata={this.state.geneInfo.metadata} name={this.state.geneInfo.metadata.data[0].gene_name + ' - ' + this.state.geneInfo.metadata.data[0].full_gene_name} />
-
             <Container maxWidth='xl'>
               <Paper className={classes.paper}>
-                <Variants variants={this.state.geneInfo.variants} title="Variants Analysis" subtitle="Here are a list of variants found within this gene." />
+                <Variants variants={this.state.AllPatientInfo.individuals} title={"My Patients" + ' (Total: ' + this.state.AllPatientInfo.preview[0][1] + ')'} subtitle=" " />
               </Paper>
             </Container>
           </div>
@@ -74,7 +61,7 @@ class Gene extends React.Component {
   }
 }
 
-Gene.propTypes = {
+MyPatient.propTypes = {
   classes: PropTypes.object.isRequired
 };
 
@@ -85,8 +72,8 @@ const styles = theme => ({
   },
   paper: {
     padding: theme.spacing(3),
-    marginTop: theme.spacing(5)
+    marginTop: theme.spacing(3)
   }
 });
 
-export default withStyles(styles)(Gene);
+export default withStyles(styles)(MyPatient);

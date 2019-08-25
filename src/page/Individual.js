@@ -38,10 +38,10 @@ class Individual extends React.Component {
     };
   }
 
-  componentDidMount() {
+  getIndividualInformation = (individualId) => {
     var self = this;
     axios
-      .get('/api/individual/' + this.props.match.params.individualId, {
+      .get('/api/individual/' + individualId, {
         withCredentials: true
       })
       .then(res => {
@@ -55,6 +55,20 @@ class Individual extends React.Component {
       .catch(err => {
         console.log(err);
       });
+  }
+
+  componentDidMount() {
+    this.getIndividualInformation(this.props.match.params.individualId)
+  }
+
+  componentWillReceiveProps(nextProps) {
+    if (nextProps.match.params.individualId !== this.props.match.params.individualId) {
+      this.setState({
+        individualInfo: [],
+        loaded: false
+      });
+      this.getIndividualInformation(nextProps.match.params.individualId)
+    }
   }
 
   render() {

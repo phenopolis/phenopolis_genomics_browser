@@ -13,13 +13,24 @@ import TableHeader from '../Table/TableHeader';
 import TablePaginationActions from '../Table/TablePaginationActions';
 
 function desc(a, b, orderBy) {
-  if (b[orderBy] < a[orderBy]) {
-    return -1;
+  if (!isNaN(b[orderBy])) {
+    if (Number(b[orderBy]) < Number(a[orderBy])) {
+      return -1;
+    }
+    if (Number(b[orderBy]) > Number(a[orderBy])) {
+      return 1;
+    }
+    return 0;
+  } else {
+    if (b[orderBy] < a[orderBy]) {
+      return -1;
+    }
+    if (b[orderBy] > a[orderBy]) {
+      return 1;
+    }
+    return 0;
   }
-  if (b[orderBy] > a[orderBy]) {
-    return 1;
-  }
-  return 0;
+
 }
 
 function stableSort(array, cmp) {
@@ -74,7 +85,7 @@ class Variant extends React.Component {
     const isDesc =
       this.state.orderBy === property && this.state.order === 'desc';
     this.setState({ order: isDesc ? 'asc' : 'desc' });
-    this.setState({ orderBy: property });
+    this.setState({ orderBy: property, page: 0 });
   };
 
   handleUpdateFilter = (operation, filter, index) => {
@@ -159,7 +170,7 @@ class Variant extends React.Component {
       return judge;
     });
     // return filtered;
-    this.setState({ filtered: filtered });
+    this.setState({ filtered: filtered, page: 0 });
   };
 
   render() {
@@ -180,7 +191,7 @@ class Variant extends React.Component {
         <Button
           variant='outlined'
           className={classes.button}
-          onClick={event => this.handleCheckFilter('test', event)}>
+          onClick={event => this.handleCheckFilter(event)}>
           Select Table Column
             </Button>
         <div className={classes.container}>
@@ -300,7 +311,7 @@ class Variant extends React.Component {
                                                     label={chip.display}
                                                     className={classes.chip}
                                                     component={Link}
-                                                    to={chip.end_href ? h.base_href + chip.end_href : h.base_href + chip.display}
+                                                    to={chip.end_href ? (h.base_href + '/' + chip.end_href).replace(/\/\//g, '/') : (h.base_href + '/' + chip.display).replace(/\/\//g, '/')}
                                                     clickable
                                                   />
                                                 )
