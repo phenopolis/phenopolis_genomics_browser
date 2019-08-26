@@ -1,13 +1,16 @@
 import React from 'react';
+import axios from 'axios';
 import PropTypes from 'prop-types';
 import { Link } from 'react-router-dom';
 
 import { withStyles } from '@material-ui/core/styles';
+
 import {
   CssBaseline, Paper, Typography, Box, Chip, Grid, Collapse,
   Checkbox, FormControlLabel, Tooltip, Table, TableBody, TableCell,
-  TableRow, TablePagination, Button
+  TableRow, TablePagination, Button, Popover, Container, CircularProgress
 } from '@material-ui/core';
+import "../../assets/css/arrowbox.css";
 
 import TableHeader from '../Table/TableHeader';
 import TablePaginationActions from '../Table/TablePaginationActions';
@@ -68,7 +71,12 @@ class Variant extends React.Component {
       order: 'asc',
       orderBy: 'variant_id',
       checkfilter: false,
-      checkedB: false
+      checkedB: false,
+      openPreview: false,
+      anchorEl: null,
+      previewName: null,
+      previewInfo: null,
+      previewLoaded: false
     };
   }
 
@@ -173,8 +181,41 @@ class Variant extends React.Component {
     this.setState({ filtered: filtered, page: 0 });
   };
 
+  getPreviewInformation = (link) => {
+    var self = this;
+    axios
+      .get('/api/' + link + '/preview', {
+        withCredentials: true
+      })
+      .then(res => {
+        let respond = res.data;
+        self.setState({
+          previewInfo: respond[0],
+          previewLoaded: true
+        });
+      })
+      .catch(err => {
+        console.log(err);
+      });
+  }
+
+  handlePopoverOpen = (name, link, event) => {
+    this.setState({ anchorEl: event.currentTarget, previewName: name });
+    this.getPreviewInformation(link)
+  }
+
+  handlePopoverClose = () => {
+    this.setState({
+      anchorEl: null, previewInfo: [],
+      previewName: null,
+      previewLoaded: false
+    });
+  }
+
   render() {
     const { classes } = this.props;
+    const open = Boolean(this.state.anchorEl);
+    const id = open ? 'simple-popover' : undefined;
 
     return (
       <React.Fragment>
@@ -313,6 +354,12 @@ class Variant extends React.Component {
                                                     component={Link}
                                                     to={chip.end_href ? (h.base_href + '/' + chip.end_href).replace(/\/\//g, '/') : (h.base_href + '/' + chip.display).replace(/\/\//g, '/')}
                                                     clickable
+                                                    aria-owns={open ? 'mouse-over-popover' : undefined}
+                                                    aria-haspopup="true"
+                                                    onMouseEnter={(event) => this.handlePopoverOpen(chip.display,
+                                                      chip.end_href ? (h.base_href + '/' + chip.end_href).replace(/\/\//g, '/') : (h.base_href + '/' + chip.display).replace(/\/\//g, '/')
+                                                      , event)}
+                                                    onMouseLeave={this.handlePopoverClose}
                                                   />
                                                 )
                                               } else {
@@ -356,7 +403,74 @@ class Variant extends React.Component {
             </Grid>
           </Grid>
         </div>
-      </React.Fragment>
+        <Popover
+          id="mouse-over-popover"
+          className={classes.popover}
+          classes={{
+            paper: classes.paperPopover,
+          }}
+          open={open}
+          anchorEl={this.state.anchorEl}
+          anchorOrigin={{
+            vertical: 'center',
+            horizontal: 'right',
+          }}
+          transformOrigin={{
+            vertical: 'center',
+            horizontal: 'left',
+          }}
+          onClose={this.handlePopoverClose}
+          disableRestoreFocus
+          elevation={0}
+        >
+          < Container justify="center" className="arrow_box">
+            <Typography variant="subtitle1" style={{ 'font-weight': 'bold', color: 'yellow' }}>
+              {this.state.previewName}
+            </Typography>
+          </Container>
+
+          {
+            this.state.previewLoaded === true ? (
+              < Container style={{ background: '#242424', 'min-width': '25em' }}>
+                {
+                  this.state.previewInfo.preview.map((item, index) => {
+                    return (
+                      <Grid
+                        container
+                        spacing={1}
+                        key={index}
+                        className={classes.blockgrid}>
+                        <Grid item xs={4} className={classes.namegrid}>
+                          {item[0]}
+                        </Grid>
+
+                        <Grid item xs={8}>
+                          {item[1]}
+                        </Grid>
+                      </Grid>
+                    )
+                  })
+                }
+              </Container>
+            ) : (
+                < Container style={{ background: '#242424', 'min-width': '25em' }}>
+                  <Grid
+                    container
+                    spacing={1}>
+                    <Grid item xs={6}>
+                      Fetching preview...
+                        </Grid>
+
+                    <Grid item xs={6}>
+                      <CircularProgress color="secondary" />
+                    </Grid>
+                  </Grid>
+
+                </Container>
+              )
+          }
+        </Popover>
+      </React.Fragment >
     );
   }
 }
@@ -413,6 +527,18 @@ const styles = theme => ({
   },
   tooltip: {
     fontSize: '3em'
+  },
+  popover: {
+    pointerEvents: 'none',
+    marginLeft: '0.5em'
+  },
+  paperPopover: {
+    padding: theme.spacing(3),
+    color: 'white',
+    backgroundColor: 'transparent'
+  },
+  namegrid: {
+    borderRight: '1px solid gray'
   }
 });
 

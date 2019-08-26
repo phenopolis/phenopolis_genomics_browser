@@ -1,7 +1,7 @@
 import React from 'react';
 import { createMuiTheme } from '@material-ui/core/styles';
 import { ThemeProvider } from '@material-ui/styles';
-import { blue, red } from '@material-ui/core/colors';
+import { blue, grey } from '@material-ui/core/colors';
 
 import HomeAppBar from './page/HomeAppBar';
 import Footer from './page/Footer';
@@ -13,6 +13,7 @@ import AuthCheck from './page/AuthCheck';
 
 import Gene from './page/Gene';
 import HPO from './page/HPO';
+import Test from './page/Test';
 import Individual from './page/Individual';
 import Variant from './page/Variant'
 import MyPatient from './page/MyPatient'
@@ -26,7 +27,7 @@ const outerTheme = createMuiTheme({
       main: blue[500],
     },
     secondary: {
-      main: red[500]
+      main: grey[50]
     }
   },
 });
@@ -45,6 +46,8 @@ function App() {
           <Route path='/publications' component={Publication} />
           <Route path='/search' component={Search} />
           <Route path='/my_patients' component={MyPatient} />
+          <Route path='/test' component={Test} />
+
           <Route path='/gene/:geneId' component={Gene} />
           <Route path='/hpo/:hpoId' component={HPO} />
           <Route path='/individual/:individualId' component={Individual} />
