@@ -1,6 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import { Link } from 'react-router-dom';
+import { Redirect } from 'react-router';
 import axios from 'axios';
 
 import { withStyles } from '@material-ui/core/styles';
@@ -29,6 +30,8 @@ class SearchBox extends React.Component {
         }
       ],
       searchContent: '',
+      redirect: false,
+      guesslink: ''
     };
   }
 
@@ -39,9 +42,7 @@ class SearchBox extends React.Component {
       .get('/api/best_guess?query=' + this.state.searchContent, { withCredentials: true })
       .then(res => {
         console.log(res)
-        if (res.status === '200') {
-          window.alert('Success')
-        }
+        this.setState({ redirect: true, guesslink: res.data.redirect });
       })
       .catch(err => {
         window.alert('Best guess Failed.');
@@ -66,6 +67,9 @@ class SearchBox extends React.Component {
 
   render() {
     const { classes } = this.props;
+    if (this.state.redirect) {
+      return <Redirect to={this.state.guesslink} />;
+    }
 
     return (
       <div className={classes.root}>
