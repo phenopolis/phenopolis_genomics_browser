@@ -423,51 +423,43 @@ class Variant extends React.Component {
           disableRestoreFocus
           elevation={0}
         >
-          < Container justify="center" className="arrow_box">
+          < Container className="arrow_box">
             <Typography variant="subtitle1" style={{ 'font-weight': 'bold', color: 'yellow' }}>
               {this.state.previewName}
+
+              {
+                this.state.previewLoaded !== true &&
+                <small style={{ color: 'white' }}>  &nbsp;(Loading ...
+                <CircularProgress size={18} color="white" />
+                &nbsp; &nbsp;)
+                </small>
+              }
             </Typography>
           </Container>
 
           {
-            this.state.previewLoaded === true ? (
-              < Container style={{ background: '#242424', 'min-width': '25em' }}>
-                {
-                  this.state.previewInfo.preview.map((item, index) => {
-                    return (
-                      <Grid
-                        container
-                        spacing={1}
-                        key={index}
-                        className={classes.blockgrid}>
-                        <Grid item xs={4} className={classes.namegrid}>
-                          {item[0]}
-                        </Grid>
-
-                        <Grid item xs={8}>
-                          {item[1]}
-                        </Grid>
+            this.state.previewLoaded === true &&
+            < Container style={{ background: '#242424', 'min-width': '25em' }}>
+              {
+                this.state.previewInfo.preview.map((item, index) => {
+                  return (
+                    <Grid
+                      container
+                      spacing={1}
+                      key={index}
+                      className={classes.blockgrid}>
+                      <Grid item xs={4} className={classes.namegrid}>
+                        {item[0]}
                       </Grid>
-                    )
-                  })
-                }
-              </Container>
-            ) : (
-                < Container style={{ background: '#242424', 'min-width': '25em' }}>
-                  <Grid
-                    container
-                    spacing={1}>
-                    <Grid item xs={6}>
-                      Fetching preview...
-                        </Grid>
 
-                    <Grid item xs={6}>
-                      <CircularProgress color="secondary" />
+                      <Grid item xs={8} className={classes.datagrid}>
+                        {item[1]}
+                      </Grid>
                     </Grid>
-                  </Grid>
-
-                </Container>
-              )
+                  )
+                })
+              }
+            </Container>
           }
         </Popover>
       </React.Fragment >
@@ -530,15 +522,19 @@ const styles = theme => ({
   },
   popover: {
     pointerEvents: 'none',
-    marginLeft: '0.5em'
+    marginLeft: '0.2em'
   },
   paperPopover: {
-    padding: theme.spacing(3),
+    padding: theme.spacing(1),
     color: 'white',
     backgroundColor: 'transparent'
   },
   namegrid: {
-    borderRight: '1px solid gray'
+    borderRight: '1px solid gray',
+    borderBottom: '1px solid gray'
+  },
+  datagrid: {
+    borderBottom: '1px solid gray'
   }
 });
 

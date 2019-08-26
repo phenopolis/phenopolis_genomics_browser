@@ -1,7 +1,9 @@
 .arrow_box {
 	position: relative;
 	background: #242424;
-	min-height: 3em
+	min-height: 3em;
+	min-width: 25em;
+	padding-top: 0.5em;
 }
 .arrow_box:after {
 	right: 100%;

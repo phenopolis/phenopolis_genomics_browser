@@ -1,7 +1,7 @@
 import React from 'react';
 import { createMuiTheme } from '@material-ui/core/styles';
 import { ThemeProvider } from '@material-ui/styles';
-import { blue, grey } from '@material-ui/core/colors';
+import { blue, red } from '@material-ui/core/colors';
 
 import HomeAppBar from './page/HomeAppBar';
 import Footer from './page/Footer';
@@ -27,7 +27,7 @@ const outerTheme = createMuiTheme({
       main: blue[500],
     },
     secondary: {
-      main: grey[50]
+      main: red[500]
     }
   },
 });

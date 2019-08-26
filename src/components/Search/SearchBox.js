@@ -1,10 +1,13 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import { Link } from 'react-router-dom';
+import axios from 'axios';
 
 import { withStyles } from '@material-ui/core/styles';
-import { Paper, Container, Box, Typography, TextField,
-         Grid } from '@material-ui/core';
+import {
+  Paper, Container, Box, Typography, TextField,
+  Grid
+} from '@material-ui/core';
 import SearchIcon from '@material-ui/icons/Search';
 
 class SearchBox extends React.Component {
@@ -24,9 +27,42 @@ class SearchBox extends React.Component {
           type: '(Variant)',
           to: '/variant/22-38212762-A-G'
         }
-      ]
+      ],
+      searchContent: '',
     };
   }
+
+  handleSearch = event => {
+    event.preventDefault();
+
+    axios
+      .get('/api/best_guess?query=' + this.state.searchContent, { withCredentials: true })
+      .then(res => {
+        console.log(res)
+        if (res.status === '200') {
+          window.alert('Success')
+        }
+      })
+      .catch(err => {
+        window.alert('Best guess Failed.');
+      });
+
+    // fetch('/api/best_guess?query=' + this.state.searchContent)
+    //   .then(response => {
+    //     console.log(response)
+    //     if (response.status === '200') {
+    //       window.alert('Success')
+    //     }
+    //   })
+    //   .catch(err => {
+    //     console.log(err)
+    //     window.alert('Error')
+    //   });
+  };
+
+  handlesearchChange = event => {
+    this.setState({ searchContent: event.target.value });
+  };
 
   render() {
     const { classes } = this.props;
@@ -46,24 +82,31 @@ class SearchBox extends React.Component {
             </Typography>
 
             <div className={classes.margin}>
-              <Grid container spacing={1} alignItems='flex-end'>
-                <Grid item>
-                  <SearchIcon className={classes.searchIcon} />
+              <form
+                className={classes.form}
+                noValidate
+                onSubmit={this.handleSearch}>
+                <Grid container spacing={1} alignItems='flex-end'>
+                  <Grid item>
+                    <SearchIcon className={classes.searchIcon} />
+                  </Grid>
+                  <Grid item xs={8}>
+                    <CssTextField
+                      className={classes.input}
+                      InputProps={{
+                        classes: {
+                          input: classes.resizeFont
+                        }
+                      }}
+                      id='input-with-icon-grid'
+                      label='Search for a phenotype, patient, gene, variant or region.'
+                      autoFocus={true}
+                      value={this.state.searchContent}
+                      onChange={this.handlesearchChange}
+                    />
+                  </Grid>
                 </Grid>
-                <Grid item xs={8}>
-                  <CssTextField
-                    className={classes.input}
-                    InputProps={{
-                      classes: {
-                        input: classes.resizeFont
-                      }
-                    }}
-                    id='input-with-icon-grid'
-                    label='Search for a phenotype, patient, gene, variant or region.'
-                    autoFocus={true}
-                  />
-                </Grid>
-              </Grid>
+              </form>
               <Typography component='div'>
                 <Box
                   className={classes.example}
