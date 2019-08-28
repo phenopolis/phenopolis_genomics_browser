@@ -13,7 +13,6 @@ import AuthCheck from './page/AuthCheck';
 
 import Gene from './page/Gene';
 import HPO from './page/HPO';
-import Test from './page/Test';
 import Individual from './page/Individual';
 import Variant from './page/Variant'
 import MyPatient from './page/MyPatient'
@@ -46,8 +45,6 @@ function App() {
           <Route path='/publications' component={Publication} />
           <Route path='/search' component={Search} />
           <Route path='/my_patients' component={MyPatient} />
-          <Route path='/test' component={Test} />
-
           <Route path='/gene/:geneId' component={Gene} />
           <Route path='/hpo/:hpoId' component={HPO} />
           <Route path='/individual/:individualId' component={Individual} />

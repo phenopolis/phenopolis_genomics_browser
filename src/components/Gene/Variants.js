@@ -349,6 +349,7 @@ class Variant extends React.Component {
                                                   <Chip
                                                     key={j}
                                                     size='small'
+                                                    variant="outlined"
                                                     label={chip.display}
                                                     className={classes.chip}
                                                     component={Link}

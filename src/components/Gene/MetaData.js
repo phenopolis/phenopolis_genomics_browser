@@ -50,6 +50,7 @@ class MetaData extends React.Component {
                               chip.href ? (
                                 <Chip
                                   key={m}
+                                  variant="outlined"
                                   size='small'
                                   label={chip.display}
                                   className={classes.chip}
@@ -60,11 +61,12 @@ class MetaData extends React.Component {
                               ) : (
                                   <Chip
                                     key={m}
+                                    variant="outlined"
                                     size='small'
                                     label={chip.display}
                                     className={classes.chip}
                                     component={Link}
-                                    to={chip.end_href ? (item.base_href + '/' + chip.end_href).replace(/\/\//g, '/') : (item.base_href + '/' + chip.display).replace(/\/\//g, '/') }
+                                    to={chip.end_href ? (item.base_href + '/' + chip.end_href).replace(/\/\//g, '/') : (item.base_href + '/' + chip.display).replace(/\/\//g, '/')}
                                     clickable
                                   />
                                 )

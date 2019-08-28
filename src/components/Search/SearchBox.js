@@ -7,7 +7,7 @@ import axios from 'axios';
 import { withStyles } from '@material-ui/core/styles';
 import {
   Paper, Container, Box, Typography, TextField,
-  Grid
+  Grid, CircularProgress, Collapse, Chip
 } from '@material-ui/core';
 import SearchIcon from '@material-ui/icons/Search';
 
@@ -31,15 +31,22 @@ class SearchBox extends React.Component {
       ],
       searchContent: '',
       redirect: false,
-      guesslink: ''
+      guesslink: '',
+      autoCompleteContent: null,
+      searchLoaded: false
     };
   }
 
-  handleSearch = event => {
+  handleSearch = (event, guess) => {
     event.preventDefault();
 
+    var guessText = guess
+    if (guessText === 'default') {
+      guessText = this.state.searchContent
+    }
+
     axios
-      .get('/api/best_guess?query=' + this.state.searchContent, { withCredentials: true })
+      .get('/api/best_guess?query=' + guessText, { withCredentials: true })
       .then(res => {
         console.log(res)
         this.setState({ redirect: true, guesslink: res.data.redirect });
@@ -63,7 +70,37 @@ class SearchBox extends React.Component {
 
   handlesearchChange = event => {
     this.setState({ searchContent: event.target.value });
+
+    this.changeName(event)
   };
+
+  changeName = event => {
+    var searchText = event.target.value; // this is the search text
+
+    let self = this;
+    if (this.timeout) clearTimeout(this.timeout);
+    this.timeout = setTimeout(() => {
+      if (searchText !== '') {
+        self.autocomplete(searchText)
+      } else {
+        self.setState({ autoCompleteContent: null, searchLoaded: false })
+      }
+    }, 500);
+  };
+
+  autocomplete = (searchText) => {
+    this.setState({ autoCompleteContent: null, searchLoaded: true })
+    let self = this;
+    axios
+      .get('/api/autocomplete/' + searchText, { withCredentials: true })
+      .then(res => {
+        console.log(res.data)
+        self.setState({ autoCompleteContent: res.data, searchLoaded: false })
+      })
+      .catch(err => {
+        window.alert('autocomplete failed.');
+      });
+  }
 
   render() {
     const { classes } = this.props;
@@ -89,12 +126,19 @@ class SearchBox extends React.Component {
               <form
                 className={classes.form}
                 noValidate
-                onSubmit={this.handleSearch}>
+                onSubmit={event => this.handleSearch(event, 'default')}>
                 <Grid container spacing={1} alignItems='flex-end'>
-                  <Grid item>
-                    <SearchIcon className={classes.searchIcon} />
+                  <Grid item xs={1}>
+                    {
+                      this.state.searchLoaded !== true ? (
+                        <SearchIcon className={classes.searchIcon} />
+                      ) : (
+                          <CircularProgress size={40} color="primary" />
+                        )
+                    }
+
                   </Grid>
-                  <Grid item xs={8}>
+                  <Grid item xs={11}>
                     <CssTextField
                       className={classes.input}
                       InputProps={{
@@ -111,6 +155,49 @@ class SearchBox extends React.Component {
                   </Grid>
                 </Grid>
               </form>
+              <Collapse in={this.state.searchLoaded === true || this.state.autoCompleteContent !== null}>
+                <Paper elevation={0} className={classes.paperCollapse}>
+                  <Grid container justify="center">
+                    {
+                      this.state.searchLoaded === true ? (
+                        <Typography variant="subtitle1" gutterBottom>
+                          Search for auto completing...
+                      </Typography>
+                      ) : (
+                          this.state.autoCompleteContent !== null ? (
+
+                            this.state.autoCompleteContent.length > 0 ? (
+
+                              this.state.autoCompleteContent.map((item, index) => {
+                                return (
+                                  <Chip
+                                    key={index}
+                                    size="large"
+                                    label={item}
+                                    className={classes.chip}
+                                    clickable
+                                    variant="outlined"
+                                    onClick={event => this.handleSearch(event, item)}
+                                  />
+
+                                )
+                              })
+                            ) : (
+                                <Typography variant="subtitle1" gutterBottom>
+                                  Sorry, we did not get any auto completing options...So sad.
+                          </Typography>
+                              )
+
+                          ) : (
+                              <Typography variant="subtitle1" gutterBottom>
+                                Nothing for search.
+                            </Typography>
+                            )
+                        )
+                    }
+                  </Grid>
+                </Paper>
+              </Collapse>
               <Typography component='div'>
                 <Box
                   className={classes.example}
@@ -151,6 +238,9 @@ const styles = theme => ({
   paper: {
     padding: theme.spacing(5)
   },
+  paperCollapse: {
+    padding: theme.spacing(2)
+  },
   margin: {
     margin: '3em'
   },
@@ -172,6 +262,15 @@ const styles = theme => ({
     textDecoration: 'none',
     color: '#2E84CF',
     padding: '0em 0.5em 0em 0.5em',
+    '&:hover': {
+      textShadow: '-0.06ex 0 #2E84CF, 0.06ex 0 #2E84CF'
+    }
+  },
+  chip: {
+    margin: theme.spacing(1),
+    padding: theme.spacing(1),
+    textShadow: 'none',
+    color: '#2E84CF',
     '&:hover': {
       textShadow: '-0.06ex 0 #2E84CF, 0.06ex 0 #2E84CF'
     }
