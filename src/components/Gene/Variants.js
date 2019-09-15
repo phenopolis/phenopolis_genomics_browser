@@ -160,14 +160,26 @@ class Variant extends React.Component {
                 break;
               }
             } else {
-              let displays = item[filter.column].filter(chip => {
-                return RegExp(filter.filter).test(chip.display);
-              });
-              if (displays.length > 0) {
-                break;
+              if (typeof item[filter.column][0] === 'object') {
+                let displays = item[filter.column].filter(chip => {
+                  return RegExp(filter.filter).test(chip.display);
+                });
+                if (displays.length > 0) {
+                  break;
+                } else {
+                  judge = false;
+                  break;
+                }
               } else {
-                judge = false;
-                break;
+                let displays = item[filter.column].filter(chip => {
+                  return RegExp(filter.filter).test(chip);
+                });
+                if (displays.length > 0) {
+                  break;
+                } else {
+                  judge = false;
+                  break;
+                }
               }
             }
 
@@ -432,7 +444,7 @@ class Variant extends React.Component {
                 this.state.previewLoaded !== true &&
                 <small style={{ color: 'white' }}>  &nbsp;(Loading ...
                 <CircularProgress size={18} color="white" />
-                &nbsp; &nbsp;)
+                  &nbsp; &nbsp;)
                 </small>
               }
             </Typography>
