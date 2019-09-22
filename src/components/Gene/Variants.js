@@ -160,7 +160,7 @@ class Variant extends React.Component {
                 break;
               }
             } else {
-              if (typeof item[filter.column][0] === 'object') {
+              if (typeof item[filter.column][0] === 'object' & item[filter.column][0] !== null) {
                 let displays = item[filter.column].filter(chip => {
                   return RegExp(filter.filter).test(chip.display);
                 });
@@ -171,10 +171,7 @@ class Variant extends React.Component {
                   break;
                 }
               } else {
-                let displays = item[filter.column].filter(chip => {
-                  return RegExp(filter.filter).test(chip);
-                });
-                if (displays.length > 0) {
+                if (RegExp(filter.filter).test(item[filter.column].join(','))) {
                   break;
                 } else {
                   judge = false;
@@ -354,9 +351,9 @@ class Variant extends React.Component {
                                       <TableCell align='center' key={i}>
                                         {typeof row[h.key] !== 'object' | row[h.key] === null
                                           ? row[h.key]
-                                          : row[h.key].map((chip, j) => {
-                                            if (chip !== null) {
-                                              if (typeof chip === 'object') {
+                                          : typeof row[h.key][0] === 'object' & row[h.key][0] !== null
+                                            ? row[h.key].map((chip, j) => {
+                                              if (chip !== null) {
                                                 return (
                                                   <Chip
                                                     key={j}
@@ -376,15 +373,13 @@ class Variant extends React.Component {
                                                   />
                                                 )
                                               } else {
-                                                return (
-                                                  chip.toString() + ', '
-                                                )
+                                                return null
                                               }
-                                            } else {
-                                              return null
-                                            }
-
-                                          })}
+                                            }) :
+                                            <div>
+                                              {row[h.key].join(',')}
+                                            </div>
+                                        }
                                       </TableCell>
                                     );
                                   } else {
