@@ -146,7 +146,7 @@ class TableHeader extends React.Component {
               return (
                 h.description ?
                   (
-                    <StyledTooltip title={h.description} placement='top'>
+                    <StyledTooltip key={i} title={h.description} placement='top'>
                     <TableCell
                       align='center'
                       key={i}

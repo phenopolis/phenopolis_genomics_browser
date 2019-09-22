@@ -7,7 +7,7 @@ import { Link } from 'react-router-dom';
 
 function Copyright() {
   return (
-    <Typography variant="body2" color="white" align="left">
+    <Typography variant="body2" align="left">
       {'© '}
       2019 Phenopolis Limited. Registered company number 11541164.
     </Typography>
@@ -91,8 +91,8 @@ export default function StickyFooter() {
               </Typography>
             </Grid>
             <Grid item xs={2}>
-              <a className={classes.a} href="https://twitter.com/phenopolis"><Icon className={clsx(classes.iconHover, 'fab fa-twitter-square')} color="white" /></a>
-              <a className={classes.a} href="https://github.com/phenopolis/phenopolis"><Icon className={clsx(classes.iconHover, 'fab fa-github-square')} color="white" /></a>
+              <a className={classes.a} href="https://twitter.com/phenopolis"><Icon className={clsx(classes.iconHover, 'fab fa-twitter-square')} /></a>
+              <a className={classes.a} href="https://github.com/phenopolis/phenopolis"><Icon className={clsx(classes.iconHover, 'fab fa-github-square')} /></a>
             </Grid>
           </Grid>
           <Copyright />

@@ -46,7 +46,8 @@ class MetaData extends React.Component {
 
   handlePopoverClose = () => {
     this.setState({
-      anchorEl: null, previewInfo: [],
+      anchorEl: null, 
+      previewInfo: [],
       previewName: null,
       previewLoaded: false
     });

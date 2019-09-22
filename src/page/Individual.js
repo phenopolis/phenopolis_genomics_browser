@@ -3,7 +3,7 @@ import axios from 'axios';
 
 import PropTypes from 'prop-types';
 import { withStyles } from '@material-ui/core/styles';
-import { CssBaseline, AppBar, Tabs, Tab, Container, Paper } from '@material-ui/core';
+import { CssBaseline, AppBar, Tabs, Tab, Container, Paper, Fab } from '@material-ui/core';
 import SwipeableViews from 'react-swipeable-views';
 
 import Loading from '../components/General/Loading';
@@ -12,6 +12,11 @@ import TabPanel from '../components/Tab/Tabpanel'
 import MetaData from '../components/Gene/MetaData';
 import Variants from '../components/Gene/Variants';
 
+import EditIcon from '@material-ui/icons/Edit';
+import Dialog from '@material-ui/core/Dialog';
+
+import EditPerson from '../components/Individual/EditPerson'
+
 
 class Individual extends React.Component {
   constructor(props) {
@@ -19,7 +24,8 @@ class Individual extends React.Component {
     this.state = {
       individualInfo: {},
       loaded: false,
-      value: 0
+      value: 0,
+      EditOpen: false
     };
   }
 
@@ -71,6 +77,12 @@ class Individual extends React.Component {
     }
   }
 
+  OpenDialog() {
+    this.setState({
+      EditOpen: !this.state.EditOpen
+    });
+  }
+
   render() {
     const { classes } = this.props;
 
@@ -79,6 +91,10 @@ class Individual extends React.Component {
         <React.Fragment>
           <CssBaseline />
           <div className={classes.root}>
+            <Fab color="primary" aria-label="add" className={classes.fab} onClick={() => this.OpenDialog()}>
+              <EditIcon />
+            </Fab>
+
             <MetaData metadata={this.state.individualInfo.metadata} name={this.props.match.params.individualId} />
 
             <Container maxWidth='xl'>
@@ -118,6 +134,14 @@ class Individual extends React.Component {
               </Paper>
             </Container>
           </div>
+          <Dialog
+            open={this.state.EditOpen}
+            onClose={() => this.OpenDialog()}
+            aria-labelledby="alert-dialog-title"
+            aria-describedby="alert-dialog-description"
+          >
+            <EditPerson />
+          </Dialog>
         </React.Fragment>
       );
     } else {
@@ -145,6 +169,12 @@ const styles = theme => ({
   paper: {
     padding: theme.spacing(1),
     marginTop: theme.spacing(5)
+  },
+  fab: {
+    position: "absolute",
+    top: "10em",
+    left: "80em",
+    margin: theme.spacing(1),
   }
 });
 

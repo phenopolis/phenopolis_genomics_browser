@@ -206,7 +206,7 @@ class SearchBox extends React.Component {
                   Examples:
                   {this.state.examples.map((item, index) => {
                     return (
-                      <span>
+                      <span key={index}>
                         <Link className={classes.link} to={item.to}>
                           {item.name + item.type}
                         </Link>

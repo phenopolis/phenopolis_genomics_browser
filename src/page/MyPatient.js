@@ -49,7 +49,7 @@ class MyPatient extends React.Component {
           <div className={classes.root}>
             <Container maxWidth='xl'>
               <Paper className={classes.paper}>
-                <Variants variants={this.state.AllPatientInfo.individuals} title={"My Patients" + ' (Total: ' + this.state.AllPatientInfo.preview[0][1] + ')'} subtitle=" " />
+                <Variants variants={this.state.AllPatientInfo.individuals} title={'My Patients' + ' (Total: ' + this.state.AllPatientInfo.preview[0][1] + ')'} subtitle=" " />
               </Paper>
             </Container>
           </div>

@@ -255,6 +255,7 @@ class Variant extends React.Component {
                       sm={6}
                       md={3}
                       lg={2}
+                      key={i}
                       style={{ margin: 0, padding: 0 }}>
                       {
                         h.description ?
