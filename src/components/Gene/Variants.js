@@ -224,7 +224,6 @@ class Variant extends React.Component {
   render() {
     const { classes } = this.props;
     const open = Boolean(this.state.anchorEl);
-    const id = open ? 'simple-popover' : undefined;
 
     return (
       <React.Fragment>
@@ -447,7 +446,7 @@ class Variant extends React.Component {
 
           {
             this.state.previewLoaded === true &&
-            < Container style={{ background: '#242424', 'min-width': '25em' }}>
+            < Container style={{ background: '#242424', 'min-width': '25em', 'border-radius': '0.3em', 'padding-bottom': '1em' }}>
               {
                 this.state.previewInfo.preview.map((item, index) => {
                   return (
