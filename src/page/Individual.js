@@ -91,7 +91,8 @@ class Individual extends React.Component {
         <React.Fragment>
           <CssBaseline />
           <div className={classes.root}>
-            <Fab color="primary" aria-label="add" className={classes.fab} onClick={() => this.OpenDialog()}>
+
+            <Fab className={classes.fab} size="middle" color="primary" aria-label="add" onClick={() => this.OpenDialog()}>
               <EditIcon />
             </Fab>
 
@@ -140,7 +141,7 @@ class Individual extends React.Component {
             aria-labelledby="alert-dialog-title"
             aria-describedby="alert-dialog-description"
           >
-            <EditPerson />
+            <EditPerson metadata={this.state.individualInfo.metadata} dialogClose={() => this.OpenDialog()} />
           </Dialog>
         </React.Fragment>
       );
@@ -171,10 +172,9 @@ const styles = theme => ({
     marginTop: theme.spacing(5)
   },
   fab: {
-    position: "absolute",
-    top: "10em",
-    left: "80em",
-    margin: theme.spacing(1),
+    position: 'absolute',
+    right: theme.spacing(15),
+    top: theme.spacing(18),
   }
 });
 
