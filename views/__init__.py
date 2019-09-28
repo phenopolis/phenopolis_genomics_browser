@@ -2,13 +2,13 @@
 #flask import
 from flask import Flask
 from flask import session
-from flask.ext.session import Session
+from flask_session import Session
 from flask import Response
 from flask import request
 from flask import redirect
 from flask import jsonify
-from flask.ext.compress import Compress
-from flask.ext.cache import Cache
+from flask_compress import Compress
+from flask_cache import Cache
 import json
 import os
 import logging
