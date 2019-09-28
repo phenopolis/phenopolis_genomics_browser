@@ -119,6 +119,9 @@ def phenopolis_statistics():
 # need to figure out how to encode json data type in sqlite import
 # rather do the conversion on the fly
 def process_for_display(data):
+   c,fd,=sqlite3_ro_cursor(app.config['PHENOPOLIS_DB'])
+   my_patients=[pid for pid, in c.execute("select internal_id from users_individuals where user='%s'"%session['user']).fetchall()]
+   sqlite3_ro_close(c, fd)
    for x2 in data:
        if '#CHROM' in x2 and 'POS' in x2 and 'REF' in x2 and 'ALT' in x2:
            variant_id='%s-%s-%s-%s' % (x2['#CHROM'], x2['POS'], x2['REF'], x2['ALT'],)
@@ -126,9 +129,9 @@ def process_for_display(data):
        if 'gene_symbol' in x2:
            x2['gene_symbol']=[{'display':x3} for x3 in x2['gene_symbol'].split(',') if x3]
        if 'HET' in x2:
-           x2['HET']=[{'display':x3} for x3 in json.loads(x2['HET'])]
+           x2['HET']=[{'display':'my:'+x3,'end_href':x3} if x3 in my_patients else {'display':x3,'end_href':x3} for x3 in json.loads(x2['HET']) ]
        if 'HOM' in x2:
-           x2['HOM']=[{'display':x3} for x3 in json.loads(x2['HOM'])]
+           x2['HOM']=[{'display':'my:'+x3,'end_href':x3} if x3 in my_patients else {'display':x3,'end_href':x3} for x3 in json.loads(x2['HOM']) ]
        if 'hpo_ancestors' in x2:
            x2['hpo_ancestors']=[{'display':x3} for x3 in x2['hpo_ancestors'].split(';') if x3]
 
