@@ -46,9 +46,11 @@ def gene(gene_id, subset='all', language='en'):
    c.execute("select * from variants where gene_symbol=?",(x[0]['metadata']['data'][0]['gene_name'],))
    headers=[h[0] for h in c.description]
    x[0]['variants']['data']=[dict(zip(headers,r)) for r in c.fetchall()]
+   cadd_gt_20=0
    for v in x[0]['variants']['data']:
        v['variant_id']=[{'display':'%s-%s-%s-%s' % (v['#CHROM'], v['POS'], v['REF'], v['ALT'],)}]
-   x[0]['preview']=[['Number of variants',len(x[0]['variants']['data'])]]
+       if v['cadd_phred'] and float(v['cadd_phred'])>=20: cadd_gt_20+=1
+   x[0]['preview']=[['pLI', x[0]['metadata']['data'][0].get('pLI','')],['Number of variants',len(x[0]['variants']['data'])],['CADD > 20',cadd_gt_20]]
    sqlite3_ro_close(c,fd)
    for d in x[0]['metadata']['data']: d['number_of_variants']=len(x[0]['variants']['data'])
    process_for_display(x[0]['variants']['data'])
