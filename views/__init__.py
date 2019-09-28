@@ -21,8 +21,9 @@ from passlib.hash import argon2
 import re
 import itertools
 import pysam
+from time import strftime
 
-
+from logging.handlers import RotatingFileHandler
 
 logging.getLogger().addHandler(logging.StreamHandler())
 logging.getLogger().setLevel(logging.INFO)
@@ -67,6 +68,19 @@ def sqlite3_cursor(dbname):
 def sqlite3_close(conn,cursor):
     conn.commit()
     cursor.close()
+
+@app.after_request
+def after_request(response):
+    timestamp = strftime('[%Y-%b-%d %H:%M]')
+    logging.error('%s %s %s %s %s %s', timestamp, request.remote_addr, request.method, request.scheme, request.full_path, response.status)
+    return response
+
+@app.errorhandler(Exception)
+def exceptions(e):
+    tb = traceback.format_exc()
+    timestamp = strftime('[%Y-%b-%d %H:%M]')
+    logging.error('%s %s %s %s %s 5xx INTERNAL SERVER ERROR\n%s', timestamp, request.remote_addr, request.method, request.scheme, request.full_path, tb)
+    return e.status_code
 
 @app.route('/phenopolis_statistics')
 def phenopolis_statistics():
