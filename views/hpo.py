@@ -24,6 +24,11 @@ def hpo(hpo_id='HP:0000001',subset='all',language='en'):
        and ui.user=?
        and i.ancestor_observed_features like ?""",(session['user'],'%'+hpo_id+'%',))
    individuals=[dict(zip([h[0] for h in c.description],r)) for r in c.fetchall()]
+   if hpo_id != 'HP:0000001':
+       x[0]['phenogenon_recessive']['data']=[{'gene_id':[{'display':gene_id,'end_href':gene_id}],'hpo_id':hpo_id,'hgf_score':hgf,'moi_score':moi_score} for gene_id,hpo_id,hgf,moi_score, in c.execute('select * from phenogenon where hpo_id="%s"'%hpo_id).fetchall() ]
+       x[0]['phenogenon_dominant']['data']=[{'gene_id':[{'display':gene_id,'end_href':gene_id}],'hpo_id':hpo_id,'hgf_score':hgf,'moi_score':moi_score,} for gene_id,hpo_id,hgf,moi_score, in c.execute('select * from phenogenon where hpo_id="%s"'%hpo_id).fetchall()]
+       #Chr,Start,End,HPO,Symbol,ENSEMBL,FisherPvalue,SKATO,variants,CompoundHetPvalue,HWEp,min_depth,nb_alleles_cases,case_maf,nb_ctrl_homs,nb_case_homs,MaxMissRate,nb_alleles_ctrls,nb_snps,nb_cases,minCadd,MeanCallRateCtrls,MeanCallRateCases,OddsRatio,MinSNPs,nb_ctrl_hets,total_maf,MaxCtrlMAF,ctrl_maf,nb_ctrls,nb_case_hets,maxExac
+       x[0]['skat']['data']=[{'gene_id':[{'display':gene_id,'end_href':gene_id}],'fisher_p_value':fisher_p_value,'skato':skato,'odds_ratio':odds_ratio,'variants':[]} for gene_id,fisher_p_value,skato,odds_ratio,variants, in c.execute('select Symbol,FisherPvalue,SKATO,OddsRatio,variants from skat where HPO="%s"'%hpo_id).fetchall()[:100]]
    sqlite3_ro_close(c, fd)
    print(len(individuals))
    x[0]["preview"]=[["Number of Individuals",len(individuals)]]
