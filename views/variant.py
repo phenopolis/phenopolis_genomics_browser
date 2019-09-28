@@ -1,4 +1,5 @@
 from views import *
+import requests
 
 
 @app.route('/<language>/variant/<variant_id>')
@@ -13,6 +14,12 @@ def variant(variant_id, subset='all', language='en'):
    phenoid_mapping={ind['external_id']:ind['internal_id'] for ind in pheno_ids}
    print(phenoid_mapping)
    chrom,pos,ref,alt,=variant_id.split('-')
+   url='https://myvariant.info/v1/variant/chr%s:g.%s%s>%s?fields=clinvar.rcv.clinical_significance&dotfield=true' % (chrom,pos,ref,alt,)
+   x=requests.get(url).json()
+   if x:
+       clinical_significance=str(x.get("clinvar.rcv.clinical_significance",''))
+   else:
+       clinical_significance=''
    pos=int(pos)
    variant_file=pysam.VariantFile(app.config['VCF_FILE'])
    samples=variant_file.header.samples
@@ -45,6 +52,7 @@ def variant(variant_id, subset='all', language='en'):
    x[0]['frequency']['data']=[var]
    x[0]['consequence']['data']=[var]
    x[0]['genotypes']['data']=variant['genotypes']
+   x[0]['preview']=[['Clinvar', clinical_significance]]
    if subset=='all': return json.dumps(x)
    else: return json.dumps([{subset:y[subset]} for y in x])
 
