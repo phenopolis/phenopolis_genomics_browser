@@ -42,7 +42,7 @@ def gene(gene_id, subset='all', language='en'):
                 {"display": "Wikigenes","href": "http://www.wikigenes.org/?search="+gene_name},
                 {"display": "GTEx (expression)","href": "http://www.gtexportal.org/home/gene/"+gene_name}
                ]
-       d["related_hpo"]=[{"display": "", "href":""}]
+       d["related_hpo"]=[ {'display':c.execute("select hpo_name from hpo where hpo_id='%s' limit 1"%hpo_id).fetchone()[0], 'end_href':hpo_id} for hpo_id, in c.execute("select hpo_id from gene_hpo where gene_symbol='%s'"%gene_name).fetchall() ]
    c.execute("select * from variants where gene_symbol=?",(x[0]['metadata']['data'][0]['gene_name'],))
    headers=[h[0] for h in c.description]
    x[0]['variants']['data']=[dict(zip(headers,r)) for r in c.fetchall()]
