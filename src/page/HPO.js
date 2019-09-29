@@ -169,7 +169,7 @@ class HPO extends React.Component {
         </React.Fragment>
       );
     } else {
-      return <Loading />;
+      return <Loading message={'Loading HPO Information from Server...'} />;
     }
   }
 }

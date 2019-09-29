@@ -56,7 +56,7 @@ class MyPatient extends React.Component {
         </React.Fragment>
       );
     } else {
-      return <Loading />;
+      return <Loading message={'Loading All Patients Information from Server...'} />;
     }
   }
 }

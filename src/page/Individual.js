@@ -22,6 +22,7 @@ class Individual extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
+      message: 'Loading Patient Information from Server...',
       individualInfo: {},
       loaded: false,
       value: 0,
@@ -83,6 +84,14 @@ class Individual extends React.Component {
     });
   }
 
+  refreshPage = (patientName) => {
+    this.setState({
+      loaded: false,
+      message: 'Edit Patient Information Success, Reloading...'
+    });
+    this.getIndividualInformation(patientName)
+  }
+
   render() {
     const { classes } = this.props;
 
@@ -136,17 +145,19 @@ class Individual extends React.Component {
             </Container>
           </div>
           <Dialog
+            fullWidth={true}
+            maxWidth={'md'}
             open={this.state.EditOpen}
             onClose={() => this.OpenDialog()}
             aria-labelledby="alert-dialog-title"
             aria-describedby="alert-dialog-description"
           >
-            <EditPerson metadata={this.state.individualInfo.metadata} dialogClose={() => this.OpenDialog()} />
+            <EditPerson patientName={this.props.match.params.individualId} metadata={this.state.individualInfo.metadata} dialogClose={() => this.OpenDialog()} refreshData={this.refreshPage} />
           </Dialog>
         </React.Fragment>
       );
     } else {
-      return <Loading />;
+      return <Loading message={this.state.message} />;
     }
   }
 }

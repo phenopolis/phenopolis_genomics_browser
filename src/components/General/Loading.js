@@ -6,6 +6,10 @@ import { CssBaseline, Paper, Container, Box, Typography,
          LinearProgress } from '@material-ui/core';
 
 class Loading extends React.Component {
+  constructor(props) {
+    super(props);
+  }
+
   render() {
     const { classes } = this.props;
 
@@ -17,7 +21,7 @@ class Loading extends React.Component {
             <Paper className={classes.paper}>
               <Typography component='div'>
                 <Box fontWeight='fontWeightBold' fontSize='h4.fontSize' m={1}>
-                  Loading Data from the Server...
+                  {this.props.message}
                 </Box>
               </Typography>
               <LinearProgress color='secondary' className={classes.progress} />

@@ -69,7 +69,7 @@ class Gene extends React.Component {
         </React.Fragment>
       );
     } else {
-      return <Loading />;
+      return <Loading message={'Loading Gene Information from Server...'} />;
     }
   }
 }
