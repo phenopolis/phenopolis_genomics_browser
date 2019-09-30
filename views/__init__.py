@@ -1,4 +1,6 @@
 
+from google.cloud import bigquery
+
 #flask import
 from flask import Flask
 from flask import session
@@ -49,6 +51,7 @@ app.config.from_object(__name__)
 sess=Session()
 sess.init_app(app)
 
+bigquery_client=bigquery.Client()
 
 def sqlite3_ro_cursor(dbname):
    fd = os.open(dbname, os.O_RDONLY)
@@ -151,8 +154,8 @@ def check_auth(username, password):
     print(user)
     print(password)
     print(argon2.hash(password))
-    print user[0]['argon_password']
-    print argon2.verify(password, user[0]['argon_password'])
+    print(user[0]['argon_password'])
+    print(argon2.verify(password, user[0]['argon_password']))
     if len(user)==0: return False
     return argon2.verify(password, user[0]['argon_password'])
 
@@ -161,11 +164,8 @@ def requires_auth(f):
     @wraps(f)
     def decorated(*args, **kwargs):
         if session:
-          print 'session'
-          print session
-          print session.keys()
           if 'user' in session: 
-             print session['user']
+             print(session['user'])
              return f(*args, **kwargs)
         if request.method == 'POST':
           username=request.form['user']
@@ -202,8 +202,6 @@ def login(language='en'):
     else:
         print('LOGIN SUCCESS')
         session['user']=username
-        print session['user']
-        print session
         return jsonify(success="Authenticated", username=username), 200
 
 # 
@@ -222,7 +220,6 @@ def is_logged_in():
 
 @app.after_request
 def apply_caching(response):
-    print 'CACHE'
     response.headers['Cache-Control'] = 'no-cache'
     response.headers['Cache-Control'] = 'no-cache, no-store, must-revalidate'
     # prevent click-jacking vulnerability identified by BITs

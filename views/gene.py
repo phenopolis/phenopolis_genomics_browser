@@ -8,17 +8,20 @@ from views import *
 @requires_auth
 def gene(gene_id, subset='all', language='en'):
    x=json.loads(file(app.config['USER_CONFIGURATION'].format(session['user'],language,'gene') ,'r').read())
-   c,fd,=sqlite3_ro_cursor(app.config['PHENOPOLIS_DB'])
+   #c,fd,=sqlite3_ro_cursor(app.config['PHENOPOLIS_DB'])
    gene_id=gene_id.upper()
    if gene_id.startswith('ENSG'):
-      c.execute('select * from genes where gene_id=?',(gene_id,))
-      data=c.fetchall()
+      q="SELECT * FROM `poised-breaker-236510.phenopolis_August2019.genes` where gene_symbol='%s'" % gene_id
+      query_job=bigquery_client.query(q, location="EU",) 
+      data=[x for x in query_job]
    else:
-      c.execute('select * from genes where gene_name=?',(gene_id,))
-      data=c.fetchall()
+      q="SELECT * FROM `poised-breaker-236510.phenopolis_August2019.genes` where gene_name='%s'" % gene_id
+      query_job=bigquery_client.query(q, location="EU",) 
+      data=[x for x in query_job]
    if not data:
-      c.execute('select * from genes where other_names like ?',('%'+gene_id+'%',))
-      data=c.fetchall()
+      q="SELECT * FROM `poised-breaker-236510.phenopolis_August2019.genes` where other_names like '%s'" % ('%'+gene_id+'%')
+      query_job=bigquery_client.query(q, location="EU",) 
+      data=[x for x in query_job]
    x[0]['metadata']['data']=[dict(zip([h[0] for h in c.description],r)) for r in data]
    print x[0]['metadata']['data']
    chrom=x[0]['metadata']['data'][0]['chrom']
@@ -43,12 +46,14 @@ def gene(gene_id, subset='all', language='en'):
                 {"display": "GTEx (expression)","href": "http://www.gtexportal.org/home/gene/"+gene_name}
                ]
        d["related_hpo"]=[ {'display':c.execute("select hpo_name from hpo where hpo_id='%s' limit 1"%hpo_id).fetchone()[0], 'end_href':hpo_id} for hpo_id, in c.execute("select hpo_id from gene_hpo where gene_symbol='%s'"%gene_name).fetchall() ]
-   c.execute("select * from variants where gene_symbol=?",(x[0]['metadata']['data'][0]['gene_name'],))
-   headers=[h[0] for h in c.description]
-   x[0]['variants']['data']=[dict(zip(headers,r)) for r in c.fetchall()]
+   #c.execute("select * from variants where gene_symbol=?",(x[0]['metadata']['data'][0]['gene_name'],))
+   q="select * from variants where gene_symbol='%s'" % (x[0]['metadata']['data'][0]['gene_name'],)
+   query_job=bigquery_client.query(q, location="EU",) 
+   data=[x for x in query_job]
+   x[0]['variants']['data']=data
    cadd_gt_20=0
    for v in x[0]['variants']['data']:
-       v['variant_id']=[{'display':'%s-%s-%s-%s' % (v['#CHROM'], v['POS'], v['REF'], v['ALT'],)}]
+       v['variant_id']=[{'display':'%s-%s-%s-%s' % (v['CHROM'], v['POS'], v['REF'], v['ALT'],)}]
        if v['cadd_phred'] and float(v['cadd_phred'])>=20: cadd_gt_20+=1
    x[0]['preview']=[['pLI', x[0]['metadata']['data'][0].get('pLI','')],['Number of variants',len(x[0]['variants']['data'])],['CADD > 20',cadd_gt_20]]
    sqlite3_ro_close(c,fd)
