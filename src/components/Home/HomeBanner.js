@@ -5,12 +5,55 @@ import { Parallax } from 'react-parallax';
 import { withStyles } from '@material-ui/core/styles';
 import { Grid, Box, Typography, Button } from '@material-ui/core';
 
+import { Link } from 'react-router-dom';
+
+import Cookies from 'universal-cookie';
+import compose from 'recompose/compose';
+import { connect } from 'react-redux';
+import { setUser } from '../../redux/actions';
+import { getUsername } from '../../redux/selectors';
+
+import axios from 'axios';
+const qs = require('querystring');
+
 class HomeBanner extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
       BannerText: null
     };
+  }
+
+  getReduxName() {
+    return this.props.reduxName;
+  }
+
+  DemoLogin = () => {
+    const cookies = new Cookies();
+
+    const loginData = qs.stringify({
+      name: 'demo',
+      password: 'demo123'
+    });
+
+    axios
+      .post('/api/login', loginData, { withCredentials: true })
+      .then(res => {
+        let respond = res.data;
+        if (respond.success === 'Authenticated') {
+          cookies.set('username', respond.username, {
+            path: '/',
+            maxAge: 86400 * 60 * 24 * 30
+          });
+          this.setState({ redirect: true });
+          this.props.setUser(respond.username);
+        } else {
+          window.alert('Login Failed.');
+        }
+      })
+      .catch(err => {
+        window.alert('Login Failed.');
+      });
   }
 
   render() {
@@ -31,12 +74,23 @@ class HomeBanner extends React.Component {
                   <Typography variant='h6' align='center' gutterBottom>
                     Harmonization & Analysis of Sequencing & Phenotype Data
                   </Typography>
-                  <Button
-                    variant='outlined'
-                    color='inherit'
-                    className={classes.button}>
-                    LOGIN AS DEMO USER
-                  </Button>
+                  {this.props.reduxName === '' ?
+                    (<Button
+                      variant='outlined'
+                      color='inherit'
+                      className={classes.button}
+                      onClick={this.DemoLogin}
+                    >
+                      LOGIN AS DEMO USER
+                  </Button>) : (<Button
+                      variant='outlined'
+                      color='inherit'
+                      className={classes.button}
+                      component={Link}
+                      to='/search'
+                    >
+                      Search Phenopolis
+                  </Button>)}
                 </div>
               </Box>
             </Grid>
@@ -61,4 +115,11 @@ const styles = theme => ({
   }
 });
 
-export default withStyles(styles)(HomeBanner);
+const mapStateToProps = state => ({ reduxName: getUsername(state) });
+export default compose(
+  withStyles(styles),
+  connect(
+    mapStateToProps,
+    { setUser }
+  )
+)(HomeBanner);

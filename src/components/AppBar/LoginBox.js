@@ -63,6 +63,12 @@ class LoginBox extends React.Component {
     this.setState({ password: event.target.value });
   };
 
+  DemoLogin = (event) => {
+    this.setState({ name: 'demo', password: 'demo123' }, () => {
+      this.handleSubmit(event)
+    });
+  }
+
   render() {
     const { classes } = this.props;
 
@@ -96,6 +102,7 @@ class LoginBox extends React.Component {
               id='name'
               label='User Name'
               name='name'
+              placeholder='demo'
               autoFocus
             />
             <CssTextField
@@ -107,6 +114,7 @@ class LoginBox extends React.Component {
               required
               fullWidth
               name='password'
+              placeholder='demo123'
               label='Password'
               type='password'
               id='password'
@@ -119,6 +127,9 @@ class LoginBox extends React.Component {
               style={{ backgroundColor: '#2E84CF', color: 'white' }}>
               Sign In
             </Button>
+            <div style={{ textAlign: 'center', }}>
+              <span style={{ color: 'grey' }}>Click <a className={classes.demolink} onClick={this.DemoLogin}> Demo Login</a> to have a try!</span>
+            </div>
           </form>
         </div>
       </Container>
@@ -150,6 +161,13 @@ const styles = theme => ({
   },
   textfild: {
     color: '#2E84CF'
+  },
+  demolink: {
+    '&:hover': {
+      cursor: 'pointer',
+      textShadow: '-0.06ex 0 grey, 0.06ex 0 grey',
+      textDecoration: 'underline'
+    }
   }
 });
 

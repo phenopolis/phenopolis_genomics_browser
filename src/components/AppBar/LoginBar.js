@@ -85,9 +85,15 @@ class LoginBar extends React.Component {
                 <MenuIcon className={classes.menuicon} />
               </IconButton>
             </Grid>
+
           </Hidden>
 
-          <Grid item xs={10} md={3} className={classes.grid}>
+          <Hidden smDown>
+          <Grid item xs={2}>
+            </Grid>
+          </Hidden>
+
+          <Grid item xs={10} md={1} className={classes.grid} >
             <Typography
               className={classes.Homelabel}
               variant='h6'
@@ -120,7 +126,7 @@ class LoginBar extends React.Component {
           <Hidden smDown>
             <Grid
               item
-              md={5}
+              md={4}
               className={classes.gridpaper}
               container
               direction='row'
