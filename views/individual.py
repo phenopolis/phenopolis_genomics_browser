@@ -1,14 +1,14 @@
 from views import *
 
 def get_hpo_ids_per_gene(variants,ind):
-   c,fd,=sqlite3_ro_cursor(app.config['PHENOPOLIS_DB'])
    for y in variants:
+       y['hpo_terms']=[]
+       continue
        query=""" select * from gene_hpo where gene_symbol='%s' """ % (y['gene_symbol'])
        c.execute(query)
        gene_hpo_ids=[dict(zip( [h[0] for h in c.description] ,r)) for r in c.fetchall()]
        y['hpo_terms']=[{'display': c.execute("select hpo_name from hpo where hpo_id=? limit 1",(gh['hpo_id'],)).fetchone()[0], 'end_href':gh['hpo_id']} for gh in gene_hpo_ids if gh['hpo_id'] in ind['ancestor_observed_features'].split(';')]
        #print y['hpo_terms']
-   sqlite3_ro_close(c,fd)
    return variants
 
 @app.route('/<language>/individual/<individual_id>')
@@ -18,15 +18,19 @@ def get_hpo_ids_per_gene(variants,ind):
 @requires_auth
 def individual(individual_id, subset='all', language='en'):
    c,fd,=sqlite3_ro_cursor(app.config['PHENOPOLIS_DB'])
-   x=json.loads(file(app.config['USER_CONFIGURATION'].format(session['user'],language,'individual') ,'r').read())
-   c.execute(""" select i.*
-           from users_individuals as ui, individuals as i
-           where
-           i.internal_id=ui.internal_id
-           and ui.user=?
-           and ui.internal_id=?
-           """,(session['user'],individual_id,))
-   individual=[dict(zip( [h[0] for h in c.description],r)) for r in c.fetchall()]
+   x=json.loads(open(app.config['USER_CONFIGURATION'].format(session['user'],language,'individual') ,'r').read())
+   q="""
+   select i.*
+   from
+   `poised-breaker-236510.phenopolis_August2019.users_individuals` as ui,
+   `poised-breaker-236510.phenopolis_August2019.individuals` as i
+   where
+   i.internal_id=ui.internal_id
+   and ui.user='%s'
+   and i.internal_id='%s'
+   """ % (session['user'],individual_id,)
+   query_job=bigquery_client.query(q, location="EU",) 
+   individual=[dict(x) for x in query_job]
    print(individual)
    if individual:
        individual=individual[0]
@@ -35,25 +39,43 @@ def individual(individual_id, subset='all', language='en'):
        return json.dumps(x)
    ind=individual
    if subset=='preview':
-       query=""" select count(1)
-       from hom_variants hv, variants v
-       where hv."#CHROM"=v."#CHROM"
-       and hv."POS"=v."POS"
-       and hv."REF"=v."REF"
-       and hv."ALT"=v."ALT"
+       q="""
+       select count(1)
+       from
+       `poised-breaker-236510.phenopolis_August2019.hom_variants` hv,
+       `poised-breaker-236510.phenopolis_August2019.variants` v
+       where hv.CHROM=v.CHROM
+       and hv.POS=v.POS
+       and hv.REF=v.REF
+       and hv.ALT=v.ALT
        and hv.individual='%s' """ % (ind['external_id'],)
-       hom_count=c.execute(query).fetchone()[0]
+       query_job=bigquery_client.query(q, location="EU",) 
+       hom_count=[x for x in query_job][0]
        query=""" select count(1)
-       from het_variants hv, variants v
+       from
+       `poised-breaker-236510.phenopolis_August2019.het_variants` hv,
+       `poised-breaker-236510.phenopolis_August2019.variants` v
        where
-       hv."#CHROM"=v."#CHROM"
-       and hv."POS"=v."POS"
-       and hv."REF"=v."REF"
-       and hv."ALT"=v."ALT"
+       hv.CHROM=v.CHROM
+       and hv.POS=v.POS
+       and hv.REF=v.REF
+       and hv.ALT=v.ALT
        and hv.individual='%s' """ % (ind['external_id'],)
-       het_count=c.execute(query).fetchone()[0]
-       query=""" select count (1) from (select count(1) from het_variants hv, variants v where hv."#CHROM"=v."#CHROM" and hv."POS"=v."POS" and hv."REF"=v."REF" and hv."ALT"=v."ALT" and hv.individual='%s' group by v.gene_symbol having count(v.gene_symbol)>1) as t """ % (ind['external_id'],)
-       comp_het_count=c.execute(query).fetchone()[0]
+       query_job=bigquery_client.query(q, location="EU",) 
+       het_count=[x for x in query_job][0]
+       query=""" select count (1) from
+       (select count(1) from
+       `poised-breaker-236510.phenopolis_August2019.het_variants` hv,
+       `poised-breaker-236510.phenopolis_August2019.variants` v
+       where
+       hv.CHROM=v.CHROM
+       and hv.POS=v.POS
+       and hv.REF=v.REF
+       and hv.ALT=v.ALT
+       and hv.individual='%s'
+       group by v.gene_symbol having count(v.gene_symbol)>1) as t """ % (ind['external_id'],)
+       query_job=bigquery_client.query(q, location="EU",) 
+       comp_het_count=[x for x in query_job][0]
        x[0]['preview']=[
                ['External_id', ind['external_id']],
                ['Sex', ind['sex']],
@@ -65,32 +87,36 @@ def individual(individual_id, subset='all', language='en'):
        sqlite3_ro_close(c,fd)
        return json.dumps(x)
    # hom variants
-   query=""" select v.*
-       from hom_variants hv, variants v
-       where hv."#CHROM"=v."#CHROM"
-       and hv."POS"=v."POS"
-       and hv."REF"=v."REF"
-       and hv."ALT"=v."ALT"
+   q="""
+       select v.*
+       from
+       `poised-breaker-236510.phenopolis_August2019.hom_variants` hv,
+       `poised-breaker-236510.phenopolis_August2019.variants` v
+       where
+       hv.CHROM=v.CHROM
+       and hv.POS=v.POS
+       and hv.REF=v.REF
+       and hv.ALT=v.ALT
        and hv.individual='%s' """ % (ind['external_id'],)
-   print query
-   c.execute(query)
-   hom_variants=[dict(zip( [h[0] for h in c.description] ,r)) for r in c.fetchall()]
+   query_job=bigquery_client.query(q, location="EU",) 
+   hom_variants=[dict(x) for x in query_job]
    hom_variants=get_hpo_ids_per_gene(hom_variants,ind)
    x[0]['rare_homs']['data']=hom_variants
    # rare variants
-   query=""" select v.*
-      from het_variants hv, variants v
+   q="""
+      select v.*
+      from
+      `poised-breaker-236510.phenopolis_August2019.het_variants` hv,
+      `poised-breaker-236510.phenopolis_August2019.variants` v
       where
-      hv."#CHROM"=v."#CHROM"
-      and hv."POS"=v."POS"
-      and hv."REF"=v."REF"
-      and hv."ALT"=v."ALT"
+      hv.CHROM=v.CHROM
+      and hv.POS=v.POS
+      and hv.REF=v.REF
+      and hv.ALT=v.ALT
       and hv.individual='%s' """ % (ind['external_id'],)
-   print query
-   c.execute(query)
-   rare_variants=[dict(zip( [h[0] for h in c.description],r)) for r in c.fetchall()]
+   query_job=bigquery_client.query(q, location="EU",) 
+   rare_variants=[dict(x) for x in query_job ]
    rare_variants=get_hpo_ids_per_gene(rare_variants,ind)
-   sqlite3_ro_close(c,fd)
    x[0]['rare_variants']['data']=rare_variants
    # rare_comp_hets
    gene_counter=Counter([v['gene_symbol'] for v in x[0]['rare_variants']['data']])
@@ -132,17 +158,18 @@ def update_patient_data(individual_id,language='en'):
    print('FEATURES',features)
    print(individual_id)
    c,fd,=sqlite3_ro_cursor(app.config['PHENOPOLIS_DB'])
-   hpo=[dict(zip(['hpo_id','hpo_name','hpo_ancestor_ids','hpo_ancestor_names'] ,c.execute("select * from hpo where hpo_name=? limit 1",(x,)).fetchone())) for x in features]
-   print hpo
-   x=json.loads(file(app.config['USER_CONFIGURATION'].format(session['user'],language,'individual') ,'r').read())
-   c.execute(""" select i.*
-       from users_individuals as ui, individuals as i
+   #hpo=[dict(zip(['hpo_id','hpo_name','hpo_ancestor_ids','hpo_ancestor_names'] ,c.execute("select * from hpo where hpo_name=? limit 1",(x,)).fetchone())) for x in features]
+   hpo=[]
+   x=json.loads(open(app.config['USER_CONFIGURATION'].format(session['user'],language,'individual') ,'r').read())
+   q="""select i.*
+       from
+       `poised-breaker-236510.phenopolis_August2019.users_individuals` as ui,
+       `poised-breaker-236510.phenopolis_August2019.individuals` as i
        where i.internal_id=ui.internal_id
-       and ui.user=?
-       and ui.internal_id=? """,
-       (session['user'],individual_id,))
-   individual=[dict(zip( [h[0] for h in c.description],r)) for r in c.fetchall()]
-   sqlite3_ro_close(c,fd,)
+       and ui.user='%s'
+       and i.internal_id='%s'""" % (session['user'],individual_id,)
+   query_job=bigquery_client.query(q, location="EU",) 
+   individual=[dict(x) for x in query_job]
    print(individual)
    if individual:
        individual=individual[0]
@@ -161,8 +188,7 @@ def update_patient_data(individual_id,language='en'):
    ind['unobserved_features']=''
    ind['ancestor_observed_features']=';'.join(sorted(list(set(list(itertools.chain.from_iterable([h['hpo_ancestor_ids'].split(';') for h in hpo]))))))
    ind['genes']=','.join([x for x in genes])
-   print 'UPDATE:', ind
-   conn,c,=sqlite3_cursor(app.config['PHENOPOLIS_DB'])
+   print('UPDATE:', ind)
    c.execute("""update individuals set
            sex=?,
            consanguinity=?,
@@ -184,8 +210,6 @@ def update_patient_data(individual_id,language='en'):
             ind['unobserved_features'],
             ind['genes'],
             ind['external_id'],))
-   print c.execute("select * from individuals where external_id=?",(ind['external_id'],)).fetchall()
-   sqlite3_close(conn,c)
    return jsonify({'success': True}), 200
 
 
