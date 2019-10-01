@@ -7,29 +7,47 @@ from views import *
 @app.route('/hpo/<hpo_id>/<subset>')
 @requires_auth
 def hpo(hpo_id='HP:0000001',subset='all',language='en'):
-   x=json.loads(file(app.config['USER_CONFIGURATION'].format(session['user'],language,'hpo') ,'r').read())
-   c,fd,=sqlite3_ro_cursor(app.config['PHENOPOLIS_DB'])
+   x=json.loads(open(app.config['USER_CONFIGURATION'].format(session['user'],language,'hpo') ,'r').read())
    if not hpo_id.startswith('HP:'):
-       c.execute("select * from hpo where hpo_name=? limit 1",(hpo_id,))
+       q="select * from `poised-breaker-236510.phenopolis_August2019.hpo` where hpo_name='%s' limit 1"%(hpo_id,)
    else:
-       c.execute("select * from hpo where hpo_id=? limit 1",(hpo_id,))
-   res=[dict(zip([h[0] for h in c.description],r)) for r in c.fetchall()][0]
+       q="select * from `poised-breaker-236510.phenopolis_August2019.hpo` where hpo_id='%s' limit 1"%(hpo_id,)
+   query_job=bigquery_client.query(q, location="EU",) 
+   res=[dict(y) for y in query_job][0]
    hpo_id=res['hpo_id']
    hpo_name=res['hpo_name']
    parent_phenotypes=[{'display':i, 'end_href':j} for i,j, in zip(res['hpo_ancestor_names'].split(';'), res['hpo_ancestor_ids'].split(';')) ]
-   c.execute(""" select *
-       from individuals as i, users_individuals as ui
+   q=""" select i.*
+       from
+        `poised-breaker-236510.phenopolis_August2019.individuals` as i,
+        `poised-breaker-236510.phenopolis_August2019.users_individuals` as ui
        where
        i.internal_id=ui.internal_id
-       and ui.user=?
-       and i.ancestor_observed_features like ?""",(session['user'],'%'+hpo_id+'%',))
-   individuals=[dict(zip([h[0] for h in c.description],r)) for r in c.fetchall()]
+       and ui.user='%s'
+       and i.ancestor_observed_features like '%s'"""%(session['user'],'%'+hpo_id+'%',)
+   query_job=bigquery_client.query(q, location="EU",) 
+   individuals=[dict(y) for y in query_job]
    if hpo_id != 'HP:0000001':
-       x[0]['phenogenon_recessive']['data']=[{'gene_id':[{'display':gene_id,'end_href':gene_id}],'hpo_id':hpo_id,'hgf_score':hgf,'moi_score':moi_score} for gene_id,hpo_id,hgf,moi_score, in c.execute('select * from phenogenon where hpo_id="%s"'%hpo_id).fetchall() ]
-       x[0]['phenogenon_dominant']['data']=[{'gene_id':[{'display':gene_id,'end_href':gene_id}],'hpo_id':hpo_id,'hgf_score':hgf,'moi_score':moi_score,} for gene_id,hpo_id,hgf,moi_score, in c.execute('select * from phenogenon where hpo_id="%s"'%hpo_id).fetchall()]
+       q='select * from `poised-breaker-236510.phenopolis_August2019.phenogenon` where hpo_id="%s"'%hpo_id
+       query_job=bigquery_client.query(q, location="EU",) 
+       x[0]['phenogenon_recessive']['data']=[]
+       for y in query_job:
+           y=dict(y)
+           x[0]['phenogenon_recessive']['data'].append({'gene_id':[{'display':y['gene_id'],'end_href':y['gene_id']}],'hpo_id':y['hpo_id'],'hgf_score':y['hgf'],'moi_score':y['moi_score']})
+       q='select * from `poised-breaker-236510.phenopolis_August2019.phenogenon` where hpo_id="%s"'%hpo_id
+       query_job=bigquery_client.query(q, location="EU",) 
+       x[0]['phenogenon_dominant']['data']=[]
+       for y in query_job:
+           y=dict(y)
+           x[0]['phenogenon_dominant']['data'].append({'gene_id':[{'display':y['gene_id'],'end_href':y['gene_id']}],'hpo_id':y['hpo_id'],'hgf_score':y['hgf'],'moi_score':y['moi_score'],})
        #Chr,Start,End,HPO,Symbol,ENSEMBL,FisherPvalue,SKATO,variants,CompoundHetPvalue,HWEp,min_depth,nb_alleles_cases,case_maf,nb_ctrl_homs,nb_case_homs,MaxMissRate,nb_alleles_ctrls,nb_snps,nb_cases,minCadd,MeanCallRateCtrls,MeanCallRateCases,OddsRatio,MinSNPs,nb_ctrl_hets,total_maf,MaxCtrlMAF,ctrl_maf,nb_ctrls,nb_case_hets,maxExac
-       x[0]['skat']['data']=[{'gene_id':[{'display':gene_id,'end_href':gene_id}],'fisher_p_value':fisher_p_value,'skato':skato,'odds_ratio':odds_ratio,'variants':[]} for gene_id,fisher_p_value,skato,odds_ratio,variants, in c.execute('select Symbol,FisherPvalue,SKATO,OddsRatio,variants from skat where HPO="%s"'%hpo_id).fetchall()[:100]]
-   sqlite3_ro_close(c, fd)
+       q='select Symbol,FisherPvalue,SKATO,OddsRatio,variants from `poised-breaker-236510.phenopolis_August2019.skat` where HPO="%s"'%hpo_id
+       #query_job=bigquery_client.query(q, location="EU",) 
+       query_job=[]
+       x[0]['skat']['data']=[]
+       for y in query_job:
+           y=dict(y)
+           x[0]['skat']['data'].append({'gene_id':[{'display':x['gene_id'],'end_href':x['gene_id']}],'fisher_p_value':x['fisher_p_value'],'skato':x['skato'],'odds_ratio':x['odds_ratio'],'variants':[]})
    print(len(individuals))
    x[0]["preview"]=[["Number of Individuals",len(individuals)]]
    if subset=='preview': return json.dumps([{subset:y['preview']} for y in x])
