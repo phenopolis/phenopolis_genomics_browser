@@ -13,7 +13,7 @@ def autocomplete(query, query_type=''):
    gene_results=[]
    hpo_results=[]
    regex="%"+re.escape(query)+"%"
-   c,fd,=sqlite3_ro_cursor(app.config['PHENOPOLIS_DB'])
+   c=postgres_cursor()
    if query_type in ['gene:','']: 
        c.execute("select * from genes where gene_name_upper like '%s' limit 20"%regex)
        headers=[h[0] for h in c.description]
@@ -48,9 +48,6 @@ def autocomplete(query, query_type=''):
            patient_results = [x['internal_id'] for x in patient_hits]
        else:
            patient_results = ['patient:'+x['internal_id'] for x in patient_hits]
-       #sqlite3_ro_close(c,fd)
-   sqlite3_ro_close(c,fd)
-   #c,fd,=sqlite3_ro_cursor(app.config['PHENOPOLIS_DB'])
    #c.execute('select * from variants where "#CHROM"=? and POS=? and REF=? and ALT=? limit 20',regex.split('-'))
    #headers=[h[0] for h in c.description]
    #variant_hits=[dict(zip(headers,r)) for r in c.fetchall()]
