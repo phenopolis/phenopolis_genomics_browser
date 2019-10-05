@@ -16,7 +16,7 @@ def change_password():
         print('LOGIN SUCCESS, CHANGING PASSWORD')
         argon_password = argon2.hash(new_password_1)
         c=postgres_cursor()
-        c.execute(""" update users set argon_password=? where user=? """, (argon_password, session['user'],))
+        c.execute(""" update users set argon_password='%s' where user='%s' """%(argon_password, session['user'],))
         msg = 'Password for username \''+username+'\' changed. You are logged in as \''+username+'\'.' 
         return jsonify(success=msg), 200
 
