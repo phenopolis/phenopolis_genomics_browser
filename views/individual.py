@@ -6,7 +6,8 @@ def get_hpo_ids_per_gene(variants,ind):
        query=""" select * from gene_hpo where gene_symbol='%s' """ % (y['gene_symbol'])
        c.execute(query)
        gene_hpo_ids=[dict(zip( [h[0] for h in c.description] ,r)) for r in c.fetchall()]
-       y['hpo_terms']=[{'display': c.execute("select hpo_name from hpo where hpo_id=? limit 1",(gh['hpo_id'],)).fetchone()[0], 'end_href':gh['hpo_id']} for gh in gene_hpo_ids if gh['hpo_id'] in ind['ancestor_observed_features'].split(';')]
+       #y['hpo_,terms']=[{'display': c.execute("select hpo_name from hpo where hpo_id=? limit 1",(gh['hpo_id'],)).fetchone()[0], 'end_href':gh['hpo_id']} for gh in gene_hpo_ids if gh['hpo_id'] in ind['ancestor_observed_features'].split(';')]
+       y['hpo_,terms']=[]
        #print y['hpo_terms']
    return variants
 
@@ -17,14 +18,14 @@ def get_hpo_ids_per_gene(variants,ind):
 @requires_auth
 def individual(individual_id, subset='all', language='en'):
    c=postgres_cursor()
-   x=json.loads(file(app.config['USER_CONFIGURATION'].format(session['user'],language,'individual') ,'r').read())
+   x=json.loads(open(app.config['USER_CONFIGURATION'].format(session['user'],language,'individual') ,'r').read())
    c.execute(""" select i.*
            from users_individuals as ui, individuals as i
            where
            i.internal_id=ui.internal_id
-           and ui.user=?
-           and ui.internal_id=?
-           """,(session['user'],individual_id,))
+           and ui.user='%s'
+           and ui.internal_id='%s'
+           """%(session['user'],individual_id,))
    individual=[dict(zip( [h[0] for h in c.description],r)) for r in c.fetchall()]
    print(individual)
    if individual:
@@ -36,7 +37,7 @@ def individual(individual_id, subset='all', language='en'):
    if subset=='preview':
        query=""" select count(1)
        from hom_variants hv, variants v
-       where hv."#CHROM"=v."#CHROM"
+       where hv."CHROM"=v."CHROM"
        and hv."POS"=v."POS"
        and hv."REF"=v."REF"
        and hv."ALT"=v."ALT"
@@ -45,13 +46,13 @@ def individual(individual_id, subset='all', language='en'):
        query=""" select count(1)
        from het_variants hv, variants v
        where
-       hv."#CHROM"=v."#CHROM"
+       hv."CHROM"=v."CHROM"
        and hv."POS"=v."POS"
        and hv."REF"=v."REF"
        and hv."ALT"=v."ALT"
        and hv.individual='%s' """ % (ind['external_id'],)
        het_count=c.execute(query).fetchone()[0]
-       query=""" select count (1) from (select count(1) from het_variants hv, variants v where hv."#CHROM"=v."#CHROM" and hv."POS"=v."POS" and hv."REF"=v."REF" and hv."ALT"=v."ALT" and hv.individual='%s' group by v.gene_symbol having count(v.gene_symbol)>1) as t """ % (ind['external_id'],)
+       query=""" select count (1) from (select count(1) from het_variants hv, variants v where hv."CHROM"=v."CHROM" and hv."POS"=v."POS" and hv."REF"=v."REF" and hv."ALT"=v."ALT" and hv.individual='%s' group by v.gene_symbol having count(v.gene_symbol)>1) as t """ % (ind['external_id'],)
        comp_het_count=c.execute(query).fetchone()[0]
        x[0]['preview']=[
                ['External_id', ind['external_id']],
@@ -65,7 +66,7 @@ def individual(individual_id, subset='all', language='en'):
    # hom variants
    query=""" select v.*
        from hom_variants hv, variants v
-       where hv."#CHROM"=v."#CHROM"
+       where hv."CHROM"=v."CHROM"
        and hv."POS"=v."POS"
        and hv."REF"=v."REF"
        and hv."ALT"=v."ALT"
@@ -78,7 +79,7 @@ def individual(individual_id, subset='all', language='en'):
    query=""" select v.*
       from het_variants hv, variants v
       where
-      hv."#CHROM"=v."#CHROM"
+      hv."CHROM"=v."CHROM"
       and hv."POS"=v."POS"
       and hv."REF"=v."REF"
       and hv."ALT"=v."ALT"
@@ -132,9 +133,8 @@ def update_patient_data(individual_id,language='en'):
    c.execute(""" select i.*
        from users_individuals as ui, individuals as i
        where i.internal_id=ui.internal_id
-       and ui.user=?
-       and ui.internal_id=? """,
-       (session['user'],individual_id,))
+       and ui.user='%s'
+       and ui.internal_id='%s' """ % (session['user'],individual_id,))
    individual=[dict(zip( [h[0] for h in c.description],r)) for r in c.fetchall()]
    print(individual)
    if individual:
@@ -157,16 +157,16 @@ def update_patient_data(individual_id,language='en'):
    print('UPDATE:', ind)
    c=postgres_cursor()
    c.execute("""update individuals set
-           sex=?,
-           consanguinity=?,
-           observed_features=?,
-           observed_features_names=?,
-           simplified_observed_features=?,
-           simplified_observed_features_names=?,
-           ancestor_observed_features=?,
-           unobserved_features=?,
-           genes=?
-           where external_id=?""",
+           sex='%s'
+           consanguinity='%s'
+           observed_features='%s'
+           observed_features_names='%s'
+           simplified_observed_features='%s'
+           simplified_observed_features_names='%s'
+           ancestor_observed_features='%s'
+           unobserved_features='%s'
+           genes='%s'
+           where external_id='%s'""" %
            (ind['sex'],
             ind['consanguinity'],
             ind['observed_features'],
@@ -177,7 +177,7 @@ def update_patient_data(individual_id,language='en'):
             ind['unobserved_features'],
             ind['genes'],
             ind['external_id'],))
-   print(c.execute("select * from individuals where external_id=?",(ind['external_id'],)).fetchall())
+   #print(c.execute("select * from individuals where external_id=?",(ind['external_id'],)).fetchall())
    return jsonify({'success': True}), 200
 
 
