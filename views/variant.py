@@ -8,11 +8,11 @@ import requests
 @app.route('/variant/<variant_id>/<subset>')
 @requires_auth
 def variant(variant_id, subset='all', language='en'):
-   c,fd,=sqlite3_ro_cursor(app.config['PHENOPOLIS_DB'])
+   c=postgres_cursor()
    c.execute("select external_id, internal_id from individuals")
    pheno_ids=[dict(zip([h[0] for h in c.description],r)) for r in c.fetchall()]
    phenoid_mapping={ind['external_id']:ind['internal_id'] for ind in pheno_ids}
-   print(phenoid_mapping)
+   #print(phenoid_mapping)
    chrom,pos,ref,alt,=variant_id.split('-')
    url='https://myvariant.info/v1/variant/chr%s:g.%s%s>%s?fields=clinvar.rcv.clinical_significance&dotfield=true' % (chrom,pos,ref,alt,)
    x=requests.get(url).json()
@@ -41,12 +41,15 @@ def variant(variant_id, subset='all', language='en'):
       variant['format']=dict([(v.format[k].name,v.format[k].id,) for k in v.format.keys()])
       variant['info']=dict(v.info)
       variant['genotypes']=[{'sample':[{'display':phenoid_mapping[s]}],'GT':v.samples[s].get('GT',''),'AD':v.samples[s].get('AD',''),'DP':v.samples[s].get('DP','')} for s in v.samples]
-   x=json.loads(file(app.config['USER_CONFIGURATION'].format(session['user'],language,'variant') ,'r').read())
-   c.execute('select * from variants where "#CHROM"=? and POS=? and REF=? and ALT=?',variant_id.split('-'))
+   x=json.loads(open(app.config['USER_CONFIGURATION'].format(session['user'],language,'variant') ,'r').read())
+   CHROM,POS,REF,ALT,=variant_id.split('-')
+   q="""select * from variants where "CHROM"='%s' and "POS"='%s' and "REF"='%s' and "ALT"='%s'"""%(CHROM,POS,REF,ALT,)
+   print(q)
+   c.execute(q)
    var=[dict(zip([h[0] for h in c.description] ,r)) for r in c.fetchall()]
    process_for_display(var)
    var=var[0]
-   print json.dumps(var)
+   #print(json.dumps(var))
    x[0]['metadata']['data']=[var]
    x[0]['individuals']['data']=[var]
    x[0]['frequency']['data']=[var]

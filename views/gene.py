@@ -7,20 +7,20 @@ from views import *
 @app.route('/gene/<gene_id>/<subset>')
 @requires_auth
 def gene(gene_id, subset='all', language='en'):
-   x=json.loads(file(app.config['USER_CONFIGURATION'].format(session['user'],language,'gene') ,'r').read())
-   c,fd,=sqlite3_ro_cursor(app.config['PHENOPOLIS_DB'])
+   x=json.loads(open(app.config['USER_CONFIGURATION'].format(session['user'],language,'gene') ,'r').read())
+   c=postgres_cursor()
    gene_id=gene_id.upper()
    if gene_id.startswith('ENSG'):
-      c.execute('select * from genes where gene_id=?',(gene_id,))
+      c.execute("select * from genes where gene_id='%s'"%(gene_id,))
       data=c.fetchall()
    else:
-      c.execute('select * from genes where gene_name=?',(gene_id,))
+      c.execute("select * from genes where gene_name='%s'"%(gene_id,))
       data=c.fetchall()
    if not data:
-      c.execute('select * from genes where other_names like ?',('%'+gene_id+'%',))
+      c.execute("select * from genes where other_names like '%s'"%('%'+gene_id+'%',))
       data=c.fetchall()
    x[0]['metadata']['data']=[dict(zip([h[0] for h in c.description],r)) for r in data]
-   print x[0]['metadata']['data']
+   #print x[0]['metadata']['data']
    chrom=x[0]['metadata']['data'][0]['chrom']
    start=x[0]['metadata']['data'][0]['start']
    stop=x[0]['metadata']['data'][0]['stop']
@@ -42,21 +42,23 @@ def gene(gene_id, subset='all', language='en'):
                 {"display": "Wikigenes","href": "http://www.wikigenes.org/?search="+gene_name},
                 {"display": "GTEx (expression)","href": "http://www.gtexportal.org/home/gene/"+gene_name}
                ]
-       d["related_hpo"]=[ {'display':c.execute("select hpo_name from hpo where hpo_id='%s' limit 1"%hpo_id).fetchone()[0], 'end_href':hpo_id} for hpo_id, in c.execute("select hpo_id from gene_hpo where gene_symbol='%s'"%gene_name).fetchall() ]
-   c.execute("select * from variants where gene_symbol=?",(x[0]['metadata']['data'][0]['gene_name'],))
+       #d["related_hpo"]=[ {'display':c.execute("select hpo_name from hpo where hpo_id='%s' limit 1"%hpo_id).fetchone()[0], 'end_href':hpo_id} for hpo_id, in c.execute("select hpo_id from gene_hpo where gene_symbol='%s'"%gene_name).fetchall() ]
+       d["related_hpo"]=[ ]
+   c.execute("select * from variants where gene_symbol='%s'"%(x[0]['metadata']['data'][0]['gene_name'],))
    headers=[h[0] for h in c.description]
    x[0]['variants']['data']=[dict(zip(headers,r)) for r in c.fetchall()]
    cadd_gt_20=0
    for v in x[0]['variants']['data']:
-       v['variant_id']=[{'display':'%s-%s-%s-%s' % (v['#CHROM'], v['POS'], v['REF'], v['ALT'],)}]
-       if v['cadd_phred'] and float(v['cadd_phred'])>=20: cadd_gt_20+=1
+       print(v)
+       v['variant_id']=[{'display':'%s-%s-%s-%s' % (v['CHROM'], v['POS'], v['REF'], v['ALT'],)}]
+       if v['cadd_phred'] and v['cadd_phred']!='NA' and float(v['cadd_phred'])>=20: cadd_gt_20+=1
    x[0]['preview']=[['pLI', x[0]['metadata']['data'][0].get('pLI','')],['Number of variants',len(x[0]['variants']['data'])],['CADD > 20',cadd_gt_20]]
-   sqlite3_ro_close(c,fd)
    for d in x[0]['metadata']['data']: d['number_of_variants']=len(x[0]['variants']['data'])
    process_for_display(x[0]['variants']['data'])
-   print x[0]['preview']
+   c.close()
+   #print x[0]['preview']
    #print x[0]['variants']['data'][0]
-   if session['user']=='demo': x[0]['variants']['data']=[]
+   if session['user']=='demo' and gene_name not in ['TTLL5','DRAM2']: x[0]['variants']['data']=[]
    if subset=='all': return json.dumps(x)
    else: return json.dumps([{subset:y[subset]} for y in x])
     

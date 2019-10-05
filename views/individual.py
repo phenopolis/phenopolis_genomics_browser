@@ -1,14 +1,13 @@
 from views import *
 
 def get_hpo_ids_per_gene(variants,ind):
-   c,fd,=sqlite3_ro_cursor(app.config['PHENOPOLIS_DB'])
+   c=postgres_cursor()
    for y in variants:
        query=""" select * from gene_hpo where gene_symbol='%s' """ % (y['gene_symbol'])
        c.execute(query)
        gene_hpo_ids=[dict(zip( [h[0] for h in c.description] ,r)) for r in c.fetchall()]
        y['hpo_terms']=[{'display': c.execute("select hpo_name from hpo where hpo_id=? limit 1",(gh['hpo_id'],)).fetchone()[0], 'end_href':gh['hpo_id']} for gh in gene_hpo_ids if gh['hpo_id'] in ind['ancestor_observed_features'].split(';')]
        #print y['hpo_terms']
-   sqlite3_ro_close(c,fd)
    return variants
 
 @app.route('/<language>/individual/<individual_id>')
@@ -17,7 +16,7 @@ def get_hpo_ids_per_gene(variants,ind):
 @app.route('/individual/<individual_id>/<subset>')
 @requires_auth
 def individual(individual_id, subset='all', language='en'):
-   c,fd,=sqlite3_ro_cursor(app.config['PHENOPOLIS_DB'])
+   c=postgres_cursor()
    x=json.loads(file(app.config['USER_CONFIGURATION'].format(session['user'],language,'individual') ,'r').read())
    c.execute(""" select i.*
            from users_individuals as ui, individuals as i
@@ -62,7 +61,6 @@ def individual(individual_id, subset='all', language='en'):
                ['Number of hom variants',hom_count],
                ['Number of compound hets',comp_het_count],
                ['Number of het variants', het_count] ]
-       sqlite3_ro_close(c,fd)
        return json.dumps(x)
    # hom variants
    query=""" select v.*
@@ -72,7 +70,6 @@ def individual(individual_id, subset='all', language='en'):
        and hv."REF"=v."REF"
        and hv."ALT"=v."ALT"
        and hv.individual='%s' """ % (ind['external_id'],)
-   print query
    c.execute(query)
    hom_variants=[dict(zip( [h[0] for h in c.description] ,r)) for r in c.fetchall()]
    hom_variants=get_hpo_ids_per_gene(hom_variants,ind)
@@ -86,11 +83,9 @@ def individual(individual_id, subset='all', language='en'):
       and hv."REF"=v."REF"
       and hv."ALT"=v."ALT"
       and hv.individual='%s' """ % (ind['external_id'],)
-   print query
    c.execute(query)
    rare_variants=[dict(zip( [h[0] for h in c.description],r)) for r in c.fetchall()]
    rare_variants=get_hpo_ids_per_gene(rare_variants,ind)
-   sqlite3_ro_close(c,fd)
    x[0]['rare_variants']['data']=rare_variants
    # rare_comp_hets
    gene_counter=Counter([v['gene_symbol'] for v in x[0]['rare_variants']['data']])
@@ -131,9 +126,8 @@ def update_patient_data(individual_id,language='en'):
    print('GENES',genes)
    print('FEATURES',features)
    print(individual_id)
-   c,fd,=sqlite3_ro_cursor(app.config['PHENOPOLIS_DB'])
+   c=postgres_cursor()
    hpo=[dict(zip(['hpo_id','hpo_name','hpo_ancestor_ids','hpo_ancestor_names'] ,c.execute("select * from hpo where hpo_name=? limit 1",(x,)).fetchone())) for x in features]
-   print hpo
    x=json.loads(file(app.config['USER_CONFIGURATION'].format(session['user'],language,'individual') ,'r').read())
    c.execute(""" select i.*
        from users_individuals as ui, individuals as i
@@ -142,7 +136,6 @@ def update_patient_data(individual_id,language='en'):
        and ui.internal_id=? """,
        (session['user'],individual_id,))
    individual=[dict(zip( [h[0] for h in c.description],r)) for r in c.fetchall()]
-   sqlite3_ro_close(c,fd,)
    print(individual)
    if individual:
        individual=individual[0]
@@ -161,8 +154,8 @@ def update_patient_data(individual_id,language='en'):
    ind['unobserved_features']=''
    ind['ancestor_observed_features']=';'.join(sorted(list(set(list(itertools.chain.from_iterable([h['hpo_ancestor_ids'].split(';') for h in hpo]))))))
    ind['genes']=','.join([x for x in genes])
-   print 'UPDATE:', ind
-   conn,c,=sqlite3_cursor(app.config['PHENOPOLIS_DB'])
+   print('UPDATE:', ind)
+   c=postgres_cursor()
    c.execute("""update individuals set
            sex=?,
            consanguinity=?,
@@ -184,8 +177,7 @@ def update_patient_data(individual_id,language='en'):
             ind['unobserved_features'],
             ind['genes'],
             ind['external_id'],))
-   print c.execute("select * from individuals where external_id=?",(ind['external_id'],)).fetchall()
-   sqlite3_close(conn,c)
+   print(c.execute("select * from individuals where external_id=?",(ind['external_id'],)).fetchall())
    return jsonify({'success': True}), 200
 
 

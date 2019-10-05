@@ -15,9 +15,8 @@ def change_password():
     else:
         print('LOGIN SUCCESS, CHANGING PASSWORD')
         argon_password = argon2.hash(new_password_1)
-        conn,c,=sqlite3_cursor(app.config['PHENOPOLIS_DB'])
+        c=postgres_cursor()
         c.execute(""" update users set argon_password=? where user=? """, (argon_password, session['user'],))
-        sqlite3_close(conn,c)
         msg = 'Password for username \''+username+'\' changed. You are logged in as \''+username+'\'.' 
         return jsonify(success=msg), 200
 

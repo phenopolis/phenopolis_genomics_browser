@@ -13,7 +13,6 @@ import json
 import os
 import logging
 from collections import defaultdict, Counter, OrderedDict
-import sqlite3
 from functools import wraps 
 import time
 import datetime
@@ -23,6 +22,8 @@ import itertools
 import pysam
 from time import strftime
 from werkzeug.exceptions import HTTPException
+
+import psycopg2
 
 from logging.handlers import RotatingFileHandler
 
@@ -49,27 +50,14 @@ app.config.from_object(__name__)
 sess=Session()
 sess.init_app(app)
 
+conn = psycopg2.connect(host="localhost",database="phenopolis_db",user="phenopolis",password="pheno123")
 
-def sqlite3_ro_cursor(dbname):
-   fd = os.open(dbname, os.O_RDONLY)
-   conn = sqlite3.connect('/dev/fd/%d' % fd)
-   conn = sqlite3.connect(dbname)
-   c=conn.cursor()
-   return (c, fd)
+def postgres_cursor():
+   cursor = conn.cursor()
+   return (cursor)
 
-def sqlite3_ro_close(cursor, fd):
+def postgres_close(cursor):
    cursor.close()
-   os.close(fd)
-
-
-def sqlite3_cursor(dbname):
-   conn = sqlite3.connect(dbname)
-   c=conn.cursor()
-   return (conn, c,)
-
-def sqlite3_close(conn,cursor):
-    conn.commit()
-    cursor.close()
 
 @app.after_request
 def after_request(response):
@@ -121,12 +109,12 @@ def phenopolis_statistics():
 
 
 # this should not be done live but offline
-# need to figure out how to encode json data type in sqlite import
+# need to figure out how to encode json data type in postgres import
 # rather do the conversion on the fly
 def process_for_display(data):
-   c,fd,=sqlite3_ro_cursor(app.config['PHENOPOLIS_DB'])
-   my_patients=[pid for pid, in c.execute("select internal_id from users_individuals where user='%s'"%session['user']).fetchall()]
-   sqlite3_ro_close(c, fd)
+   c=postgres_cursor()
+   c.execute("select internal_id from users_individuals ui where ui.user='%s'"%session['user'])
+   my_patients=[pid for pid, in c.fetchall()]
    for x2 in data:
        if '#CHROM' in x2 and 'POS' in x2 and 'REF' in x2 and 'ALT' in x2:
            variant_id='%s-%s-%s-%s' % (x2['#CHROM'], x2['POS'], x2['REF'], x2['ALT'],)
@@ -145,14 +133,14 @@ def check_auth(username, password):
     """
     This function is called to check if a username / password combination is valid.
     """
-    c,fd,=sqlite3_ro_cursor(app.config['PHENOPOLIS_DB'])
-    c.execute('select * from users where user=?',(username,))
+    c=postgres_cursor()
+    c.execute("select * from users u where u.user='%s'"%username)
     user=[ dict(zip( [h[0] for h in c.description] ,r)) for r in c.fetchall() ]
     print(user)
     print(password)
     print(argon2.hash(password))
-    print user[0]['argon_password']
-    print argon2.verify(password, user[0]['argon_password'])
+    print(user[0]['argon_password'])
+    print(argon2.verify(password, user[0]['argon_password']))
     if len(user)==0: return False
     return argon2.verify(password, user[0]['argon_password'])
 
@@ -161,11 +149,7 @@ def requires_auth(f):
     @wraps(f)
     def decorated(*args, **kwargs):
         if session:
-          print 'session'
-          print session
-          print session.keys()
           if 'user' in session: 
-             print session['user']
              return f(*args, **kwargs)
         if request.method == 'POST':
           username=request.form['user']
@@ -202,8 +186,6 @@ def login(language='en'):
     else:
         print('LOGIN SUCCESS')
         session['user']=username
-        print session['user']
-        print session
         return jsonify(success="Authenticated", username=username), 200
 
 # 
@@ -222,7 +204,6 @@ def is_logged_in():
 
 @app.after_request
 def apply_caching(response):
-    print 'CACHE'
     response.headers['Cache-Control'] = 'no-cache'
     response.headers['Cache-Control'] = 'no-cache, no-store, must-revalidate'
     # prevent click-jacking vulnerability identified by BITs

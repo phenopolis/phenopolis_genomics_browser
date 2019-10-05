@@ -8,7 +8,7 @@ from views import *
 @requires_auth
 def autocomplete(query, query_type=''):
    if query_type: query_type=query_type+':'
-   print query_type, query
+   print(query_type, query)
    patient_results=[]
    gene_results=[]
    hpo_results=[]
