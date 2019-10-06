@@ -8,7 +8,7 @@ from flask import request
 from flask import redirect
 from flask import jsonify
 from flask_compress import Compress
-from flask_cache import Cache
+from flask_caching import Cache
 import json
 import os
 import logging

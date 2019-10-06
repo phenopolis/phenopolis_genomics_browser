@@ -1,6 +1,6 @@
 flask
 flask_compress
-flask_cache
+flask_caching
 passlib[argon2]
 flask_session
 pysam
