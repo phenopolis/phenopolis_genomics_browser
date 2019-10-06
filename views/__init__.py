@@ -53,7 +53,10 @@ application.config.from_object(__name__)
 sess=Session()
 sess.init_app(application)
 
-conn = psycopg2.connect(host="localhost",database="phenopolis_db",user="phenopolis",password="pheno123")
+conn = psycopg2.connect(host=os.environ['DB_HOST'],
+                        database=os.environ['DB_DATABASE'],
+                        user=os.environ['DB_USER'],
+                        password=os.environ['DB_PASSWORD'])
 
 def postgres_cursor():
    cursor = conn.cursor()
