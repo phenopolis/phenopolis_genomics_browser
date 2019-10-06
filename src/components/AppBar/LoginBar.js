@@ -32,6 +32,7 @@ import PeopleIcon from '@material-ui/icons/People';
 import AccountCircleIcon from '@material-ui/icons/AccountCircle';
 
 import Sidebar from './Sidebar';
+import NavSearch from './NavSearch';
 
 import { setUser } from '../../redux/actions';
 
@@ -110,19 +111,31 @@ class LoginBar extends React.Component {
 
 					<Hidden smDown>
 						<Grid item md={4} className={classes.gridpaper}>
-							<div className={classes.search}>
+							{/* <div className={classes.search}>
 								<div className={classes.searchIcon}>
 									<SearchIcon />
 								</div>
 								<InputBase
-									placeholder='Search…'
+									placeholder='Search for a phenotype, patient, gene, variant or region…'
 									classes={{
 										root: classes.inputRoot,
 										input: classes.inputInput
 									}}
 									inputProps={{ 'aria-label': 'search' }}
 								/>
-							</div>
+								<div
+									style={{
+										backgroundColor: 'white',
+										borderRadius: '0.5em',
+										position: 'absolute',
+										top: '3em',
+										left: '0px',
+										height: '10em',
+										width: '100%'
+									}}
+								/>
+              </div> */}
+							<NavSearch />
 						</Grid>
 					</Hidden>
 
