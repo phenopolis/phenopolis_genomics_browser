@@ -7,8 +7,11 @@ from views import *
 @application.route('/hpo/<hpo_id>/<subset>')
 @requires_auth
 def hpo(hpo_id='HP:0000001',subset='all',language='en'):
-   x=json.loads(open(app.config['USER_CONFIGURATION'].format(session['user'],language,'hpo') ,'r').read())
    c=postgres_cursor()
+   c.execute("select config from user_config u where u.user_name='%s' and u.language='%s' and u.page='%s' limit 1" % (session['user'], language, 'hpo'))
+   x=c.fetchone()[0]
+   #print(s)
+   #x=json.loads(s)
    if not hpo_id.startswith('HP:'):
        c.execute("select * from hpo where hpo_name='%s' limit 1"%hpo_id)
    else:

@@ -7,8 +7,9 @@ from views import *
 @application.route('/gene/<gene_id>/<subset>')
 @requires_auth
 def gene(gene_id, subset='all', language='en'):
-   x=json.loads(open(app.config['USER_CONFIGURATION'].format(session['user'],language,'gene') ,'r').read())
    c=postgres_cursor()
+   c.execute("select config from user_config u where u.user_name='%s' and u.language='%s' and u.page='%s' limit 1" % (session['user'], language, 'gene'))
+   x=c.fetchone()[0]
    gene_id=gene_id.upper()
    if gene_id.startswith('ENSG'):
       c.execute("select * from genes where gene_id='%s'"%(gene_id,))

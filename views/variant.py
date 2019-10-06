@@ -41,7 +41,8 @@ def variant(variant_id, subset='all', language='en'):
       variant['format']=dict([(v.format[k].name,v.format[k].id,) for k in v.format.keys()])
       variant['info']=dict(v.info)
       variant['genotypes']=[{'sample':[{'display':phenoid_mapping[s]}],'GT':v.samples[s].get('GT',''),'AD':v.samples[s].get('AD',''),'DP':v.samples[s].get('DP','')} for s in v.samples]
-   x=json.loads(open(app.config['USER_CONFIGURATION'].format(session['user'],language,'variant') ,'r').read())
+   c.execute("select config from user_config u where u.user_name='%s' and u.language='%s' and u.page='%s' limit 1" % (session['user'], language, 'gene'))
+   x=c.fetchone()[0]
    CHROM,POS,REF,ALT,=variant_id.split('-')
    q="""select * from variants where "CHROM"='%s' and "POS"='%s' and "REF"='%s' and "ALT"='%s'"""%(CHROM,POS,REF,ALT,)
    print(q)

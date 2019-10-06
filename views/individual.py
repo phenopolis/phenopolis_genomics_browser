@@ -18,7 +18,8 @@ def get_hpo_ids_per_gene(variants,ind):
 @requires_auth
 def individual(individual_id, subset='all', language='en'):
    c=postgres_cursor()
-   x=json.loads(open(app.config['USER_CONFIGURATION'].format(session['user'],language,'individual') ,'r').read())
+   c.execute("select config from user_config u where u.user_name='%s' and u.language='%s' and u.page='%s' limit 1" % (session['user'], language, 'gene'))
+   x=c.fetchone()[0]
    c.execute(""" select i.*
            from users_individuals as ui, individuals as i
            where
@@ -135,7 +136,8 @@ def update_patient_data(individual_id,language='en'):
    for x in features:
        c.execute("select * from hpo where hpo_name='%s' limit 1"%x)
        hpo+=[dict(zip(['hpo_id','hpo_name','hpo_ancestor_ids','hpo_ancestor_names'] ,c.fetchone())) ]
-   x=json.loads(open(app.config['USER_CONFIGURATION'].format(session['user'],language,'individual') ,'r').read())
+   c.execute("select config from user_config u where u.user_name='%s' and u.language='%s' and u.page='%s' limit 1" % (session['user'], language, 'individual'))
+   x=c.fetchone()[0]
    c.execute(""" select i.*
        from users_individuals as ui, individuals as i
        where i.internal_id=ui.internal_id
