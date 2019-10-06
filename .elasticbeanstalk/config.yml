@@ -1,4 +1,6 @@
 branch-defaults:
+  ec2:
+    environment: Phenopolis-api
   postgres:
     environment: Phenopolis-api
     group_suffix: null
