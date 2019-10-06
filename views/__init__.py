@@ -116,8 +116,8 @@ def process_for_display(data):
    c.execute("select internal_id from users_individuals ui where ui.user='%s'"%session['user'])
    my_patients=[pid for pid, in c.fetchall()]
    for x2 in data:
-       if '#CHROM' in x2 and 'POS' in x2 and 'REF' in x2 and 'ALT' in x2:
-           variant_id='%s-%s-%s-%s' % (x2['#CHROM'], x2['POS'], x2['REF'], x2['ALT'],)
+       if 'CHROM' in x2 and 'POS' in x2 and 'REF' in x2 and 'ALT' in x2:
+           variant_id='%s-%s-%s-%s' % (x2['CHROM'], x2['POS'], x2['REF'], x2['ALT'],)
            x2['variant_id']=[{'end_href':variant_id,'display':variant_id[:60]}]
        if 'gene_symbol' in x2:
            x2['gene_symbol']=[{'display':x3} for x3 in x2['gene_symbol'].split(',') if x3]
