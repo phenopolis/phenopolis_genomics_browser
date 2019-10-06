@@ -1,10 +1,10 @@
 from views import *
 
 
-@app.route('/<language>/autocomplete/<query_type>/<query>')
-@app.route('/<language>/autocomplete/<query>')
-@app.route('/autocomplete/<query_type>/<query>')
-@app.route('/autocomplete/<query>')
+@application.route('/<language>/autocomplete/<query_type>/<query>')
+@application.route('/<language>/autocomplete/<query>')
+@application.route('/autocomplete/<query_type>/<query>')
+@application.route('/autocomplete/<query>')
 @requires_auth
 def autocomplete(query, query_type=''):
    if query_type: query_type=query_type+':'
@@ -56,7 +56,7 @@ def autocomplete(query, query_type=''):
    suggestions = list(itertools.islice(results, 0, 20))
    return Response(json.dumps(suggestions),  mimetype='application/json')
 
-@app.route('/best_guess')
+@application.route('/best_guess')
 @requires_auth
 def best_guess():
      query = str(request.args.get('query'))

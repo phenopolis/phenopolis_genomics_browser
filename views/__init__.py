@@ -32,23 +32,23 @@ logging.getLogger().addHandler(logging.StreamHandler())
 logging.getLogger().setLevel(logging.INFO)
 
 # Load default config and override config from an environment variable
-app = Flask(__name__)
-app.config.from_pyfile('../local.cfg')
+application = Flask(__name__)
+application.config.from_pyfile('../local.cfg')
 
-Compress(app)
+Compress(application)
 #app.config['COMPRESS_DEBUG'] = True
 #cache = SimpleCache(default_timeout=70*60*24)
-cache = Cache(app,config={'CACHE_TYPE': 'simple'})
+cache = Cache(application,config={'CACHE_TYPE': 'simple'})
 
 # Check Configuration section for more details
 #SESSION_TYPE = 'redis'
 #SESSION_TYPE='memcached'
 #SESSION_TYPE = 'mongodb'
 SESSION_TYPE='filesystem'
-SESSION_FILE_DIR=app.config['USER_SESSION']
-app.config.from_object(__name__)
+SESSION_FILE_DIR=application.config['USER_SESSION']
+application.config.from_object(__name__)
 sess=Session()
-sess.init_app(app)
+sess.init_app(application)
 
 conn = psycopg2.connect(host="localhost",database="phenopolis_db",user="phenopolis",password="pheno123")
 
@@ -59,13 +59,13 @@ def postgres_cursor():
 def postgres_close(cursor):
    cursor.close()
 
-@app.after_request
+@application.after_request
 def after_request(response):
     timestamp = strftime('[%Y-%b-%d %H:%M]')
     logging.error('%s %s %s %s %s %s', timestamp, request.remote_addr, request.method, request.scheme, request.full_path, response.status)
     return response
 
-@app.errorhandler(Exception)
+@application.errorhandler(Exception)
 def exceptions(e):
     tb = traceback.format_exc()
     timestamp = strftime('[%Y-%b-%d %H:%M]')
@@ -75,7 +75,7 @@ def exceptions(e):
        code = e.code
     return jsonify(error='error', code=code)
 
-@app.route('/phenopolis_statistics')
+@application.route('/phenopolis_statistics')
 def phenopolis_statistics():
     version_number = None
     print('Version number is:-')
@@ -162,16 +162,16 @@ def requires_auth(f):
     return decorated
 
 
-@app.before_request
+@application.before_request
 def make_session_timeout():
     print('session timeout')
     session.permanent = True
-    app.permanent_session_lifetime = datetime.timedelta(hours=2)
+    application.permanent_session_lifetime = datetime.timedelta(hours=2)
     #app.permanent_session_lifetime = datetime.timedelta(seconds=2)
 
 # 
-@app.route('/<language>/login', methods=['POST'])
-@app.route('/login', methods=['POST'])
+@application.route('/<language>/login', methods=['POST'])
+@application.route('/login', methods=['POST'])
 def login(language='en'):
     print(request.args)
     print('LOGIN form')
@@ -189,20 +189,20 @@ def login(language='en'):
         return jsonify(success="Authenticated", username=username), 200
 
 # 
-@app.route('/<language>/logout', methods=['POST'])
-@app.route('/logout', methods=['POST'])
+@application.route('/<language>/logout', methods=['POST'])
+@application.route('/logout', methods=['POST'])
 def logout(language='en'):
     print('DELETE SESSION')
     session.pop('user',None)
     return jsonify(success='logged out'), 200
 
 
-@app.route('/is_logged_in')
+@application.route('/is_logged_in')
 @requires_auth
 def is_logged_in():
     return jsonify(username=session['user']), 200
 
-@app.after_request
+@application.after_request
 def apply_caching(response):
     response.headers['Cache-Control'] = 'no-cache'
     response.headers['Cache-Control'] = 'no-cache, no-store, must-revalidate'

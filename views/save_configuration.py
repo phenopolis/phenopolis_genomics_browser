@@ -1,7 +1,7 @@
 from views import *
 
-@app.route('/<language>/save_configuration/<pageType>/<pagePart>', methods=['POST'])
-@app.route('/save_configuration/<pageType>/<pagePart>', methods=['POST'])
+@application.route('/<language>/save_configuration/<pageType>/<pagePart>', methods=['POST'])
+@application.route('/save_configuration/<pageType>/<pagePart>', methods=['POST'])
 @requires_auth
 def save_configuration(pageType,pagePart,language='en'):
     print(pageType)

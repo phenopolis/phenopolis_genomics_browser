@@ -1,10 +1,10 @@
 from views import *
 
 
-@app.route('/<language>/gene/<gene_id>')
-@app.route('/<language>/gene/<gene_id>/<subset>')
-@app.route('/gene/<gene_id>')
-@app.route('/gene/<gene_id>/<subset>')
+@application.route('/<language>/gene/<gene_id>')
+@application.route('/<language>/gene/<gene_id>/<subset>')
+@application.route('/gene/<gene_id>')
+@application.route('/gene/<gene_id>/<subset>')
 @requires_auth
 def gene(gene_id, subset='all', language='en'):
    x=json.loads(open(app.config['USER_CONFIGURATION'].format(session['user'],language,'gene') ,'r').read())

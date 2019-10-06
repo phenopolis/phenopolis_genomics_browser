@@ -11,10 +11,10 @@ def get_hpo_ids_per_gene(variants,ind):
        #print y['hpo_terms']
    return variants
 
-@app.route('/<language>/individual/<individual_id>')
-@app.route('/<language>/individual/<individual_id>/<subset>')
-@app.route('/individual/<individual_id>')
-@app.route('/individual/<individual_id>/<subset>')
+@application.route('/<language>/individual/<individual_id>')
+@application.route('/<language>/individual/<individual_id>/<subset>')
+@application.route('/individual/<individual_id>')
+@application.route('/individual/<individual_id>/<subset>')
 @requires_auth
 def individual(individual_id, subset='all', language='en'):
    c=postgres_cursor()
@@ -112,8 +112,8 @@ def individual(individual_id, subset='all', language='en'):
    else:
        return json.dumps([{subset:y[subset]} for y in x])
     
-@app.route('/<language>/update_patient_data/<individual_id>',methods=['POST'])
-@app.route('/update_patient_data/<individual_id>',methods=['POST'])
+@application.route('/<language>/update_patient_data/<individual_id>',methods=['POST'])
+@application.route('/update_patient_data/<individual_id>',methods=['POST'])
 @requires_auth
 def update_patient_data(individual_id,language='en'):
    if session['user']=='demo': return jsonify(error='Unauthorized'), 401

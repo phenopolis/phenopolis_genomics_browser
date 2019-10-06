@@ -2,10 +2,10 @@ from views import *
 import requests
 
 
-@app.route('/<language>/variant/<variant_id>')
-@app.route('/<language>/variant/<variant_id>/<subset>')
-@app.route('/variant/<variant_id>')
-@app.route('/variant/<variant_id>/<subset>')
+@application.route('/<language>/variant/<variant_id>')
+@application.route('/<language>/variant/<variant_id>/<subset>')
+@application.route('/variant/<variant_id>')
+@application.route('/variant/<variant_id>/<subset>')
 @requires_auth
 def variant(variant_id, subset='all', language='en'):
    c=postgres_cursor()

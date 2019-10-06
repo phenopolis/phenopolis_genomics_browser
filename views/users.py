@@ -1,7 +1,7 @@
 from views import *
 
 
-@app.route('/change_password', methods=['POST'])
+@application.route('/change_password', methods=['POST'])
 @requires_auth
 def change_password():
     username=session['user']

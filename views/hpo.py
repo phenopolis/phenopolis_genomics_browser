@@ -1,10 +1,10 @@
 from views import *
 
 
-@app.route('/<language>/hpo/<hpo_id>')
-@app.route('/<language>/hpo/<hpo_id>/<subset>')
-@app.route('/hpo/<hpo_id>')
-@app.route('/hpo/<hpo_id>/<subset>')
+@application.route('/<language>/hpo/<hpo_id>')
+@application.route('/<language>/hpo/<hpo_id>/<subset>')
+@application.route('/hpo/<hpo_id>')
+@application.route('/hpo/<hpo_id>/<subset>')
 @requires_auth
 def hpo(hpo_id='HP:0000001',subset='all',language='en'):
    x=json.loads(open(app.config['USER_CONFIGURATION'].format(session['user'],language,'hpo') ,'r').read())
