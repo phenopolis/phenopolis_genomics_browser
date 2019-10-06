@@ -33,7 +33,6 @@ logging.getLogger().setLevel(logging.INFO)
 
 # Load default config and override config from an environment variable
 application = Flask(__name__)
-application.config.from_pyfile('../local.cfg')
 
 Compress(application)
 #app.config['COMPRESS_DEBUG'] = True
