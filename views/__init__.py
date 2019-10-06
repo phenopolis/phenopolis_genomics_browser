@@ -44,7 +44,11 @@ cache = Cache(application,config={'CACHE_TYPE': 'simple'})
 #SESSION_TYPE='memcached'
 #SESSION_TYPE = 'mongodb'
 SESSION_TYPE='filesystem'
-SESSION_FILE_DIR=application.config['USER_SESSION']
+SESSION_FILE_DIR='/tmp/sessions'
+
+if not os.path.exists(SESSION_FILE_DIR):
+    os.mkdir(SESSION_FILE_DIR)
+
 application.config.from_object(__name__)
 sess=Session()
 sess.init_app(application)
