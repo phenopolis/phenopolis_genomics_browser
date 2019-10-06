@@ -18,7 +18,7 @@ def get_hpo_ids_per_gene(variants,ind):
 @requires_auth
 def individual(individual_id, subset='all', language='en'):
    c=postgres_cursor()
-   c.execute("select config from user_config u where u.user_name='%s' and u.language='%s' and u.page='%s' limit 1" % (session['user'], language, 'gene'))
+   c.execute("select config from user_config u where u.user_name='%s' and u.language='%s' and u.page='%s' limit 1" % (session['user'], language, 'individual'))
    x=c.fetchone()[0]
    c.execute(""" select i.*
            from users_individuals as ui, individuals as i
