@@ -1,4 +1,6 @@
 from views import *
+import boto3
+import os
 import requests
 
 
@@ -21,7 +23,13 @@ def variant(variant_id, subset='all', language='en'):
    else:
        clinical_significance=''
    pos=int(pos)
-   variant_file=pysam.VariantFile(app.config['VCF_FILE'])
+   s3 = boto3.client('s3', aws_secret_access_key = os.environ['VCF_S3_SECRET'],
+                     aws_access_key_id = os.environ['VCF_S3_KEY'],
+                     region_name = "eu-west-2",
+                     config = boto3.session.Config(signature_version='s3v4'))
+   vcf_index = s3.generate_presigned_url('get_object',Params={'Bucket': 'phenopolis-vcf','Key': 'August2019/merged2.vcf.gz.tbi'}, ExpiresIn=5000)
+   vcf_file = s3.generate_presigned_url('get_object',Params={'Bucket': 'phenopolis-vcf','Key': 'August2019/merged2.vcf.gz'}, ExpiresIn=5000)
+   variant_file=pysam.VariantFile(vcf_file, index_filename = vcf_index)
    samples=variant_file.header.samples
    variant=dict()
    for v in variant_file.fetch(chrom, pos-1, pos):

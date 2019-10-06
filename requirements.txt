@@ -5,3 +5,4 @@ passlib[argon2]
 flask_session
 pysam
 psycopg2
+boto3
