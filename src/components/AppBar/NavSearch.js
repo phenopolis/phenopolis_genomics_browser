@@ -31,7 +31,9 @@ class NavSearch extends React.Component {
 		};
 	}
 
-	handleSearch = (guess) => {
+	handleSearch = (event, guess) => {
+		event.preventDefault();
+
 		var guessText = guess;
 		if (guessText === 'default') {
 			guessText = this.state.searchContent;
@@ -200,7 +202,7 @@ const styles = (theme) => ({
 		transition: theme.transitions.create('width'),
 		width: '100%',
 		[theme.breakpoints.up('md')]: {
-			width: 200
+			width: 400
 		}
 	},
 	chip: {
