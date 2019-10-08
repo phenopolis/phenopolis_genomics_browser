@@ -1,16 +1,12 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import { Link } from 'react-router-dom';
 import { Redirect } from 'react-router';
 import axios from 'axios';
 
 import { fade, withStyles } from '@material-ui/core/styles';
 import {
 	Paper,
-	Container,
-	Box,
 	Typography,
-	TextField,
 	Grid,
 	CircularProgress,
 	Collapse,
@@ -96,11 +92,11 @@ class NavSearch extends React.Component {
 					{this.state.searchLoaded !== true ? (
 						<SearchIcon className={classes.searchIcon} />
 					) : (
-						<CircularProgress size={20} color='secondary' />
-					)}
+							<CircularProgress size={20} color='secondary' />
+						)}
 				</div>
 				<InputBase
-					placeholder='Search for a phenotype, patient, gene, variant or region…'
+					placeholder='Search for patient, gene, variant…'
 					classes={{
 						root: classes.inputRoot,
 						input: classes.inputInput
@@ -109,6 +105,7 @@ class NavSearch extends React.Component {
 					value={this.state.searchContent}
 					onChange={this.handlesearchChange}
 				/>
+
 				{this.state.searchLoaded === true || this.state.autoCompleteContent !== null ? (
 					<div
 						style={{
@@ -145,21 +142,21 @@ class NavSearch extends React.Component {
 											);
 										})
 									) : (
-										<Typography variant='subtitle1' gutterBottom>
-											Sorry, we did not get any auto completing options...So sad.
+											<Typography variant='subtitle1' gutterBottom>
+												Sorry, we did not get any auto completing options...So sad.
 										</Typography>
-									) : (
-										<Typography variant='subtitle1' gutterBottom>
-											Nothing for search.
+										) : (
+												<Typography variant='subtitle1' gutterBottom>
+													Nothing for search.
 										</Typography>
-									)}
+											)}
 								</Grid>
 							</Paper>
 						</Collapse>
 					</div>
 				) : (
-					<div />
-				)}
+						<div />
+					)}
 			</div>
 		);
 	}
@@ -181,7 +178,7 @@ const styles = (theme) => ({
 		marginLeft: 0,
 		width: '100%',
 		[theme.breakpoints.up('sm')]: {
-			marginLeft: theme.spacing(3),
+			marginLeft: theme.spacing(4),
 			width: 'auto'
 		}
 	},
@@ -195,14 +192,15 @@ const styles = (theme) => ({
 		justifyContent: 'center'
 	},
 	inputRoot: {
-		color: 'inherit'
+		color: 'inherit',
+		width: '100%'
 	},
 	inputInput: {
 		padding: theme.spacing(1, 1, 1, 7),
 		transition: theme.transitions.create('width'),
-		width: '100%',
+		width: '80%',
 		[theme.breakpoints.up('md')]: {
-			width: 400
+			width: '80%'
 		}
 	},
 	chip: {

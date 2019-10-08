@@ -99,9 +99,9 @@ class LoginBar extends React.Component {
 						</Grid>
 					</Hidden>
 
-					<Hidden smDown>
-						<Grid item xs={2} />
-					</Hidden>
+					{/* <Hidden smDown>
+						<Grid item md={1} />
+					</Hidden> */}
 
 					<Grid item xs={10} md={1} className={classes.grid}>
 						<Typography className={classes.Homelabel} variant='h6' color='inherit' noWrap component={Link} to='/'>
@@ -110,37 +110,13 @@ class LoginBar extends React.Component {
 					</Grid>
 
 					<Hidden smDown>
-						<Grid item md={4} className={classes.gridpaper}>
-							{/* <div className={classes.search}>
-								<div className={classes.searchIcon}>
-									<SearchIcon />
-								</div>
-								<InputBase
-									placeholder='Search for a phenotype, patient, gene, variant or region…'
-									classes={{
-										root: classes.inputRoot,
-										input: classes.inputInput
-									}}
-									inputProps={{ 'aria-label': 'search' }}
-								/>
-								<div
-									style={{
-										backgroundColor: 'white',
-										borderRadius: '0.5em',
-										position: 'absolute',
-										top: '3em',
-										left: '0px',
-										height: '10em',
-										width: '100%'
-									}}
-								/>
-              </div> */}
+						<Grid item md={5} lg={7} direction='row' justify='flex-end' alignItems='center'>
 							<NavSearch />
 						</Grid>
 					</Hidden>
 
 					<Hidden smDown>
-						<Grid item md={4} className={classes.gridpaper} container direction='row' alignItems='flex-start'>
+						<div>
 							<BottomNavigationAction
 								className={classes.navigationbutton}
 								label='Search'
@@ -159,7 +135,7 @@ class LoginBar extends React.Component {
 							/>
 							<BottomNavigationAction
 								className={classes.navigationbutton}
-								label='My Patients'
+								label='Patients'
 								showLabel
 								icon={<PeopleIcon />}
 								component={Link}
@@ -192,7 +168,7 @@ class LoginBar extends React.Component {
 									<ListItemText classes={{ primary: classes.listItemText }} primary='Logout' />
 								</MenuItem>
 							</Menu>
-						</Grid>
+						</div>
 					</Hidden>
 				</Grid>
 
@@ -206,7 +182,7 @@ class LoginBar extends React.Component {
 
 LoginBar.propTypes = {
 	classes: PropTypes.object.isRequired,
-	width: PropTypes.oneOf([ 'lg', 'md', 'sm', 'xl', 'xs' ]).isRequired
+	width: PropTypes.oneOf(['lg', 'md', 'sm', 'xl', 'xs']).isRequired
 };
 
 const styles = (theme) => ({

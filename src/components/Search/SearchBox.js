@@ -17,11 +17,11 @@ class SearchBox extends React.Component {
     this.state = {
       examples: [
         { name: 'TTLL5', type: '(Gene)', to: '/gene/ENSG00000119685' },
-        { name: 'Nystagmus', type: '(HPO Phenotype)', to: '/hpo/HP:0000639' },
+        { name: 'Abnormality of the eye', type: '(HPO Phenotype)', to: '/hpo/HP:0000478' },
         {
-          name: 'PH00008257',
+          name: 'PH00008258',
           type: '(Patient)',
-          to: '/individual/PH00008257'
+          to: '/individual/PH00008258'
         },
         {
           name: '22-38212762-A-G',
@@ -54,18 +54,6 @@ class SearchBox extends React.Component {
       .catch(err => {
         window.alert('Best guess Failed.');
       });
-
-    // fetch('/api/best_guess?query=' + this.state.searchContent)
-    //   .then(response => {
-    //     console.log(response)
-    //     if (response.status === '200') {
-    //       window.alert('Success')
-    //     }
-    //   })
-    //   .catch(err => {
-    //     console.log(err)
-    //     window.alert('Error')
-    //   });
   };
 
   handlesearchChange = event => {
@@ -110,7 +98,7 @@ class SearchBox extends React.Component {
 
     return (
       <div className={classes.root}>
-        <Container maxWidth='lg'>
+        <Container maxWidth='xl'>
           <Paper className={classes.paper}>
             <Typography component='div'>
               <Box fontWeight='fontWeightBold' fontSize='h3.fontSize' m={1}>
@@ -161,7 +149,7 @@ class SearchBox extends React.Component {
                     {
                       this.state.searchLoaded === true ? (
                         <Typography variant="subtitle1" gutterBottom>
-                          Search for auto completing...
+                          <b>Searching for auto completing...</b>
                       </Typography>
                       ) : (
                           this.state.autoCompleteContent !== null ? (
@@ -184,13 +172,13 @@ class SearchBox extends React.Component {
                               })
                             ) : (
                                 <Typography variant="subtitle1" gutterBottom>
-                                  Sorry, we did not get any auto completing options...So sad.
-                          </Typography>
+                                  <b>Sorry, we did not get any auto completing options...So sad.</b>
+                                </Typography>
                               )
 
                           ) : (
                               <Typography variant="subtitle1" gutterBottom>
-                                Nothing for search.
+                                <b>Nothing for search.</b>
                             </Typography>
                             )
                         )
@@ -236,7 +224,7 @@ const styles = theme => ({
     padding: '4em'
   },
   paper: {
-    padding: theme.spacing(5)
+    padding: theme.spacing(8)
   },
   paperCollapse: {
     padding: theme.spacing(2)

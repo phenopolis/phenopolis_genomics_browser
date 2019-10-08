@@ -58,25 +58,18 @@ class NoLoginBar extends React.Component {
 						</Grid>
 					</Hidden>
 
-					<Grid item xs={10} md={2} className={classes.grid}>
+					<Grid item xs={10} md={1} className={classes.grid}>
 						<Typography className={classes.Homelabel} variant='h6' color='inherit' noWrap component={Link} to='/'>
 							Phenopolis
 						</Typography>
 					</Grid>
 
 					<Hidden smDown>
-						<Grid item xs={3} className={classes.gridpaper} />
+						<Grid item xs={6} className={classes.gridpaper} />
 					</Hidden>
 
 					<Hidden smDown>
-						<Grid
-							item
-							xs={3}
-							className={classes.gridpaper}
-							container
-							direction='row'
-							justify='flex-end'
-							alignItems='center'>
+						<div>
 							<BottomNavigationAction
 								className={classes.navigationbutton}
 								label='Publication'
@@ -92,7 +85,7 @@ class NoLoginBar extends React.Component {
 								icon={<AccountCircleIcon />}
 								onClick={() => this.OpenDialog()}
 							/>
-						</Grid>
+						</div>
 					</Hidden>
 				</Grid>
 
