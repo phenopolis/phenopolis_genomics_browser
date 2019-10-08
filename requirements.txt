@@ -4,5 +4,5 @@ flask_caching
 passlib[argon2]
 flask_session
 pysam
-psycopg2
+psycopg2-binary
 boto3
