@@ -1,14 +1,15 @@
 branch-defaults:
-  ec2:
-    environment: Phenopolis-api
-  postgres:
-    environment: Phenopolis-api
-    group_suffix: null
+  aws:
+    environment: Phenopolisapi-env
+environment-defaults:
+  Phenopolisapi-env:
+    branch: null
+    repository: null
 global:
   application_name: phenopolis
-  branch: null
   default_ec2_keyname: phenogenon
-  default_platform: Python 3.6
+  default_platform: arn:aws:elasticbeanstalk:eu-west-2::platform/Python 3.6 running
+    on 64bit Amazon Linux/2.9.2
   default_region: eu-west-2
   include_git_submodules: true
   instance_profile: null
