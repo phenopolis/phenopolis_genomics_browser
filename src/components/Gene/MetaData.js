@@ -77,11 +77,11 @@ class MetaData extends React.Component {
                     spacing={3}
                     key={index}
                     className={classes.blockgrid}>
-                    <Grid item xs={2} className={classes.namegrid}>
+                    <Grid item xs={4} md={2} className={classes.namegrid}>
                       {item.name}
                     </Grid>
 
-                    <Grid item xs={10}>
+                    <Grid item xs={8} md={10}>
                       {typeof metadata.data[0][item.key] !== 'object' ? (
                         <span> {metadata.data[0][item.key]} </span>
                       ) : (

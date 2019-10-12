@@ -1,8 +1,10 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import { fade, withStyles } from '@material-ui/core/styles';
-import { TableCell, TableHead, TableRow, TableSortLabel, InputBase, Grid,
-         Tooltip } from '@material-ui/core';
+import {
+  TableCell, TableHead, TableRow, TableSortLabel, InputBase, Grid,
+  Tooltip
+} from '@material-ui/core';
 
 class FilterInput extends React.Component {
   constructor(props) {
@@ -66,7 +68,7 @@ class FilterInput extends React.Component {
   };
 
   render() {
-    return <BootstrapInput placeholder='Filter' onChange={this.changeName} />;
+    return <BootstrapInput fullWidth placeholder='Filter' onChange={this.changeName} />;
   }
 }
 
@@ -147,41 +149,38 @@ class TableHeader extends React.Component {
                 h.description ?
                   (
                     <StyledTooltip key={i} title={h.description} placement='top'>
-                    <TableCell
-                      align='center'
-                      key={i}
-                      className={classes.headcell}>
-                      <Grid
-                        container
-                        direction='column'
-                        justify='center'
-                        alignItems='center'>
-                        <Grid item xs={12} style={{ height: '3em' }}>
-                          <TableSortLabel
-                            // className={classes.sortlabel}
-                            active={this.props.orderBy === h.key}
-                            direction={this.props.order}
-                            onClick={this.createSortHandler(h.key)}>
-                            {h.name}
-                            {this.props.orderBy === h.key ? (
-                              <span className={classes.visuallyHidden}>
-                                {this.props.order === 'desc'
-                                  ? 'sorted descending'
-                                  : 'sorted ascending'}
-                              </span>
-                            ) : null}
-                          </TableSortLabel>
+                      <TableCell
+                        align='center'
+                        key={i}
+                        className={classes.headcell}>
+                        <Grid
+                          direction='column'>
+                          <Grid item xs={12} style={{ height: '3em' }}>
+                            <TableSortLabel
+                              // className={classes.sortlabel}
+                              active={this.props.orderBy === h.key}
+                              direction={this.props.order}
+                              onClick={this.createSortHandler(h.key)}>
+                              {h.name}
+                              {this.props.orderBy === h.key ? (
+                                <span className={classes.visuallyHidden}>
+                                  {this.props.order === 'desc'
+                                    ? 'sorted descending'
+                                    : 'sorted ascending'}
+                                </span>
+                              ) : null}
+                            </TableSortLabel>
+                          </Grid>
+                          <Grid item xs={12}>
+                            <FilterInput
+                              value={this.props.filter[i]}
+                              index={i}
+                              onReturnFilter={this.handleUpdateFilter}
+                            />
+                          </Grid>
                         </Grid>
-                        <Grid item xs={12}>
-                          <FilterInput
-                            value={this.props.filter[i]}
-                            index={i}
-                            onReturnFilter={this.handleUpdateFilter}
-                          />
-                        </Grid>
-                      </Grid>
-                    </TableCell>
-                  </StyledTooltip>
+                      </TableCell>
+                    </StyledTooltip>
                   ) :
                   (
                     <TableCell
@@ -189,10 +188,7 @@ class TableHeader extends React.Component {
                       key={i}
                       className={classes.headcell}>
                       <Grid
-                        container
-                        direction='column'
-                        justify='center'
-                        alignItems='center'>
+                        direction='column'>
                         <Grid item xs={12} style={{ height: '3em' }}>
                           <TableSortLabel
                             // className={classes.sortlabel}
@@ -237,18 +233,20 @@ TableHeader.propTypes = {
 const BootstrapInput = withStyles(theme => ({
   root: {
     'label + &': {
-      marginTop: theme.spacing(3)
+      marginTop: theme.spacing(2)
     }
   },
   input: {
     borderRadius: 4,
     marginTop: theme.spacing(2),
+    marginLeft: theme.spacing(0.25),
+    marginRight: theme.spacing(0.25),
     position: 'relative',
     backgroundColor: theme.palette.common.white,
     border: '1px solid #ced4da',
     fontSize: 16,
-    width: '80%',
-    padding: '10px 12px',
+    width: '100%',
+    padding: '12px 12px 12px 12px',
     transition: theme.transitions.create(['border-color', 'box-shadow']),
     // Use the system font instead of the default Roboto font.
     fontFamily: [
