@@ -27,9 +27,9 @@ export default function StickyFooter() {
   return (
     <div className={classes.root}>
       <CssBaseline />
-      <Container component="main" className={classes.main} maxWidth="md">
-        <Grid container spacing={3}>
-          <Grid item xs={6}>
+      <Container component="main" className={classes.main} maxWidth="xl" >
+        <Grid container direction='row' justify='center' alignItems='center'>
+          <Grid item xs={12} md={6}>
             <Typography component='div'>
               <Box fontWeight='fontWeightBold' fontSize='h5.fontSize' m={1}>
                 About Us
@@ -43,7 +43,7 @@ export default function StickyFooter() {
               </Box>
             </Typography>
           </Grid>
-          <Grid item xs={3}>
+          <Grid item xs={6} md={2}>
             <Typography component='div'>
               <Box fontWeight='fontWeightBold' fontSize='h5.fontSize' m={1}>
                 Useful Links
@@ -59,7 +59,7 @@ export default function StickyFooter() {
               </Box>
             </Typography>
           </Grid>
-          <Grid item xs={3}>
+          <Grid item xs={6} md={2}>
             <Typography component='div'>
               <Box fontWeight='fontWeightBold' fontSize='h5.fontSize' m={1}>
                 External Links
@@ -81,21 +81,21 @@ export default function StickyFooter() {
         </Grid>
       </Container>
       <footer className={classes.footer}>
-        <Container maxWidth="md">
-          <Grid container spacing={3}>
-            <Grid item xs={10}>
+        <Container component="main" className={classes.main} maxWidth="xl" >
+          <Grid container direction='row' justify='center' alignItems='center'>
+            <Grid item xs={12} md={8}>
               <Typography variant="body2" gutterBottom>
                 If you use Phenopolis, please cite us as: <a href='https://doi.org/10.1093/bioinformatics/btx147' className={classes.a}>Pontikos, N. et al. (2017).
                 Phenopolis: an open platform for harmonization and analysis of genetic
                 and phenotypic data. Bioinformatics, 9, 7</a>
               </Typography>
+              <Copyright />
             </Grid>
-            <Grid item xs={2}>
+            <Grid item xs={12} md={2}>
               <a className={classes.a} href="https://twitter.com/phenopolis"><Icon className={clsx(classes.iconHover, 'fab fa-twitter-square')} /></a>
               <a className={classes.a} href="https://github.com/phenopolis/phenopolis"><Icon className={clsx(classes.iconHover, 'fab fa-github-square')} /></a>
             </Grid>
           </Grid>
-          <Copyright />
         </Container>
       </footer>
     </div>
@@ -111,13 +111,12 @@ const useStyles = makeStyles(theme => ({
     color: 'white'
   },
   main: {
-    marginTop: theme.spacing(3),
-    marginBottom: theme.spacing(2),
-    display: 'inline-block',
-    textAlign: 'justify'
+    marginTop: theme.spacing(2),
+    marginBottom: theme.spacing(2)
   },
   footer: {
-    padding: theme.spacing(2),
+    paddingTop: theme.spacing(2),
+    paddingBottom: theme.spacing(2),
     marginTop: 'auto',
     backgroundColor: '#0474c6',
   },
