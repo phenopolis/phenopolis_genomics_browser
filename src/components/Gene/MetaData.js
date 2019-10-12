@@ -46,7 +46,7 @@ class MetaData extends React.Component {
 
   handlePopoverClose = () => {
     this.setState({
-      anchorEl: null, 
+      anchorEl: null,
       previewInfo: [],
       previewName: null,
       previewLoaded: false
@@ -111,7 +111,7 @@ class MetaData extends React.Component {
                                     aria-owns={open ? 'mouse-over-popover' : undefined}
                                     aria-haspopup="true"
                                     onMouseEnter={(event) => this.handlePopoverOpen(chip.display,
-                                      chip.end_href ? (item.base_href + '/' + chip.end_href).replace(/\/\//g, '/') : (item.base_href + '/' + chip.display).replace(/\/\//g, '/')
+                                      chip.end_href ? (item.base_href + '/' + chip.end_href).replace(/\/\//g, '/') : item.base_href ? (item.base_href + '/' + chip.display).replace(/\/\//g, '/') : (item.href + '/' + chip.display).replace(/\/\//g, '/')
                                       , event)}
                                     onMouseLeave={this.handlePopoverClose}
                                   />
