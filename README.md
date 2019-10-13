@@ -1,6 +1,6 @@
 # Phenopolis API
 
-The Phenopolis API provides endpoints (see `views/` dir) which query the sqlite database and return JSON (see `exemplar_data` for examples of responses).
+The Phenopolis API provides endpoints (see `views/` dir) which query the postgres database and return JSON (see `exemplar_data` for examples of responses).
 The templates for the JSON response are stored under `response_templates/`.
 These are language specific as they are prefixed with en, cn and jp.
 These JSON files provide the headers which map to table headers on the [phenopolis_frontend](https://github.com/phenopolis/phenopolis_frontend).
@@ -11,22 +11,31 @@ Endpoints are called by [phenopolis_frontend](https://github.com/phenopolis/phen
 
 ##  How to start the API srver
 
+
+First create the postgres`phenopolis_db_demo` db owned by the `demo` user with password `demo123`:
 ```
-python run_server.py
+
 ```
 
-`run_server.py` needs the `local.cfg` file which provides the path to:
-* the sqlite database
-* the JSON config files which determine what gets displayed to the logged-in user, these are used by the endpoints
+Then load data into postgres db:
+```
+psql -U demo -W phenopolis_db_demo < demo/phenopolis_db_demo.sql
+```
 
+Then source the `demo_env.sh` file to set the env variables:
+```
+source demo_env.sh
+```
 
-
-## The sqlite database tables
+Then you can start the server:
+```
+python application.py
+```
 
 
 ### Overview
 
-The sqlite database  is composed of the following 8 tables:
+The postgres database  is composed of the following 8 tables:
 ```
 1. genes
 2. variants
@@ -384,7 +393,7 @@ individual.py:@app.route('/individual/<individual_id>/<subset>')
 
 #### /update_individual
 
-There's also the edit button the individual page which calls this endpoint to update `individuals` table in sqlite:
+There's also the edit button the individual page which calls this endpoint to update `individuals` table in postgres:
 
 ```
 individual.py:@app.route('/<language>/update_patient_data/<individual_id>',methods=['POST'])
