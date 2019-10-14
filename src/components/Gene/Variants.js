@@ -303,7 +303,10 @@ class Variant extends React.Component {
             direction='column'
             justify='center'
             alignItems='stretch'>
-            <Grid item xs={12}>
+            <Grid container
+              direction="row"
+              justify="flex-end"
+              alignItems="center">
               <TablePagination
                 className={classes.pagination}
                 rowsPerPageOptions={[10, 25, 50, 75, 100]}
@@ -393,7 +396,10 @@ class Variant extends React.Component {
                 </Table>
               </div>
             </Grid>
-            <Grid item xs={12}>
+            <Grid container
+              direction="row"
+              justify="flex-end"
+              alignItems="center">
               <TablePagination
                 rowsPerPageOptions={[10, 25, 50, 75, 100]}
                 className={classes.pagination}
@@ -489,10 +495,13 @@ const styles = theme => ({
     marginTop: theme.spacing(5)
   },
   tableWrapper: {
-    overflowX: 'auto'
+    overflowX: 'auto',
+    overflowY: 'auto',
+    maxHeight: '60em'
   },
   table: {
-    Width: '100%'
+    Width: '100%',
+    maxHeight: '60em'
   },
   head: {
     backgroundColor: 'black',
@@ -517,7 +526,7 @@ const styles = theme => ({
     }
   },
   pagination: {
-    float: 'right',
+    // float: 'right',
     border: '0px'
   },
   button: {
