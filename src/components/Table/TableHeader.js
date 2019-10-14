@@ -81,7 +81,10 @@ const styles = theme => ({
   headcell: {
     fontSize: '1em',
     padding: '1em 0.25em 1em .25em',
-    margin: 0
+    margin: 0,
+    position: 'sticky',
+    top: '0',
+    backgroundColor: '#bdbdbd'
   },
   sortlabel: {
     color: 'white',
