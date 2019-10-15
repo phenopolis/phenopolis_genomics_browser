@@ -157,7 +157,7 @@ const styles = (theme) => ({
   margin: {
     margin: theme.spacing(1),
   }
-});
+})
 
 const mapStateToProps = (state) => ({ reduxSnackMessage: getSnackMessage(state) });
 export default compose(connect(null, { setSnack }), withStyles(styles), withWidth(), connect(mapStateToProps, {}))(CustomizedSnackbars);
