@@ -116,10 +116,10 @@ class HPO extends React.Component {
                   onChangeIndex={this.handleChangeIndex}
                 >
                   <TabPanel value={this.state.value} index={0} dir={this.props.theme.direction}>
-                    <Variants variants={this.state.hpoInfo.individuals} title="Individuals" subtitle="Below is a list of individuals who have this phenotype or a descendant of it." />
+                    <Variants variants={this.state.hpoInfo.individuals} title="Individuals" subtitle="Below is a list of individuals who have this phenotype or a descendant of it." configureLink="hpo/individuals" />
                   </TabPanel>
                   <TabPanel value={this.state.value} index={1} dir={this.props.theme.direction}>
-                    <Variants variants={this.state.hpoInfo.literature_genes} title="Literature Genes" subtitle="Below is a list of the literature genes from OMIM which are associated with this phenotype." />
+                    <Variants variants={this.state.hpoInfo.literature_genes} title="Literature Genes" subtitle="Below is a list of the literature genes from OMIM which are associated with this phenotype." configureLink="hpo/literature_genes" />
                   </TabPanel>
 
                   {/* Phenogenon tab is more complex. */}
@@ -151,16 +151,16 @@ class HPO extends React.Component {
                       onChangeIndex={this.handleChangePhenogenonIndex}
                     >
                       <TabPanel value={this.state.phenogenonvalue} index={0} dir={this.props.theme.direction}>
-                        <Variants variants={this.state.hpoInfo.phenogenon_recessive} title="Recessive" subtitle={[<strong>Genotype</strong>, ": With at least two variants on a given gene that have ExAC homozygous count not higher than ", <b style={{ color: '#2E84CF' }}>2</b>, ", and CADD phred score not lower than ", <b style={{ color: '#2E84CF' }}>15</b>, "."]} />
+                        <Variants variants={this.state.hpoInfo.phenogenon_recessive} title="Recessive" subtitle={[<strong>Genotype</strong>, ": With at least two variants on a given gene that have ExAC homozygous count not higher than ", <b style={{ color: '#2E84CF' }}>2</b>, ", and CADD phred score not lower than ", <b style={{ color: '#2E84CF' }}>15</b>, "."]} configureLink="hpo/phenogenon_recessive" />
                       </TabPanel>
                       <TabPanel value={this.state.phenogenonvalue} index={1} dir={this.props.theme.direction}>
-                        <Variants variants={this.state.hpoInfo.phenogenon_dominant} title="Dominant" subtitle={[<strong>Genotype</strong>, ": With at least one variant on a given gene that has an ExAC heterozygous count not higher than ", <b style={{ color: '#2E84CF' }}>0.0001</b>, ", and CADD phred score not lower than ", <b style={{ color: '#2E84CF' }}>15</b>, "."]} />
+                        <Variants variants={this.state.hpoInfo.phenogenon_dominant} title="Dominant" subtitle={[<strong>Genotype</strong>, ": With at least one variant on a given gene that has an ExAC heterozygous count not higher than ", <b style={{ color: '#2E84CF' }}>0.0001</b>, ", and CADD phred score not lower than ", <b style={{ color: '#2E84CF' }}>15</b>, "."]} configureLink="hpo/phenogenon_dominant" />
                       </TabPanel>
                     </SwipeableViews>
                   </TabPanel>
 
                   <TabPanel value={this.state.value} index={3} dir={this.props.theme.direction}>
-                    <Variants variants={this.state.hpoInfo.skat} title="SKAT" subtitle="Below is a list of genes and their variants from the Sequence Kernel Association Test (SKAT)." />
+                    <Variants variants={this.state.hpoInfo.skat} title="SKAT" subtitle="Below is a list of genes and their variants from the Sequence Kernel Association Test (SKAT)." configureLink="hpo/skat" />
                   </TabPanel>
                 </SwipeableViews>
               </Paper>

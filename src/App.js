@@ -10,6 +10,7 @@ import Home from './page/Home';
 import Publication from './page/Publication';
 import Search from './page/Search';
 import AuthCheck from './page/AuthCheck';
+import CustomizedSnackbars from './page/CustomizedSnackbars';
 
 import Gene from './page/Gene';
 import HPO from './page/HPO';
@@ -36,6 +37,7 @@ function App() {
     <CookiesProvider>
       <Router>
         <AuthCheck />
+        <CustomizedSnackbars />
 
         <ThemeProvider theme={outerTheme}>
           <HomeAppBar />
