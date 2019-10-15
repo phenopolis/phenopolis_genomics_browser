@@ -3,10 +3,12 @@ import PropTypes from 'prop-types';
 import compose from 'recompose/compose';
 
 import { withStyles } from '@material-ui/core/styles';
-import { withWidth, Grid, Box, Typography, Paper} from '@material-ui/core';
+import { withWidth, Grid, Box, Typography, Paper } from '@material-ui/core';
 
-import { faTachometerAlt, faChartBar, faProjectDiagram, faUsers,
-         faEnvelopeOpen} from '@fortawesome/free-solid-svg-icons';
+import {
+  faTachometerAlt, faChartBar, faProjectDiagram, faUsers,
+  faEnvelopeOpen
+} from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 
 class HomeMainPart extends React.Component {
@@ -119,7 +121,7 @@ class HomeMainPart extends React.Component {
                     fontWeight='fontWeightLight'
                     fontSize='h6.fontSize'
                     m={1}>
-                    Please feel free to contact us here to give us feedback or
+                    Please feel free to contact us <a href="mailto:info@phenopolis.org" className={classes.a}>here</a> to give us feedback or
                     report any issues.
                   </Box>
                 </Typography>
@@ -171,6 +173,14 @@ const styles = theme => ({
   paper2: {
     padding: '4em 1em 4em 1em',
     backgroundColor: '#eeeeee'
+  },
+  a: {
+    textDecoration: 'none',
+    color: '#2E84CF',
+    fontWeight: '900',
+    '&:hover': {
+      textShadow: '-0.06ex 0 white, 0.06ex 0 white',
+    }
   }
 });
 
