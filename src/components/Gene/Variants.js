@@ -497,11 +497,11 @@ const styles = theme => ({
   tableWrapper: {
     overflowX: 'auto',
     overflowY: 'auto',
-    maxHeight: '60em'
+    maxHeight: '80vh'
   },
   table: {
     Width: '100%',
-    maxHeight: '60em'
+    maxHeight: '80vh'
   },
   head: {
     backgroundColor: 'black',

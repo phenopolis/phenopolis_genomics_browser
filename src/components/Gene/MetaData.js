@@ -106,7 +106,7 @@ class MetaData extends React.Component {
                                     label={chip.display}
                                     className={classes.chip}
                                     component={Link}
-                                    to={chip.end_href ? (item.base_href + '/' + chip.end_href).replace(/\/\//g, '/') : (item.base_href + '/' + chip.display).replace(/\/\//g, '/')}
+                                    to={chip.end_href ? (item.base_href + '/' + chip.end_href).replace(/\/\//g, '/') : item.base_href ? (item.base_href + '/' + chip.display).replace(/\/\//g, '/') : (item.href + '/' + chip.display).replace(/\/\//g, '/')}
                                     clickable
                                     aria-owns={open ? 'mouse-over-popover' : undefined}
                                     aria-haspopup="true"
