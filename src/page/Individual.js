@@ -132,13 +132,13 @@ class Individual extends React.Component {
                   onChangeIndex={this.handleChangeIndex}
                 >
                   <TabPanel value={this.state.value} index={0} dir={this.props.theme.direction}>
-                    <Variants variants={this.state.individualInfo.rare_homs} title="Rare HOMs" subtitle="This is the list of rare homozygous variants in this individual obtained with thresholds." />
+                    <Variants variants={this.state.individualInfo.rare_homs} title="Rare HOMs" subtitle="This is the list of rare homozygous variants in this individual obtained with thresholds." configureLink="individual/rare_homs" />
                   </TabPanel>
                   <TabPanel value={this.state.value} index={1} dir={this.props.theme.direction}>
-                    <Variants variants={this.state.individualInfo.rare_comp_hets} title="Rare Comp Hets" subtitle="This is the list of rare compound heterozgote variants (more than one variant in a given gene) found in this individual obtained with allele frequency thresholds." />
+                    <Variants variants={this.state.individualInfo.rare_comp_hets} title="Rare Comp Hets" subtitle="This is the list of rare compound heterozgote variants (more than one variant in a given gene) found in this individual obtained with allele frequency thresholds." configureLink="individual/rare_comp_hets" />
                   </TabPanel>
                   <TabPanel value={this.state.value} index={2} dir={this.props.theme.direction}>
-                    <Variants variants={this.state.individualInfo.rare_variants} title="Rare Variants" subtitle="This is the list of rare compound heterozgote variants (more than one variant in a given gene) found in this individual obtained with allele frequency thresholds." />
+                    <Variants variants={this.state.individualInfo.rare_variants} title="Rare Variants" subtitle="This is the list of rare compound heterozgote variants (more than one variant in a given gene) found in this individual obtained with allele frequency thresholds." configureLink="individual/rare_variants" />
                   </TabPanel>
                 </SwipeableViews>
               </Paper>

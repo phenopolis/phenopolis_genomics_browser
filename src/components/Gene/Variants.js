@@ -2,6 +2,8 @@ import React from 'react';
 import axios from 'axios';
 import PropTypes from 'prop-types';
 import { Link } from 'react-router-dom';
+import compose from 'recompose/compose';
+import { connect } from 'react-redux';
 
 import { withStyles } from '@material-ui/core/styles';
 
@@ -10,10 +12,15 @@ import {
   Checkbox, FormControlLabel, Tooltip, Table, TableBody, TableCell,
   TableRow, TablePagination, Button, Popover, Container, CircularProgress
 } from '@material-ui/core';
+import SaveIcon from '@material-ui/icons/Save';
 import "../../assets/css/arrowbox.css";
 
 import TableHeader from '../Table/TableHeader';
 import TablePaginationActions from '../Table/TablePaginationActions';
+
+import { setSnack } from '../../redux/actions';
+const qs = require('querystring');
+
 
 function desc(a, b, orderBy) {
   if (!isNaN(b[orderBy])) {
@@ -221,6 +228,38 @@ class Variant extends React.Component {
     });
   }
 
+  handleSaveConfigure = () => {
+
+    var formData = qs.stringify({
+    });
+
+    this.state.header.forEach((h, index) => {
+      if (h.default) {
+        if (index === 0) {
+          formData = formData + 'colNames%5B%5D=' + h.key.split(" ").join("+")
+        } else {
+          formData = formData + '&' + 'colNames%5B%5D=' + h.key.split(" ").join("+")
+        }
+      }
+    })
+
+    axios
+      .post('/api/save_configuration/' + this.props.configureLink, formData, { withCredentials: true })
+      .then(res => {
+        let respond = res.data;
+        console.log(respond)
+        // if (respond.success === true) {
+        //   this.props.refreshData(this.props.patientName)
+        //   this.handleClose()
+        // }
+        this.props.setSnack('Save Configuration Success!');
+      })
+      .catch(err => {
+        window.alert('Save Failed.');
+      });
+
+  }
+
   render() {
     const { classes } = this.props;
     const open = Boolean(this.state.anchorEl);
@@ -294,6 +333,21 @@ class Variant extends React.Component {
                 })}
               </Grid>
             </Paper>
+            <Grid
+              container
+              direction="row"
+              justify="flex-end"
+              alignItems="center"
+            >
+              <Button
+                variant="outlined"
+                color="secondary"
+                className={classes.button2}
+                onClick={this.handleSaveConfigure}>
+                <SaveIcon className={classes.leftIcon} />
+                Save Column Configuration
+              </Button>
+            </Grid>
           </Collapse>
         </div>
 
@@ -491,8 +545,12 @@ const styles = theme => ({
     marginTop: theme.spacing(3)
   },
   paper: {
-    padding: theme.spacing(3),
-    marginTop: theme.spacing(5)
+    paddingTop: theme.spacing(1),
+    paddingLeft: theme.spacing(3),
+    paddingRight: theme.spacing(3),
+    paddingBottom: theme.spacing(1),
+    marginTop: theme.spacing(1),
+    marginBottom: theme.spacing(1)
   },
   tableWrapper: {
     overflowX: 'auto',
@@ -534,6 +592,12 @@ const styles = theme => ({
     borderColor: '#2E84CF',
     color: '#2E84CF'
   },
+  button2: {
+    margin: theme.spacing(1)
+  },
+  leftIcon: {
+    marginRight: theme.spacing(1),
+  },
   tooltip: {
     fontSize: '3em'
   },
@@ -561,4 +625,4 @@ const StyledTooltip = withStyles({
   }
 })(Tooltip);
 
-export default withStyles(styles)(Variant);
+export default compose(connect(null, { setSnack }), withStyles(styles))(Variant);

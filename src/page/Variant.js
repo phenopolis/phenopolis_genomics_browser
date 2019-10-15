@@ -92,19 +92,19 @@ class Variant extends React.Component {
                   onChangeIndex={this.handleChangeIndex}
                 >
                   <TabPanel value={this.state.value} index={0} dir={this.props.theme.direction}>
-                    <Variants variants={this.state.variantInfo.frequency} title="Frequency" subtitle="Frequency of the variant in external databases and internally." />
+                    <Variants variants={this.state.variantInfo.frequency} title="Frequency" subtitle="Frequency of the variant in external databases and internally." configureLink="variant/frequency" />
                   </TabPanel>
                   <TabPanel value={this.state.value} index={1} dir={this.props.theme.direction}>
-                    <Variants variants={this.state.variantInfo.consequence} title="Consequences" subtitle="Consequence of the variant on transcripts." />
+                    <Variants variants={this.state.variantInfo.consequence} title="Consequences" subtitle="Consequence of the variant on transcripts." configureLink="variant/consequence" />
                   </TabPanel>
                   <TabPanel value={this.state.value} index={2} dir={this.props.theme.direction}>
-                    <Variants variants={this.state.variantInfo.quality} title="Quality" subtitle="Quality of the variant on transcripts." />
+                    <Variants variants={this.state.variantInfo.quality} title="Quality" subtitle="Quality of the variant on transcripts." configureLink="variant/quality" />
                   </TabPanel>
                   <TabPanel value={this.state.value} index={3} dir={this.props.theme.direction}>
-                    <Variants variants={this.state.variantInfo.individuals} title="Individuals" subtitle="Genotypes of individuals." />
+                    <Variants variants={this.state.variantInfo.individuals} title="Individuals" subtitle="Genotypes of individuals." configureLink="variant/individuals" />
                   </TabPanel>
                   <TabPanel value={this.state.value} index={4} dir={this.props.theme.direction} >
-                    <Variants variants={this.state.variantInfo.genotypes} title="Genotypes" subtitle="Genotypes of individuals." />
+                    <Variants variants={this.state.variantInfo.genotypes} title="Genotypes" subtitle="Genotypes of individuals." configureLink="variant/genotypes" />
                   </TabPanel>
                 </SwipeableViews>
               </Paper>

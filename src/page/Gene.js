@@ -62,7 +62,7 @@ class Gene extends React.Component {
 
             <Container maxWidth='xl'>
               <Paper className={classes.paper}>
-                <Variants variants={this.state.geneInfo.variants} title="Variants Analysis" subtitle="Here are a list of variants found within this gene." />
+                <Variants variants={this.state.geneInfo.variants} title="Variants Analysis" subtitle="Here are a list of variants found within this gene." configureLink="gene/variants" />
               </Paper>
             </Container>
           </div>
