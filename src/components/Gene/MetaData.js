@@ -83,7 +83,7 @@ class MetaData extends React.Component {
 
                     <Grid item xs={8} md={10}>
                       {typeof metadata.data[0][item.key] !== 'object' ? (
-                        <span> {metadata.data[0][item.key]} </span>
+                        <span> {item.key === 'start' | item.key === 'stop' ? (Number(metadata.data[0][item.key]).toLocaleString()) : (metadata.data[0][item.key])} </span>
                       ) : (
                           metadata.data[0][item.key].map((chip, m) => {
                             return (
