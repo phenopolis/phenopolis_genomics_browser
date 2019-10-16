@@ -56,7 +56,8 @@ sess.init_app(application)
 conn = psycopg2.connect(host=os.environ['DB_HOST'],
                         database=os.environ['DB_DATABASE'],
                         user=os.environ['DB_USER'],
-                        password=os.environ['DB_PASSWORD'])
+                        password=os.environ['DB_PASSWORD'],
+                        port=os.environ['DB_PORT'])
 
 def postgres_cursor():
    cursor = conn.cursor()
