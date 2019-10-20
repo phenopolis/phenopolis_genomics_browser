@@ -1,5 +1,6 @@
-import { SET_USER  } from './actionTypes';
+import { SET_USER } from './actionTypes';
 import { SET_SNACK } from './actionTypes';
+import { SET_MESSAGE } from './actionTypes';
 
 export const setUser = newUsername => ({
   type: SET_USER,
@@ -8,9 +9,17 @@ export const setUser = newUsername => ({
   }
 });
 
-export const setSnack = newMessage => ({
-  type: SET_SNACK,
+export const setMessage = newMessage => ({
+  type: SET_MESSAGE,
   payload: {
     newMessage
+  }
+});
+
+export const setSnack = (newMessage, newVariant) => ({
+  type: SET_SNACK,
+  payload: {
+    newMessage,
+    newVariant
   }
 });

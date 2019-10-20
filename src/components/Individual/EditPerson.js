@@ -9,6 +9,10 @@ import MuiDialogContent from '@material-ui/core/DialogContent';
 import MuiDialogActions from '@material-ui/core/DialogActions';
 import CloseIcon from '@material-ui/icons/Close';
 
+import compose from 'recompose/compose';
+import { connect } from 'react-redux';
+import { setSnack } from '../../redux/actions';
+
 import SearchAutoComplete from './SearchAutoComplete'
 const qs = require('querystring');
 
@@ -131,12 +135,13 @@ class EditPerson extends React.Component {
       .then(res => {
         let respond = res.data;
         if (respond.success === true) {
+          this.props.setSnack('Save Success.','success')
           this.props.refreshData(this.props.patientName)
           this.handleClose()
         }
       })
       .catch(err => {
-        window.alert('Save Failed.');
+        this.props.setSnack('Save Failed.','error')
       });
   }
 
@@ -285,4 +290,11 @@ const dialogStyles = theme => ({
   }
 });
 
-export default withStyles(dialogStyles, { withTheme: true })(EditPerson);
+
+export default compose(
+  withStyles(dialogStyles),
+  connect(
+    null,
+    { setSnack }
+  )
+)(EditPerson);

@@ -25,7 +25,6 @@ class FilterInput extends React.Component {
     let self = this;
     if (this.timeout) clearTimeout(this.timeout);
     this.timeout = setTimeout(() => {
-      // window.alert(searchText);
 
       switch (true) {
         case />=/.test(searchText):

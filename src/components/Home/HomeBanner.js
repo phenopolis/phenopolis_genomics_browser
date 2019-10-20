@@ -11,6 +11,7 @@ import Cookies from 'universal-cookie';
 import compose from 'recompose/compose';
 import { connect } from 'react-redux';
 import { setUser } from '../../redux/actions';
+import { setSnack } from '../../redux/actions';
 import { getUsername } from '../../redux/selectors';
 
 import axios from 'axios';
@@ -47,12 +48,13 @@ class HomeBanner extends React.Component {
           });
           this.setState({ redirect: true });
           this.props.setUser(respond.username);
+          this.props.setSnack(respond.username + " Login Success!", "success")
         } else {
-          window.alert('Login Failed.');
+          this.props.setSnack('Login Failed.', 'error')
         }
       })
       .catch(err => {
-        window.alert('Login Failed.');
+        this.props.setSnack('Login Failed.', 'error')
       });
   }
 
@@ -69,7 +71,7 @@ class HomeBanner extends React.Component {
               <Box display='flex' alignItems='center' css={{ height: 500 }}>
                 <div className={classes.bannertext}>
                   <Typography variant='h2' align='center' gutterBottom>
-                    {this.props.BannerText}
+                    <b>{this.props.BannerText}</b>
                   </Typography>
                   <Typography variant='h6' align='center' gutterBottom>
                     Harmonization & Analysis of Sequencing & Phenotype Data
@@ -120,6 +122,6 @@ export default compose(
   withStyles(styles),
   connect(
     mapStateToProps,
-    { setUser }
+    { setUser, setSnack }
   )
 )(HomeBanner);
