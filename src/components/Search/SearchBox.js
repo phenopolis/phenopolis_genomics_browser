@@ -11,6 +11,10 @@ import {
 } from '@material-ui/core';
 import SearchIcon from '@material-ui/icons/Search';
 
+import compose from 'recompose/compose';
+import { connect } from 'react-redux';
+import { setSnack } from '../../redux/actions';
+
 class SearchBox extends React.Component {
   constructor(props) {
     super(props);
@@ -52,7 +56,7 @@ class SearchBox extends React.Component {
         this.setState({ redirect: true, guesslink: res.data.redirect });
       })
       .catch(err => {
-        window.alert('Best guess Failed.');
+        this.props.setSnack('Best guess Failed.','error')
       });
   };
 
@@ -86,7 +90,7 @@ class SearchBox extends React.Component {
         self.setState({ autoCompleteContent: res.data, searchLoaded: false })
       })
       .catch(err => {
-        window.alert('autocomplete failed.');
+        this.props.setSnack('Autocomplete failed.','error')
       });
   }
 
@@ -287,4 +291,11 @@ const CssTextField = withStyles({
   }
 })(TextField);
 
-export default withStyles(styles)(SearchBox);
+
+export default compose(
+  withStyles(styles),
+  connect(
+    null,
+    { setSnack }
+  )
+)(SearchBox);

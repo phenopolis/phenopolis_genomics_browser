@@ -35,6 +35,7 @@ import Sidebar from './Sidebar';
 import NavSearch from './NavSearch';
 
 import { setUser } from '../../redux/actions';
+import { setSnack } from '../../redux/actions';
 
 class LoginBar extends React.Component {
 	constructor(props) {
@@ -74,9 +75,10 @@ class LoginBar extends React.Component {
 				cookies.remove('username');
 				this.setState({ redirect: true });
 				this.props.setUser('');
+				this.props.setSnack('Logout Success.','success')
 			})
 			.catch((err) => {
-				window.alert('Logout Failed.');
+				this.props.setSnack('Logout Failed.','error')
 				console.log(err);
 			});
 	};
@@ -243,4 +245,4 @@ const styles = (theme) => ({
 	}
 });
 
-export default compose(connect(null, { setUser }), withStyles(styles), withWidth())(LoginBar);
+export default compose(connect(null, { setUser, setSnack }), withStyles(styles), withWidth())(LoginBar);

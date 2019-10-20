@@ -12,8 +12,9 @@ import { makeStyles, withStyles } from '@material-ui/core/styles';
 
 import { connect } from 'react-redux';
 import compose from 'recompose/compose';
-import { getSnackMessage } from '../redux/selectors';
-import { setSnack } from '../redux/actions';
+import { getSnackMessage, getSnackVariant } from '../redux/selectors';
+
+import { setMessage } from '../redux/actions';
 
 const variantIcon = {
   success: CheckCircleIcon,
@@ -90,20 +91,8 @@ class CustomizedSnackbars extends React.Component {
     };
   }
 
-  getReduxSnackMessage() {
-    return this.props.reduxSnackMessage;
-  }
-
-  // handleClick = () => {
-  //   this.setState({open: true})
-  // }
-
-  handleClose = (event, reason) => {
-    if (reason === 'clickaway') {
-      return;
-    }
-    // this.setState({open: false})
-    this.props.setSnack('');
+  handleClose = () => {
+    this.props.setMessage("");
   }
   render() {
     const { classes } = this.props;
@@ -120,7 +109,7 @@ class CustomizedSnackbars extends React.Component {
       >
         <MySnackbarContentWrapper
           onClose={this.handleClose}
-          variant="success"
+          variant={this.props.reduxSnackVariant}
           message={this.props.reduxSnackMessage}
         />
       </Snackbar>
@@ -159,8 +148,8 @@ const styles = (theme) => ({
   }
 })
 
-const mapStateToProps = (state) => ({ reduxSnackMessage: getSnackMessage(state) });
-export default compose(connect(null, { setSnack }), withStyles(styles), withWidth(), connect(mapStateToProps, {}))(CustomizedSnackbars);
+const mapStateToProps = (state) => ({ reduxSnackMessage: getSnackMessage(state), reduxSnackVariant: getSnackVariant(state) });
+export default compose(connect(null, { setMessage }), withStyles(styles), withWidth(), connect(mapStateToProps, {}))(CustomizedSnackbars);
 
 
 // **************************************************************

@@ -10,6 +10,7 @@ import { Avatar, Button, CssBaseline, TextField, Typography, Container } from '@
 import LockOutlinedIcon from '@material-ui/icons/LockOutlined';
 
 import { setUser } from '../../redux/actions';
+import { setSnack } from '../../redux/actions'
 
 import axios from 'axios';
 const qs = require('querystring');
@@ -45,13 +46,14 @@ class LoginBox extends React.Component {
           });
           this.setState({ redirect: true });
           this.props.setUser(respond.username);
+          this.props.setSnack(respond.username + " Login Success!", "success")
           this.props.onLoginSuccess();
         } else {
-          window.alert('Login Failed.');
+          this.props.setSnack("Login Failed.", "error")
         }
       })
       .catch(err => {
-        window.alert('Login Failed.');
+        this.props.setSnack("Login Failed.", "error")
       });
   };
 
@@ -197,6 +199,6 @@ export default compose(
   withStyles(styles),
   connect(
     null,
-    { setUser }
+    { setUser, setSnack }
   )
 )(LoginBox);

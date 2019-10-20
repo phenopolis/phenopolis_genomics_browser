@@ -6,3 +6,6 @@ export const getUsername = store =>
 
 export const getSnackMessage = store =>
   getSnackState(store) ? getSnackState(store).snackMessage : '';
+
+  export const getSnackVariant = store =>
+  getSnackState(store) ? getSnackState(store).snackVariant : '';

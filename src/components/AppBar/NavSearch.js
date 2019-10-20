@@ -15,6 +15,11 @@ import {
 } from '@material-ui/core';
 import SearchIcon from '@material-ui/icons/Search';
 
+import { connect } from 'react-redux';
+import compose from 'recompose/compose';
+
+import { setSnack } from '../../redux/actions'
+
 class NavSearch extends React.Component {
 	constructor(props) {
 		super(props);
@@ -42,7 +47,7 @@ class NavSearch extends React.Component {
 				this.setState({ redirect: true, guesslink: res.data.redirect });
 			})
 			.catch((err) => {
-				window.alert('Best guess Failed.');
+				this.props.setSnack('Best guess failed.','error')
 			});
 	};
 
@@ -76,7 +81,7 @@ class NavSearch extends React.Component {
 				self.setState({ autoCompleteContent: res.data, searchLoaded: false });
 			})
 			.catch((err) => {
-				window.alert('autocomplete failed.');
+				this.props.setSnack('Autocomplete fail.','error')
 			});
 	};
 
@@ -214,4 +219,10 @@ const styles = (theme) => ({
 	}
 });
 
-export default withStyles(styles)(NavSearch);
+export default compose(
+  withStyles(styles),
+  connect(
+    null,
+    { setSnack }
+  )
+)(NavSearch);

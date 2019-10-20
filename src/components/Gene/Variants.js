@@ -252,10 +252,10 @@ class Variant extends React.Component {
         //   this.props.refreshData(this.props.patientName)
         //   this.handleClose()
         // }
-        this.props.setSnack('Save Configuration Success!');
+        this.props.setSnack('Save Configuration Success!', 'success')
       })
       .catch(err => {
-        window.alert('Save Failed.');
+        this.props.setSnack('Save Configuration Failed.', 'error')
       });
 
   }

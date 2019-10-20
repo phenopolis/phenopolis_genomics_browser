@@ -8,6 +8,10 @@ import {
   Grid, Collapse, Chip
 } from '@material-ui/core';
 
+import compose from 'recompose/compose';
+import { connect } from 'react-redux';
+import { setSnack } from '../../redux/actions';
+
 import ChipInput from 'material-ui-chip-input'
 
 class SearchAutoComplete extends React.Component {
@@ -71,7 +75,7 @@ class SearchAutoComplete extends React.Component {
         self.setState({ autoCompleteContent: filteredOptions, searchLoaded: false })
       })
       .catch(err => {
-        window.alert('autocomplete failed.');
+        this.props.setSnack('Autocomplete failed.','error')
       });
   }
 
@@ -197,4 +201,10 @@ const styles = theme => ({
   }
 });
 
-export default withStyles(styles)(SearchAutoComplete);
+export default compose(
+  withStyles(styles),
+  connect(
+    null,
+    { setSnack }
+  )
+)(SearchAutoComplete);
