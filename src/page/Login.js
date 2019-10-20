@@ -21,13 +21,18 @@ class Login extends React.Component {
 
   render() {
     const { classes } = this.props;
+    const query = new URLSearchParams(this.props.location.search);
 
     return (
       <>
         <CssBaseline />
         {this.props.reduxName === '' ? (
-           <div className={classes.root}>
-          <LoginBox onLoginSuccess={() => { }}>/</LoginBox>
+          <div className={classes.root}>
+            {query.get('link') ? (
+              <span> Ops, seems you don't have access to <b style={{ color: '#2E84CF' }}>{query.get('link')} yet</b>, try login?</span>
+            ) : (null)}
+
+            <LoginBox onLoginSuccess={() => { }} redirectLink={query.get('link') ? query.get('link') : null}>/</LoginBox>
           </div>
         ) : (
             <div className={classes.root}>
@@ -60,7 +65,8 @@ const styles = theme => ({
     height: 'calc(100vh - 64px)',
     position: 'relative',
     backgroundColor: '#eeeeee',
-    padding: '4em'
+    padding: '4em',
+    textAlign: 'center'
   },
   paper2: {
     padding: theme.spacing(5)

@@ -37,7 +37,7 @@ class AuthCheck extends React.Component {
 
   render() {
     if (this.state.redirect) {
-      return <Redirect to='/login' />;
+      return <Redirect to={'/login?link=' + window.location.pathname} />;
     }
 
     return <div />;
