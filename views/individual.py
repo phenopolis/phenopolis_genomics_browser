@@ -165,7 +165,8 @@ def update_patient_data(individual_id,language='en'):
    ind['genes']=','.join([x for x in genes])
    print('UPDATE:', ind)
    c=postgres_cursor()
-   c.execute("""update individuals set
+   try:
+       c.execute("""update individuals set
            sex='%s',
            consanguinity='%s',
            observed_features='%s',
@@ -186,8 +187,13 @@ def update_patient_data(individual_id,language='en'):
             ind['unobserved_features'],
             ind['genes'],
             ind['external_id'],))
-   conn.commit()
-   c.close()
+       conn.commit()
+       c.close()
+   except (Exception, psychopg2.DatabaseError) as error:
+       print(error)
+       conn.rollback()
+   finally:
+       c.close()
    #print(c.execute("select * from individuals where external_id=?",(ind['external_id'],)).fetchall())
    return jsonify({'success': True}), 200
 
