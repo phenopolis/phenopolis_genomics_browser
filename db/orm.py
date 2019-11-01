@@ -30,11 +30,10 @@ meta=MetaData(engine)
 
 class Gene(Base):
     __tablename__ = 'genes'
-    id   = Column(Integer, primary_key=True)
+    gene_id = Column('gene_id', String(255), primary_key=True)    
     stop = Column('stop', String(255)) 
-    gene_id = Column('gene_id', String(255)) 
     chrom =  Column('chrom', String(2))
-    strand = Column('strand', String(1)) # forward or reverse strand
+    strand = Column('strand', String(1)) 
     full_gene_name = Column('full_gene_name', String(255)) 
     gene_name_upper = Column('gene_name_upper', String(255))
     other_names = Column('other_names', String(255))
@@ -43,6 +42,7 @@ class Gene(Base):
     xstop = Column('xstop', String(255))
     xstart = Column('xstart', String(255))
     gene_name = Column('gene_name', String(255))
+    variants = relationship('Variant', backref='genes', lazy = True)
 
 
 class Variant(Base):
@@ -74,30 +74,31 @@ class Variant(Base):
     af_krgdb = Column('af_krgdb', Float)
     af_converge = Column('af_converge', Float)
     af_hgvd = Column('af_hgvd', Float)
-    gene_symbol = Column('gene_symbol', String(255))
+    gene_id = Column('gene_id', String(255), ForeignKey('genes.gene_id'))
     hgvsc = Column('hgvsc', String(255))
     hgvsp = Column('hgvsp', String(255))
     dann = Column('dann', Float)
     cadd_phred = Column('cadd_phred', Float)
-
-
-class HOM_Variant(Base):
-    __tablename__ = 'hom_variants'
-    variant_id = Column(Integer, primary_key = True) # needs composite key
-    chrom =  Column('chrom', String(2))
-    pos = Column('position', String(255))
-    ref = Column('ref', String(255))
-    alt = Column('alt', String(255))
-    individual = Column('individual', String(255))
+    het_variants = relationship('HET_Variant', backref = backref('variants', uselist = False), lazy = True) # one to one relationships
+    hom_variants = relationship('HOM_Variant', backref = backref('variants', uselist = False), lazy = True)
 
 class HET_Variant(Base):
     __tablename__ = 'het_variants'
-    variant_id = Column(Integer, primary_key = True) # needs composite key
+    variant_id = Column(Integer, ForeignKey('variants.variant_id'), primary_key = True) # needs composite key
     chrom =  Column('chrom', String(2))
     pos = Column('position', String(255))
     ref = Column('ref', String(255))
     alt = Column('alt', String(255))
-    individual = Column('individual', String(255))
+    individual = Column('individual', String(255), ForeignKey('individuals.internal_id'))
+
+class HOM_Variant(Base):
+    __tablename__ = 'hom_variants'
+    variant_id = Column(Integer, ForeignKey('variants.variant_id'), primary_key = True) # needs composite key
+    chrom =  Column('chrom', String(2))
+    pos = Column('position', String(255))
+    ref = Column('ref', String(255))
+    alt = Column('alt', String(255))
+    individual = Column('individual', String(255), ForeignKey('individuals.internal_id'))
 
 class HPO(Base):
     __tablename__ = 'hpo'
@@ -109,6 +110,7 @@ class User(Base):
     __tablename__ = 'users'
     user = Column('user', primary_key = True)
     argon_password = Column('argon_password', String(255))
+    individuals = relationship('User_Individual', backref = 'users')
 
 
 class Individual(Base):
@@ -127,12 +129,14 @@ class Individual(Base):
     simplified_observed_features_names = Column('simplified_observed_features_names', String(255))
     ancestor_observed_features = Column('ancestor_observed_features', String(255))
     ancestor_observed_features_names = Column('ancestor_observed_features_names', String(255))
+    het_variants = relationship('HET_Variant', backref = 'individuals', lazy = True)
+    hom_variants = relationship('HOM_Variant', backref = 'individuals', lazy = True)
+    user = relationship('User_Individual', backref = 'individuals', lazy = True)
 
 class User_Individual(Base):
     __tablename__ = 'users_individuals'
-    user = Column('user', String(255))
-    internal_id = Column('internal_id', String(255), primary_key = True)
-
+    user = Column('user', String(255), ForeignKey('users.user'))
+    internal_id = Column('internal_id', String(255), ForeignKey('individuals.internal_id'), primary_key = True)
 
 meta.create_all()
 
