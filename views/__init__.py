@@ -3,6 +3,7 @@
 from flask import Flask
 from flask import session
 from flask_session import Session
+from flask import current_app, g
 from flask import Response
 from flask import request
 from flask import redirect
@@ -53,17 +54,23 @@ application.config.from_object(__name__)
 sess=Session()
 sess.init_app(application)
 
-conn = psycopg2.connect(host=os.environ['DB_HOST'],
+def get_db():
+    if 'db' not in g:
+        g.db = psycopg2.connect(host=os.environ['DB_HOST'],
                         database=os.environ['DB_DATABASE'],
                         user=os.environ['DB_USER'],
                         password=os.environ['DB_PASSWORD'])
+    return g.db
+
+
+def close_db():
+    db = g.pop('db', None)
+    if db is not None:
+        db.close()
 
 def postgres_cursor():
-   cursor = conn.cursor()
+   cursor = get_db().cursor()
    return (cursor)
-
-def postgres_close(cursor):
-   cursor.close()
 
 @application.after_request
 def after_request(response):
