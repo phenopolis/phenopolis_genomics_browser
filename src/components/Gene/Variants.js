@@ -236,9 +236,9 @@ class Variant extends React.Component {
     this.state.header.forEach((h, index) => {
       if (h.default) {
         if (index === 0) {
-          formData = formData + 'colNames%5B%5D=' + h.key.split(" ").join("+")
+          formData = formData + 'colNames%5B%5D=' + h.key.split(' ').join('+')
         } else {
-          formData = formData + '&' + 'colNames%5B%5D=' + h.key.split(" ").join("+")
+          formData = formData + '&' + 'colNames%5B%5D=' + h.key.split(' ').join('+')
         }
       }
     })

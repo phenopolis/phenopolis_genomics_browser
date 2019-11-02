@@ -14,7 +14,6 @@ import {
 	Toolbar,
 	Typography,
 	IconButton,
-	InputBase,
 	BottomNavigationAction,
 	Menu,
 	MenuItem,
@@ -75,10 +74,10 @@ class LoginBar extends React.Component {
 				cookies.remove('username');
 				this.setState({ redirect: true });
 				this.props.setUser('');
-				this.props.setSnack('Logout Success.','success')
+				this.props.setSnack('Logout Success.', 'success')
 			})
 			.catch((err) => {
-				this.props.setSnack('Logout Failed.','error')
+				this.props.setSnack('Logout Failed.', 'error')
 				console.log(err);
 			});
 	};

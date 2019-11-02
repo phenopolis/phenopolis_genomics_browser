@@ -95,7 +95,6 @@ class CustomizedSnackbars extends React.Component {
     this.props.setMessage("");
   }
   render() {
-    const { classes } = this.props;
 
     return (
       <Snackbar
