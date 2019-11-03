@@ -3,6 +3,7 @@ import axios from 'axios';
 import PropTypes from 'prop-types';
 import { withStyles } from '@material-ui/core/styles';
 import { CssBaseline, Paper, Container } from '@material-ui/core';
+import { Redirect } from 'react-router';
 
 import MetaData from '../components/Gene/MetaData';
 import Variants from '../components/Gene/Variants';
@@ -13,7 +14,8 @@ class Gene extends React.Component {
     super(props);
     this.state = {
       geneInfo: {},
-      loaded: false
+      loaded: false,
+      redirect: false
     };
   }
 
@@ -33,6 +35,10 @@ class Gene extends React.Component {
       })
       .catch(err => {
         console.log(err);
+        // console.log(err.response)
+        if (err.response.data.error === 'Unauthenticated') {
+          this.setState({ redirect: true });
+        }
       });
   }
 
@@ -52,6 +58,10 @@ class Gene extends React.Component {
 
   render() {
     const { classes } = this.props;
+
+    if (this.state.redirect) {
+      return <Redirect to={'/login?link=' + window.location.pathname} />;
+    }
 
     if (this.state.loaded) {
       return (

@@ -1,5 +1,6 @@
 import React from 'react';
 import axios from 'axios';
+import { Redirect } from 'react-router';
 
 import PropTypes from 'prop-types';
 import { withStyles } from '@material-ui/core/styles';
@@ -20,7 +21,8 @@ class HPO extends React.Component {
       hpoInfo: {},
       loaded: false,
       value: 0,
-      phenogenonvalue: 0
+      phenogenonvalue: 0,
+      redirect: false
     };
   }
 
@@ -63,6 +65,9 @@ class HPO extends React.Component {
       })
       .catch(err => {
         console.log(err);
+        if (err.response.data.error === 'Unauthenticated') {
+          this.setState({ redirect: true });
+        }
       });
   }
 
@@ -83,6 +88,10 @@ class HPO extends React.Component {
 
   render() {
     const { classes } = this.props;
+
+    if (this.state.redirect) {
+      return <Redirect to={'/login?link=' + window.location.pathname} />;
+    }
 
     if (this.state.loaded) {
       return (
