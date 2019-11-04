@@ -11,9 +11,12 @@ import {
 } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 
+import { withTranslation, Trans } from 'react-i18next';
+
 class HomeMainPart extends React.Component {
   render() {
     const { classes } = this.props;
+    const { t } = this.props;
 
     return (
       <div>
@@ -28,11 +31,10 @@ class HomeMainPart extends React.Component {
                 />
                 <Typography component='div'>
                   <Box fontWeight='fontWeightBold' fontSize='h5.fontSize' m={1}>
-                    Speed Up Diagnosis
+                    {t('HomePage.HomeMainPart.tab1.title')}
                   </Box>
                   <Box fontWeight='fontWeightLight' m={1}>
-                    Prioritises genetic mutations in patients based on their
-                    phenotypes described using the Human Phenotype Ontology.
+                    {t('HomePage.HomeMainPart.tab1.description')}
                   </Box>
                 </Typography>
               </Paper>
@@ -47,11 +49,10 @@ class HomeMainPart extends React.Component {
                 />
                 <Typography component='div'>
                   <Box fontWeight='fontWeightBold' fontSize='h5.fontSize' m={1}>
-                    Multiple Analysis Tools
+                    {t('HomePage.HomeMainPart.tab2.title')}
                   </Box>
                   <Box fontWeight='fontWeightLight' m={1}>
-                    Exomiser, PubmedScore, Phenogenon, SimReg, Bevimed and SKAT
-                    score genetic variants and phenotypes.
+                    {t('HomePage.HomeMainPart.tab2.description')}
                   </Box>
                 </Typography>
               </Paper>
@@ -66,11 +67,10 @@ class HomeMainPart extends React.Component {
                 />
                 <Typography component='div'>
                   <Box fontWeight='fontWeightBold' fontSize='h5.fontSize' m={1}>
-                    Gene-Phenotype Relations
+                    {t('HomePage.HomeMainPart.tab3.title')}
                   </Box>
                   <Box fontWeight='fontWeightLight' m={1}>
-                    Using the gene or phenotype view, understand the spectrum of
-                    phenotypes that gene mutations lead to.
+                    {t('HomePage.HomeMainPart.tab3.description')}
                   </Box>
                 </Typography>
               </Paper>
@@ -89,14 +89,13 @@ class HomeMainPart extends React.Component {
                 />
                 <Typography component='div'>
                   <Box fontWeight='fontWeightBold' fontSize='h4.fontSize' m={1}>
-                    Phenopolis Statistics
+                    {t('HomePage.HomeMainPart.statistic.title')}
                   </Box>
                   <Box
                     fontWeight='fontWeightLight'
                     fontSize='h6.fontSize'
                     m={1}>
-                    Phenopolis includes data from 6,048 exomes representing a
-                    total number of 4,859,971 variants.
+                    {t('HomePage.HomeMainPart.statistic.description')}
                   </Box>
                 </Typography>
               </Paper>
@@ -115,14 +114,15 @@ class HomeMainPart extends React.Component {
                 />
                 <Typography component='div'>
                   <Box fontWeight='fontWeightBold' fontSize='h4.fontSize' m={1}>
-                    Contact Us
+                    {t('HomePage.HomeMainPart.contact.title')}
                   </Box>
                   <Box
                     fontWeight='fontWeightLight'
                     fontSize='h6.fontSize'
                     m={1}>
-                    Please feel free to contact us <a href="mailto:info@phenopolis.org" className={classes.a}>here</a> to give us feedback or
-                    report any issues.
+                    <Trans i18nKey="HomePage.HomeMainPart.contact.description">
+                      Please feel free to contact us <a href='mailto:info@phenopolis.org' className={classes.a}>here</a> to give us feedback or report any issues.
+                    </Trans>
                   </Box>
                 </Typography>
               </Paper>
@@ -186,5 +186,6 @@ const styles = theme => ({
 
 export default compose(
   withStyles(styles),
-  withWidth()
+  withWidth(),
+  withTranslation()
 )(HomeMainPart);

@@ -14,6 +14,8 @@ import { setUser } from '../../redux/actions';
 import { setSnack } from '../../redux/actions';
 import { getUsername } from '../../redux/selectors';
 
+import { withTranslation } from 'react-i18next';
+
 import axios from 'axios';
 const qs = require('querystring');
 
@@ -60,6 +62,7 @@ class HomeBanner extends React.Component {
 
   render() {
     const { classes } = this.props;
+    const { t } = this.props;
 
     return (
       <div>
@@ -74,7 +77,7 @@ class HomeBanner extends React.Component {
                     <b>{this.props.BannerText}</b>
                   </Typography>
                   <Typography variant='h6' align='center' gutterBottom>
-                    Harmonization & Analysis of Sequencing & Phenotype Data
+                    {t('HomePage.HomeBanner.subtitle')}
                   </Typography>
                   {this.props.reduxName === '' ?
                     (<Button
@@ -83,16 +86,16 @@ class HomeBanner extends React.Component {
                       className={classes.button}
                       onClick={this.DemoLogin}
                     >
-                      LOGIN AS DEMO USER
-                  </Button>) : (<Button
+                      {t('HomePage.HomeBanner.button_no_login')}
+                    </Button>) : (<Button
                       variant='outlined'
                       color='inherit'
                       className={classes.button}
                       component={Link}
                       to='/search'
                     >
-                      Search Phenopolis
-                  </Button>)}
+                      {t('HomePage.HomeBanner.button_login')}
+                    </Button>)}
                 </div>
               </Box>
             </Grid>
@@ -123,5 +126,6 @@ export default compose(
   connect(
     mapStateToProps,
     { setUser, setSnack }
-  )
+  ),
+  withTranslation()
 )(HomeBanner);

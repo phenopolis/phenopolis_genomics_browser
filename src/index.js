@@ -11,6 +11,9 @@ import * as serviceWorker from './serviceWorker';
 // import roboto font, as instructed by material-UI
 import 'typeface-roboto';
 
+// import i18next for multi-lanugage supporting.
+import "./i18n";
+
 // Here by default APP.js was set as the entrence of whole App.
 ReactDOM.render(
   <Provider store={store}>

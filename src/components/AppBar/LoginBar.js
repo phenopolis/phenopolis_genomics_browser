@@ -28,6 +28,7 @@ import LockIcon from '@material-ui/icons/Lock';
 import DescriptionIcon from '@material-ui/icons/Description';
 import MenuIcon from '@material-ui/icons/Menu';
 import PeopleIcon from '@material-ui/icons/People';
+import TranslateIcon from '@material-ui/icons/Translate';
 import AccountCircleIcon from '@material-ui/icons/AccountCircle';
 
 import Sidebar from './Sidebar';
@@ -36,14 +37,23 @@ import NavSearch from './NavSearch';
 import { setUser } from '../../redux/actions';
 import { setSnack } from '../../redux/actions';
 
+import { withTranslation } from 'react-i18next';
+import i18next from "i18next";
+
+import GB from '../../assets/svg/gb.svg'
+import CN from '../../assets/svg/cn.svg'
+import JP from '../../assets/svg/jp.svg'
+
 class LoginBar extends React.Component {
 	constructor(props) {
 		super(props);
 		this.state = {
 			openMenu: false,
 			anchorEl: null,
+			anchorLan: null,
 			redirect: false,
-			openSideBar: false
+			openSideBar: false,
+			openLan: false
 		};
 	}
 
@@ -74,16 +84,34 @@ class LoginBar extends React.Component {
 				cookies.remove('username');
 				this.setState({ redirect: true });
 				this.props.setUser('');
-				this.props.setSnack('Logout Success.', 'success')
+				this.props.setSnack(i18next.t('AppBar.LoginBar.Logout_Success'), 'success')
 			})
 			.catch((err) => {
-				this.props.setSnack('Logout Failed.', 'error')
+				this.props.setSnack(i18next.t('AppBar.LoginBar.Logout_Failed'), 'error')
 				console.log(err);
 			});
 	};
 
+	handleLanClick = (event) => {
+		this.state.ancherLan ? this.setState({ anchorLan: null }) : this.setState({ anchorLan: event.currentTarget });
+		this.OpenLan();
+	};
+
+	OpenLan() {
+		this.setState({
+			openLan: !this.state.openLan
+		});
+	}
+
+
 	render() {
 		const { classes } = this.props;
+		const { t, i18n } = this.props;
+
+		const changeLanguage = lng => {
+			i18next.changeLanguage(lng);
+			this.OpenLan()
+		};
 
 		if (this.state.redirect) {
 			return <Redirect to='/' />;
@@ -120,7 +148,7 @@ class LoginBar extends React.Component {
 						<div>
 							<BottomNavigationAction
 								className={classes.navigationbutton}
-								label='Search'
+								label={t('AppBar.LoginBar.Label_Search')}
 								showLabel
 								icon={<SearchIcon />}
 								component={Link}
@@ -128,7 +156,7 @@ class LoginBar extends React.Component {
 							/>
 							<BottomNavigationAction
 								className={classes.navigationbutton}
-								label='Publication'
+								label={t('AppBar.LoginBar.Label_Publication')}
 								showLabel
 								icon={<DescriptionIcon />}
 								component={Link}
@@ -136,11 +164,18 @@ class LoginBar extends React.Component {
 							/>
 							<BottomNavigationAction
 								className={classes.navigationbutton}
-								label='Patients'
+								label={t('AppBar.LoginBar.Label_Patients')}
 								showLabel
 								icon={<PeopleIcon />}
 								component={Link}
 								to='/my_patients'
+							/>
+							<BottomNavigationAction
+								className={classes.navigationbutton}
+								label={t('AppBar.LoginBar.Label_Language')}
+								showLabel
+								icon={<TranslateIcon />}
+								onClick={(event) => this.handleLanClick(event)}
 							/>
 							<BottomNavigationAction
 								className={classes.navigationbutton}
@@ -149,6 +184,7 @@ class LoginBar extends React.Component {
 								icon={<AccountCircleIcon />}
 								onClick={(event) => this.handleClick(event)}
 							/>
+
 							<Menu
 								id='simple-menu'
 								anchorEl={this.state.anchorEl}
@@ -160,13 +196,40 @@ class LoginBar extends React.Component {
 									<ListItemIcon>
 										<LockIcon />
 									</ListItemIcon>
-									<ListItemText primary='Change Password' classes={{ primary: classes.listItemText }} />
+									<ListItemText primary={t('AppBar.LoginBar.Label_Change_Password')} classes={{ primary: classes.listItemText }} />
 								</MenuItem>
 								<MenuItem onClick={this.handleLogout}>
 									<ListItemIcon>
 										<ExitToAppIcon />
 									</ListItemIcon>
-									<ListItemText classes={{ primary: classes.listItemText }} primary='Logout' />
+									<ListItemText classes={{ primary: classes.listItemText }} primary={t('AppBar.LoginBar.Label_Logout')} />
+								</MenuItem>
+							</Menu>
+
+							<Menu
+								id='simple-menu'
+								anchorEl={this.state.anchorLan}
+								keepMounted
+								open={Boolean(this.state.openLan)}
+								style={{ top: '3em' }}
+								onClose={() => this.OpenLan()}>
+								<MenuItem onClick={() => changeLanguage('en')}>
+									<ListItemIcon>
+										<img className={classes.imageIcon} src={GB} />
+									</ListItemIcon>
+									<ListItemText classes={{ primary: classes.listItemText }} primary='English' />
+								</MenuItem>
+								<MenuItem onClick={() => changeLanguage('ch')}>
+									<ListItemIcon>
+										<img className={classes.imageIcon} src={CN} />
+									</ListItemIcon>
+									<ListItemText classes={{ primary: classes.listItemText }} primary='中文' />
+								</MenuItem>
+								<MenuItem onClick={() => this.OpenLan()}>
+									<ListItemIcon>
+										<img className={classes.imageIcon} src={JP} />
+									</ListItemIcon>
+									<ListItemText classes={{ primary: classes.listItemText }} primary='日本語' />
 								</MenuItem>
 							</Menu>
 						</div>
@@ -241,7 +304,12 @@ const styles = (theme) => ({
 		[theme.breakpoints.up('md')]: {
 			width: 200
 		}
+	},
+	imageIcon: {
+		height: '1.2em',
+		width: '1.2em',
+		boxShadow: '0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19)'
 	}
 });
 
-export default compose(connect(null, { setUser, setSnack }), withStyles(styles), withWidth())(LoginBar);
+export default compose(connect(null, { setUser, setSnack }), withStyles(styles), withWidth(), withTranslation())(LoginBar);

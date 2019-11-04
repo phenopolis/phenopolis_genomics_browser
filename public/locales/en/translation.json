@@ -1,0 +1,85 @@
+{
+  "HomePage": {
+    "HomeBanner": {
+      "subtitle": "Harmonization & Analysis of Sequencing & Phenotype Data",
+      "button_no_login": "Login as Demo User",
+      "button_login": "Search Phenopolis"
+    },
+    "HomeMainPart": {
+      "tab1": {
+        "title": "Speed Up Diagnosis",
+        "description": "Prioritises genetic mutations in patients based on their phenotypes described using the Human Phenotype Ontology."
+      },
+      "tab2": {
+        "title": "Multiple Analysis Tools",
+        "description": "Exomiser, PubmedScore, Phenogenon, SimReg, Bevimed and SKAT score genetic variants and phenotypes."
+      },
+      "tab3": {
+        "title": "Gene-Phenotype Relations",
+        "description": "Using the gene or phenotype view, understand the spectrum of phenotypes that gene mutations lead to."
+      },
+      "statistic": {
+        "title": "Phenopolis Statistics",
+        "description": "Phenopolis includes data from 6,048 exomes representing a total number of 4,859,971 variants."
+      },
+      "contact": {
+        "title": "Contact Us",
+        "description": "Please feel free to contact us <1>here</1> to give us feedback or report any issues."
+      }
+    }
+  },
+  "AppBar": {
+    "NoLoginBar": {
+      "Label_Publication": "Publication",
+      "Label_Language": "Language",
+      "Label_Login": "Login"
+    },
+    "LoginBar": {
+      "Label_Search": "Search",
+      "Label_Publication": "Publication",
+      "Label_Patients": "Patients",
+      "Label_Language": "Language",
+      "Label_Change_Password": "Change Password",
+      "Label_Logout": "Log out",
+      "Logout_Success": "Logout Success.",
+      "Logout_Failed": "Logout Failed."
+    },
+    "LoginBox": {
+      "title": "Sign in",
+      "Label_User_Name": "User Name",
+      "Label_Password": "Password",
+      "Button": "Sign In",
+      "Hint": "Click <1> Demo Login</1> to have a try!",
+      "Login_Success": " Login Success!",
+      "Login_Failed": " Login Failed!"
+    },
+    "NavSearch": {
+      "InputPlaceHolder": "Search for patient, gene, variant…",
+      "Searching": "Searching for auto completing...",
+      "NoOption": "Sorry, we did not get any auto completing options...So sad.",
+      "NoContent": "Nothing for search.",
+      "Autocomplete_Failed": "Autocomplete failed",
+      "Best_Guess_Failed": "Best guess failed"
+    },
+    "NoSideBar": {
+      "Label_Publication": "Publication",
+      "Label_Login": "Login"
+    },
+    "SideBar": {
+      "Label_Search": "Search",
+      "Label_Publication": "Publication",
+      "Label_Patients": "Patients",
+      "Label_Change_Password": "Change Password",
+      "Label_Logout": "Log out"
+    }
+  },
+  "Footer": {
+    "About_Us": "About Us",
+    "Description": "Phenopolis is a platform for harmonization and analysis of sequencing and phenotype data. Development of Phenopolis was supported by RP Fighting Blindness, NIHR (UCL-Moorfields Eyes Hospital Biomedical Research Center), the UK Medical Research Council, the British Heart Foundation and the Japan Society for the Promotion of Science.",
+    "Useful_Links": "Useful Links",
+    "Publications": "Publications",
+    "Contact": "Contact",
+    "External_Links": "External Links",
+    "Citation": "If you use Phenopolis, please cite us as: <1>Pontikos, N. et al. (2017). Phenopolis: an open platform for harmonization and analysis of genetic and phenotypic data. Bioinformatics, 9, 7</1>"
+  }
+}
