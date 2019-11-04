@@ -15,6 +15,9 @@ import compose from 'recompose/compose';
 import { connect } from 'react-redux';
 import { setSnack } from '../../redux/actions';
 
+import { withTranslation} from 'react-i18next';
+import i18next from "i18next";
+
 class SearchBox extends React.Component {
   constructor(props) {
     super(props);
@@ -56,7 +59,7 @@ class SearchBox extends React.Component {
         this.setState({ redirect: true, guesslink: res.data.redirect });
       })
       .catch(err => {
-        this.props.setSnack('Best guess Failed.','error')
+        this.props.setSnack(i18next.t('AppBar.NavSearch.Best_Guess_Failed'),'error')
       });
   };
 
@@ -90,12 +93,14 @@ class SearchBox extends React.Component {
         self.setState({ autoCompleteContent: res.data, searchLoaded: false })
       })
       .catch(err => {
-        this.props.setSnack('Autocomplete failed.','error')
+        this.props.setSnack(i18next.t('AppBar.NavSearch.Autocomplete_Failed'),'error')
       });
   }
 
   render() {
     const { classes } = this.props;
+    const { t, i18n } = this.props;
+
     if (this.state.redirect) {
       return <Redirect to={this.state.guesslink} />;
     }
@@ -106,11 +111,10 @@ class SearchBox extends React.Component {
           <Paper className={classes.paper}>
             <Typography component='div'>
               <Box fontWeight='fontWeightBold' fontSize='h3.fontSize' m={1}>
-                Search Phenopolis
+                {t("Search.title")}
               </Box>
               <Box fontWeight='fontWeightLight' m={1}>
-                An open platform for harmonization and analysis of sequencing
-                and phenotype data.
+              {t("Search.subtitle")}
               </Box>
             </Typography>
 
@@ -139,7 +143,7 @@ class SearchBox extends React.Component {
                         }
                       }}
                       id='input-with-icon-grid'
-                      label='Search for a phenotype, patient, gene, variant or region.'
+                      label={t("Search.label")}
                       autoFocus={true}
                       value={this.state.searchContent}
                       onChange={this.handlesearchChange}
@@ -153,7 +157,7 @@ class SearchBox extends React.Component {
                     {
                       this.state.searchLoaded === true ? (
                         <Typography variant="subtitle1" gutterBottom>
-                          <b>Searching for auto completing...</b>
+                          <b>{t("Search.Searching")}</b>
                       </Typography>
                       ) : (
                           this.state.autoCompleteContent !== null ? (
@@ -176,13 +180,13 @@ class SearchBox extends React.Component {
                               })
                             ) : (
                                 <Typography variant="subtitle1" gutterBottom>
-                                  <b>Sorry, we did not get any auto completing options...So sad.</b>
+                                  <b>{t("Search.NoOption")}</b>
                                 </Typography>
                               )
 
                           ) : (
                               <Typography variant="subtitle1" gutterBottom>
-                                <b>Nothing for search.</b>
+                                <b>{t("Search.NoContent")}</b>
                             </Typography>
                             )
                         )
@@ -297,5 +301,6 @@ export default compose(
   connect(
     null,
     { setSnack }
-  )
+  ),
+  withTranslation()
 )(SearchBox);

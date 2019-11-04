@@ -81,5 +81,15 @@
     "Contact": "Contact",
     "External_Links": "External Links",
     "Citation": "If you use Phenopolis, please cite us as: <1>Pontikos, N. et al. (2017). Phenopolis: an open platform for harmonization and analysis of genetic and phenotypic data. Bioinformatics, 9, 7</1>"
+  },
+  "Search": {
+    "title": "Search Phenopolis",
+    "subtitle": "An open platform for harmonization and analysis of sequencing and phenotype data.",
+    "label": "Search for a phenotype, patient, gene, variant or region.",
+    "Searching": "Searching for auto completing...",
+    "NoOption": "Sorry, we did not get any auto completing options...So sad.",
+    "NoContent": "Nothing for search.",
+    "Autocomplete_Failed": "Autocomplete failed",
+    "Best_Guess_Failed": "Best guess failed"
   }
 }
