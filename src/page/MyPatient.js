@@ -3,6 +3,7 @@ import axios from 'axios';
 import PropTypes from 'prop-types';
 import { withStyles } from '@material-ui/core/styles';
 import { CssBaseline, Paper, Container } from '@material-ui/core';
+import { Redirect } from 'react-router';
 
 import Variants from '../components/Gene/Variants';
 import Loading from '../components/General/Loading';
@@ -12,7 +13,8 @@ class MyPatient extends React.Component {
     super(props);
     this.state = {
       AllPatientInfo: {},
-      loaded: false
+      loaded: false,
+      redirect: false
     };
   }
 
@@ -32,6 +34,9 @@ class MyPatient extends React.Component {
       })
       .catch(err => {
         console.log(err);
+        if (err.response.data.error === 'Unauthenticated') {
+          this.setState({ redirect: true });
+        }
       });
   }
 
@@ -42,6 +47,10 @@ class MyPatient extends React.Component {
   render() {
     const { classes } = this.props;
 
+    if (this.state.redirect) {
+      return <Redirect to={'/login?link=' + window.location.pathname} />;
+    }
+
     if (this.state.loaded) {
       return (
         <React.Fragment>
@@ -49,7 +58,7 @@ class MyPatient extends React.Component {
           <div className={classes.root}>
             <Container maxWidth='xl'>
               <Paper className={classes.paper}>
-                <Variants variants={this.state.AllPatientInfo.individuals} title={'My Patients' + ' (Total: ' + this.state.AllPatientInfo.preview[0][1] + ')'} subtitle=" " />
+                <Variants variants={this.state.AllPatientInfo.individuals} title={'My Patients' + ' (Total: ' + this.state.AllPatientInfo.preview[0][1] + ')'} subtitle=' ' />
               </Paper>
             </Container>
           </div>

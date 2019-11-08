@@ -1,0 +1,95 @@
+{
+  "HomePage": {
+    "HomeBanner": {
+      "subtitle": "整合统一 & 测序分析 & 表型数据",
+      "button_no_login": "Demo用户登录",
+      "button_login": "搜索 Phenopolis"
+    },
+    "HomeMainPart": {
+      "tab1": {
+        "title": "加速表型突变诊断",
+        "description": "根据患者的表型(使用人类表型本体论描述)推定考虑患者的遗传突变，加速您的诊断。"
+      },
+      "tab2": {
+        "title": "多样全能分析工具",
+        "description": "使用Exomiser, PubmedScore, Phenogenon, SimReg, Bevimed 以及 SKAT等工具或指标，给突变与表型评分。"
+      },
+      "tab3": {
+        "title": "基因-表型关系速查",
+        "description": "利用基因与表型列表，了解任意基因突变可能导致的表型。"
+      },
+      "statistic": {
+        "title": "Phenopolis 统计",
+        "description": "Phenopolis包括来自6,048个外显子的数据，涵盖总共4,859,971个变异。"
+      },
+      "contact": {
+        "title": "联系我们",
+        "description": "请通过<1>这里</1>联系我们， 给我们提出建议、意见、或者任何问题。我们十分珍重您对我们的反馈。"
+      }
+    }
+  },
+  "AppBar": {
+    "NoLoginBar": {
+      "Label_Publication": "期刊论文",
+      "Label_Language": "切换语言",
+      "Label_Login": "用户登录"
+    },
+    "LoginBar": {
+      "Label_Search": "搜索",
+      "Label_Publication": "期刊论文",
+      "Label_Patients": "我的患者",
+      "Label_Language": "切换语言",
+      "Label_Change_Password": "更换密码",
+      "Label_Logout": "退出",
+      "Logout_Success": "退出成功",
+      "Logout_Failed": "退出失败"
+    },
+    "LoginBox": {
+      "title": "登 录",
+      "Label_User_Name": "用户名",
+      "Label_Password": "密码",
+      "Button": "登 录",
+      "Hint": "点击<1>Demo登录</1>进行试用!",
+      "Login_Success": " 登录成功!",
+      "Login_Failed": " 登录失败!"
+    },
+    "NavSearch": {
+      "InputPlaceHolder": "搜索患者、基因、突变……",
+      "Searching": "正在自动匹配……",
+      "NoOption": "抱歉，我们无法自动匹配到任何数据……太遗憾了！",
+      "NoContent": "搜索内容为空。",
+      "Autocomplete_Failed": "自动补全失败",
+      "Best_Guess_Failed": "跳转失败"
+    },
+    "NoSideBar": {
+      "Label_Publication": "期刊论文",
+      "Label_Login": "登录"
+    },
+    "SideBar": {
+      "Label_Search": "搜索",
+      "Label_Publication": "期刊论文",
+      "Label_Patients": "我的患者",
+      "Label_Change_Password": "更换密码",
+      "Label_Logout": "退出"
+    }
+  },
+  "Footer": {
+    "About_Us": "关于我们",
+    "Description": "Phenopolis是一个整合分析测序和表型数据的平台。Phenopolis的发展得到了以下协会的支持：RP Fighting Blindness, NIHR (UCL-Moorfields Eyes Hospital Biomedical Research Center), the UK Medical Research Council, the British Heart Foundation 以及 the Japan Society for the Promotion of Science。",
+    "Useful_Links": "相关链接",
+    "Publications": "期刊论文",
+    "Contact": "联系我们",
+    "External_Links": "外部链接",
+    "Citation": "如果您使用了Phenopolis，请在您的论文中添加引用文献: <1>Pontikos, N. et al. (2017). Phenopolis: an open platform for harmonization and analysis of genetic and phenotypic data. Bioinformatics, 9, 7</1>"
+  },
+  "Search": {
+    "title": "搜索 Phenopolis",
+    "subtitle": "一个致力于整合测序数据，表型，变异以及基因信息的开放平台。",
+    "label": "搜索患者、基因、突变……",
+    "Searching": "正在自动匹配……",
+    "NoOption": "抱歉，我们无法自动匹配到任何数据……太遗憾了！",
+    "NoContent": "搜索内容为空。",
+    "Autocomplete_Failed": "自动补全失败",
+    "Best_Guess_Failed": "跳转失败"
+  }
+}

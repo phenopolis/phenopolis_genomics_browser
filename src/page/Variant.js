@@ -1,5 +1,6 @@
 import React from 'react';
 import axios from 'axios';
+import { Redirect } from 'react-router';
 
 import PropTypes from 'prop-types';
 import { withStyles } from '@material-ui/core/styles';
@@ -19,7 +20,8 @@ class Variant extends React.Component {
     this.state = {
       variantInfo: {},
       loaded: false,
-      value: 0
+      value: 0,
+      redirect: false
     };
   }
 
@@ -38,7 +40,7 @@ class Variant extends React.Component {
     };
   }
 
-  componentDidMount() {
+  getVariantInformation = (variantId) => {
     var self = this;
     axios
       .get('/api/variant/' + this.props.match.params.variantId, {
@@ -54,11 +56,32 @@ class Variant extends React.Component {
       })
       .catch(err => {
         console.log(err);
+        if (err.response.data.error === 'Unauthenticated') {
+          this.setState({ redirect: true });
+        }
       });
+  }
+
+  componentDidMount() {
+    this.getVariantInformation(this.props.match.params.variantId)
+  }
+
+  componentWillReceiveProps(nextProps) {
+    if (nextProps.match.params.variantId !== this.props.match.params.variantId) {
+      this.setState({
+        variantInfo: [],
+        loaded: false
+      });
+      this.getVariantInformation(nextProps.match.params.variantId)
+    }
   }
 
   render() {
     const { classes } = this.props;
+
+    if (this.state.redirect) {
+      return <Redirect to={'/login?link=' + window.location.pathname} />;
+    }
 
     if (this.state.loaded) {
       return (

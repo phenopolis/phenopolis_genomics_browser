@@ -13,6 +13,10 @@ import { setUser } from '../../redux/actions';
 import { setSnack } from '../../redux/actions'
 
 import axios from 'axios';
+
+import { withTranslation, Trans } from 'react-i18next';
+import i18next from "i18next";
+
 const qs = require('querystring');
 
 class LoginBox extends React.Component {
@@ -46,14 +50,16 @@ class LoginBox extends React.Component {
           });
           this.setState({ redirect: true });
           this.props.setUser(respond.username);
-          this.props.setSnack(respond.username + " Login Success!", "success")
+
+          this.props.setSnack(respond.username + i18next.t('AppBar.LoginBox.Login_Success'), "success")
           this.props.onLoginSuccess();
         } else {
-          this.props.setSnack("Login Failed.", "error")
+          this.props.setSnack(i18next.t('AppBar.LoginBox.Login_Failed'), "error")
         }
       })
       .catch(err => {
-        this.props.setSnack("Login Failed.", "error")
+        this.props.setSnack(i18next.t('AppBar.LoginBox.Login_Failed'), "error")
+
       });
   };
 
@@ -73,6 +79,7 @@ class LoginBox extends React.Component {
 
   render() {
     const { classes } = this.props;
+    const { t, i18n } = this.props;
 
     if (this.state.redirect) {
       return <Redirect to={this.props.redirectLink ? this.props.redirectLink : '/search'} />;
@@ -86,7 +93,7 @@ class LoginBox extends React.Component {
             <LockOutlinedIcon />
           </Avatar>
           <Typography component='h1' variant='h6'>
-            Sign in
+            {t('AppBar.LoginBox.title')}
           </Typography>
 
           <form
@@ -102,7 +109,7 @@ class LoginBox extends React.Component {
               required
               fullWidth
               id='name'
-              label='User Name'
+              label={t('AppBar.LoginBox.Label_User_Name')}
               name='name'
               placeholder='demo'
               autoFocus
@@ -117,7 +124,7 @@ class LoginBox extends React.Component {
               fullWidth
               name='password'
               placeholder='demo123'
-              label='Password'
+              label={t('AppBar.LoginBox.Label_Password')}
               type='password'
               id='password'
             />
@@ -127,10 +134,14 @@ class LoginBox extends React.Component {
               variant='contained'
               className={classes.submit}
               style={{ backgroundColor: '#2E84CF', color: 'white' }}>
-              Sign In
+              {t('AppBar.LoginBox.Button')}
             </Button>
             <div style={{ textAlign: 'center', }}>
-              <span style={{ color: 'grey' }}>Click <a className={classes.demolink} onClick={this.DemoLogin}> Demo Login</a> to have a try!</span>
+              <span style={{ color: 'grey' }}>
+                <Trans i18nKey="AppBar.LoginBox.Hint">
+                  Click <a className={classes.demolink} onClick={this.DemoLogin}> Demo Login</a> to have a try!
+                </Trans>
+              </span>
             </div>
           </form>
         </div>
@@ -200,5 +211,6 @@ export default compose(
   connect(
     null,
     { setUser, setSnack }
-  )
+  ),
+  withTranslation()
 )(LoginBox);

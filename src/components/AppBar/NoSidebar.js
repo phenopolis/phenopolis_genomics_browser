@@ -9,6 +9,8 @@ import { withWidth, List, ListItem, ListItemIcon, ListItemText } from '@material
 import DescriptionIcon from '@material-ui/icons/Description';
 import AccountCircleIcon from '@material-ui/icons/AccountCircle';
 
+import { withTranslation } from 'react-i18next';
+
 class NoSideBar extends React.Component {
 	constructor(props) {
 		super(props);
@@ -25,6 +27,7 @@ class NoSideBar extends React.Component {
 
 	render() {
 		const { classes } = this.props;
+		const { t, i18n } = this.props;
 
 		return (
 			<div className={classes.list} role='presentation' onClick={this.toggleDrawer} onKeyDown={this.toggleDrawer}>
@@ -33,13 +36,13 @@ class NoSideBar extends React.Component {
 						<ListItemIcon>
 							<DescriptionIcon />
 						</ListItemIcon>
-						<ListItemText primary='Publication' classes={{ primary: classes.listItemText }} />
+						<ListItemText primary={t('AppBar.NoSideBar.Label_Publication')} classes={{ primary: classes.listItemText }} />
 					</ListItem>
 					<ListItem button onClick={this.toggleLogin}>
 						<ListItemIcon>
 							<AccountCircleIcon />
 						</ListItemIcon>
-						<ListItemText primary='Login' classes={{ primary: classes.listItemText }} />
+						<ListItemText primary={t('AppBar.NoSideBar.Label_Login')} classes={{ primary: classes.listItemText }} />
 					</ListItem>
 				</List>
 			</div>
@@ -61,4 +64,4 @@ const styles = (theme) => ({
 	}
 });
 
-export default compose(withStyles(styles), withWidth())(NoSideBar);
+export default compose(withStyles(styles), withWidth(), withTranslation())(NoSideBar);

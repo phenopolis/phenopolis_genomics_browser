@@ -13,22 +13,35 @@ import {
 	IconButton,
 	BottomNavigationAction,
 	Dialog,
-	Drawer
+	Drawer,
+	Menu,
+	MenuItem,
+	ListItemIcon,
+	ListItemText
 } from '@material-ui/core';
 
 import MenuIcon from '@material-ui/icons/Menu';
 import DescriptionIcon from '@material-ui/icons/Description';
 import AccountCircleIcon from '@material-ui/icons/AccountCircle';
+import TranslateIcon from '@material-ui/icons/Translate';
 
 import NoSidebar from './NoSidebar';
 import LoginBox from './LoginBox';
+
+import GB from '../../assets/svg/gb.svg'
+import CN from '../../assets/svg/cn.svg'
+import JP from '../../assets/svg/jp.svg'
+
+import { withTranslation } from 'react-i18next';
 
 class NoLoginBar extends React.Component {
 	constructor(props) {
 		super(props);
 		this.state = {
 			openLoginDialog: false,
-			openSideBar: false
+			openSideBar: false,
+			openLan: false,
+			anchorEl: null,
 		};
 	}
 
@@ -44,8 +57,25 @@ class NoLoginBar extends React.Component {
 		});
 	}
 
+	handleLanClick = (event) => {
+		this.state.ancherEl ? this.setState({ anchorEl: null }) : this.setState({ anchorEl: event.currentTarget });
+		this.OpenLan();
+	};
+
+	OpenLan() {
+		this.setState({
+			openLan: !this.state.openLan
+		});
+	}
+
 	render() {
 		const { classes } = this.props;
+		const { t, i18n } = this.props;
+
+		const changeLanguage = lng => {
+			i18n.changeLanguage(lng);
+			this.OpenLan()
+		};
 
 		return (
 			<Toolbar>
@@ -72,7 +102,7 @@ class NoLoginBar extends React.Component {
 						<div>
 							<BottomNavigationAction
 								className={classes.navigationbutton}
-								label='Publication'
+								label={t('AppBar.NoLoginBar.Label_Publication')}
 								showLabel
 								icon={<DescriptionIcon />}
 								component={Link}
@@ -80,7 +110,14 @@ class NoLoginBar extends React.Component {
 							/>
 							<BottomNavigationAction
 								className={classes.navigationbutton}
-								label='Login'
+								label={t('AppBar.NoLoginBar.Label_Language')}
+								showLabel
+								icon={<TranslateIcon />}
+								onClick={(event) => this.handleLanClick(event)}
+							/>
+							<BottomNavigationAction
+								className={classes.navigationbutton}
+								label={t('AppBar.NoLoginBar.Label_Login')}
 								showLabel
 								icon={<AccountCircleIcon />}
 								onClick={() => this.OpenDialog()}
@@ -88,6 +125,33 @@ class NoLoginBar extends React.Component {
 						</div>
 					</Hidden>
 				</Grid>
+
+				<Menu
+					id='simple-menu'
+					anchorEl={this.state.anchorEl}
+					keepMounted
+					open={Boolean(this.state.openLan)}
+					style={{ top: '3em' }}
+					onClose={() => this.OpenLan()}>
+					<MenuItem onClick={() => changeLanguage('en')}>
+						<ListItemIcon>
+							<img className={classes.imageIcon} src={GB} />
+						</ListItemIcon>
+						<ListItemText classes={{ primary: classes.listItemText }} primary='English' />
+					</MenuItem>
+					<MenuItem onClick={() => changeLanguage('ch')}>
+						<ListItemIcon>
+							<img className={classes.imageIcon} src={CN} />
+						</ListItemIcon>
+						<ListItemText classes={{ primary: classes.listItemText }} primary='中文' />
+					</MenuItem>
+					<MenuItem onClick={() => this.OpenLan()}>
+						<ListItemIcon>
+							<img className={classes.imageIcon} src={JP} />
+						</ListItemIcon>
+						<ListItemText classes={{ primary: classes.listItemText }} primary='日本語' />
+					</MenuItem>
+				</Menu>
 
 				<Dialog
 					open={this.state.openLoginDialog}
@@ -107,7 +171,7 @@ class NoLoginBar extends React.Component {
 
 NoLoginBar.propTypes = {
 	classes: PropTypes.object.isRequired,
-	width: PropTypes.oneOf([ 'lg', 'md', 'sm', 'xl', 'xs' ]).isRequired
+	width: PropTypes.oneOf(['lg', 'md', 'sm', 'xl', 'xs']).isRequired
 };
 
 const styles = (theme) => ({
@@ -127,7 +191,15 @@ const styles = (theme) => ({
 	},
 	grid: {
 		textAlign: 'center'
+	},
+	listItemText: {
+		fontSize: '0.8em' //Insert your required size
+	},
+	imageIcon: {
+		height: '1.2em',
+		width: '1.2em',
+		boxShadow: '0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19)'
 	}
 });
 
-export default compose(withStyles(styles), withWidth())(NoLoginBar);
+export default compose(withStyles(styles), withWidth(), withTranslation())(NoLoginBar);

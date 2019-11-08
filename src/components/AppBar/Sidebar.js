@@ -12,6 +12,8 @@ import LockIcon from '@material-ui/icons/Lock';
 import DescriptionIcon from '@material-ui/icons/Description';
 import PeopleIcon from '@material-ui/icons/People';
 
+import { withTranslation } from 'react-i18next';
+
 class SideBar extends React.Component {
 	constructor(props) {
 		super(props);
@@ -28,6 +30,7 @@ class SideBar extends React.Component {
 
 	render() {
 		const { classes } = this.props;
+		const { t, i18n } = this.props;
 
 		return (
 			<div className={classes.list} role='presentation' onClick={this.toggleDrawer} onKeyDown={this.toggleDrawer}>
@@ -36,35 +39,35 @@ class SideBar extends React.Component {
 						<ListItemIcon>
 							<SearchIcon />
 						</ListItemIcon>
-						<ListItemText primary='Search' classes={{ primary: classes.listItemText }} />
+						<ListItemText primary={t('AppBar.SideBar.Label_Search')} classes={{ primary: classes.listItemText }} />
 					</ListItem>
 
 					<ListItem button component={Link} to='/publications'>
 						<ListItemIcon>
 							<DescriptionIcon />
 						</ListItemIcon>
-						<ListItemText primary='Publication' classes={{ primary: classes.listItemText }} />
+						<ListItemText primary={t('AppBar.SideBar.Label_Publication')} classes={{ primary: classes.listItemText }} />
 					</ListItem>
 
 					<ListItem button component={Link} to='/my_patients'>
 						<ListItemIcon>
 							<PeopleIcon />
 						</ListItemIcon>
-						<ListItemText primary='My Patients' classes={{ primary: classes.listItemText }} />
+						<ListItemText primary={t('AppBar.SideBar.Label_Patients')} classes={{ primary: classes.listItemText }} />
 					</ListItem>
 
 					<ListItem button>
 						<ListItemIcon>
 							<LockIcon />
 						</ListItemIcon>
-						<ListItemText primary='Change Password' classes={{ primary: classes.listItemText }} />
+						<ListItemText primary={t('AppBar.SideBar.Label_Change_Password')} classes={{ primary: classes.listItemText }} />
 					</ListItem>
 
 					<ListItem button onClick={this.toggleLogout}>
 						<ListItemIcon>
 							<ExitToAppIcon />
 						</ListItemIcon>
-						<ListItemText primary='Logout' classes={{ primary: classes.listItemText }} />
+						<ListItemText primary={t('AppBar.SideBar.Label_Logout')} classes={{ primary: classes.listItemText }} />
 					</ListItem>
 				</List>
 			</div>
@@ -86,4 +89,4 @@ const styles = (theme) => ({
 	}
 });
 
-export default compose(withStyles(styles), withWidth())(SideBar);
+export default compose(withStyles(styles), withWidth(),withTranslation())(SideBar);

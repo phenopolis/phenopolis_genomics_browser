@@ -13,4 +13,5 @@
   from = "/*"	
   to = "/index.html"	
   status = 200	
-  headers = {X-From = "Netlify"}  
+  headers = {X-From = "Netlify"} 
+

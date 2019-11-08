@@ -20,6 +20,9 @@ import compose from 'recompose/compose';
 
 import { setSnack } from '../../redux/actions'
 
+import { withTranslation, Trans } from 'react-i18next';
+import i18next from "i18next";
+
 class NavSearch extends React.Component {
 	constructor(props) {
 		super(props);
@@ -47,7 +50,7 @@ class NavSearch extends React.Component {
 				this.setState({ redirect: true, guesslink: res.data.redirect });
 			})
 			.catch((err) => {
-				this.props.setSnack('Best guess failed.','error')
+				this.props.setSnack(i18next.t('AppBar.NavSearch.Best_Guess_Failed'),'error')
 			});
 	};
 
@@ -81,12 +84,14 @@ class NavSearch extends React.Component {
 				self.setState({ autoCompleteContent: res.data, searchLoaded: false });
 			})
 			.catch((err) => {
-				this.props.setSnack('Autocomplete fail.','error')
+				this.props.setSnack(i18next.t('AppBar.NavSearch.Autocomplete_Failed'),'error')
 			});
 	};
 
 	render() {
 		const { classes } = this.props;
+		const { t, i18n } = this.props;
+
 		if (this.state.redirect) {
 			return <Redirect to={this.state.guesslink} />;
 		}
@@ -101,7 +106,7 @@ class NavSearch extends React.Component {
 						)}
 				</div>
 				<InputBase
-					placeholder='Search for patient, gene, variant…'
+					placeholder={t('AppBar.NavSearch.InputPlaceHolder')}
 					classes={{
 						root: classes.inputRoot,
 						input: classes.inputInput
@@ -130,7 +135,7 @@ class NavSearch extends React.Component {
 								<Grid container justify='center'>
 									{this.state.searchLoaded === true ? (
 										<Typography variant='subtitle1' gutterBottom>
-											Searching for auto completing...
+											{t('AppBar.NavSearch.Searching')}
 										</Typography>
 									) : this.state.autoCompleteContent !== null ? this.state.autoCompleteContent.length > 0 ? (
 										this.state.autoCompleteContent.map((item, index) => {
@@ -148,11 +153,11 @@ class NavSearch extends React.Component {
 										})
 									) : (
 											<Typography variant='subtitle1' gutterBottom>
-												Sorry, we did not get any auto completing options...So sad.
+												{t('AppBar.NavSearch.NoOption')}
 										</Typography>
 										) : (
 												<Typography variant='subtitle1' gutterBottom>
-													Nothing for search.
+													{t('AppBar.NavSearch.NoContent')}
 										</Typography>
 											)}
 								</Grid>
@@ -224,5 +229,6 @@ export default compose(
   connect(
     null,
     { setSnack }
-  )
+	),
+	withTranslation()
 )(NavSearch);
