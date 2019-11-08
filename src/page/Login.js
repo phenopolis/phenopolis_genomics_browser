@@ -29,7 +29,7 @@ class Login extends React.Component {
         {this.props.reduxName === '' ? (
           <div className={classes.root}>
             {query.get('link') ? (
-              <span> Ops, seems you don't have access to <b style={{ color: '#2E84CF' }}>{query.get('link')} </b> yet, try login?</span>
+              <span> Oops, seems you don't have access to <b style={{ color: '#2E84CF' }}>{query.get('link')} </b> yet, try login?</span>
             ) : (null)}
 
             <LoginBox onLoginSuccess={() => { }} redirectLink={query.get('link') ? query.get('link') : null}>/</LoginBox>

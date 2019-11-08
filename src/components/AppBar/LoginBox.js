@@ -50,6 +50,7 @@ class LoginBox extends React.Component {
           });
           this.setState({ redirect: true });
           this.props.setUser(respond.username);
+
           this.props.setSnack(respond.username + i18next.t('AppBar.LoginBox.Login_Success'), "success")
           this.props.onLoginSuccess();
         } else {
@@ -58,6 +59,7 @@ class LoginBox extends React.Component {
       })
       .catch(err => {
         this.props.setSnack(i18next.t('AppBar.LoginBox.Login_Failed'), "error")
+
       });
   };
 

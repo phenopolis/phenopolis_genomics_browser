@@ -37,6 +37,7 @@ const outerTheme = createMuiTheme({
 function App() {
   return (
     <CookiesProvider>
+
       <Suspense fallback={<Loading message={'Loading Phenopolis...'} />}>
         <Router>
           <AuthCheck />
@@ -60,6 +61,7 @@ function App() {
 
         </Router>
       </Suspense>
+
     </CookiesProvider>
   );
 }

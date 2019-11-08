@@ -44,6 +44,7 @@ import GB from '../../assets/svg/gb.svg'
 import CN from '../../assets/svg/cn.svg'
 import JP from '../../assets/svg/jp.svg'
 
+
 class LoginBar extends React.Component {
 	constructor(props) {
 		super(props);
@@ -312,4 +313,6 @@ const styles = (theme) => ({
 	}
 });
 
+
 export default compose(connect(null, { setUser, setSnack }), withStyles(styles), withWidth(), withTranslation())(LoginBar);
+
