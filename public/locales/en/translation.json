@@ -30,13 +30,13 @@
   },
   "AppBar": {
     "NoLoginBar": {
-      "Label_Publication": "Publication",
+      "Label_Publication": "Publications",
       "Label_Language": "Language",
       "Label_Login": "Login"
     },
     "LoginBar": {
       "Label_Search": "Search",
-      "Label_Publication": "Publication",
+      "Label_Publication": "Publications",
       "Label_Patients": "Patients",
       "Label_Language": "Language",
       "Label_Change_Password": "Change Password",
@@ -75,7 +75,7 @@
   },
   "Footer": {
     "About_Us": "About Us",
-    "Description": "Phenopolis is a platform for harmonization and analysis of sequencing and phenotype data. Development of Phenopolis was supported by RP Fighting Blindness, NIHR (UCL-Moorfields Eyes Hospital Biomedical Research Center), the UK Medical Research Council, the British Heart Foundation and the Japan Society for the Promotion of Science.",
+    "Description": "Phenopolis is a platform for harmonization and analysis of sequencing and phenotype data. Development of Phenopolis was initially supported by RP Fighting Blindness, NIHR (UCL-Moorfields Eyes Hospital Biomedical Research Center), the UK Medical Research Council, the British Heart Foundation and the Japan Society for the Promotion of Science.",
     "Useful_Links": "Useful Links",
     "Publications": "Publications",
     "Contact": "Contact",
@@ -84,7 +84,7 @@
   },
   "Search": {
     "title": "Search Phenopolis",
-    "subtitle": "An open platform for harmonization and analysis of sequencing and phenotype data.",
+    "subtitle": "A platform for harmonization and analysis of sequencing and phenotype data.",
     "label": "Search for a phenotype, patient, gene, variant or region.",
     "Searching": "Searching for auto completing...",
     "NoOption": "Sorry, we did not get any auto completing options...So sad.",
