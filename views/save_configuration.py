@@ -18,8 +18,15 @@ def save_configuration(pageType,pagePart,language='en'):
         else:
             print(col['key'], False)
             col['default']=False
-    c.execute("UPDATE user_config SET config=%s WHERE user_name=%s AND language=%s AND page=%s",(json.dumps(x),session['user'],language,pageType))
-    conn.commit()
+    try:
+        c.execute("UPDATE user_config SET config=%s WHERE user_name=%s AND language=%s AND page=%s",(json.dumps(x),session['user'],language,pageType))
+        get_db().commit()
+        c.close()
+    except (Exception, psycopg2.DatabaseError) as error:
+        print(error)
+        get_db().rollback()
+    finally:
+        c.close()
     return jsonify(success=''), 200
 
 
