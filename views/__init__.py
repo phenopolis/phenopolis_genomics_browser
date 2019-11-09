@@ -61,8 +61,8 @@ application.config['MAIL_SERVER']=os.environ['MAIL_SERVER']
 application.config['MAIL_PORT'] = os.environ['MAIL_PORT']
 application.config['MAIL_USERNAME'] = os.environ['MAIL_USERNAME']
 application.config['MAIL_PASSWORD'] = os.environ['MAIL_PASSWORD']
-application.config['MAIL_USE_TLS'] = os.environ['MAIL_USE_TLS']
-application.config['MAIL_USE_SSL'] = os.environ['MAIL_USE_SSL']
+application.config['MAIL_USE_TLS'] = os.environ['MAIL_USE_TLS']=='true'
+application.config['MAIL_USE_SSL'] = os.environ['MAIL_USE_SSL']=='true'
 mail = Mail(application)
 
 def get_db():
@@ -107,7 +107,7 @@ def postgres_cursor():
 def after_request(response):
     timestamp = strftime('[%Y-%b-%d %H:%M]')
     logging.error('%s %s %s %s %s %s', timestamp, request.remote_addr, request.method, request.scheme, request.full_path, response.status)
-    subject='%s %s %s %s %s %s' % timestamp, request.remote_addr, request.method, request.scheme, request.full_path, response.status
+    subject='%s %s %s %s %s' % request.remote_addr, request.method, request.scheme, request.full_path, response.status,
     msg = Message(subject, sender="no-reply@phenopolis.org", recipients=["no-reply@phenopolis.org"])
     mail.send(msg)
     return response
@@ -118,8 +118,7 @@ def exceptions(e):
     timestamp = strftime('[%Y-%b-%d %H:%M]')
     logging.error('%s %s %s %s %s 5xx INTERNAL SERVER ERROR\n%s', timestamp, request.remote_addr, request.method, request.scheme, request.full_path, tb)
     code = 500
-    if isinstance(e, HTTPException):
-       code = e.code
+    if isinstance(e, HTTPException): code = e.code
     return jsonify(error='error', code=code)
 
 @application.route('/statistics')
