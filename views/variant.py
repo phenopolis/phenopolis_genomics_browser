@@ -52,10 +52,8 @@ def variant(variant_id, subset='all', language='en'):
    c.execute("select config from user_config u where u.user_name='%s' and u.language='%s' and u.page='%s' limit 1" % (session['user'], language, 'variant'))
    x=c.fetchone()[0]
    CHROM,POS,REF,ALT,=variant_id.split('-')
-   q="""select * from variants where "CHROM"='%s' and "POS"='%s' and "REF"='%s' and "ALT"='%s'"""%(CHROM,POS,REF,ALT,)
-   print(q)
-   c.execute(q)
-   var=[dict(zip([h[0] for h in c.description] ,r)) for r in c.fetchall()]
+   data=get_db_session().query(Variant).filter(and_(Variant.CHROM==CHROM,Variant.REF==REF,Variant.ALT==ALT))
+   var=[p.as_dict() for p in data]
    process_for_display(var)
    var=var[0]
    #print(json.dumps(var))

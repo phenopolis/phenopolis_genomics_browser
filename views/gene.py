@@ -20,7 +20,7 @@ def gene(gene_id, subset='all', language='en'):
    if not data:
       data=get_db_session().query(Gene).filter(Gene.other_names.like('%'+gene_id+'%'))
    data=[p.as_dict() for p in data]
-   print(data)
+   if not data: return jsonify({'Gene not found': False}), 404
    x[0]['metadata']['data']=data
    chrom=x[0]['metadata']['data'][0]['chrom']
    start=x[0]['metadata']['data'][0]['start']

@@ -26,10 +26,7 @@ from werkzeug.exceptions import HTTPException
 import psycopg2 
 from logging.handlers import RotatingFileHandler 
 import traceback
-from sqlalchemy import create_engine
-from sqlalchemy import MetaData
-from sqlalchemy.orm import sessionmaker
-
+from db import *
 
 
 logging.getLogger().addHandler(logging.StreamHandler())
@@ -111,23 +108,16 @@ def exceptions(e):
        code = e.code
     return jsonify(error='error', code=code)
 
-@application.route('/phenopolis_statistics')
+@application.route('/statistics')
 def phenopolis_statistics():
-    version_number = None
-    print('Version number is:-')
-    print(version_number)
-    total_patients=6048
-    male_patients=0
-    female_patients=0
-    unknown_patients=0
-    exomes=0
-    males=0
-    females=0
-    unknowns=0
-    total_variants=4859971
+    total_patients=get_db_session().query(Individual).count()
+    male_patients=get_db_session().query(Individual).filter(Individual.sex=='M').count()
+    female_patients=get_db_session().query(Individual).filter(Individual.sex=='F').count()
+    unknown_patients=get_db_session().query(Individual).filter(Individual.sex=='U').count()
+    total_variants=get_db_session().query(Variant).count()
     exac_variants=0
-    pass_variants=0
-    nonpass_variants=0
+    pass_variants=get_db_session().query(Variant).filter(Variant.FILTER=='PASS').count()
+    nonpass_variants=get_db_session().query(Variant).filter(Variant.FILTER!='PASS').count()
     pass_exac_variants=0
     pass_nonexac_variants=0
     return jsonify( exomes="{:,}".format(total_patients),
@@ -138,19 +128,15 @@ def phenopolis_statistics():
         exac_variants="{:,}".format(exac_variants),
         pass_variants="{:,}".format(pass_variants),
         nonpass_variants="{:,}".format(nonpass_variants),
-        pass_exac_variants="{:,}".format(pass_exac_variants),
-        pass_nonexac_variants="{:,}".format(pass_nonexac_variants),
         #image=image.decode('utf8'))
-        version_number=version_number)
+        version_number=0)
 
 
 # this should not be done live but offline
 # need to figure out how to encode json data type in postgres import
 # rather do the conversion on the fly
 def process_for_display(data):
-   c=postgres_cursor()
-   c.execute("select internal_id from users_individuals ui where ui.user='%s'"%session['user'])
-   my_patients=[pid for pid, in c.fetchall()]
+   my_patients=get_db_session().query(User_Individual).filter(User_Individual.user==session['user']).with_entities(User_Individual.internal_id)
    for x2 in data:
        if 'CHROM' in x2 and 'POS' in x2 and 'REF' in x2 and 'ALT' in x2:
            variant_id='%s-%s-%s-%s' % (x2['CHROM'], x2['POS'], x2['REF'], x2['ALT'],)
@@ -169,14 +155,8 @@ def check_auth(username, password):
     """
     This function is called to check if a username / password combination is valid.
     """
-    c=postgres_cursor()
-    c.execute("select * from users u where u.user='%s'"%username)
-    user=[ dict(zip( [h[0] for h in c.description] ,r)) for r in c.fetchall() ]
-    print(user)
-    print(password)
-    print(argon2.hash(password))
-    print(user[0]['argon_password'])
-    print(argon2.verify(password, user[0]['argon_password']))
+    data=get_db_session().query(User).filter(User.user==username)
+    user=[p.as_dict() for p in data]
     if len(user)==0: return False
     return argon2.verify(password, user[0]['argon_password'])
 

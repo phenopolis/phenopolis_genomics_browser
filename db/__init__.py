@@ -1,10 +1,12 @@
 
+from sqlalchemy.orm import sessionmaker
 from sqlalchemy import create_engine
 from sqlalchemy import MetaData
 #"postgres://admin:donotusethispassword@aws-us-east-1-portal.19.dblayer.com:15813/compose"
 from sqlalchemy import Column, String, Integer, Float, ForeignKey
 from sqlalchemy.orm import relationship, backref
 from sqlalchemy.ext.declarative import declarative_base
+from sqlalchemy import and_
 
 Base = declarative_base()
 
@@ -97,6 +99,7 @@ class User(Base):
     user = Column('user', primary_key = True)
     argon_password = Column('argon_password', String(255))
     individuals = relationship('User_Individual', backref = 'users')
+    def as_dict(self): return {c.name: getattr(self,c.name) for c in self.__table__.columns}
 
 
 class Individual(Base):
