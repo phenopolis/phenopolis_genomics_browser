@@ -10,6 +10,8 @@ from flask import redirect
 from flask import jsonify
 from flask_compress import Compress
 from flask_caching import Cache
+from flask_mail import Mail
+from flask_mail import Message
 import json
 import os
 import logging
@@ -54,6 +56,15 @@ application.config.from_object(__name__)
 sess=Session()
 sess.init_app(application)
 
+mail = Mail(application)
+application.config['MAIL_SERVER']=os.environ['MAIL_SERVER']
+application.config['MAIL_PORT'] = os.environ['MAIL_PORT']
+application.config['MAIL_USERNAME'] = os.environ['MAIL_USERNAME']
+application.config['MAIL_PASSWORD'] = os.environ['MAIL_PASSWORD']
+application.config['MAIL_USE_TLS'] = os.environ['MAIL_USE_TLS']
+application.config['MAIL_USE_SSL'] = os.environ['MAIL_USE_SSL']
+mail = Mail(application)
+
 def get_db():
     if 'db' not in g:
         g.db = psycopg2.connect(host=os.environ['DB_HOST'],
@@ -96,6 +107,9 @@ def postgres_cursor():
 def after_request(response):
     timestamp = strftime('[%Y-%b-%d %H:%M]')
     logging.error('%s %s %s %s %s %s', timestamp, request.remote_addr, request.method, request.scheme, request.full_path, response.status)
+    subject='%s %s %s %s %s %s' % timestamp, request.remote_addr, request.method, request.scheme, request.full_path, response.status
+    msg = Message(subject, sender="no-reply@phenopolis.org", recipients=["no-reply@phenopolis.org"])
+    mail.send(msg)
     return response
 
 @application.errorhandler(Exception)
@@ -136,7 +150,7 @@ def phenopolis_statistics():
 # need to figure out how to encode json data type in postgres import
 # rather do the conversion on the fly
 def process_for_display(data):
-   my_patients=get_db_session().query(User_Individual).filter(User_Individual.user==session['user']).with_entities(User_Individual.internal_id)
+   my_patients=[x for x in get_db_session().query(User_Individual).filter(User_Individual.user==session['user']).with_entities(User_Individual.internal_id)]
    for x2 in data:
        if 'CHROM' in x2 and 'POS' in x2 and 'REF' in x2 and 'ALT' in x2:
            variant_id='%s-%s-%s-%s' % (x2['CHROM'], x2['POS'], x2['REF'], x2['ALT'],)
@@ -198,6 +212,8 @@ def login(language='en'):
     print(check_auth(username,password))
     if not check_auth(username,password):
        print('Login Failed')
+       msg = Message("bad login", sender="no-reply@phenopolis.org", recipients=["no-reply@phenopolis.org"])
+       mail.send(msg)
        return jsonify(error='Invalid Credentials. Please try again.'), 401
     else:
         print('LOGIN SUCCESS')
