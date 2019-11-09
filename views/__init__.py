@@ -22,13 +22,16 @@ import re
 import itertools
 import pysam
 from time import strftime
-from werkzeug.exceptions import HTTPException
-
-import psycopg2
-
-from logging.handlers import RotatingFileHandler
-
+from werkzeug.exceptions import HTTPException 
+import psycopg2 
+from logging.handlers import RotatingFileHandler 
 import traceback
+from sqlalchemy import create_engine
+from sqlalchemy import MetaData
+from sqlalchemy.orm import sessionmaker
+
+
+
 logging.getLogger().addHandler(logging.StreamHandler())
 logging.getLogger().setLevel(logging.INFO)
 
@@ -61,6 +64,26 @@ def get_db():
                         user=os.environ['DB_USER'],
                         password=os.environ['DB_PASSWORD'])
     return g.db
+
+def get_db_session():
+    """
+    Opens a new database connection if there is none yet for the
+    current application context.
+    """
+    if not hasattr(g, 'dbsession'):
+        host=os.environ['DB_HOST']
+        database=os.environ['DB_DATABASE']
+        user=os.environ['DB_USER']
+        password=os.environ['DB_PASSWORD']
+        port=os.environ['DB_PORT']
+        #engine = create_engine('postgres://%s:%s@%s:%s/%s'% (user,password,host,port,database))
+        #create_engine('postgresql+psycopg2://scott:tiger@localhost/mydatabase')
+        engine=create_engine('postgresql+psycopg2://%s:%s@%s/%s' % (user,password,host,database,))
+        engine.connect()
+        DbSession = sessionmaker(bind=engine)
+        DbSession.configure(bind=engine)
+        g.dbsession = DbSession()
+    return g.dbsession
 
 
 def close_db():

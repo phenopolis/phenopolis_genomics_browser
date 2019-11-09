@@ -1,4 +1,5 @@
 from views import *
+from db import *
 
 
 @application.route('/<language>/hpo/<hpo_id>')
@@ -13,10 +14,13 @@ def hpo(hpo_id='HP:0000001',subset='all',language='en'):
    #print(s)
    #x=json.loads(s)
    if not hpo_id.startswith('HP:'):
-       c.execute("select * from hpo where hpo_name='%s' limit 1"%hpo_id)
+       #c.execute("select * from hpo where hpo_name='%s' limit 1"%hpo_id)
+       get_data=db_session().query(HPO).filter(HPO.hpo_name==hpo_id)
    else:
-       c.execute("select * from hpo where hpo_id='%s' limit 1"%hpo_id)
-   res=[dict(zip([h[0] for h in c.description],r)) for r in c.fetchall()][0]
+       #c.execute("select * from hpo where hpo_id='%s' limit 1"%hpo_id)
+       data=get_db_session().query(HPO).filter(HPO.hpo_id==hpo_id)
+   res=[p.as_dict() for p in data][0]
+   print(res)
    hpo_id=res['hpo_id']
    hpo_name=res['hpo_name']
    parent_phenotypes=[{'display':i, 'end_href':j} for i,j, in zip(res['hpo_ancestor_names'].split(';'), res['hpo_ancestor_ids'].split(';')) ]

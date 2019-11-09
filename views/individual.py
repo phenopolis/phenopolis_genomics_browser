@@ -117,7 +117,7 @@ def individual(individual_id, subset='all', language='en'):
 @application.route('/update_patient_data/<individual_id>',methods=['POST'])
 @requires_auth
 def update_patient_data(individual_id,language='en'):
-   if session['user']=='demo': return jsonify(error='Unauthorized'), 401
+   if session['user']=='demo': return jsonify(error='Demo user not authorised'), 405
    print(request.form)
    consanguinity=request.form.getlist('consanguinity_edit[]')[0]
    gender=request.form.getlist('gender_edit[]')[0]
@@ -187,11 +187,11 @@ def update_patient_data(individual_id,language='en'):
             ind['unobserved_features'],
             ind['genes'],
             ind['external_id'],))
-       conn.commit()
+       get_db().commit()
        c.close()
-   except (Exception, psychopg2.DatabaseError) as error:
+   except (Exception, psycopg2.DatabaseError) as error:
        print(error)
-       conn.rollback()
+       get_db().rollback()
    finally:
        c.close()
    #print(c.execute("select * from individuals where external_id=?",(ind['external_id'],)).fetchall())

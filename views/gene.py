@@ -1,4 +1,5 @@
 from views import *
+from db import *
 
 
 @application.route('/<language>/gene/<gene_id>')
@@ -9,19 +10,18 @@ from views import *
 def gene(gene_id, subset='all', language='en'):
    c=postgres_cursor()
    c.execute("select config from user_config u where u.user_name='%s' and u.language='%s' and u.page='%s' limit 1" % (session['user'], language, 'gene'))
+   #get_db_session().query().filter(
    x=c.fetchone()[0]
    gene_id=gene_id.upper()
    if gene_id.startswith('ENSG'):
-      c.execute("select * from genes where gene_id='%s'"%(gene_id,))
-      data=c.fetchall()
+      data=get_db_session().query(Gene).filter(Gene.gene_id==gene_id)
    else:
-      c.execute("select * from genes where gene_name='%s'"%(gene_id,))
-      data=c.fetchall()
+      data=get_db_session().query(Gene).filter(Gene.gene_name==gene_id)
    if not data:
-      c.execute("select * from genes where other_names like '%s'"%('%'+gene_id+'%',))
-      data=c.fetchall()
-   x[0]['metadata']['data']=[dict(zip([h[0] for h in c.description],r)) for r in data]
-   #print x[0]['metadata']['data']
+      data=get_db_session().query(Gene).filter(Gene.other_names.like('%'+gene_id+'%'))
+   data=[p.as_dict() for p in data]
+   print(data)
+   x[0]['metadata']['data']=data
    chrom=x[0]['metadata']['data'][0]['chrom']
    start=x[0]['metadata']['data'][0]['start']
    stop=x[0]['metadata']['data'][0]['stop']
@@ -45,9 +45,11 @@ def gene(gene_id, subset='all', language='en'):
                ]
        #d["related_hpo"]=[ {'display':c.execute("select hpo_name from hpo where hpo_id='%s' limit 1"%hpo_id).fetchone()[0], 'end_href':hpo_id} for hpo_id, in c.execute("select hpo_id from gene_hpo where gene_symbol='%s'"%gene_name).fetchall() ]
        d["related_hpo"]=[ ]
-   c.execute("select * from variants where gene_symbol='%s'"%(x[0]['metadata']['data'][0]['gene_name'],))
-   headers=[h[0] for h in c.description]
-   x[0]['variants']['data']=[dict(zip(headers,r)) for r in c.fetchall()]
+   #c.execute("select * from variants where gene_symbol='%s'"%(x[0]['metadata']['data'][0]['gene_name'],))
+   gene_id=x[0]['metadata']['data'][0]['gene_id']
+   data=get_db_session().query(Gene).filter(Gene.gene_id==gene_id).first().variants
+   print(data)
+   x[0]['variants']['data']=[p.as_dict() for p in data]
    cadd_gt_20=0
    for v in x[0]['variants']['data']:
        print(v)
