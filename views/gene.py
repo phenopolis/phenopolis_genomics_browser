@@ -48,11 +48,9 @@ def gene(gene_id, subset='all', language='en'):
    #c.execute("select * from variants where gene_symbol='%s'"%(x[0]['metadata']['data'][0]['gene_name'],))
    gene_id=x[0]['metadata']['data'][0]['gene_id']
    data=get_db_session().query(Gene).filter(Gene.gene_id==gene_id).first().variants
-   print(data)
    x[0]['variants']['data']=[p.as_dict() for p in data]
    cadd_gt_20=0
    for v in x[0]['variants']['data']:
-       print(v)
        v['variant_id']=[{'display':'%s-%s-%s-%s' % (v['CHROM'], v['POS'], v['REF'], v['ALT'],)}]
        if v['cadd_phred'] and v['cadd_phred']!='NA' and float(v['cadd_phred'])>=20: cadd_gt_20+=1
    x[0]['preview']=[['pLI', x[0]['metadata']['data'][0].get('pLI','')],['Number of variants',len(x[0]['variants']['data'])],['CADD > 20',cadd_gt_20]]
