@@ -25,6 +25,7 @@ def save_configuration(pageType,pagePart,language='en'):
     except (Exception, psycopg2.DatabaseError) as error:
         print(error)
         get_db().rollback()
+        return jsonify('save configuration failed'), 500
     finally:
         c.close()
     return jsonify(success=''), 200
