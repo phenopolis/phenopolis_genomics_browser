@@ -8,6 +8,10 @@ import { Redirect } from 'react-router';
 import Variants from '../components/Gene/Variants';
 import Loading from '../components/General/Loading';
 
+import compose from 'recompose/compose';
+import { withTranslation, Trans } from 'react-i18next';
+import i18next from "i18next";
+
 class MyPatient extends React.Component {
   constructor(props) {
     super(props);
@@ -21,7 +25,7 @@ class MyPatient extends React.Component {
   getAllPatientInformation = () => {
     var self = this;
     axios
-      .get('/api/hpo/HP:0000001', {
+      .get('/api/' + i18next.t('MyPatient.entry') + '/hpo/HP:0000001', {
         withCredentials: true
       })
       .then(res => {
@@ -46,6 +50,7 @@ class MyPatient extends React.Component {
 
   render() {
     const { classes } = this.props;
+    const { t } = this.props;
 
     if (this.state.redirect) {
       return <Redirect to={'/login?link=' + window.location.pathname} />;
@@ -58,14 +63,14 @@ class MyPatient extends React.Component {
           <div className={classes.root}>
             <Container maxWidth='xl'>
               <Paper className={classes.paper}>
-                <Variants variants={this.state.AllPatientInfo.individuals} title={'My Patients' + ' (Total: ' + this.state.AllPatientInfo.preview[0][1] + ')'} subtitle=' ' />
+                <Variants variants={this.state.AllPatientInfo.individuals} title={t('MyPatient.My_Patients') + ' (' + t('MyPatient.Total') + ' ' + this.state.AllPatientInfo.preview[0][1] + ')'} subtitle=' ' />
               </Paper>
             </Container>
           </div>
         </React.Fragment>
       );
     } else {
-      return <Loading message={'Loading All Patients Information from Server...'} />;
+      return <Loading message={t("MyPatient.message")} />;
     }
   }
 }
@@ -85,4 +90,4 @@ const styles = theme => ({
   }
 });
 
-export default withStyles(styles)(MyPatient);
+export default compose(withStyles(styles), withTranslation())(MyPatient)

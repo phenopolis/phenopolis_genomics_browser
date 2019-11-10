@@ -19,6 +19,10 @@ import TableHeader from '../Table/TableHeader';
 import TablePaginationActions from '../Table/TablePaginationActions';
 
 import { setSnack } from '../../redux/actions';
+
+import { withTranslation, Trans } from 'react-i18next';
+import i18next from "i18next";
+
 const qs = require('querystring');
 
 
@@ -252,16 +256,17 @@ class Variant extends React.Component {
         //   this.props.refreshData(this.props.patientName)
         //   this.handleClose()
         // }
-        this.props.setSnack('Save Configuration Success!', 'success')
+        this.props.setSnack(i18next.t("Table.Save_Success"), 'success')
       })
       .catch(err => {
-        this.props.setSnack('Save Configuration Failed.', 'error')
+        this.props.setSnack(i18next.t("Table.Save_Fail"), 'error')
       });
 
   }
 
   render() {
     const { classes } = this.props;
+    const { t } = this.props;
     const open = Boolean(this.state.anchorEl);
 
     return (
@@ -280,8 +285,8 @@ class Variant extends React.Component {
           variant='outlined'
           className={classes.button}
           onClick={event => this.handleCheckFilter(event)}>
-          Select Table Column
-            </Button>
+          {t("Table.Select_Button")}
+        </Button>
         <div className={classes.container}>
           <Collapse in={this.state.checkfilter}>
             <Paper elevation={0} className={classes.paper}>
@@ -345,7 +350,7 @@ class Variant extends React.Component {
                 className={classes.button2}
                 onClick={this.handleSaveConfigure}>
                 <SaveIcon className={classes.leftIcon} />
-                Save Column Configuration
+                {t("Table.Save Configuration")}
               </Button>
             </Grid>
           </Collapse>
@@ -625,4 +630,4 @@ const StyledTooltip = withStyles({
   }
 })(Tooltip);
 
-export default compose(connect(null, { setSnack }), withStyles(styles))(Variant);
+export default compose(connect(null, { setSnack }), withStyles(styles), withTranslation())(Variant);

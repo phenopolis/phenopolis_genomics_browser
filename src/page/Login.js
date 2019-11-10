@@ -14,6 +14,9 @@ import {
 
 import LoginBox from '../components/AppBar/LoginBox';
 
+import { withTranslation, Trans } from 'react-i18next';
+import i18next from "i18next";
+
 class Login extends React.Component {
   getReduxName() {
     return this.props.reduxName;
@@ -21,7 +24,9 @@ class Login extends React.Component {
 
   render() {
     const { classes } = this.props;
+    const { t } = this.props;
     const query = new URLSearchParams(this.props.location.search);
+    const mylink = query.get('link')
 
     return (
       <>
@@ -29,7 +34,9 @@ class Login extends React.Component {
         {this.props.reduxName === '' ? (
           <div className={classes.root}>
             {query.get('link') ? (
-              <span> Oops, seems you don't have access to <b style={{ color: '#2E84CF' }}>{query.get('link')} </b> yet, try login?</span>
+              <Trans i18nKey="Login.redirectionLink" >
+                <span> Oops, seems you don't have access to <b style={{ color: '#2E84CF' }}> {{ mylink }} </b> yet, try login?</span>
+              </Trans>
             ) : (null)}
 
             <LoginBox onLoginSuccess={() => { }} redirectLink={query.get('link') ? query.get('link') : null}>/</LoginBox>
@@ -40,12 +47,11 @@ class Login extends React.Component {
                 <Paper className={classes.paper2}>
                   <Typography component='div'>
                     <Box fontWeight='fontWeightBold' fontSize='h4.fontSize' m={1}>
-                      You have logge in.
-                  </Box>
+                      {t("Login.login")}
+                    </Box>
                     <Box fontWeight='fontWeightLight' m={1}>
-                      If you want to log out, click Account Icon on the top right
-                      of the page.
-                  </Box>
+                      {t("Login.login_subtitle")}
+                    </Box>
                   </Typography>
                 </Paper>
               </Container>
@@ -79,5 +85,6 @@ export default compose(
   connect(
     mapStateToProps,
     { setUser }
-  )
+  ),
+  withTranslation()
 )(Login);

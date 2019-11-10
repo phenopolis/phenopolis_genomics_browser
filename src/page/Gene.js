@@ -9,6 +9,10 @@ import MetaData from '../components/Gene/MetaData';
 import Variants from '../components/Gene/Variants';
 import Loading from '../components/General/Loading';
 
+import compose from 'recompose/compose';
+import { withTranslation, Trans } from 'react-i18next';
+import i18next from "i18next";
+
 class Gene extends React.Component {
   constructor(props) {
     super(props);
@@ -22,7 +26,7 @@ class Gene extends React.Component {
   getGeneInformation = (geneId) => {
     var self = this;
     axios
-      .get('/api/gene/' + geneId, {
+      .get('/api/' + i18next.t('Gene.entry') + '/gene/' + geneId, {
         withCredentials: true
       })
       .then(res => {
@@ -58,6 +62,7 @@ class Gene extends React.Component {
 
   render() {
     const { classes } = this.props;
+    const { t } = this.props;
 
     if (this.state.redirect) {
       return <Redirect to={'/login?link=' + window.location.pathname} />;
@@ -72,14 +77,14 @@ class Gene extends React.Component {
 
             <Container maxWidth='xl'>
               <Paper className={classes.paper}>
-                <Variants variants={this.state.geneInfo.variants} title="Variants Analysis" subtitle="Here are a list of variants found within this gene." configureLink="gene/variants" />
+                <Variants variants={this.state.geneInfo.variants} title={t('Gene.Variants_Analysis')} subtitle={t('Gene.Variants Analysis_subtitle')} configureLink="gene/variants" />
               </Paper>
             </Container>
           </div>
         </React.Fragment>
       );
     } else {
-      return <Loading message={'Loading Gene Information from Server...'} />;
+      return <Loading message={t('Gene.message')} />;
     }
   }
 }
@@ -99,4 +104,4 @@ const styles = theme => ({
   }
 });
 
-export default withStyles(styles)(Gene);
+export default compose(withStyles(styles), withTranslation())(Gene)

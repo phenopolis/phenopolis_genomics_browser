@@ -13,6 +13,9 @@ import TabPanel from '../components/Tab/Tabpanel'
 import MetaData from '../components/Gene/MetaData';
 import Variants from '../components/Gene/Variants';
 
+import compose from 'recompose/compose';
+import { withTranslation, Trans } from 'react-i18next';
+import i18next from "i18next";
 
 class Variant extends React.Component {
   constructor(props) {
@@ -43,7 +46,7 @@ class Variant extends React.Component {
   getVariantInformation = (variantId) => {
     var self = this;
     axios
-      .get('/api/variant/' + this.props.match.params.variantId, {
+      .get('/api/' + i18next.t('Variant.entry') + '/variant/' + this.props.match.params.variantId, {
         withCredentials: true
       })
       .then(res => {
@@ -78,6 +81,7 @@ class Variant extends React.Component {
 
   render() {
     const { classes } = this.props;
+    const { t } = this.props;
 
     if (this.state.redirect) {
       return <Redirect to={'/login?link=' + window.location.pathname} />;
@@ -102,7 +106,7 @@ class Variant extends React.Component {
                     aria-label="full width tabs example"
                     classes={{ indicator: classes.bigIndicator }}
                   >
-                    {['FREQUENCY', 'CONSEQUENCES', 'QUALITY', 'INDIVIDUALS', 'GENOTYPES'].map((item, index) => {
+                    {[t('Variant.FREQUENCY'), t('Variant.CONSEQUENCES'), t('Variant.QUALITY'), t('Variant.INDIVIDUALS'), t('Variant.GENOTYPES')].map((item, index) => {
                       return (
                         <Tab label={item} {...this.a11yProps(index)} />
                       )
@@ -115,19 +119,19 @@ class Variant extends React.Component {
                   onChangeIndex={this.handleChangeIndex}
                 >
                   <TabPanel value={this.state.value} index={0} dir={this.props.theme.direction}>
-                    <Variants variants={this.state.variantInfo.frequency} title="Frequency" subtitle="Frequency of the variant in external databases and internally." configureLink="variant/frequency" />
+                    <Variants variants={this.state.variantInfo.frequency} title={t("Variant.Frequency")} subtitle={t("Variant.Frequency_subtitle")} configureLink="variant/frequency" />
                   </TabPanel>
                   <TabPanel value={this.state.value} index={1} dir={this.props.theme.direction}>
-                    <Variants variants={this.state.variantInfo.consequence} title="Consequences" subtitle="Consequence of the variant on transcripts." configureLink="variant/consequence" />
+                    <Variants variants={this.state.variantInfo.consequence} title={t("Variant.Consequences")} subtitle={t("Variant.Consequences_subtitle")} configureLink="variant/consequence" />
                   </TabPanel>
                   <TabPanel value={this.state.value} index={2} dir={this.props.theme.direction}>
-                    <Variants variants={this.state.variantInfo.quality} title="Quality" subtitle="Quality of the variant on transcripts." configureLink="variant/quality" />
+                    <Variants variants={this.state.variantInfo.quality} title={t("Variant.Quality")} subtitle={t("Variant.Quality_subtitle")} configureLink="variant/quality" />
                   </TabPanel>
                   <TabPanel value={this.state.value} index={3} dir={this.props.theme.direction}>
-                    <Variants variants={this.state.variantInfo.individuals} title="Individuals" subtitle="Genotypes of individuals." configureLink="variant/individuals" />
+                    <Variants variants={this.state.variantInfo.individuals} title={t("Variant.Individuals")} subtitle={t("Variant.Individuals_subtitle")} configureLink="variant/individuals" />
                   </TabPanel>
                   <TabPanel value={this.state.value} index={4} dir={this.props.theme.direction} >
-                    <Variants variants={this.state.variantInfo.genotypes} title="Genotypes" subtitle="Genotypes of individuals." configureLink="variant/genotypes" />
+                    <Variants variants={this.state.variantInfo.genotypes} title={t("Variant.Genotypes")} subtitle={t("Variant.Genotypes_subtitle")} configureLink="variant/genotypes" />
                   </TabPanel>
                 </SwipeableViews>
               </Paper>
@@ -136,7 +140,7 @@ class Variant extends React.Component {
         </React.Fragment>
       );
     } else {
-      return <Loading message={'Loading Variant Information from Server...'} />;
+      return <Loading message={t("Variant.message")} />;
     }
   }
 }
@@ -163,4 +167,4 @@ const styles = theme => ({
   }
 });
 
-export default withStyles(styles, { withTheme: true })(Variant);
+export default compose(withStyles(styles, { withTheme: true }), withTranslation())(Variant)

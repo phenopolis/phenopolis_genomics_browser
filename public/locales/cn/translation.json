@@ -79,6 +79,11 @@
       "Label_Logout": "退出"
     }
   },
+  "Login": {
+    "redirectionLink": "很遗憾, 看起来您尚没有权限访问 <1> {{ mylink}}  </1>, 登录以后试一试？",
+    "login": "您已经成功登录。",
+    "login_subtitle": "如果您想要退出登录，请点击右上角的账号名称，选择退出。"
+  },
   "Footer": {
     "About_Us": "关于我们",
     "Description": "Phenopolis是一个整合分析测序和表型数据的平台。Phenopolis的发展得到了以下协会的支持：RP Fighting Blindness, NIHR (UCL-Moorfields Eyes Hospital Biomedical Research Center), the UK Medical Research Council, the British Heart Foundation 以及 the Japan Society for the Promotion of Science。",
@@ -110,7 +115,63 @@
     "Rare_HOMs_subtitle": "以下是该名患者所携带通过了阈值筛选的罕见纯合变异。",
     "Rare_Comp_Hets_subtitle": "以下是该名患者所携带的罕见复合杂合变异（在同一个基因上存在一个以上突变），以及它们的等位基因频率阈值。",
     "Rare_Variants_subtitle": "以下是该名患者所携带的罕见的杂合变体，以及它们的等位基因频率阈值。",
-    "message": "正在从服务器获取患者信息...",
+    "message": "正在从服务器获取患者中文信息...",
     "edit_message": "修改患者信息成功，正在重新载入数据..."
+  },
+  "Gene": {
+    "entry": "cn",
+    "Variants_Analysis": "突变分析",
+    "Variants Analysis_subtitle": "以下是与该基因相关的变异",
+    "message": "正在从服务器获取中文基因信息..."
+  },
+  "HPO": {
+    "entry": "cn",
+    "INDIVIDUALS": "相关患者",
+    "LITERATURE_GENES": "文献基因",
+    "PHENOGENON": "表型基因关联",
+    "SKAT": "序列核关联检验",
+    "RECESSIVE": "隐形",
+    "DOMINANT": "显性",
+    "Individuals": "相关患者",
+    "Literature_Genes": "文献基因",
+    "Phenogenon": "Phenogenon",
+    "Individuals_subtitle": "以下是与该表型有关的患者或者其后代。",
+    "Literature_Genes_subtitle": "以下是OMIM数据库中与该表型相关的文献基因。",
+    "Phenogenon_subtitle": "以下是Phenogenon分析显著的基因。",
+    "SKAT_subtitle": "以下是从序列核关联检验（Sequence Kernel Association Test, SKAT）。",
+    "RECESSIVE_subtitle": "<0>基因型</0> : 给定基因上至少有两个ExAC纯合计数不高于<2>2</2>,CADD phred评分不低于<4>15</4>的变异。",
+    "DOMINANT_subtitle": " <0>基因型</0> : 在一个给定的基因上至少有一个突变，外源性杂合计数不高于<2>0.0001</2>,CADD phred评分不低于<4>15</4>。",
+    "message": "正在从服务器获取中文人类表型本体信息..."
+  },
+  "Variant": {
+    "entry": "cn",
+    "FREQUENCY": "突变频率",
+    "CONSEQUENCES": "突变影响",
+    "QUALITY": "突变质量",
+    "INDIVIDUALS": "相关患者",
+    "GENOTYPES": "相关基因型",
+    "Frequency": "突变频率",
+    "Consequences": "突变影响",
+    "Quality": "突变质量",
+    "Individuals": "相关患者",
+    "Genotypes": "相关基因型",
+    "Frequency_subtitle": "外部数据库和内部数据库中变量的频率。",
+    "Consequences_subtitle": "转录本上该突变会带来的影响。",
+    "Quality_subtitle": "转录本上该突变的质量。",
+    "Individuals_subtitle": "与该突变相关的患者。",
+    "Genotypes_subtitle": "与该突变相关的基因型。",
+    "message": "正在从服务器获取中文突变信息..."
+  },
+  "MyPatient": {
+    "entry": "cn",
+    "My_Patients": "我的患者",
+    "Total": "总数",
+    "message": "正在从服务器获取所有患者信息..."
+  },
+  "Table": {
+    "Select_Button": "选择表格列项",
+    "Save Configuration": "保存表格列项设置",
+    "Save_Success": "保存列项设置成功！",
+    "Save_Fail": "保存列项设置失败。"
   }
 }

@@ -79,6 +79,12 @@
       "Label_Logout": "Log out"
     }
   },
+  "Login": {
+    "redirectionLink": "Oops, seems you don't have access to <1> {{ mylink}}  </1> yet, try login?",
+    "redirectionLink_plural": "Oops, seems you don't have access to <1> {{ mylink}}  </1> yet, try login?",
+    "login": "You have logge in.",
+    "login_subtitle": "If you want to log out, click Account Icon on the top right of the page."
+  },
   "Footer": {
     "About_Us": "About Us",
     "Description": "Phenopolis is a platform for harmonization and analysis of sequencing and phenotype data. Development of Phenopolis was initially supported by RP Fighting Blindness, NIHR (UCL-Moorfields Eyes Hospital Biomedical Research Center), the UK Medical Research Council, the British Heart Foundation and the Japan Society for the Promotion of Science.",
@@ -112,5 +118,61 @@
     "Rare_Variants_subtitle": "This is the list of rare heterozgote variants found in this individual obtained with allele frequency thresholds.",
     "message": "Loading Patient Information from Server...",
     "edit_message": "Edit Patient Information Success, Reloading..."
+  },
+  "Gene": {
+    "entry": "en",
+    "Variants_Analysis": "Variants Analysis",
+    "Variants Analysis_subtitle": "Here are a list of variants found within this gene.",
+    "message": "Loading Gene Information from Server..."
+  },
+  "HPO": {
+    "entry": "en",
+    "INDIVIDUALS": "INDIVIDUALS",
+    "LITERATURE_GENES": "LITERATURE GENES",
+    "PHENOGENON": "PHENOGENON",
+    "SKAT": "SKAT",
+    "RECESSIVE": "RECESSIVE",
+    "DOMINANT": "DOMINANT",
+    "Individuals": "Individuals",
+    "Literature_Genes": "Literature Genes",
+    "Phenogenon": "Phenogenon",
+    "Individuals_subtitle": "Below is a list of individuals who have this phenotype or a descendant of it.",
+    "Literature_Genes_subtitle": "Below is a list of the literature genes from OMIM which are associated with this phenotype.",
+    "Phenogenon_subtitle": "Below is a list of the significant Phenogenon genes.",
+    "SKAT_subtitle": "Below is a list of genes and their variants from the Sequence Kernel Association Test (SKAT).",
+    "RECESSIVE_subtitle": "<0>Genotype</0> : With at least two variants on a given gene that have ExAC homozygous count not higher than <2>2</2> and CADD phred score not lower than <4>15</4>.",
+    "DOMINANT_subtitle": " <0>Genotype</0> : With at least one variant on a given gene that has an ExAC heterozygous count not higher than <2>0.0001</2>, and CADD phred score not lower than <4>15</4>.",
+    "message": "Loading HPO Information from Server..."
+  },
+  "Variant": {
+    "entry": "en",
+    "FREQUENCY": "FREQUENCY",
+    "CONSEQUENCES": "CONSEQUENCES",
+    "QUALITY": "QUALITY",
+    "INDIVIDUALS": "INDIVIDUALS",
+    "GENOTYPES": "GENOTYPES",
+    "Frequency": "Frequency",
+    "Consequences": "Consequences",
+    "Quality": "Quality",
+    "Individuals": "Individuals",
+    "Genotypes": "Genotypes",
+    "Frequency_subtitle": "Frequency of the variant in external databases and internally.",
+    "Consequences_subtitle": "Consequence of the variant on transcripts.",
+    "Quality_subtitle": "Quality of the variant on transcripts.",
+    "Individuals_subtitle": "Genotypes of individuals.",
+    "Genotypes_subtitle": "Genotypes of individuals.",
+    "message": "Loading Variant Information from Server..."
+  },
+  "MyPatient": {
+    "entry": "en",
+    "My_Patients": "My Patients",
+    "Total": "Total",
+    "message": "Loading All Patients Information from Server..."
+  },
+  "Table": {
+    "Select_Button": "Select Table Column",
+    "Save Configuration": "Save Column Configuration",
+    "Save_Success": "Save Configuration Success!",
+    "Save_Fail": "Save Configuration Failed."
   }
 }
