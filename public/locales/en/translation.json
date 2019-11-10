@@ -20,12 +20,13 @@
       },
       "statistic": {
         "title": "Phenopolis Statistics",
-        "description": "Phenopolis includes data from 6,048 exomes representing a total number of 4,859,971 variants."
+        "description": "Phenopolis includes data from {{ exomes }} exomes representing a total number of {{ variants }} variants."
       },
       "contact": {
         "title": "Contact Us",
         "description": "Please feel free to contact us <1>here</1> to give us feedback or report any issues."
-      }
+      },
+      "message": "Loading Home Page..."
     }
   },
   "AppBar": {

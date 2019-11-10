@@ -20,12 +20,13 @@
       },
       "statistic": {
         "title": "Phenopolis 统计",
-        "description": "Phenopolis包括来自6,048个外显子的数据，涵盖总共4,859,971个变异。"
+        "description": "Phenopolis包括来自{{ exomes }}个外显子的数据，涵盖总共{{ variants }}个变异。"
       },
       "contact": {
         "title": "联系我们",
         "description": "请通过<1>这里</1>联系我们， 给我们提出建议、意见、或者任何问题。我们十分珍重您对我们的反馈。"
-      }
+      },
+      "message": "正在载入首页..."
     }
   },
   "AppBar": {
