@@ -16,6 +16,7 @@ class TeamMember extends React.Component {
       cards: [
         {
           name: 'Nikolas',
+          small: 'Co-Founder and CEO',
           des: 'Some information about Niko, like background, graduated university, interests, hobby. eg.',
           icons: [
             {
@@ -34,6 +35,7 @@ class TeamMember extends React.Component {
         },
         {
           name: 'Ismail',
+          small: 'Co-Founder and CTO',
           des: 'Some information about Ismail, like background, graduated university, interests, hobby. eg.',
           icons: [
             {
@@ -56,7 +58,8 @@ class TeamMember extends React.Component {
         },
         {
           name: 'Jing',
-          des: 'Some information about Jing, like background, graduated university, interests, hobby. eg.',
+          small: 'Full-Stack Developer',
+          des: 'Some information about Jing, like background, graduated university, interests, hobby. eg. ',
           icons: [
             {
               name: 'github',
@@ -74,6 +77,7 @@ class TeamMember extends React.Component {
         },
         {
           name: 'Tian',
+          small: 'Front-end Developer',
           des: 'Some information about Tian, like background, graduated university, interests, hobby. eg.',
           icons: [
             {
@@ -85,7 +89,40 @@ class TeamMember extends React.Component {
               url: 'https://linkedin.com/'
             }
           ]
-        }]
+        }
+      ],
+      contributors: [
+        {
+          name: 'Dr. Cian Murphy',
+          small: 'UCL Genetics Institute;',
+          des: 'Some information about this contributor, like background, interests, hobby. eg. But not too long I hope.'
+        },
+        {
+          name: 'Daniel Greene',
+          small: 'Department of Haematology, University of Cambridge / Medical Research Council Biostatistics Unit, Cambridge;',
+          des: 'Some information about this contributor, like background, interests, hobby. eg. But not too long I hope.'
+        },
+        {
+          name: 'Dr. Tom Vulliamy',
+          small: 'Blizard Institute, Queen Mary University of London',
+          des: 'Some information about this contributor, like background, interests, hobby. eg. But not too long I hope.'
+        },
+        {
+          name: 'Dr. Fiona Blanco-Kelly',
+          small: 'Institute of Ophthalmology, UCL / Moorfields Eye Hospital, London;',
+          des: 'Some information about this contributor, like background, interests, hobby. eg. But not too long I hope.'
+        },
+        {
+          name: 'Baron Koylass',
+          small: 'UCL Genetics Institute',
+          des: 'Some information about this contributor, like background, interests, hobby. eg. But not too long I hope.'
+        },
+        {
+          name: 'Sajid Mughal',
+          small: 'UCL Genetics Institute',
+          des: 'Some information about this contributor, like background, interests, hobby. eg. But not too long I hope.'
+        }
+      ]
     };
   }
 
@@ -131,6 +168,11 @@ class TeamMember extends React.Component {
         </Grid>
 
         <Container className={classes.cardGrid} maxWidth="lg">
+          <Typography component='div' style={{ textAlign: 'center', paddingBottom: '1em' }}>
+            <Box fontWeight='fontWeightBold' fontSize='h4.fontSize' m={1} gutterBottom>
+              Core Team
+            </Box>
+          </Typography>
           <Grid container spacing={4}>
             {this.state.cards.map((card, index) => (
               <Grid item key={card} xs={12} sm={6} md={3} style={index !== 3 ? { borderRight: '1px solid gray' } : {}}>
@@ -142,6 +184,9 @@ class TeamMember extends React.Component {
                     <Typography gutterBottom variant="h5" component="h2">
                       <b>{card.name}</b>
                     </Typography>
+                    <Typography gutterBottom variant="body2" className={classes.small}>
+                      {card.small}
+                    </Typography >
                     <Typography style={{ textAlign: 'left' }} >
                       {card.des}
                     </Typography>
@@ -159,6 +204,42 @@ class TeamMember extends React.Component {
             ))}
           </Grid>
         </Container>
+
+        <Grid container className={classes.root2}>
+          <Grid container justify='center'>
+            <Grid item xs={12} md={8} className={classes.gridpaper2}>
+              <Paper elevation={0} className={classes.paper2}>
+                <Typography component='div'>
+                  <Box fontWeight='fontWeightBold' fontSize='h4.fontSize' m={1}>
+                    Contributors
+                  </Box>
+                </Typography>
+              </Paper>
+              <Grid container spacing={4}>
+            {this.state.contributors.map((card, index) => (
+              <Grid item key={card} xs={12} sm={6} md={3}>
+                <Card elevation={0} className={classes.card}>
+                  <Grid container justify="center" alignItems="center">
+                    <Avatar src={require('../../assets/image/TmpAvatar.jpg')} className={classes.bigAvatar} />
+                  </Grid>
+                  <CardContent className={classes.cardContent}>
+                    <Typography gutterBottom variant="h5" component="h2">
+                      <b>{card.name}</b>
+                    </Typography>
+                    <Typography gutterBottom variant="body2" className={classes.small}>
+                      {card.small}
+                    </Typography >
+                    <Typography style={{ textAlign: 'left' }} >
+                      {card.des}
+                    </Typography>
+                  </CardContent>
+                </Card>
+              </Grid>
+            ))}
+          </Grid>
+            </Grid>
+          </Grid>
+        </Grid>
       </div>
     );
   }
@@ -215,6 +296,10 @@ const styles = theme => ({
     '&:hover': {
       textShadow: '-0.06ex 0 white, 0.06ex 0 white',
     }
+  },
+  small: {
+    color: 'gray',
+    marginBottom: '0.5em'
   }
 });
 
