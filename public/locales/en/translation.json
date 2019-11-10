@@ -96,6 +96,21 @@
     "NoOption": "Sorry, we did not get any auto completing options...So sad.",
     "NoContent": "Nothing for search.",
     "Autocomplete_Failed": "Autocomplete failed",
-    "Best_Guess_Failed": "Best guess failed"
+    "Best_Guess_Failed": "Best guess failed",
+    "Example": "Example"
+  },
+  "Individual": {
+    "entry": "en",
+    "RARE_HOMS": "RARE HOMS",
+    "RARE_COMP_HETS": "RARE COMP HETS",
+    "RARE_VARIANTS": "RARE VARIANTS",
+    "Rare_HOMs": "Rare HOMs",
+    "Rare_Comp_Hets": "Rare Comp Hets",
+    "Rare_Variants": "Rare Variants",
+    "Rare_HOMs_subtitle": "This is the list of rare homozygous variants in this individual obtained with thresholds.",
+    "Rare_Comp_Hets_subtitle": "This is the list of rare compound heterozgote variants (more than one variant in a given gene) found in this individual obtained with allele frequency thresholds.",
+    "Rare_Variants_subtitle": "This is the list of rare heterozgote variants found in this individual obtained with allele frequency thresholds.",
+    "message": "Loading Patient Information from Server...",
+    "edit_message": "Edit Patient Information Success, Reloading..."
   }
 }

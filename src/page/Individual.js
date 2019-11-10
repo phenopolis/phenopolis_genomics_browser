@@ -1,6 +1,7 @@
 import React from 'react';
 import axios from 'axios';
 import { Redirect } from 'react-router';
+import compose from 'recompose/compose';
 
 import PropTypes from 'prop-types';
 import { withStyles } from '@material-ui/core/styles';
@@ -18,12 +19,14 @@ import Dialog from '@material-ui/core/Dialog';
 
 import EditPerson from '../components/Individual/EditPerson'
 
+import { withTranslation, Trans } from 'react-i18next';
+import i18next from "i18next";
 
 class Individual extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      message: 'Loading Patient Information from Server...',
+      message: i18next.t('Individual.message'),
       individualInfo: {},
       loaded: false,
       value: 0,
@@ -50,7 +53,7 @@ class Individual extends React.Component {
   getIndividualInformation = (individualId) => {
     var self = this;
     axios
-      .get('/api/individual/' + individualId, {
+      .get('/api/' + i18next.t('Individual.entry') + '/individual/' + individualId, {
         withCredentials: true
       })
       .then(res => {
@@ -63,9 +66,9 @@ class Individual extends React.Component {
       })
       .catch(err => {
         console.log(err);
-        if (err.response.data.error === 'Unauthenticated') {
-          this.setState({ redirect: true });
-        }
+        // if (err.response.data.error === 'Unauthenticated') {
+        //   this.setState({ redirect: true });
+        // }
       });
   }
 
@@ -92,13 +95,14 @@ class Individual extends React.Component {
   refreshPage = (patientName) => {
     this.setState({
       loaded: false,
-      message: 'Edit Patient Information Success, Reloading...'
+      message: i18next.t('Individual.edit_message')
     });
     this.getIndividualInformation(patientName)
   }
 
   render() {
     const { classes } = this.props;
+    const { t } = this.props;
 
     if (this.state.redirect) {
       return <Redirect to={'/login?link=' + window.location.pathname} />;
@@ -128,7 +132,7 @@ class Individual extends React.Component {
                     aria-label="full width tabs example"
                     classes={{ indicator: classes.bigIndicator }}
                   >
-                    {['RARE HOMS', 'RARE COMP HETS', 'RARE VARIANTS'].map((item, index) => {
+                    {[t('Individual.RARE_HOMS'), t('Individual.RARE_COMP_HETS'), t('Individual.RARE_VARIANTS')].map((item, index) => {
                       return (
                         <Tab label={item} {...this.a11yProps(index)} />
                       )
@@ -141,13 +145,13 @@ class Individual extends React.Component {
                   onChangeIndex={this.handleChangeIndex}
                 >
                   <TabPanel value={this.state.value} index={0} dir={this.props.theme.direction}>
-                    <Variants variants={this.state.individualInfo.rare_homs} title="Rare HOMs" subtitle="This is the list of rare homozygous variants in this individual obtained with thresholds." configureLink="individual/rare_homs" />
+                    <Variants variants={this.state.individualInfo.rare_homs} title={t("Individual.Rare_HOMs")} subtitle={t("Individual.Rare_HOMs_subtitle")} configureLink="individual/rare_homs" />
                   </TabPanel>
                   <TabPanel value={this.state.value} index={1} dir={this.props.theme.direction}>
-                    <Variants variants={this.state.individualInfo.rare_comp_hets} title="Rare Comp Hets" subtitle="This is the list of rare compound heterozgote variants (more than one variant in a given gene) found in this individual obtained with allele frequency thresholds." configureLink="individual/rare_comp_hets" />
+                    <Variants variants={this.state.individualInfo.rare_comp_hets} title={t("Individual.Rare_Comp_Hets")} subtitle={t("Individual.Rare_Comp_Hets_subtitle")} configureLink="individual/rare_comp_hets" />
                   </TabPanel>
                   <TabPanel value={this.state.value} index={2} dir={this.props.theme.direction}>
-                    <Variants variants={this.state.individualInfo.rare_variants} title="Rare Variants" subtitle="This is the list of rare compound heterozgote variants (more than one variant in a given gene) found in this individual obtained with allele frequency thresholds." configureLink="individual/rare_variants" />
+                    <Variants variants={this.state.individualInfo.rare_variants} title={t("Individual.Rare_Variants")} subtitle={t("Individual.Rare_Variants_subtitle")} configureLink="individual/rare_variants" />
                   </TabPanel>
                 </SwipeableViews>
               </Paper>
@@ -198,4 +202,4 @@ const styles = theme => ({
   }
 });
 
-export default withStyles(styles, { withTheme: true })(Individual);
+export default compose(withStyles(styles, { withTheme: true }), withTranslation())(Individual)

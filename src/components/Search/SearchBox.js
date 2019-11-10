@@ -199,7 +199,7 @@ class SearchBox extends React.Component {
                   className={classes.example}
                   fontWeight='fontWeightLight'
                   m={2}>
-                  Examples:
+                  {t('Search.Example')}:
                   {this.state.examples.map((item, index) => {
                     return (
                       <span key={index}>

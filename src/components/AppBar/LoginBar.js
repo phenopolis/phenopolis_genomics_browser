@@ -128,6 +128,17 @@ class LoginBar extends React.Component {
 		const changeLanguage = lng => {
 			i18next.changeLanguage(lng);
 			this.OpenLan()
+			if (
+				(window.location.pathname !== '/') &
+				(window.location.pathname !== '/publications') &
+				(window.location.pathname !== '/login') &
+				(window.location.pathname !== '/about') &
+				(window.location.pathname !== '/price') &
+				(window.location.pathname !== '/product') &
+				(window.location.pathname !== '/search')
+			) {
+				window.location.reload();
+			}
 		};
 
 		if (this.state.redirect) {

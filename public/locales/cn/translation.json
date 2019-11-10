@@ -96,6 +96,21 @@
     "NoOption": "抱歉，我们无法自动匹配到任何数据……太遗憾了！",
     "NoContent": "搜索内容为空。",
     "Autocomplete_Failed": "自动补全失败",
-    "Best_Guess_Failed": "跳转失败"
+    "Best_Guess_Failed": "跳转失败",
+    "Example": "案例参考"
+  },
+  "Individual": {
+    "entry": "cn",
+    "RARE_HOMS": "罕见纯合变异",
+    "RARE_COMP_HETS": "罕见复合杂合变异",
+    "RARE_VARIANTS": "罕见突变",
+    "Rare_HOMs": "罕见纯合变异",
+    "Rare_Comp_Hets": "罕见复合杂合变异",
+    "Rare_Variants": "罕见突变",
+    "Rare_HOMs_subtitle": "以下是该名患者所携带通过了阈值筛选的罕见纯合变异。",
+    "Rare_Comp_Hets_subtitle": "以下是该名患者所携带的罕见复合杂合变异（在同一个基因上存在一个以上突变），以及它们的等位基因频率阈值。",
+    "Rare_Variants_subtitle": "以下是该名患者所携带的罕见的杂合变体，以及它们的等位基因频率阈值。",
+    "message": "正在从服务器获取患者信息...",
+    "edit_message": "修改患者信息成功，正在重新载入数据..."
   }
 }
