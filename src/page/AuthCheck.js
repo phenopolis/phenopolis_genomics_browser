@@ -28,7 +28,9 @@ class AuthCheck extends React.Component {
         if (
           (window.location.pathname !== '/') &
           (window.location.pathname !== '/publications') &
-          (window.location.pathname !== '/login')
+          (window.location.pathname !== '/login') &
+          (window.location.pathname !== '/about') &
+          (window.location.pathname !== '/price')
         ) {
           this.setState({ redirect: true });
         }

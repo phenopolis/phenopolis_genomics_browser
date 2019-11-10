@@ -19,7 +19,8 @@ import {
 	MenuItem,
 	ListItemIcon,
 	ListItemText,
-	Drawer
+	Drawer,
+	Avatar
 } from '@material-ui/core';
 
 import SearchIcon from '@material-ui/icons/Search';
@@ -30,6 +31,8 @@ import MenuIcon from '@material-ui/icons/Menu';
 import PeopleIcon from '@material-ui/icons/People';
 import TranslateIcon from '@material-ui/icons/Translate';
 import AccountCircleIcon from '@material-ui/icons/AccountCircle';
+import SupervisedUserCircleIcon from '@material-ui/icons/SupervisedUserCircle';
+import ShoppingCartIcon from '@material-ui/icons/ShoppingCart';
 
 import Sidebar from './Sidebar';
 import NavSearch from './NavSearch';
@@ -54,7 +57,9 @@ class LoginBar extends React.Component {
 			anchorLan: null,
 			redirect: false,
 			openSideBar: false,
-			openLan: false
+			openLan: false,
+			openExplore: false,
+			anchorExplore: null
 		};
 	}
 
@@ -101,6 +106,17 @@ class LoginBar extends React.Component {
 	OpenLan() {
 		this.setState({
 			openLan: !this.state.openLan
+		});
+	}
+
+	handleExploreClick = (event) => {
+		this.state.ancherExplore ? this.setState({ anchorExplore: null }) : this.setState({ anchorExplore: event.currentTarget });
+		this.OpenExplore();
+	};
+
+	OpenExplore() {
+		this.setState({
+			openExplore: !this.state.openExplore
 		});
 	}
 
@@ -157,19 +173,18 @@ class LoginBar extends React.Component {
 							/>
 							<BottomNavigationAction
 								className={classes.navigationbutton}
-								label={t('AppBar.LoginBar.Label_Publication')}
-								showLabel
-								icon={<DescriptionIcon />}
-								component={Link}
-								to='/publications'
-							/>
-							<BottomNavigationAction
-								className={classes.navigationbutton}
 								label={t('AppBar.LoginBar.Label_Patients')}
 								showLabel
 								icon={<PeopleIcon />}
 								component={Link}
 								to='/my_patients'
+							/>
+							<BottomNavigationAction
+								className={classes.navigationbutton}
+								label={t('AppBar.LoginBar.Label_Explore')}
+								showLabel
+								icon={<Avatar src={require('../../assets/image/phenopolis_logo_white.png')} className={classes.avatar} />}
+								onClick={(event) => this.handleExploreClick(event)}
 							/>
 							<BottomNavigationAction
 								className={classes.navigationbutton}
@@ -185,6 +200,33 @@ class LoginBar extends React.Component {
 								icon={<AccountCircleIcon />}
 								onClick={(event) => this.handleClick(event)}
 							/>
+
+							<Menu
+								id='simple-menu'
+								anchorEl={this.state.anchorExplore}
+								keepMounted
+								open={Boolean(this.state.openExplore)}
+								style={{ top: '3em' }}
+								onClose={() => this.OpenExplore()}>
+								<MenuItem component={Link} to='/publications' onClick={() => this.OpenExplore()}>
+									<ListItemIcon>
+										<DescriptionIcon />
+									</ListItemIcon>
+									<ListItemText classes={{ primary: classes.listItemText }} primary={t('AppBar.LoginBar.Label_Publication')} />
+								</MenuItem>
+								<MenuItem component={Link} to='/about' onClick={() => this.OpenExplore()}>
+									<ListItemIcon>
+										<SupervisedUserCircleIcon />
+									</ListItemIcon>
+									<ListItemText classes={{ primary: classes.listItemText }} primary={t('AppBar.LoginBar.Label_About')} />
+								</MenuItem>
+								<MenuItem component={Link} to='/product' onClick={() => this.OpenExplore()}>
+									<ListItemIcon>
+										<ShoppingCartIcon />
+									</ListItemIcon>
+									<ListItemText classes={{ primary: classes.listItemText }} primary={t('AppBar.LoginBar.Label_Product')} />
+								</MenuItem>
+							</Menu>
 
 							<Menu
 								id='simple-menu'
@@ -220,7 +262,7 @@ class LoginBar extends React.Component {
 									</ListItemIcon>
 									<ListItemText classes={{ primary: classes.listItemText }} primary='English' />
 								</MenuItem>
-								<MenuItem onClick={() => changeLanguage('ch')}>
+								<MenuItem onClick={() => changeLanguage('cn')}>
 									<ListItemIcon>
 										<img className={classes.imageIcon} src={CN} />
 									</ListItemIcon>
@@ -310,6 +352,10 @@ const styles = (theme) => ({
 		height: '1.2em',
 		width: '1.2em',
 		boxShadow: '0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19)'
+	},
+	avatar: {
+		width: 23,
+		height: 23
 	}
 });
 

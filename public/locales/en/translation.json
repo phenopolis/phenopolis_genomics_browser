@@ -30,13 +30,19 @@
   },
   "AppBar": {
     "NoLoginBar": {
-      "Label_Publication": "Publications",
+      "Label_Explore": "Explore",
+      "Label_Publication": "Publication",
+      "Label_About": "About us",
+      "Label_Product": "Purchase Service",
       "Label_Language": "Language",
       "Label_Login": "Login"
     },
     "LoginBar": {
       "Label_Search": "Search",
-      "Label_Publication": "Publications",
+      "Label_Explore": "Explore",
+      "Label_Publication": "Publication",
+      "Label_About": "About us",
+      "Label_Product": "Purchase Service",
       "Label_Patients": "Patients",
       "Label_Language": "Language",
       "Label_Change_Password": "Change Password",

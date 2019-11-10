@@ -17,13 +17,16 @@ import {
 	Menu,
 	MenuItem,
 	ListItemIcon,
-	ListItemText
+	ListItemText,
+	Avatar
 } from '@material-ui/core';
 
 import MenuIcon from '@material-ui/icons/Menu';
 import DescriptionIcon from '@material-ui/icons/Description';
 import AccountCircleIcon from '@material-ui/icons/AccountCircle';
 import TranslateIcon from '@material-ui/icons/Translate';
+import SupervisedUserCircleIcon from '@material-ui/icons/SupervisedUserCircle';
+import ShoppingCartIcon from '@material-ui/icons/ShoppingCart';
 
 import NoSidebar from './NoSidebar';
 import LoginBox from './LoginBox';
@@ -42,6 +45,8 @@ class NoLoginBar extends React.Component {
 			openSideBar: false,
 			openLan: false,
 			anchorEl: null,
+			openExplore: false,
+			anchorExplore: null,
 		};
 	}
 
@@ -54,6 +59,17 @@ class NoLoginBar extends React.Component {
 	OpenSideBar() {
 		this.setState({
 			openSideBar: !this.state.openSideBar
+		});
+	}
+
+	handleExploreClick = (event) => {
+		this.state.ancherExplore ? this.setState({ anchorExplore: null }) : this.setState({ anchorExplore: event.currentTarget });
+		this.OpenExplore();
+	};
+
+	OpenExplore() {
+		this.setState({
+			openExplore: !this.state.openExplore
 		});
 	}
 
@@ -102,11 +118,10 @@ class NoLoginBar extends React.Component {
 						<div>
 							<BottomNavigationAction
 								className={classes.navigationbutton}
-								label={t('AppBar.NoLoginBar.Label_Publication')}
+								label={t('AppBar.NoLoginBar.Label_Explore')}
 								showLabel
-								icon={<DescriptionIcon />}
-								component={Link}
-								to='/publications'
+								icon={<Avatar src={require('../../assets/image/phenopolis_logo_white.png')} className={classes.avatar} />}
+								onClick={(event) => this.handleExploreClick(event)}
 							/>
 							<BottomNavigationAction
 								className={classes.navigationbutton}
@@ -128,6 +143,33 @@ class NoLoginBar extends React.Component {
 
 				<Menu
 					id='simple-menu'
+					anchorEl={this.state.anchorExplore}
+					keepMounted
+					open={Boolean(this.state.openExplore)}
+					style={{ top: '3em' }}
+					onClose={() => this.OpenExplore()}>
+					<MenuItem component={Link} to='/publications' onClick={() => this.OpenExplore()}>
+						<ListItemIcon>
+							<DescriptionIcon />
+						</ListItemIcon>
+						<ListItemText classes={{ primary: classes.listItemText }} primary={t('AppBar.NoLoginBar.Label_Publication')} />
+					</MenuItem>
+					<MenuItem component={Link} to='/about' onClick={() => this.OpenExplore()}>
+						<ListItemIcon>
+							<SupervisedUserCircleIcon />
+						</ListItemIcon>
+						<ListItemText classes={{ primary: classes.listItemText }} primary={t('AppBar.NoLoginBar.Label_About')} />
+					</MenuItem>
+					<MenuItem component={Link} to='/product' onClick={() => this.OpenExplore()}>
+						<ListItemIcon>
+							<ShoppingCartIcon />
+						</ListItemIcon>
+						<ListItemText classes={{ primary: classes.listItemText }} primary={t('AppBar.NoLoginBar.Label_Product')} />
+					</MenuItem>
+				</Menu>
+
+				<Menu
+					id='simple-menu'
 					anchorEl={this.state.anchorEl}
 					keepMounted
 					open={Boolean(this.state.openLan)}
@@ -139,7 +181,7 @@ class NoLoginBar extends React.Component {
 						</ListItemIcon>
 						<ListItemText classes={{ primary: classes.listItemText }} primary='English' />
 					</MenuItem>
-					<MenuItem onClick={() => changeLanguage('ch')}>
+					<MenuItem onClick={() => changeLanguage('cn')}>
 						<ListItemIcon>
 							<img className={classes.imageIcon} src={CN} />
 						</ListItemIcon>
@@ -199,6 +241,10 @@ const styles = (theme) => ({
 		height: '1.2em',
 		width: '1.2em',
 		boxShadow: '0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19)'
+	},
+	avatar: {
+		width: 23,
+		height: 23
 	}
 });
 

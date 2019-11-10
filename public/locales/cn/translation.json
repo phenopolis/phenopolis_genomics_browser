@@ -30,12 +30,18 @@
   },
   "AppBar": {
     "NoLoginBar": {
+      "Label_Explore": "探索更多",
       "Label_Publication": "期刊论文",
+      "Label_About": "关于我们",
+      "Label_Product": "购买服务",
       "Label_Language": "切换语言",
       "Label_Login": "用户登录"
     },
     "LoginBar": {
       "Label_Search": "搜索",
+      "Label_Explore": "探索更多",
+      "Label_About": "关于我们",
+      "Label_Product": "购买服务",
       "Label_Publication": "期刊论文",
       "Label_Patients": "我的患者",
       "Label_Language": "切换语言",

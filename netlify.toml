@@ -2,7 +2,7 @@
   publish = "build"
   command = "npm run build"
 
-[context.dev]
+[context.master]
   command = "npm run build; cp _redirects_dev build/_redirects"
 
 [context.live]
