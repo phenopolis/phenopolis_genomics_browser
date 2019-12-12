@@ -15,7 +15,7 @@ def hpo(hpo_id='HP:0000001',subset='all',language='en'):
    #x=json.loads(s)
    if not hpo_id.startswith('HP:'):
        #c.execute("select * from hpo where hpo_name='%s' limit 1"%hpo_id)
-       get_data=db_session().query(HPO).filter(HPO.hpo_name==hpo_id)
+       data=get_db_session().query(HPO).filter(HPO.hpo_name==hpo_id)
    else:
        #c.execute("select * from hpo where hpo_id='%s' limit 1"%hpo_id)
        data=get_db_session().query(HPO).filter(HPO.hpo_id==hpo_id)

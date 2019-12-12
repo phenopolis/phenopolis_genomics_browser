@@ -15,6 +15,7 @@ from flask_mail import Message
 import json
 import os
 import logging
+from logging.handlers import SMTPHandler
 from collections import defaultdict, Counter, OrderedDict
 from functools import wraps 
 import time
@@ -30,12 +31,15 @@ from logging.handlers import RotatingFileHandler
 import traceback
 from db import *
 
+# Load default config and override config from an environment variable
+application = Flask(__name__)
+
+mail_handler = SMTPHandler(mailhost=(os.environ['MAIL_SERVER'],os.environ['MAIL_PORT']), fromaddr='no-reply@phenopolis.org', toaddrs=['nikolas.pontikos@phenopolis.org','ismail.moghul@phenopolis.org'], subject='Phenopolis Error', credentials=(os.environ['MAIL_USERNAME'],os.environ['MAIL_PASSWORD']))
+mail_handler.setLevel(logging.ERROR)
+application.logger.addHandler(mail_handler)
 
 logging.getLogger().addHandler(logging.StreamHandler())
 logging.getLogger().setLevel(logging.INFO)
-
-# Load default config and override config from an environment variable
-application = Flask(__name__)
 
 Compress(application)
 #app.config['COMPRESS_DEBUG'] = True
@@ -107,9 +111,8 @@ def postgres_cursor():
 def after_request(response):
     timestamp = strftime('[%Y-%b-%d %H:%M]')
     logging.error('%s %s %s %s %s %s', timestamp, request.remote_addr, request.method, request.scheme, request.full_path, response.status)
-    subject='%s %s %s %s %s' % request.remote_addr, request.method, request.scheme, request.full_path, response.status,
-    msg = Message(subject, sender="no-reply@phenopolis.org", recipients=["no-reply@phenopolis.org"])
-    mail.send(msg)
+    #msg = Message('error', sender="no-reply@phenopolis.org", recipients=["no-reply@phenopolis.org"])
+    #mail.send(msg)
     return response
 
 @application.errorhandler(Exception)
@@ -119,6 +122,9 @@ def exceptions(e):
     logging.error('%s %s %s %s %s 5xx INTERNAL SERVER ERROR\n%s', timestamp, request.remote_addr, request.method, request.scheme, request.full_path, tb)
     code = 500
     if isinstance(e, HTTPException): code = e.code
+    msg = Message('internal error '+request.full_path+' from '+request.remote_addr, sender="no-reply@phenopolis.org", recipients=["no-reply@phenopolis.org"])
+    msg.body=tb
+    mail.send(msg)
     return jsonify(error='error', code=code)
 
 @application.route('/statistics')
@@ -210,8 +216,8 @@ def login(language='en'):
     print(username)
     print(check_auth(username,password))
     if not check_auth(username,password):
-       print('Login Failed')
-       msg = Message("bad login", sender="no-reply@phenopolis.org", recipients=["no-reply@phenopolis.org"])
+       logging.error('Login failed')
+       msg = Message("bad login "+username+" from "+request.remote_addr, sender="no-reply@phenopolis.org", recipients=["no-reply@phenopolis.org"])
        mail.send(msg)
        return jsonify(error='Invalid Credentials. Please try again.'), 401
     else:
