@@ -3,16 +3,20 @@ import CssBaseline from '@material-ui/core/CssBaseline';
 import HomeBanner from '../components/Home/HomeBanner';
 import PublicationList from '../components/Publication/PublicationList';
 
+import { withTranslation } from 'react-i18next';
+
 class Publication extends React.Component {
   render() {
+    const { t, i18n } = this.props;
+
     return (
       <>
         <CssBaseline />
-        <HomeBanner BannerText='Publications' />
+        <HomeBanner BannerText={t('Publication.Title')} />
         <PublicationList />
       </>
     );
   }
 }
 
-export default Publication;
+export default withTranslation()(Publication)

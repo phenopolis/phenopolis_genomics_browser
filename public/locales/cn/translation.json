@@ -78,8 +78,12 @@
     },
     "SideBar": {
       "Label_Search": "搜索",
-      "Label_Publication": "期刊论文",
       "Label_Patients": "我的患者",
+      "Label_Explore": "探索更多",
+      "Label_Publication": "期刊论文",
+      "Label_About": "关于我们",
+      "Label_Product": "购买服务",
+      "Label_Language": "切换语言",
       "Label_Change_Password": "更换密码",
       "Label_Logout": "退出"
     }
@@ -108,6 +112,12 @@
     "Autocomplete_Failed": "自动补全失败",
     "Best_Guess_Failed": "跳转失败",
     "Example": "案例参考"
+  },
+  "Publication": {
+    "Title": "相关文献"
+  },
+  "About": {
+    "Title": "关于我们"
   },
   "Individual": {
     "entry": "cn",

@@ -15,7 +15,7 @@ import compose from 'recompose/compose';
 import { connect } from 'react-redux';
 import { setSnack } from '../../redux/actions';
 
-import { withTranslation} from 'react-i18next';
+import { withTranslation } from 'react-i18next';
 import i18next from "i18next";
 
 class SearchBox extends React.Component {
@@ -59,7 +59,7 @@ class SearchBox extends React.Component {
         this.setState({ redirect: true, guesslink: res.data.redirect });
       })
       .catch(err => {
-        this.props.setSnack(i18next.t('AppBar.NavSearch.Best_Guess_Failed'),'error')
+        this.props.setSnack(i18next.t('AppBar.NavSearch.Best_Guess_Failed'), 'error')
       });
   };
 
@@ -93,7 +93,7 @@ class SearchBox extends React.Component {
         self.setState({ autoCompleteContent: res.data, searchLoaded: false })
       })
       .catch(err => {
-        this.props.setSnack(i18next.t('AppBar.NavSearch.Autocomplete_Failed'),'error')
+        this.props.setSnack(i18next.t('AppBar.NavSearch.Autocomplete_Failed'), 'error')
       });
   }
 
@@ -114,7 +114,7 @@ class SearchBox extends React.Component {
                 {t("Search.title")}
               </Box>
               <Box fontWeight='fontWeightLight' m={1}>
-              {t("Search.subtitle")}
+                {t("Search.subtitle")}
               </Box>
             </Typography>
 
@@ -124,7 +124,7 @@ class SearchBox extends React.Component {
                 noValidate
                 onSubmit={event => this.handleSearch(event, 'default')}>
                 <Grid container spacing={1} alignItems='flex-end'>
-                  <Grid item xs={1}>
+                  <Grid item xs={4} md={1}>
                     {
                       this.state.searchLoaded !== true ? (
                         <SearchIcon className={classes.searchIcon} />
@@ -134,7 +134,7 @@ class SearchBox extends React.Component {
                     }
 
                   </Grid>
-                  <Grid item xs={11}>
+                  <Grid item xs={8} md={11}>
                     <CssTextField
                       className={classes.input}
                       InputProps={{
@@ -158,7 +158,7 @@ class SearchBox extends React.Component {
                       this.state.searchLoaded === true ? (
                         <Typography variant="subtitle1" gutterBottom>
                           <b>{t("Search.Searching")}</b>
-                      </Typography>
+                        </Typography>
                       ) : (
                           this.state.autoCompleteContent !== null ? (
 
@@ -187,7 +187,7 @@ class SearchBox extends React.Component {
                           ) : (
                               <Typography variant="subtitle1" gutterBottom>
                                 <b>{t("Search.NoContent")}</b>
-                            </Typography>
+                              </Typography>
                             )
                         )
                     }
@@ -226,8 +226,6 @@ SearchBox.propTypes = {
 
 const styles = theme => ({
   root: {
-    height: 'calc(100vh - 64px)',
-    position: 'relative',
     backgroundColor: '#eeeeee',
     padding: '4em'
   },

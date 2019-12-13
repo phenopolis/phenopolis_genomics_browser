@@ -78,8 +78,12 @@
     },
     "SideBar": {
       "Label_Search": "Search",
-      "Label_Publication": "Publication",
       "Label_Patients": "Patients",
+      "Label_Explore": "Explore",
+      "Label_Publication": "Publication",
+      "Label_About": "About us",
+      "Label_Product": "Purchase Service",
+      "Label_Language": "Language",
       "Label_Change_Password": "Change Password",
       "Label_Logout": "Log out"
     }
@@ -109,6 +113,12 @@
     "Autocomplete_Failed": "Autocomplete failed",
     "Best_Guess_Failed": "Best guess failed",
     "Example": "Example"
+  },
+  "Publication": {
+    "Title": "Publication"
+  },
+  "About": {
+    "Title": "About Us"
   },
   "Individual": {
     "entry": "en",
