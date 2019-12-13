@@ -4,17 +4,30 @@ import { withStyles } from '@material-ui/core/styles';
 import compose from 'recompose/compose';
 import { Link } from 'react-router-dom';
 
-import { withWidth, List, ListItem, ListItemIcon, ListItemText } from '@material-ui/core';
+import { withWidth, List, ListItem, ListItemIcon, ListItemText, Collapse, Avatar } from '@material-ui/core';
 
 import DescriptionIcon from '@material-ui/icons/Description';
 import AccountCircleIcon from '@material-ui/icons/AccountCircle';
+import ExpandLess from '@material-ui/icons/ExpandLess';
+import ExpandMore from '@material-ui/icons/ExpandMore';
+
+import TranslateIcon from '@material-ui/icons/Translate';
+import SupervisedUserCircleIcon from '@material-ui/icons/SupervisedUserCircle';
+import ShoppingCartIcon from '@material-ui/icons/ShoppingCart';
 
 import { withTranslation } from 'react-i18next';
+
+import GB from '../../assets/svg/gb.svg'
+import CN from '../../assets/svg/cn.svg'
+import JP from '../../assets/svg/jp.svg'
 
 class NoSideBar extends React.Component {
 	constructor(props) {
 		super(props);
-		this.state = {};
+		this.state = {
+			exploreOpen: false,
+			languageOpen: false
+		};
 	}
 
 	toggleDrawer = () => {
@@ -23,27 +36,105 @@ class NoSideBar extends React.Component {
 
 	toggleLogin = () => {
 		this.props.SidebarLogin();
+		this.toggleDrawer()
 	};
+
+	handleExploreClick = () => {
+		this.setState({ exploreOpen: !this.state.exploreOpen })
+	}
+
+	handleLanguageClick = () => {
+		this.setState({ languageOpen: !this.state.languageOpen })
+	}
 
 	render() {
 		const { classes } = this.props;
 		const { t, i18n } = this.props;
 
+		const changeLanguage = lng => {
+			i18n.changeLanguage(lng);
+			this.toggleDrawer()
+		};
+
 		return (
-			<div className={classes.list} role='presentation' onClick={this.toggleDrawer} onKeyDown={this.toggleDrawer}>
+			<div className={classes.list} role='presentation'>
 				<List>
-					<ListItem button component={Link} to='/publications'>
+
+					<ListItem button onClick={this.handleExploreClick}>
 						<ListItemIcon>
-							<DescriptionIcon />
+							<Avatar src={require('../../assets/image/phenopolis_logo_grey.png')} className={classes.avatar} />
 						</ListItemIcon>
-						<ListItemText primary={t('AppBar.NoSideBar.Label_Publication')} classes={{ primary: classes.listItemText }} />
+						<ListItemText primary={t('AppBar.NoSideBar.Label_Explore')} classes={{ primary: classes.listItemText }} />
+						{this.state.exploreOpen ? <ExpandLess /> : <ExpandMore />}
 					</ListItem>
+
+					<Collapse in={this.state.exploreOpen} timeout="auto" unmountOnExit>
+						<List component="div" disablePadding>
+
+							<ListItem button component={Link} to='/publications' onClick={this.toggleDrawer} className={classes.nested}>
+								<ListItemIcon>
+									<DescriptionIcon />
+								</ListItemIcon>
+								<ListItemText primary={t('AppBar.NoSideBar.Label_Publication')} classes={{ primary: classes.listItemText }} />
+							</ListItem>
+
+							<ListItem button component={Link} to='/about' onClick={this.toggleDrawer} className={classes.nested}>
+								<ListItemIcon>
+									<SupervisedUserCircleIcon />
+								</ListItemIcon>
+								<ListItemText primary={t('AppBar.NoSideBar.Label_About')} classes={{ primary: classes.listItemText }} />
+							</ListItem>
+
+							<ListItem button component={Link} to='/product' onClick={this.toggleDrawer} className={classes.nested}>
+								<ListItemIcon>
+									<ShoppingCartIcon />
+								</ListItemIcon>
+								<ListItemText primary={t('AppBar.NoSideBar.Label_Product')} classes={{ primary: classes.listItemText }} />
+							</ListItem>
+						</List>
+					</Collapse>
+
+					<ListItem button onClick={this.handleLanguageClick}>
+						<ListItemIcon>
+							<TranslateIcon />
+						</ListItemIcon>
+						<ListItemText primary={t('AppBar.NoSideBar.Label_Language')} classes={{ primary: classes.listItemText }} />
+						{this.state.languageOpen ? <ExpandLess /> : <ExpandMore />}
+					</ListItem>
+
+					<Collapse in={this.state.languageOpen} timeout="auto" unmountOnExit>
+						<List component="div" disablePadding>
+
+							<ListItem button onClick={() => changeLanguage('en')} className={classes.nested}>
+								<ListItemIcon>
+									<img className={classes.imageIcon} src={GB} />
+								</ListItemIcon>
+								<ListItemText primary="English" classes={{ primary: classes.listItemText }} />
+							</ListItem>
+
+							<ListItem button onClick={() => changeLanguage('cn')} className={classes.nested}>
+								<ListItemIcon>
+									<img className={classes.imageIcon} src={CN} />
+								</ListItemIcon>
+								<ListItemText primary="中文" classes={{ primary: classes.listItemText }} />
+							</ListItem>
+
+							<ListItem button className={classes.nested}>
+								<ListItemIcon>
+									<img className={classes.imageIcon} src={JP} />
+								</ListItemIcon>
+								<ListItemText primary="日本語" classes={{ primary: classes.listItemText }} />
+							</ListItem>
+						</List>
+					</Collapse>
+
 					<ListItem button onClick={this.toggleLogin}>
 						<ListItemIcon>
 							<AccountCircleIcon />
 						</ListItemIcon>
 						<ListItemText primary={t('AppBar.NoSideBar.Label_Login')} classes={{ primary: classes.listItemText }} />
 					</ListItem>
+
 				</List>
 			</div>
 		);
@@ -52,7 +143,7 @@ class NoSideBar extends React.Component {
 
 NoSideBar.propTypes = {
 	classes: PropTypes.object.isRequired,
-	width: PropTypes.oneOf([ 'lg', 'md', 'sm', 'xl', 'xs' ]).isRequired
+	width: PropTypes.oneOf(['lg', 'md', 'sm', 'xl', 'xs']).isRequired
 };
 
 const styles = (theme) => ({
@@ -61,6 +152,18 @@ const styles = (theme) => ({
 	},
 	listItemText: {
 		fontSize: '0.97em'
+	},
+	nested: {
+		paddingLeft: theme.spacing(4),
+	},
+	avatar: {
+		width: 23,
+		height: 23
+	},
+	imageIcon: {
+		height: '1.2em',
+		width: '1.2em',
+		boxShadow: '0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19)'
 	}
 });
 

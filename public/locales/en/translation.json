@@ -69,8 +69,12 @@
       "Best_Guess_Failed": "Best guess failed"
     },
     "NoSideBar": {
+      "Label_Login": "Login",
+      "Label_Explore": "Explore",
       "Label_Publication": "Publication",
-      "Label_Login": "Login"
+      "Label_About": "About us",
+      "Label_Product": "Purchase Service",
+      "Label_Language": "Language"
     },
     "SideBar": {
       "Label_Search": "Search",

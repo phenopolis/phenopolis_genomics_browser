@@ -69,8 +69,12 @@
       "Best_Guess_Failed": "跳转失败"
     },
     "NoSideBar": {
+      "Label_Login": "登录",
+      "Label_Explore": "探索更多",
       "Label_Publication": "期刊论文",
-      "Label_Login": "登录"
+      "Label_About": "关于我们",
+      "Label_Product": "购买服务",
+      "Label_Language": "切换语言"
     },
     "SideBar": {
       "Label_Search": "搜索",

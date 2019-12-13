@@ -36,7 +36,7 @@ class Pricing extends React.Component {
       <>
         <Container maxWidth="lg" component="main" className={classes.cardGrid}>
           <Grid container spacing={5} direction="row" justify="space-around" alignItems="center">
-            <Grid item xs={7}>
+            <Grid item xs={12} md={7}>
               <Container maxWidth="sm" component="main" className={classes.heroContent}>
                 <Typography component="h2" variant="h3" align="center" color="textPrimary" gutterBottom>
                   <b>Exome Analysis</b>
@@ -54,7 +54,7 @@ class Pricing extends React.Component {
                 </Typography>
               </Container>
             </Grid>
-            <Grid item xs={3}>
+            <Grid item xs={12} md={3}>
               <Card>
                 <CardHeader
                   title={this.state.tier.title}
@@ -82,9 +82,9 @@ class Pricing extends React.Component {
                   </ul>
                 </CardContent>
                 <CardActions>
-                    <Button fullWidth variant={this.state.tier.buttonVariant} color="primary" href='mailto:info@phenopolis.org'>
-                      {this.state.tier.buttonText}
-                    </Button>
+                  <Button fullWidth variant={this.state.tier.buttonVariant} color="primary" href='mailto:info@phenopolis.org'>
+                    {this.state.tier.buttonText}
+                  </Button>
                 </CardActions>
               </Card>
             </Grid>
