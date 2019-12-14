@@ -131,14 +131,14 @@
   "About": {
     "Title": "About Us",
     "Mission_Title": "Our Mission",
-    "Mission_Content": "Phenopolis is an open-source web server providing an intuitive interface to genetic and phenotypic databases. It integrates analysis tools such as variant filtering and gene prioritization based on phenotype. The Phenopolis platform will accelerate clinical diagnosis, gene discovery and encourage wider adoption of the Human Phenotype Ontology in the study of rare genetic diseases.",
+    "Mission_Content": "Phenopolis is a web server providing an intuitive interface to genetic and phenotypic databases. It integrates analysis tools such as variant filtering and gene prioritization based on phenotype. The Phenopolis platform will accelerate clinical diagnosis, gene discovery and encourage wider adoption of the Human Phenotype Ontology in the study of rare genetic diseases.",
     "Core_Team": "Core Team",
     "Contributor": "Contributor"
   },
   "Product": {
     "Title": "Purchase Analysis Service",
     "Exome_Analysis_Title": "Exome Analysis",
-    "Exome_Analysis_Content": "We help you to conduct whole exome analysis, and organize data into phenopolis for all your lab members or colaborators. Our service contains:",
+    "Exome_Analysis_Content": "We help you to conduct whole exome analysis, and integrate it Phenopolis for all your lab members or collaborators. Our service contains:",
     "Exome_Analysis_Description": "<0>Mutation Detection.</0> <1>Integrating between Phenotypes, mutation genes.</1> <2>Deployment of Phenopolis system.</2> <3> Long lasting service in 3 years. </3>",
     "Exome_Analysis_Close": "Contact us for more information.",
     "Exome_Price_Title": "Exome Analysis",
