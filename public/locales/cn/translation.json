@@ -3,7 +3,9 @@
     "HomeBanner": {
       "subtitle": "整合统一 & 测序分析 & 表型数据",
       "button_no_login": "Demo用户登录",
-      "button_login": "搜索 Phenopolis"
+      "button_login": "搜索 Phenopolis",
+      "login_success": " 登录成功！",
+      "login_fail": "登录失败."
     },
     "HomeMainPart": {
       "tab1": {
@@ -114,10 +116,35 @@
     "Example": "案例参考"
   },
   "Publication": {
-    "Title": "相关文献"
+    "Title": "相关文献",
+    "Phenopolis_Publications": "Phenopolis文献",
+    "publication": "",
+    "Associated_Publications_using_Phenopolis": "使用了Phenopolis的文献",
+    "Primary_immune_deficiencies": "原发性免疫缺陷:",
+    "Dermatology": "皮肤病学:",
+    "Bone_marrow_failure": "骨髓衰竭:",
+    "Cardiovascular_disorders": "心血管疾病:",
+    "Neurology": "神经学:",
+    "Other_disease_fields": "其他疾病领域:"
   },
   "About": {
-    "Title": "关于我们"
+    "Title": "关于我们",
+    "Mission_Title": "我们的目标",
+    "Mission_Content": "Phenopolis是一个在线端的平台，提供针对基因库与表型库的直观简洁的交互服务。其包含了一系列诸如突变筛查、基于表型的基因定位的分析工具。Phenopolis平台可以加速您的临床诊断，病变基因发现，以及协助您在研究罕见基因疾病的时候使用人类表型本体数据。",
+    "Core_Team": "核心团队",
+    "Contributor": "贡献者"
+  },
+  "Product": {
+    "Title": "购买分析服务",
+    "Exome_Analysis_Title": "外显子组分析",
+    "Exome_Analysis_Content": "我们为您完成外显字组分析, 并且将结果整合到Phenopolis中，加快您的实验室，以及您的合作伙伴的科研进程. 我们的服务包括:",
+    "Exome_Analysis_Description": "<0>突变分析。</0><1>整合表型、突变以及基因型。</1> <2>Phenopolis系统部署。</2><3> 未来三年的技术支持。</3>",
+    "Exome_Analysis_Close": "联系我们获取更多详细信息。",
+    "Exome_Price_Title": "外显字组学分析",
+    "Exome_Price_Subtitle": "最受欢迎",
+    "Exome_Price_Unit": "外显字组",
+    "Exome_Price_Feature": "<0>优点 1</0> <1>优点 2</1> <2>优点 3</2> <3>优点 4</3>",
+    "Exome_Price_Button": "联系我们"
   },
   "Individual": {
     "entry": "cn",

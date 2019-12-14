@@ -1,9 +1,9 @@
 const paperlist = [
   {
-    title: 'Phenopolis Publications',
+    title: 'Phenopolis_Publications',
     data: [
       {
-        subtitle: '',
+        subtitle: 'publication',
         publications: [
           {
             title:
@@ -24,10 +24,10 @@ const paperlist = [
     ]
   },
   {
-    title: 'Associated Publications using Phenopolis',
+    title: 'Associated_Publications_using_Phenopolis',
     data: [
       {
-        subtitle: 'Primary immune deficiencies:',
+        subtitle: 'Primary_immune_deficiencies',
         publications: [
           {
             title:
@@ -75,7 +75,7 @@ const paperlist = [
         ]
       },
       {
-        subtitle: 'Dermatology:',
+        subtitle: 'Dermatology',
         publications: [
           {
             title:
@@ -108,7 +108,7 @@ const paperlist = [
         ]
       },
       {
-        subtitle: 'Bone marrow failure:',
+        subtitle: 'Bone_marrow_failure',
         publications: [
           {
             title:
@@ -134,7 +134,7 @@ const paperlist = [
         ]
       },
       {
-        subtitle: 'Cardiovascular disorders:',
+        subtitle: 'Cardiovascular_disorders',
         publications: [
           {
             title:
@@ -146,7 +146,7 @@ const paperlist = [
         ]
       },
       {
-        subtitle: 'Neurology:',
+        subtitle: 'Neurology',
         publications: [
           {
             title:
@@ -165,7 +165,7 @@ const paperlist = [
         ]
       },
       {
-        subtitle: 'Other disease fields:',
+        subtitle: 'Other_disease_fields',
         publications: [
           {
             title:

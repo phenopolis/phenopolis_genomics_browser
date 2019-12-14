@@ -3,7 +3,9 @@
     "HomeBanner": {
       "subtitle": "Harmonization & Analysis of Sequencing & Phenotype Data",
       "button_no_login": "Login as Demo User",
-      "button_login": "Search Phenopolis"
+      "button_login": "Search Phenopolis",
+      "login_success": "Login Success!",
+      "login_fail": "Login Failed."
     },
     "HomeMainPart": {
       "tab1": {
@@ -115,10 +117,35 @@
     "Example": "Example"
   },
   "Publication": {
-    "Title": "Publication"
+    "Title": "Publication",
+    "Phenopolis_Publications": "Phenopolis Publications",
+    "publication": "",
+    "Associated_Publications_using_Phenopolis": "Associated Publications using Phenopolis",
+    "Primary_immune_deficiencies": "Primary immune deficiencies:",
+    "Dermatology": "Dermatology:",
+    "Bone_marrow_failure": "Bone marrow failure:",
+    "Cardiovascular_disorders": "Cardiovascular disorders:",
+    "Neurology": "Neurology:",
+    "Other_disease_fields": "Other disease fields:"
   },
   "About": {
-    "Title": "About Us"
+    "Title": "About Us",
+    "Mission_Title": "Our Mission",
+    "Mission_Content": "Phenopolis is an open-source web server providing an intuitive interface to genetic and phenotypic databases. It integrates analysis tools such as variant filtering and gene prioritization based on phenotype. The Phenopolis platform will accelerate clinical diagnosis, gene discovery and encourage wider adoption of the Human Phenotype Ontology in the study of rare genetic diseases.",
+    "Core_Team": "Core Team",
+    "Contributor": "Contributor"
+  },
+  "Product": {
+    "Title": "Purchase Analysis Service",
+    "Exome_Analysis_Title": "Exome Analysis",
+    "Exome_Analysis_Content": "We help you to conduct whole exome analysis, and organize data into phenopolis for all your lab members or colaborators. Our service contains:",
+    "Exome_Analysis_Description": "<0>Mutation Detection.</0> <1>Integrating between Phenotypes, mutation genes.</1> <2>Deployment of Phenopolis system.</2> <3> Long lasting service in 3 years. </3>",
+    "Exome_Analysis_Close": "Contact us for more information.",
+    "Exome_Price_Title": "Exome Analysis",
+    "Exome_Price_Subtitle": "Most popular",
+    "Exome_Price_Unit": "exome",
+    "Exome_Price_Feature": "<0>Feature 1</0> <1>Feature 2</1> <2>Feature 3</2> <3>Feature 4</3>",
+    "Exome_Price_Button": "Contact Us"
   },
   "Individual": {
     "entry": "en",

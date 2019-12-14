@@ -3,13 +3,16 @@ import PropTypes from 'prop-types';
 import compose from 'recompose/compose';
 
 import { withStyles } from '@material-ui/core/styles';
-import {withWidth, Container, Box, Typography} from '@material-ui/core';
+import { withWidth, Container, Box, Typography } from '@material-ui/core';
+
+import { withTranslation } from 'react-i18next';
 
 import paperlist from '../../assets/js/paperlist';
 
 class PublicationList extends React.Component {
   render() {
     const { classes } = this.props;
+    const { t, i18n } = this.props;
     const pl = paperlist;
 
     return (
@@ -19,7 +22,7 @@ class PublicationList extends React.Component {
             return (
               <Typography component='div' key={sid}>
                 <Box fontWeight='fontWeightBold' fontSize='h4.fontSize' m={1}>
-                  {section.title}
+                  {t("Publication." + section.title)}
                 </Box>
                 {section.data.map((subsection, ssid) => {
                   return (
@@ -28,7 +31,7 @@ class PublicationList extends React.Component {
                         fontWeight='fontWeightBold'
                         fontSize='h5.fontSize'
                         m={1}>
-                        {subsection.subtitle}
+                        {t("Publication." + subsection.subtitle)}
                       </Box>
                       {subsection.publications.map((paper, index) => {
                         return (
@@ -84,5 +87,6 @@ const styles = theme => ({
 
 export default compose(
   withStyles(styles),
-  withWidth()
+  withWidth(),
+  withTranslation()
 )(PublicationList);

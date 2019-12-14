@@ -15,6 +15,7 @@ import { setSnack } from '../../redux/actions';
 import { getUsername } from '../../redux/selectors';
 
 import { withTranslation } from 'react-i18next';
+import i18next from "i18next";
 
 import axios from 'axios';
 const qs = require('querystring');
@@ -50,13 +51,13 @@ class HomeBanner extends React.Component {
           });
           this.setState({ redirect: true });
           this.props.setUser(respond.username);
-          this.props.setSnack(respond.username + " Login Success!", "success")
+          this.props.setSnack(respond.username + i18next.t("HomePage.HomeBanner.login_success"), "success")
         } else {
-          this.props.setSnack('Login Failed.', 'error')
+          this.props.setSnack(i18next.t("HomePage.HomeBanner.login_fail"), 'error')
         }
       })
       .catch(err => {
-        this.props.setSnack('Login Failed.', 'error')
+        this.props.setSnack(i18next.t("HomePage.HomeBanner.login_fail"), 'error')
       });
   }
 

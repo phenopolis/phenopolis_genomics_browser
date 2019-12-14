@@ -62,14 +62,14 @@ class SideBar extends React.Component {
 		return (
 			<div className={classes.list} role='presentation'>
 				<List>
-					<ListItem button component={Link} to='/search'>
+					<ListItem button component={Link} to='/search' onClick={this.toggleDrawer}>
 						<ListItemIcon>
 							<SearchIcon />
 						</ListItemIcon>
 						<ListItemText primary={t('AppBar.SideBar.Label_Search')} classes={{ primary: classes.listItemText }} />
 					</ListItem>
 
-					<ListItem button component={Link} to='/my_patients'>
+					<ListItem button component={Link} to='/my_patients' onClick={this.toggleDrawer}>
 						<ListItemIcon>
 							<PeopleIcon />
 						</ListItemIcon>

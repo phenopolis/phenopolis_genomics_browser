@@ -7,24 +7,12 @@ import { withWidth, Grid, Box, Container, Typography, Card, Paper, CardContent, 
 
 import StarIcon from '@material-ui/icons/Star';
 import { withTranslation, Trans } from 'react-i18next';
+import i18next from "i18next";
 
 class Pricing extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      tier: {
-        title: 'Exome Analysis',
-        subheader: 'Most popular',
-        price: '15',
-        description: [
-          'Feature 1',
-          'Feature 2',
-          'Feature 3',
-          'Feature 4',
-        ],
-        buttonText: 'Contact Us',
-        buttonVariant: 'contained'
-      }
     }
   }
 
@@ -39,26 +27,29 @@ class Pricing extends React.Component {
             <Grid item xs={12} md={7}>
               <Container maxWidth="sm" component="main" className={classes.heroContent}>
                 <Typography component="h2" variant="h3" align="center" color="textPrimary" gutterBottom>
-                  <b>Exome Analysis</b>
+                  <b>{t("Product.Exome_Analysis_Title")}</b>
                 </Typography>
+
                 <Typography variant="body1" align="left" color="textPrimary" component="p">
-                  We help you to conduct whole exome analysis, and organize data into phenopolis for all your lab members or colaborators.
-                  Our service contains:
+
+                  {t("Product.Exome_Analysis_Content")}
                   <ul>
-                    <li> Mutation Detection. </li>
-                    <li> Integrating between Phenotypes, mutation genes.</li>
-                    <li> Deployment of Phenopolis system.</li>
-                    <li> Long lasting service in 3 years.</li>
+                    <Trans i18nKey="Product.Exome_Analysis_Description">
+                      <li> Mutation Detection. </li>
+                      <li> Integrating between Phenotypes, mutation genes.</li>
+                      <li> Deployment of Phenopolis system.</li>
+                      <li> Long lasting service in 3 years.</li>
+                    </Trans>
                   </ul>
-                  Contact us for more information.
+                  {t("Product.Exome_Analysis_Close")}
                 </Typography>
               </Container>
             </Grid>
             <Grid item xs={12} md={3}>
               <Card>
                 <CardHeader
-                  title={this.state.tier.title}
-                  subheader={this.state.tier.subheader}
+                  title={t('Product.Exome_Price_Title')}
+                  subheader={t('Product.Exome_Price_Subtitle')}
                   titleTypographyProps={{ align: 'center' }}
                   subheaderTypographyProps={{ align: 'center' }}
                   action={<StarIcon />}
@@ -67,23 +58,24 @@ class Pricing extends React.Component {
                 <CardContent>
                   <div className={classes.cardPricing}>
                     <Typography component="h2" variant="h3" color="textPrimary">
-                      £{this.state.tier.price}
+                      £15
                     </Typography>
                     <Typography variant="h6" color="textSecondary">
-                      /exome
-                  </Typography>
+                      /{t('Product.Exome_Price_Unit')}
+                    </Typography>
                   </div>
-                  <ul>
-                    {this.state.tier.description.map(line => (
-                      <Typography component="li" variant="subtitle1" align="center" key={line}>
-                        {line}
-                      </Typography>
-                    ))}
+                  <ul align="center">
+                    <Trans i18nKey='Product.Exome_Price_Feature'>
+                      <li>Feature 1</li>
+                      <li>Feature 2</li>
+                      <li>Feature 3</li>
+                      <li>Feature 4</li>
+                    </Trans>
                   </ul>
                 </CardContent>
                 <CardActions>
-                  <Button fullWidth variant={this.state.tier.buttonVariant} color="primary" href='mailto:info@phenopolis.org'>
-                    {this.state.tier.buttonText}
+                  <Button fullWidth variant="contained" color="primary" href='mailto:info@phenopolis.org'>
+                    {t('Product.Exome_Price_Button')}
                   </Button>
                 </CardActions>
               </Card>

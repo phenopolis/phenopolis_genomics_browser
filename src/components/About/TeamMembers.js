@@ -139,7 +139,7 @@ class TeamMember extends React.Component {
               <Paper elevation={0} className={classes.paper2}>
                 <Typography component='div'>
                   <Box fontWeight='fontWeightBold' fontSize='h4.fontSize' m={1}>
-                    Our Mission
+                    {t("About.Mission_Title")}
                   </Box>
                   <Box
                     fontWeight='fontWeightLight'
@@ -147,20 +147,16 @@ class TeamMember extends React.Component {
                     m={1}
                     style={{ textAlign: 'left' }}
                   >
-                    Phenopolis is an open-source web server providing an intuitive interface
-                     to genetic and phenotypic databases. It integrates analysis tools such as
-                     variant filtering and gene prioritization based on phenotype. The Phenopolis
-                     platform will accelerate clinical diagnosis, gene discovery and encourage wider
-                     adoption of the Human Phenotype Ontology in the study of rare genetic diseases.
+                    {t("About.Mission_Content")}
                   </Box>
-                  <Box
+                  {/* <Box
                     fontWeight='fontWeightLight'
                     fontSize='subtitle.fontSize'
                     m={1}
                     style={{ textAlign: 'left' }}
                   >
                     (Above sentence is copied from phenopolis paper, I think maybe we can write a markdown document here. - Tian)
-                  </Box>
+                  </Box> */}
                 </Typography>
               </Paper>
             </Grid>
@@ -170,7 +166,7 @@ class TeamMember extends React.Component {
         <Container className={classes.cardGrid} maxWidth="lg">
           <Typography component='div' style={{ textAlign: 'center', paddingBottom: '1em' }}>
             <Box fontWeight='fontWeightBold' fontSize='h4.fontSize' m={1} gutterBottom>
-              Core Team
+              {t("About.Core_Team")}
             </Box>
           </Typography>
           <Grid container spacing={4}>
@@ -211,32 +207,32 @@ class TeamMember extends React.Component {
               <Paper elevation={0} className={classes.paper2}>
                 <Typography component='div'>
                   <Box fontWeight='fontWeightBold' fontSize='h4.fontSize' m={1}>
-                    Contributors
+                    {t("About.Contributor")}
                   </Box>
                 </Typography>
               </Paper>
               <Grid container spacing={4}>
-            {this.state.contributors.map((card, index) => (
-              <Grid item key={card} xs={12} sm={6} md={3}>
-                <Card elevation={0} className={classes.card}>
-                  <Grid container justify="center" alignItems="center">
-                    <Avatar src={require('../../assets/image/TmpAvatar.jpg')} className={classes.bigAvatar} />
+                {this.state.contributors.map((card, index) => (
+                  <Grid item key={card} xs={12} sm={6} md={3}>
+                    <Card elevation={0} className={classes.card}>
+                      <Grid container justify="center" alignItems="center">
+                        <Avatar src={require('../../assets/image/TmpAvatar.jpg')} className={classes.bigAvatar} />
+                      </Grid>
+                      <CardContent className={classes.cardContent}>
+                        <Typography gutterBottom variant="h5" component="h2">
+                          <b>{card.name}</b>
+                        </Typography>
+                        <Typography gutterBottom variant="body2" className={classes.small}>
+                          {card.small}
+                        </Typography >
+                        <Typography style={{ textAlign: 'left' }} >
+                          {card.des}
+                        </Typography>
+                      </CardContent>
+                    </Card>
                   </Grid>
-                  <CardContent className={classes.cardContent}>
-                    <Typography gutterBottom variant="h5" component="h2">
-                      <b>{card.name}</b>
-                    </Typography>
-                    <Typography gutterBottom variant="body2" className={classes.small}>
-                      {card.small}
-                    </Typography >
-                    <Typography style={{ textAlign: 'left' }} >
-                      {card.des}
-                    </Typography>
-                  </CardContent>
-                </Card>
+                ))}
               </Grid>
-            ))}
-          </Grid>
             </Grid>
           </Grid>
         </Grid>
