@@ -1,19 +1,19 @@
 from views import *
 
 
-@app.route('/<language>/autocomplete/<query_type>/<query>')
-@app.route('/<language>/autocomplete/<query>')
-@app.route('/autocomplete/<query_type>/<query>')
-@app.route('/autocomplete/<query>')
+@application.route('/<language>/autocomplete/<query_type>/<query>')
+@application.route('/<language>/autocomplete/<query>')
+@application.route('/autocomplete/<query_type>/<query>')
+@application.route('/autocomplete/<query>')
 @requires_auth
 def autocomplete(query, query_type=''):
    if query_type: query_type=query_type+':'
-   print query_type, query
+   print(query_type, query)
    patient_results=[]
    gene_results=[]
    hpo_results=[]
    regex="%"+re.escape(query)+"%"
-   c,fd,=sqlite3_ro_cursor(app.config['PHENOPOLIS_DB'])
+   c=postgres_cursor()
    if query_type in ['gene:','']: 
        c.execute("select * from genes where gene_name_upper like '%s' limit 20"%regex)
        headers=[h[0] for h in c.description]
@@ -48,19 +48,15 @@ def autocomplete(query, query_type=''):
            patient_results = [x['internal_id'] for x in patient_hits]
        else:
            patient_results = ['patient:'+x['internal_id'] for x in patient_hits]
-       #sqlite3_ro_close(c,fd)
-   sqlite3_ro_close(c,fd)
-   #c,fd,=sqlite3_ro_cursor(app.config['PHENOPOLIS_DB'])
    #c.execute('select * from variants where "#CHROM"=? and POS=? and REF=? and ALT=? limit 20',regex.split('-'))
    #headers=[h[0] for h in c.description]
    #variant_hits=[dict(zip(headers,r)) for r in c.fetchall()]
    #variant_results = ['variant:'+x['variant_id'] for x in variant_hits]
-   #sqlite3_ro_close(c,fd)
    results = patient_results+gene_results+hpo_results
    suggestions = list(itertools.islice(results, 0, 20))
    return Response(json.dumps(suggestions),  mimetype='application/json')
 
-@app.route('/best_guess')
+@application.route('/best_guess')
 @requires_auth
 def best_guess():
      query = str(request.args.get('query'))

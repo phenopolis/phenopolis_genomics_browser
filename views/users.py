@@ -1,7 +1,7 @@
 from views import *
 
 
-@app.route('/change_password', methods=['POST'])
+@application.route('/change_password', methods=['POST'])
 @requires_auth
 def change_password():
     username=session['user']
@@ -15,9 +15,8 @@ def change_password():
     else:
         print('LOGIN SUCCESS, CHANGING PASSWORD')
         argon_password = argon2.hash(new_password_1)
-        conn,c,=sqlite3_cursor(app.config['PHENOPOLIS_DB'])
-        c.execute(""" update users set argon_password=? where user=? """, (argon_password, session['user'],))
-        sqlite3_close(conn,c)
+        c=postgres_cursor()
+        c.execute(""" update users set argon_password='%s' where user='%s' """%(argon_password, session['user'],))
         msg = 'Password for username \''+username+'\' changed. You are logged in as \''+username+'\'.' 
         return jsonify(success=msg), 200
 

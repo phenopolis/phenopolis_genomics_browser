@@ -1,35 +1,45 @@
 from views import *
+from db import *
 
 
-@app.route('/<language>/hpo/<hpo_id>')
-@app.route('/<language>/hpo/<hpo_id>/<subset>')
-@app.route('/hpo/<hpo_id>')
-@app.route('/hpo/<hpo_id>/<subset>')
+@application.route('/<language>/hpo/<hpo_id>')
+@application.route('/<language>/hpo/<hpo_id>/<subset>')
+@application.route('/hpo/<hpo_id>')
+@application.route('/hpo/<hpo_id>/<subset>')
 @requires_auth
 def hpo(hpo_id='HP:0000001',subset='all',language='en'):
-   x=json.loads(file(app.config['USER_CONFIGURATION'].format(session['user'],language,'hpo') ,'r').read())
-   c,fd,=sqlite3_ro_cursor(app.config['PHENOPOLIS_DB'])
+   c=postgres_cursor()
+   c.execute("select config from user_config u where u.user_name='%s' and u.language='%s' and u.page='%s' limit 1" % (session['user'], language, 'hpo'))
+   x=c.fetchone()[0]
+   #print(s)
+   #x=json.loads(s)
    if not hpo_id.startswith('HP:'):
-       c.execute("select * from hpo where hpo_name=? limit 1",(hpo_id,))
+       #c.execute("select * from hpo where hpo_name='%s' limit 1"%hpo_id)
+       data=get_db_session().query(HPO).filter(HPO.hpo_name==hpo_id)
    else:
-       c.execute("select * from hpo where hpo_id=? limit 1",(hpo_id,))
-   res=[dict(zip([h[0] for h in c.description],r)) for r in c.fetchall()][0]
+       #c.execute("select * from hpo where hpo_id='%s' limit 1"%hpo_id)
+       data=get_db_session().query(HPO).filter(HPO.hpo_id==hpo_id)
+   res=[p.as_dict() for p in data][0]
+   print(res)
    hpo_id=res['hpo_id']
    hpo_name=res['hpo_name']
    parent_phenotypes=[{'display':i, 'end_href':j} for i,j, in zip(res['hpo_ancestor_names'].split(';'), res['hpo_ancestor_ids'].split(';')) ]
    c.execute(""" select *
-       from individuals as i, users_individuals as ui
+       from individuals as i,
+       users_individuals as ui
        where
        i.internal_id=ui.internal_id
-       and ui.user=?
-       and i.ancestor_observed_features like ?""",(session['user'],'%'+hpo_id+'%',))
+       and ui.user='%s'
+       and i.ancestor_observed_features like '%s'"""%(session['user'],'%'+hpo_id+'%',))
    individuals=[dict(zip([h[0] for h in c.description],r)) for r in c.fetchall()]
    if hpo_id != 'HP:0000001':
-       x[0]['phenogenon_recessive']['data']=[{'gene_id':[{'display':gene_id,'end_href':gene_id}],'hpo_id':hpo_id,'hgf_score':hgf,'moi_score':moi_score} for gene_id,hpo_id,hgf,moi_score, in c.execute('select * from phenogenon where hpo_id="%s"'%hpo_id).fetchall() ]
-       x[0]['phenogenon_dominant']['data']=[{'gene_id':[{'display':gene_id,'end_href':gene_id}],'hpo_id':hpo_id,'hgf_score':hgf,'moi_score':moi_score,} for gene_id,hpo_id,hgf,moi_score, in c.execute('select * from phenogenon where hpo_id="%s"'%hpo_id).fetchall()]
+       c.execute("select * from phenogenon where hpo_id='%s'"%hpo_id)
+       x[0]['phenogenon_recessive']['data']=[{'gene_id':[{'display':gene_id,'end_href':gene_id}],'hpo_id':hpo_id,'hgf_score':hgf,'moi_score':moi_score} for gene_id,hpo_id,hgf,moi_score, in c.fetchall()]
+       c.execute("select * from phenogenon where hpo_id='%s'"%hpo_id)
+       x[0]['phenogenon_dominant']['data']=[{'gene_id':[{'display':gene_id,'end_href':gene_id}],'hpo_id':hpo_id,'hgf_score':hgf,'moi_score':moi_score,} for gene_id,hpo_id,hgf,moi_score, in c.fetchall()]
        #Chr,Start,End,HPO,Symbol,ENSEMBL,FisherPvalue,SKATO,variants,CompoundHetPvalue,HWEp,min_depth,nb_alleles_cases,case_maf,nb_ctrl_homs,nb_case_homs,MaxMissRate,nb_alleles_ctrls,nb_snps,nb_cases,minCadd,MeanCallRateCtrls,MeanCallRateCases,OddsRatio,MinSNPs,nb_ctrl_hets,total_maf,MaxCtrlMAF,ctrl_maf,nb_ctrls,nb_case_hets,maxExac
-       x[0]['skat']['data']=[{'gene_id':[{'display':gene_id,'end_href':gene_id}],'fisher_p_value':fisher_p_value,'skato':skato,'odds_ratio':odds_ratio,'variants':[]} for gene_id,fisher_p_value,skato,odds_ratio,variants, in c.execute('select Symbol,FisherPvalue,SKATO,OddsRatio,variants from skat where HPO="%s"'%hpo_id).fetchall()[:100]]
-   sqlite3_ro_close(c, fd)
+       c.execute("select Symbol,FisherPvalue,SKATO,OddsRatio,variants from skat where HPO='%s'"%hpo_id)
+       x[0]['skat']['data']=[{'gene_id':[{'display':gene_id,'end_href':gene_id}],'fisher_p_value':fisher_p_value,'skato':skato,'odds_ratio':odds_ratio,'variants':[]} for gene_id,fisher_p_value,skato,odds_ratio,variants, in c.fetchall()[:100]]
    print(len(individuals))
    x[0]["preview"]=[["Number of Individuals",len(individuals)]]
    if subset=='preview': return json.dumps([{subset:y['preview']} for y in x])

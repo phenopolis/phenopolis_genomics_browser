@@ -1,25 +1,33 @@
 from views import *
 
-@app.route('/<language>/save_configuration/<pageType>/<pagePart>', methods=['POST'])
-@app.route('/save_configuration/<pageType>/<pagePart>', methods=['POST'])
+@application.route('/<language>/save_configuration/<pageType>/<pagePart>', methods=['POST'])
+@application.route('/save_configuration/<pageType>/<pagePart>', methods=['POST'])
 @requires_auth
 def save_configuration(pageType,pagePart,language='en'):
+    c=postgres_cursor()
+    c.execute("select config from user_config u where u.user_name='%s' and u.language='%s' and u.page='%s' limit 1" % (session['user'], language, pageType))
     print(pageType)
     print(pagePart)
-    print(app.config['USER_CONFIGURATION'].format(session['user'],language,pageType))
     if pageType=='my_patients': pageType='hpo'
-    with open(app.config['USER_CONFIGURATION'].format(session['user'],language,pageType),'r+') as config_file:
-        x=json.loads(config_file.read())
-        for col in x[0][pagePart]['colNames']:
-            if col['key'] in request.form.getlist('colNames[]'):
-                print col['key'], True
-                col['default']=True
-            else:
-                print col['key'], False
-                col['default']=False
-        config_file.seek(0)
-        json.dump(x,config_file)
-        config_file.truncate()
+    x=c.fetchone()[0]
+    print(x)
+    for col in x[0][pagePart]['colNames']:
+        if col['key'] in request.form.getlist('colNames[]'):
+            print(col['key'], True)
+            col['default']=True
+        else:
+            print(col['key'], False)
+            col['default']=False
+    try:
+        c.execute("UPDATE user_config SET config=%s WHERE user_name=%s AND language=%s AND page=%s",(json.dumps(x),session['user'],language,pageType))
+        get_db().commit()
+        c.close()
+    except (Exception, psycopg2.DatabaseError) as error:
+        print(error)
+        get_db().rollback()
+        return jsonify('save configuration failed'), 500
+    finally:
+        c.close()
     return jsonify(success=''), 200
 
 

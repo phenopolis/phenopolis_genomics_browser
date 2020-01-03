@@ -1,18 +1,20 @@
 from views import *
+import boto3
+import os
 import requests
 
 
-@app.route('/<language>/variant/<variant_id>')
-@app.route('/<language>/variant/<variant_id>/<subset>')
-@app.route('/variant/<variant_id>')
-@app.route('/variant/<variant_id>/<subset>')
+@application.route('/<language>/variant/<variant_id>')
+@application.route('/<language>/variant/<variant_id>/<subset>')
+@application.route('/variant/<variant_id>')
+@application.route('/variant/<variant_id>/<subset>')
 @requires_auth
 def variant(variant_id, subset='all', language='en'):
-   c,fd,=sqlite3_ro_cursor(app.config['PHENOPOLIS_DB'])
+   c=postgres_cursor()
    c.execute("select external_id, internal_id from individuals")
    pheno_ids=[dict(zip([h[0] for h in c.description],r)) for r in c.fetchall()]
    phenoid_mapping={ind['external_id']:ind['internal_id'] for ind in pheno_ids}
-   print(phenoid_mapping)
+   #print(phenoid_mapping)
    chrom,pos,ref,alt,=variant_id.split('-')
    url='https://myvariant.info/v1/variant/chr%s:g.%s%s>%s?fields=clinvar.rcv.clinical_significance&dotfield=true' % (chrom,pos,ref,alt,)
    x=requests.get(url).json()
@@ -21,7 +23,13 @@ def variant(variant_id, subset='all', language='en'):
    else:
        clinical_significance=''
    pos=int(pos)
-   variant_file=pysam.VariantFile(app.config['VCF_FILE'])
+   s3 = boto3.client('s3', aws_secret_access_key = os.environ['VCF_S3_SECRET'],
+                     aws_access_key_id = os.environ['VCF_S3_KEY'],
+                     region_name = "eu-west-2",
+                     config = boto3.session.Config(signature_version='s3v4'))
+   vcf_index = s3.generate_presigned_url('get_object',Params={'Bucket': 'phenopolis-vcf','Key': 'August2019/merged2.vcf.gz.tbi'}, ExpiresIn=5000)
+   vcf_file = s3.generate_presigned_url('get_object',Params={'Bucket': 'phenopolis-vcf','Key': 'August2019/merged2.vcf.gz'}, ExpiresIn=5000)
+   variant_file=pysam.VariantFile(vcf_file, index_filename = vcf_index)
    samples=variant_file.header.samples
    variant=dict()
    for v in variant_file.fetch(chrom, pos-1, pos):
@@ -41,12 +49,14 @@ def variant(variant_id, subset='all', language='en'):
       variant['format']=dict([(v.format[k].name,v.format[k].id,) for k in v.format.keys()])
       variant['info']=dict(v.info)
       variant['genotypes']=[{'sample':[{'display':phenoid_mapping[s]}],'GT':v.samples[s].get('GT',''),'AD':v.samples[s].get('AD',''),'DP':v.samples[s].get('DP','')} for s in v.samples]
-   x=json.loads(file(app.config['USER_CONFIGURATION'].format(session['user'],language,'variant') ,'r').read())
-   c.execute('select * from variants where "#CHROM"=? and POS=? and REF=? and ALT=?',variant_id.split('-'))
-   var=[dict(zip([h[0] for h in c.description] ,r)) for r in c.fetchall()]
+   c.execute("select config from user_config u where u.user_name='%s' and u.language='%s' and u.page='%s' limit 1" % (session['user'], language, 'variant'))
+   x=c.fetchone()[0]
+   CHROM,POS,REF,ALT,=variant_id.split('-')
+   data=get_db_session().query(Variant).filter(and_(Variant.CHROM==CHROM,Variant.POS==POS,Variant.REF==REF,Variant.ALT==ALT))
+   var=[p.as_dict() for p in data]
    process_for_display(var)
    var=var[0]
-   print json.dumps(var)
+   #print(json.dumps(var))
    x[0]['metadata']['data']=[var]
    x[0]['individuals']['data']=[var]
    x[0]['frequency']['data']=[var]

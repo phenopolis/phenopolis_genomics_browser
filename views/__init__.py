@@ -3,17 +3,20 @@
 from flask import Flask
 from flask import session
 from flask_session import Session
+from flask import current_app, g
 from flask import Response
 from flask import request
 from flask import redirect
 from flask import jsonify
 from flask_compress import Compress
-from flask_cache import Cache
+from flask_caching import Cache
+from flask_mail import Mail
+from flask_mail import Message
 import json
 import os
 import logging
+from logging.handlers import SMTPHandler
 from collections import defaultdict, Counter, OrderedDict
-import sqlite3
 from functools import wraps 
 import time
 import datetime
@@ -22,88 +25,118 @@ import re
 import itertools
 import pysam
 from time import strftime
-from werkzeug.exceptions import HTTPException
-
-from logging.handlers import RotatingFileHandler
-
+from werkzeug.exceptions import HTTPException 
+import psycopg2 
+from logging.handlers import RotatingFileHandler 
 import traceback
+from db import *
+
+# Load default config and override config from an environment variable
+application = Flask(__name__)
+
+mail_handler = SMTPHandler(mailhost=(os.environ['MAIL_SERVER'],os.environ['MAIL_PORT']), fromaddr='no-reply@phenopolis.org', toaddrs=['nikolas.pontikos@phenopolis.org','ismail.moghul@phenopolis.org'], subject='Phenopolis Error', credentials=(os.environ['MAIL_USERNAME'],os.environ['MAIL_PASSWORD']))
+mail_handler.setLevel(logging.ERROR)
+application.logger.addHandler(mail_handler)
+
 logging.getLogger().addHandler(logging.StreamHandler())
 logging.getLogger().setLevel(logging.INFO)
 
-# Load default config and override config from an environment variable
-app = Flask(__name__)
-app.config.from_pyfile('../local.cfg')
-
-Compress(app)
+Compress(application)
 #app.config['COMPRESS_DEBUG'] = True
 #cache = SimpleCache(default_timeout=70*60*24)
-cache = Cache(app,config={'CACHE_TYPE': 'simple'})
+cache = Cache(application,config={'CACHE_TYPE': 'simple'})
 
 # Check Configuration section for more details
 #SESSION_TYPE = 'redis'
 #SESSION_TYPE='memcached'
 #SESSION_TYPE = 'mongodb'
 SESSION_TYPE='filesystem'
-SESSION_FILE_DIR=app.config['USER_SESSION']
-app.config.from_object(__name__)
+SESSION_FILE_DIR='/tmp/sessions'
+
+if not os.path.exists(SESSION_FILE_DIR):
+    os.mkdir(SESSION_FILE_DIR)
+
+application.config.from_object(__name__)
 sess=Session()
-sess.init_app(app)
+sess.init_app(application)
+
+mail = Mail(application)
+application.config['MAIL_SERVER']=os.environ['MAIL_SERVER']
+application.config['MAIL_PORT'] = os.environ['MAIL_PORT']
+application.config['MAIL_USERNAME'] = os.environ['MAIL_USERNAME']
+application.config['MAIL_PASSWORD'] = os.environ['MAIL_PASSWORD']
+application.config['MAIL_USE_TLS'] = os.environ['MAIL_USE_TLS']=='true'
+application.config['MAIL_USE_SSL'] = os.environ['MAIL_USE_SSL']=='true'
+mail = Mail(application)
+
+def get_db():
+    if 'db' not in g:
+        g.db = psycopg2.connect(host=os.environ['DB_HOST'],
+                        database=os.environ['DB_DATABASE'],
+                        user=os.environ['DB_USER'],
+                        password=os.environ['DB_PASSWORD'])
+    return g.db
+
+def get_db_session():
+    """
+    Opens a new database connection if there is none yet for the
+    current application context.
+    """
+    if not hasattr(g, 'dbsession'):
+        host=os.environ['DB_HOST']
+        database=os.environ['DB_DATABASE']
+        user=os.environ['DB_USER']
+        password=os.environ['DB_PASSWORD']
+        port=os.environ['DB_PORT']
+        #engine = create_engine('postgres://%s:%s@%s:%s/%s'% (user,password,host,port,database))
+        #create_engine('postgresql+psycopg2://scott:tiger@localhost/mydatabase')
+        engine=create_engine('postgresql+psycopg2://%s:%s@%s/%s' % (user,password,host,database,))
+        engine.connect()
+        DbSession = sessionmaker(bind=engine)
+        DbSession.configure(bind=engine)
+        g.dbsession = DbSession()
+    return g.dbsession
 
 
-def sqlite3_ro_cursor(dbname):
-   fd = os.open(dbname, os.O_RDONLY)
-   conn = sqlite3.connect('/dev/fd/%d' % fd)
-   conn = sqlite3.connect(dbname)
-   c=conn.cursor()
-   return (c, fd)
+def close_db():
+    db = g.pop('db', None)
+    if db is not None:
+        db.close()
 
-def sqlite3_ro_close(cursor, fd):
-   cursor.close()
-   os.close(fd)
+def postgres_cursor():
+   cursor = get_db().cursor()
+   return (cursor)
 
-
-def sqlite3_cursor(dbname):
-   conn = sqlite3.connect(dbname)
-   c=conn.cursor()
-   return (conn, c,)
-
-def sqlite3_close(conn,cursor):
-    conn.commit()
-    cursor.close()
-
-@app.after_request
+@application.after_request
 def after_request(response):
     timestamp = strftime('[%Y-%b-%d %H:%M]')
     logging.error('%s %s %s %s %s %s', timestamp, request.remote_addr, request.method, request.scheme, request.full_path, response.status)
+    #msg = Message('error', sender="no-reply@phenopolis.org", recipients=["no-reply@phenopolis.org"])
+    #mail.send(msg)
     return response
 
-@app.errorhandler(Exception)
+@application.errorhandler(Exception)
 def exceptions(e):
     tb = traceback.format_exc()
     timestamp = strftime('[%Y-%b-%d %H:%M]')
     logging.error('%s %s %s %s %s 5xx INTERNAL SERVER ERROR\n%s', timestamp, request.remote_addr, request.method, request.scheme, request.full_path, tb)
     code = 500
-    if isinstance(e, HTTPException):
-       code = e.code
+    if isinstance(e, HTTPException): code = e.code
+    msg = Message('internal error '+request.full_path+' from '+request.remote_addr, sender="no-reply@phenopolis.org", recipients=["no-reply@phenopolis.org"])
+    msg.body=tb
+    mail.send(msg)
     return jsonify(error='error', code=code)
 
-@app.route('/phenopolis_statistics')
+@application.route('/statistics')
 def phenopolis_statistics():
-    version_number = None
-    print('Version number is:-')
-    print(version_number)
-    total_patients=6048
-    male_patients=0
-    female_patients=0
-    unknown_patients=0
-    exomes=0
-    males=0
-    females=0
-    unknowns=0
-    total_variants=4859971
+    total_patients=get_db_session().query(Individual).count()
+    male_patients=get_db_session().query(Individual).filter(Individual.sex=='M').count()
+    female_patients=get_db_session().query(Individual).filter(Individual.sex=='F').count()
+    unknown_patients=get_db_session().query(Individual).filter(Individual.sex=='U').count()
+    total_variants=get_db_session().query(Variant).count()
     exac_variants=0
-    pass_variants=0
-    nonpass_variants=0
+    pass_variants=get_db_session().query(Variant).filter(Variant.FILTER=='PASS').count()
+    nonpass_variants=get_db_session().query(Variant).filter(Variant.FILTER!='PASS').count()
     pass_exac_variants=0
     pass_nonexac_variants=0
     return jsonify( exomes="{:,}".format(total_patients),
@@ -114,22 +147,18 @@ def phenopolis_statistics():
         exac_variants="{:,}".format(exac_variants),
         pass_variants="{:,}".format(pass_variants),
         nonpass_variants="{:,}".format(nonpass_variants),
-        pass_exac_variants="{:,}".format(pass_exac_variants),
-        pass_nonexac_variants="{:,}".format(pass_nonexac_variants),
         #image=image.decode('utf8'))
-        version_number=version_number)
+        version_number=0)
 
 
 # this should not be done live but offline
-# need to figure out how to encode json data type in sqlite import
+# need to figure out how to encode json data type in postgres import
 # rather do the conversion on the fly
 def process_for_display(data):
-   c,fd,=sqlite3_ro_cursor(app.config['PHENOPOLIS_DB'])
-   my_patients=[pid for pid, in c.execute("select internal_id from users_individuals where user='%s'"%session['user']).fetchall()]
-   sqlite3_ro_close(c, fd)
+   my_patients=[x for x in get_db_session().query(User_Individual).filter(User_Individual.user==session['user']).with_entities(User_Individual.internal_id)]
    for x2 in data:
-       if '#CHROM' in x2 and 'POS' in x2 and 'REF' in x2 and 'ALT' in x2:
-           variant_id='%s-%s-%s-%s' % (x2['#CHROM'], x2['POS'], x2['REF'], x2['ALT'],)
+       if 'CHROM' in x2 and 'POS' in x2 and 'REF' in x2 and 'ALT' in x2:
+           variant_id='%s-%s-%s-%s' % (x2['CHROM'], x2['POS'], x2['REF'], x2['ALT'],)
            x2['variant_id']=[{'end_href':variant_id,'display':variant_id[:60]}]
        if 'gene_symbol' in x2:
            x2['gene_symbol']=[{'display':x3} for x3 in x2['gene_symbol'].split(',') if x3]
@@ -145,14 +174,8 @@ def check_auth(username, password):
     """
     This function is called to check if a username / password combination is valid.
     """
-    c,fd,=sqlite3_ro_cursor(app.config['PHENOPOLIS_DB'])
-    c.execute('select * from users where user=?',(username,))
-    user=[ dict(zip( [h[0] for h in c.description] ,r)) for r in c.fetchall() ]
-    print(user)
-    print(password)
-    print(argon2.hash(password))
-    print user[0]['argon_password']
-    print argon2.verify(password, user[0]['argon_password'])
+    data=get_db_session().query(User).filter(User.user==username)
+    user=[p.as_dict() for p in data]
     if len(user)==0: return False
     return argon2.verify(password, user[0]['argon_password'])
 
@@ -161,11 +184,7 @@ def requires_auth(f):
     @wraps(f)
     def decorated(*args, **kwargs):
         if session:
-          print 'session'
-          print session
-          print session.keys()
           if 'user' in session: 
-             print session['user']
              return f(*args, **kwargs)
         if request.method == 'POST':
           username=request.form['user']
@@ -178,16 +197,16 @@ def requires_auth(f):
     return decorated
 
 
-@app.before_request
+@application.before_request
 def make_session_timeout():
     print('session timeout')
     session.permanent = True
-    app.permanent_session_lifetime = datetime.timedelta(hours=2)
+    application.permanent_session_lifetime = datetime.timedelta(hours=2)
     #app.permanent_session_lifetime = datetime.timedelta(seconds=2)
 
 # 
-@app.route('/<language>/login', methods=['POST'])
-@app.route('/login', methods=['POST'])
+@application.route('/<language>/login', methods=['POST'])
+@application.route('/login', methods=['POST'])
 def login(language='en'):
     print(request.args)
     print('LOGIN form')
@@ -197,32 +216,31 @@ def login(language='en'):
     print(username)
     print(check_auth(username,password))
     if not check_auth(username,password):
-       print('Login Failed')
+       logging.error('Login failed')
+       msg = Message("bad login "+username+" from "+request.remote_addr, sender="no-reply@phenopolis.org", recipients=["no-reply@phenopolis.org"])
+       mail.send(msg)
        return jsonify(error='Invalid Credentials. Please try again.'), 401
     else:
         print('LOGIN SUCCESS')
         session['user']=username
-        print session['user']
-        print session
         return jsonify(success="Authenticated", username=username), 200
 
 # 
-@app.route('/<language>/logout', methods=['POST'])
-@app.route('/logout', methods=['POST'])
+@application.route('/<language>/logout', methods=['POST'])
+@application.route('/logout', methods=['POST'])
 def logout(language='en'):
     print('DELETE SESSION')
     session.pop('user',None)
     return jsonify(success='logged out'), 200
 
 
-@app.route('/is_logged_in')
+@application.route('/is_logged_in')
 @requires_auth
 def is_logged_in():
     return jsonify(username=session['user']), 200
 
-@app.after_request
+@application.after_request
 def apply_caching(response):
-    print 'CACHE'
     response.headers['Cache-Control'] = 'no-cache'
     response.headers['Cache-Control'] = 'no-cache, no-store, must-revalidate'
     # prevent click-jacking vulnerability identified by BITs
