@@ -52,7 +52,7 @@ def variant(variant_id, subset='all', language='en'):
    c.execute("select config from user_config u where u.user_name='%s' and u.language='%s' and u.page='%s' limit 1" % (session['user'], language, 'variant'))
    x=c.fetchone()[0]
    CHROM,POS,REF,ALT,=variant_id.split('-')
-   data=get_db_session().query(Variant).filter(and_(Variant.CHROM==CHROM,Variant.REF==REF,Variant.ALT==ALT))
+   data=get_db_session().query(Variant).filter(and_(Variant.CHROM==CHROM,Variant.POS==POS,Variant.REF==REF,Variant.ALT==ALT))
    var=[p.as_dict() for p in data]
    process_for_display(var)
    var=var[0]
