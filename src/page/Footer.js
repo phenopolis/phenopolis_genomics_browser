@@ -12,7 +12,7 @@ function Copyright() {
   return (
     <Typography variant="body2" align="left">
       {'© '}
-      2019 Phenopolis Limited. Registered company number 11541164.
+      2020 Phenopolis Limited. Registered company number 11541164.
     </Typography>
   );
 }
