@@ -34,6 +34,7 @@ import LoginBox from './LoginBox';
 import GB from '../../assets/svg/gb.svg'
 import CN from '../../assets/svg/cn.svg'
 import JP from '../../assets/svg/jp.svg'
+import DE from '../../assets/svg/de.svg'
 
 import { withTranslation } from 'react-i18next';
 
@@ -187,11 +188,17 @@ class NoLoginBar extends React.Component {
 						</ListItemIcon>
 						<ListItemText classes={{ primary: classes.listItemText }} primary='中文' />
 					</MenuItem>
-					<MenuItem onClick={() => this.OpenLan()}>
+					<MenuItem onClick={() => changeLanguage('ja')}>
 						<ListItemIcon>
 							<img className={classes.imageIcon} src={JP} />
 						</ListItemIcon>
 						<ListItemText classes={{ primary: classes.listItemText }} primary='日本語' />
+					</MenuItem>
+					<MenuItem onClick={() => changeLanguage('de')}>
+						<ListItemIcon>
+							<img className={classes.imageIcon} src={DE} />
+						</ListItemIcon>
+						<ListItemText classes={{ primary: classes.listItemText }} primary='Deutsch' />
 					</MenuItem>
 				</Menu>
 

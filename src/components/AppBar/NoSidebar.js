@@ -20,6 +20,7 @@ import { withTranslation } from 'react-i18next';
 import GB from '../../assets/svg/gb.svg'
 import CN from '../../assets/svg/cn.svg'
 import JP from '../../assets/svg/jp.svg'
+import DE from '../../assets/svg/de.svg'
 
 class NoSideBar extends React.Component {
 	constructor(props) {
@@ -119,11 +120,18 @@ class NoSideBar extends React.Component {
 								<ListItemText primary="中文" classes={{ primary: classes.listItemText }} />
 							</ListItem>
 
-							<ListItem button className={classes.nested}>
+							<ListItem button onClick={() => changeLanguage('ja')} className={classes.nested}>
 								<ListItemIcon>
 									<img className={classes.imageIcon} src={JP} />
 								</ListItemIcon>
 								<ListItemText primary="日本語" classes={{ primary: classes.listItemText }} />
+							</ListItem>
+
+							<ListItem button onClick={() => changeLanguage('de')} className={classes.nested}>
+								<ListItemIcon>
+									<img className={classes.imageIcon} src={DE} />
+								</ListItemIcon>
+								<ListItemText primary="Deutsch" classes={{ primary: classes.listItemText }} />
 							</ListItem>
 						</List>
 					</Collapse>
