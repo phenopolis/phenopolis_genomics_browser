@@ -1,4 +1,6 @@
 branch-defaults:
+  master:
+    environment: Phenopolisapi-env
   aws:
     environment: Phenopolisapi-env
 environment-defaults:
