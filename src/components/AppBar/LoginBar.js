@@ -78,7 +78,7 @@ class LoginBar extends React.Component {
 					this.handleLogout('/login?link=timeout')
 				}
 			}
-		}, 1000 * 3);
+		}, 1000 * 60);
 
 		this.setState({ intervalId: intervalId });
 	}
