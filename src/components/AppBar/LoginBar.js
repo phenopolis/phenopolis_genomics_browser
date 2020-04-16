@@ -59,6 +59,7 @@ class LoginBar extends React.Component {
 			anchorEl: null,
 			anchorLan: null,
 			redirect: false,
+			relink: '',
 			openSideBar: false,
 			openLan: false,
 			openExplore: false,
@@ -69,11 +70,12 @@ class LoginBar extends React.Component {
 
 	componentDidMount() {
 		var intervalId = setInterval(() => {
-			let A = { name: this.props.reduxName }
+			// let A = { name: this.props.reduxName }
+			// console.log(A)
 			if (this.props.reduxName !== '') {
 				let name = cookies.get('username')
 				if (name === undefined) {
-					this.handleLogout()
+					this.handleLogout('/login?link=timeout')
 				}
 			}
 		}, 1000 * 60);
@@ -103,13 +105,13 @@ class LoginBar extends React.Component {
 		this.OpenMenu();
 	};
 
-	handleLogout = () => {
+	handleLogout = (relink) => {
 		axios
 			.post('/api/logout', { withCredentials: true })
 			.then((res) => {
 				// let respond = res.data;
 				cookies.remove('username');
-				this.setState({ redirect: true });
+				this.setState({ redirect: true, relink: relink });
 				this.props.setUser('');
 				console.log(this.props.reduxName)
 				this.props.setSnack(i18next.t('AppBar.LoginBar.Logout_Success'), 'success')
@@ -164,7 +166,7 @@ class LoginBar extends React.Component {
 		};
 
 		if (this.state.redirect) {
-			return <Redirect to='/' />;
+			return <Redirect to={this.state.relink} />;
 		}
 
 		return (
@@ -274,7 +276,7 @@ class LoginBar extends React.Component {
 									</ListItemIcon>
 									<ListItemText primary={t('AppBar.LoginBar.Label_Change_Password')} classes={{ primary: classes.listItemText }} />
 								</MenuItem>
-								<MenuItem onClick={this.handleLogout}>
+								<MenuItem onClick={() => this.handleLogout('/')}>
 									<ListItemIcon>
 										<ExitToAppIcon />
 									</ListItemIcon>
@@ -319,7 +321,7 @@ class LoginBar extends React.Component {
 				</Grid>
 
 				<Drawer open={this.state.openSideBar} onClose={() => this.OpenSideBar()}>
-					<Sidebar SidebarClicked={() => this.OpenSideBar()} SidebarLogout={this.handleLogout} />
+					<Sidebar SidebarClicked={() => this.OpenSideBar()} SidebarLogout={() => this.handleLogout('/')} />
 				</Drawer>
 			</Toolbar>
 		);

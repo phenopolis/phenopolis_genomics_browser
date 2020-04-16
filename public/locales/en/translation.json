@@ -4,8 +4,8 @@
       "subtitle": "Harmonization & Analysis of Sequencing & Phenotype Data",
       "button_no_login": "Login as Demo User",
       "button_login": "Search Phenopolis",
-      "login_success": "Login Success!",
-      "login_fail": "Login Failed."
+      "login_success": " Login Success!",
+      "login_fail": " Login Failed."
     },
     "HomeMainPart": {
       "tab1": {

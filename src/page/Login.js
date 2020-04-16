@@ -34,9 +34,14 @@ class Login extends React.Component {
         {this.props.reduxName === '' ? (
           <div className={classes.root}>
             {query.get('link') ? (
-              <Trans i18nKey="Login.redirectionLink" >
-                <span> Oops, seems you don't have access to <b style={{ color: '#2E84CF' }}> {{ mylink }} </b> yet, try login?</span>
-              </Trans>
+              mylink === 'timeout' ? (
+                <span> <b style={{ color: '#2E84CF' }}> Token Expired </b>, please re-login.</span>
+              )
+                : (
+                  <Trans i18nKey="Login.redirectionLink" >
+                    <span> Oops, seems you don't have access to <b style={{ color: '#2E84CF' }}> {{ mylink }} </b> yet, try login?</span>
+                  </Trans>
+                )
             ) : (null)}
 
             <LoginBox onLoginSuccess={() => { }} redirectLink={query.get('link') ? query.get('link') : null}>/</LoginBox>
