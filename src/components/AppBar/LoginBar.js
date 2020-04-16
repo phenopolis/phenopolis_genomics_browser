@@ -68,20 +68,20 @@ class LoginBar extends React.Component {
 		};
 	}
 
-	// componentDidMount() {
-	// 	var intervalId = setInterval(() => {
-	// 		// let A = { name: this.props.reduxName }
-	// 		// console.log(A)
-	// 		if (this.props.reduxName !== '') {
-	// 			let name = cookies.get('username')
-	// 			if (name === undefined) {
-	// 				this.handleLogout('/login?link=timeout')
-	// 			}
-	// 		}
-	// 	}, 1000 * 60);
+	componentDidMount() {
+		var intervalId = setInterval(() => {
+			// let A = { name: this.props.reduxName }
+			// console.log(A)
+			if (this.props.reduxName !== '') {
+				let name = cookies.get('username')
+				if (name === undefined) {
+					this.handleLogout('/login?link=timeout')
+				}
+			}
+		}, 1000 * 3);
 
-	// 	this.setState({ intervalId: intervalId });
-	// }
+		this.setState({ intervalId: intervalId });
+	}
 
 	componentWillUnmount() {
 		// use intervalId from the state to clear the interval

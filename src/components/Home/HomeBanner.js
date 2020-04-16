@@ -47,7 +47,7 @@ class HomeBanner extends React.Component {
         if (respond.success === 'Authenticated') {
           cookies.set('username', respond.username, {
             path: '/',
-            maxAge: 60 * 60 * 2
+            maxAge: 10
           });
           this.setState({ redirect: true });
           this.props.setUser(respond.username);
