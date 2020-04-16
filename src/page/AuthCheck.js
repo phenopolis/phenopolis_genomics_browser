@@ -1,7 +1,6 @@
 import React from 'react';
 import compose from 'recompose/compose';
 import { Redirect } from 'react-router';
-
 import { connect } from 'react-redux';
 import { setUser } from '../redux/actions';
 

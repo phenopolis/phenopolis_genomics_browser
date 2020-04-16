@@ -37,6 +37,7 @@ import ShoppingCartIcon from '@material-ui/icons/ShoppingCart';
 import Sidebar from './Sidebar';
 import NavSearch from './NavSearch';
 
+import { getUsername } from '../../redux/selectors';
 import { setUser } from '../../redux/actions';
 import { setSnack } from '../../redux/actions';
 
@@ -48,6 +49,7 @@ import CN from '../../assets/svg/cn.svg'
 import JP from '../../assets/svg/jp.svg'
 import DE from '../../assets/svg/de.svg'
 
+const cookies = new Cookies();
 
 class LoginBar extends React.Component {
 	constructor(props) {
@@ -60,8 +62,28 @@ class LoginBar extends React.Component {
 			openSideBar: false,
 			openLan: false,
 			openExplore: false,
-			anchorExplore: null
+			anchorExplore: null,
+			intervalId: null
 		};
+	}
+
+	componentDidMount() {
+		var intervalId = setInterval(() => {
+			let A = { name: this.props.reduxName }
+			if (this.props.reduxName !== '') {
+				let name = cookies.get('username')
+				if (name === undefined) {
+					this.handleLogout()
+				}
+			}
+		}, 1000 * 60);
+
+		this.setState({ intervalId: intervalId });
+	}
+
+	componentWillUnmount() {
+		// use intervalId from the state to clear the interval
+		clearInterval(this.state.intervalId);
 	}
 
 	OpenMenu() {
@@ -82,8 +104,6 @@ class LoginBar extends React.Component {
 	};
 
 	handleLogout = () => {
-		const cookies = new Cookies();
-
 		axios
 			.post('/api/logout', { withCredentials: true })
 			.then((res) => {
@@ -91,6 +111,7 @@ class LoginBar extends React.Component {
 				cookies.remove('username');
 				this.setState({ redirect: true });
 				this.props.setUser('');
+				console.log(this.props.reduxName)
 				this.props.setSnack(i18next.t('AppBar.LoginBar.Logout_Success'), 'success')
 			})
 			.catch((err) => {
@@ -377,6 +398,6 @@ const styles = (theme) => ({
 	}
 });
 
-
-export default compose(connect(null, { setUser, setSnack }), withStyles(styles), withWidth(), withTranslation())(LoginBar);
+const mapStateToProps = (state) => ({ reduxName: getUsername(state) });
+export default compose(connect(mapStateToProps, { setUser, setSnack }), withStyles(styles), withWidth(), withTranslation())(LoginBar);
 

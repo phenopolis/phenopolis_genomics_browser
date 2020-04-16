@@ -46,7 +46,8 @@ class LoginBox extends React.Component {
         if (respond.success === 'Authenticated') {
           cookies.set('username', respond.username, {
             path: '/',
-            maxAge: 86400 * 60 * 24 * 30
+            maxAge: 60 * 60 * 6
+            // maxAge: 86400 * 60 * 24 * 30
           });
           this.setState({ redirect: true });
           this.props.setUser(respond.username);
