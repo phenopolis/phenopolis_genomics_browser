@@ -6,7 +6,11 @@ import { CssBaseline, Paper, Container } from '@material-ui/core';
 import { Redirect } from 'react-router';
 
 import MetaData from '../components/Gene/MetaData';
+
 import Variants from '../components/Gene/Variants';
+import ReactVirtualizedTable from '../components/Table/ReactVirtualizedTable'
+import VirtualGrid from '../components/Table/VirtualGrid'
+
 import Loading from '../components/General/Loading';
 
 import compose from 'recompose/compose';
@@ -18,6 +22,7 @@ class Gene extends React.Component {
     super(props);
     this.state = {
       geneInfo: {},
+      variants: [],
       loaded: false,
       redirect: false
     };
@@ -31,6 +36,7 @@ class Gene extends React.Component {
       })
       .then(res => {
         let respond = res.data;
+        respond[0].variants.colNames[0].key = "CHROM"
         console.log(respond[0]);
         self.setState({
           geneInfo: respond[0],
@@ -38,11 +44,10 @@ class Gene extends React.Component {
         });
       })
       .catch(err => {
-        console.log(err);
-        // console.log(err.response)
-        if (err.response.data.error === 'Unauthenticated') {
-          this.setState({ redirect: true });
-        }
+        // console.log(err);
+        // if (err.response.data.error === 'Unauthenticated') {
+        //   this.setState({ redirect: true });
+        // }
       });
   }
 
@@ -77,7 +82,9 @@ class Gene extends React.Component {
 
             <Container maxWidth='xl'>
               <Paper className={classes.paper}>
-                <Variants variants={this.state.geneInfo.variants} title={t('Gene.Variants_Analysis')} subtitle={t('Gene.Variants Analysis_subtitle')} configureLink="gene/variants" />
+                <VirtualGrid />
+                {/* <ReactVirtualizedTable results={this.state.geneInfo.variants} data={this.state.geneInfo.variants.data} mycolumn={this.state.geneInfo.variants.colNames} /> */}
+                {/* <Variants variants={this.state.geneInfo.variants} title={t('Gene.Variants_Analysis')} subtitle={t('Gene.Variants Analysis_subtitle')} configureLink="gene/variants" /> */}
               </Paper>
             </Container>
           </div>
@@ -99,7 +106,7 @@ const styles = theme => ({
     padding: '4em'
   },
   paper: {
-    padding: theme.spacing(3),
+    overflowX: 'auto',
     marginTop: theme.spacing(5)
   }
 });
