@@ -53,17 +53,19 @@ class CellInput extends React.Component {
   }
 
   render() {
-    return React.createElement("input", {
-      id: this.props.id,
-      className: this.props.className,
-      style: this.props.style,
-      type: this.props.type,
-      defaultValue: this.props.defaultValue,
-      onChange: this.onChange.bind(this),
-      onKeyPress: this.onKeyPress.bind(this),
-      onFocus: this.onFocus.bind(this),
-      onBlur: this.onBlur.bind(this)
-    });
+    return (
+      <input
+        id={this.props.id}
+        className={this.props.className}
+        style={this.props.style}
+        type={this.props.type}
+        defaultValue={this.props.defaultValue}
+        onChange={this.onChange.bind(this)}
+        onKeyPress={this.onKeyPress.bind(this)}
+        onFocus={this.onFocus.bind(this)}
+        onBlur={this.onBlur.bind(this)}
+      />
+    )
   }
 }
 
@@ -143,17 +145,29 @@ const columnsBuilder = (minRow, maxRow, rowHeight, stickyWidth) => {
   return rows;
 };
 
-const GridColumn = ({ rowIndex, columnIndex, style }) => {
-  let value = "Cell " + rowIndex + ", " + columnIndex;
-  return React.createElement(CellInput, {
-    id: rowIndex + 1 + "," + (columnIndex + 1),
-    className: "sticky-grid__data__column",
-    style: style,
-    type: "text",
-    defaultValue: value,
-    cellChange: handleCellChange
-  });
-};
+class GridColumn extends React.Component {
+  constructor(props) {
+    super(props);
+    this.state = {
+    };
+  }
+
+  render() {
+    const { rowIndex, columnIndex, style } = this.props;
+    let value = "Cell " + rowIndex + ", " + columnIndex;
+
+    return (
+      <CellInput
+        id={rowIndex + 1 + "," + (columnIndex + 1)}
+        className={"sticky-grid__data__column"}
+        style={style}
+        type={"text"}
+        defaultValue={value}
+        cellChange={handleCellChange}
+      />
+    );
+  }
+}
 
 const StickyHeader = ({ stickyHeight, stickyWidth, headerColumns }) => {
   const baseStyle = {
@@ -163,38 +177,25 @@ const StickyHeader = ({ stickyHeight, stickyWidth, headerColumns }) => {
   const scrollableStyle = {
     left: stickyWidth
   };
-  return React.createElement(
-    "div",
-    {
-      className: "sticky-grid__header"
-    },
-    React.createElement(
-      "div",
-      {
-        className: "sticky-grid__header__base",
-        style: baseStyle
-      },
-      "Sticky Base"
-    ),
-    React.createElement(
-      "div",
-      {
-        className: "sticky-grid__header__scrollable",
-        style: scrollableStyle
-      },
-      headerColumns.map(({ label, ...style }, i) =>
-        React.createElement(
-          "div",
-          {
-            className: "sticky-grid__header__scrollable__column",
-            style: style,
-            key: i
-          },
-          label
-        )
-      )
-    )
-  );
+
+  return (
+    <div className={"sticky-grid__header"}>
+      <div className={"sticky-grid__header__base"} style={baseStyle}>
+        Sticky Base
+      </div>
+      <div className={"sticky-grid__header__scrollable"} style={scrollableStyle}>
+        {
+          headerColumns.map(({ label, ...style }, i) => {
+            return (
+              <div className={"sticky-grid__header__scrollable__column"} style={style} key={i}>
+                {label}
+              </div>
+            )
+          })
+        }
+      </div>
+    </div>
+  )
 };
 
 const StickyColumns = ({ rows, stickyHeight, stickyWidth }) => {
@@ -203,97 +204,108 @@ const StickyColumns = ({ rows, stickyHeight, stickyWidth }) => {
     width: stickyWidth,
     height: `calc(100% - ${stickyHeight}px)`
   };
-  return React.createElement(
-    "div",
-    {
-      className: "sticky-grid__sticky-columns__container",
-      style: leftSideStyle
-    },
-    rows.map(({ label, ...style }, i) =>
-      React.createElement(
-        "div",
-        {
-          className: "sticky-grid__sticky-columns__row",
-          style: style,
-          key: i
-        },
-        label
-      )
-    )
-  );
+
+  return (
+    <div className={"sticky-grid__sticky-columns__container"} style={leftSideStyle}>
+      {
+        rows.map(({ label, ...style }, i) => {
+          return (
+            <div className={"sticky-grid__sticky-columns__row"}
+              style={style}
+              key={i}>
+              {label}
+            </div>
+          )
+        })
+      }
+    </div>
+  )
+
+
+  // return React.createElement(
+  //   "div",
+  //   {
+  //     className: "sticky-grid__sticky-columns__container",
+  //     style: leftSideStyle
+  //   },
+  //   rows.map(({ label, ...style }, i) =>
+  //     React.createElement(
+  //       "div",
+  //       {
+  //         className: "sticky-grid__sticky-columns__row",
+  //         style: style,
+  //         key: i
+  //       },
+  //       label
+  //     )
+  //   )
+  // );
 };
 
 const StickyGridContext = React.createContext();
 StickyGridContext.displayName = "StickyGridContext";
-const innerGridElementType = React.forwardRef(({ children, ...rest }, ref) =>
-  React.createElement(
-    StickyGridContext.Consumer,
-    null,
-    ({
-      stickyHeight,
-      stickyWidth,
-      headerBuilder,
-      columnsBuilder,
-      columnWidth,
-      rowHeight
-    }) => {
-      const [minRow, maxRow, minColumn, maxColumn] = getRenderedCursor(
-        children
-      ); // TODO maybe there is more elegant way to get this
 
-      const headerColumns = headerBuilder(
-        minColumn,
-        maxColumn,
+const innerGridElementType = React.forwardRef(({ children, ...rest }, ref) =>
+  <StickyGridContext.Consumer>
+    {
+      ({
+        stickyHeight,
+        stickyWidth,
+        headerBuilder,
+        columnsBuilder,
         columnWidth,
-        stickyHeight
-      );
-      const leftSideRows = columnsBuilder(
-        minRow,
-        maxRow,
-        rowHeight,
-        stickyWidth
-      );
-      const containerStyle = {
-        ...rest.style,
-        width: `${parseFloat(rest.style.width) + stickyWidth}px`,
-        height: `${parseFloat(rest.style.height) + stickyHeight}px`
-      };
-      const containerProps = {
-        ...rest,
-        style: containerStyle
-      };
-      const gridDataContainerStyle = {
-        top: stickyHeight,
-        left: stickyWidth
-      };
-      return React.createElement(
-        "div",
-        {
-          className: "sticky-grid__container",
-          ref: ref,
-          ...containerProps
-        },
-        React.createElement(StickyHeader, {
-          headerColumns: headerColumns,
-          stickyHeight: stickyHeight,
-          stickyWidth: stickyWidth
-        }),
-        React.createElement(StickyColumns, {
-          rows: leftSideRows,
-          stickyHeight: stickyHeight,
-          stickyWidth: stickyWidth
-        }),
-        React.createElement(
-          "div",
-          {
-            className: "sticky-grid__data__container",
-            style: gridDataContainerStyle
-          },
+        rowHeight
+      }) => {
+        const [minRow, maxRow, minColumn, maxColumn] = getRenderedCursor(
           children
+        ); // TODO maybe there is more elegant way to get this
+
+        const headerColumns = headerBuilder(
+          minColumn,
+          maxColumn,
+          columnWidth,
+          stickyHeight
+        );
+        const leftSideRows = columnsBuilder(
+          minRow,
+          maxRow,
+          rowHeight,
+          stickyWidth
+        );
+        const containerStyle = {
+          ...rest.style,
+          width: `${parseFloat(rest.style.width) + stickyWidth}px`,
+          height: `${parseFloat(rest.style.height) + stickyHeight}px`
+        };
+        const containerProps = {
+          ...rest,
+          style: containerStyle
+        };
+        const gridDataContainerStyle = {
+          top: stickyHeight,
+          left: stickyWidth
+        };
+        // -------------------
+        return (
+          <div ref={ref} className="sticky-grid__container" {...containerProps}>
+            <StickyHeader
+              headerColumns={headerColumns}
+              stickyHeight={stickyHeight}
+              stickyWidth={stickyWidth}
+            />
+            <StickyColumns
+              rows={leftSideRows}
+              stickyHeight={stickyHeight}
+              stickyWidth={stickyWidth}
+            />
+            <div className="sticky-grid__data__container" style={gridDataContainerStyle}>
+              {children}
+            </div>
+          </div>
         )
-      );
+      }
     }
-  )
+  </StickyGridContext.Consumer>
 );
 
 const StickyGrid = ({
@@ -303,32 +315,61 @@ const StickyGrid = ({
   rowHeight,
   children,
   ...rest
-}) =>
-  React.createElement(
-    StickyGridContext.Provider,
-    {
-      value: {
-        stickyHeight,
-        stickyWidth,
-        columnWidth,
-        rowHeight,
-        headerBuilder,
-        columnsBuilder
-      }
-    },
+}) => {
+  return (
     React.createElement(
-      Grid,
+      StickyGridContext.Provider,
       {
-        columnWidth: columnWidth,
-        rowHeight: rowHeight,
-        innerElementType: innerGridElementType,
-        ...rest
+        value: {
+          stickyHeight,
+          stickyWidth,
+          columnWidth,
+          rowHeight,
+          headerBuilder,
+          columnsBuilder
+        }
       },
-      children
+      React.createElement(
+        Grid,
+        {
+          columnWidth: columnWidth,
+          rowHeight: rowHeight,
+          innerElementType: innerGridElementType,
+          ...rest
+        },
+        children
+      )
     )
-  );
+  )
+}
+
+// ------------------------
 
 
+// ------------------------
+// React.createElement(
+//   StickyGridContext.Provider,
+//   {
+//     value: {
+//       stickyHeight,
+//       stickyWidth,
+//       columnWidth,
+//       rowHeight,
+//       headerBuilder,
+//       columnsBuilder
+//     }
+//   },
+//   React.createElement(
+//     Grid,
+//     {
+//       columnWidth: columnWidth,
+//       rowHeight: rowHeight,
+//       innerElementType: innerGridElementType,
+//       ...rest
+//     },
+//     children
+//   )
+// );
 
 function getRowHeight(index) {
   return index % 2 ? 60 : 30;
@@ -347,45 +388,8 @@ function handleCellChange(props, value) {
   console.log(value + ", " + focusField);
 }
 
-// var gparms = {
-//   columnCount: 20,
-//   rowCount: 1000,
-//   rowHeight: getRowHeight,
-//   columnWidth: getColumnWidth,
-//   stickyHeight: 40,
-//   stickyWidth: 120,
-//   onScroll: handleScroll
-// };
-
-// const rootElement = document.getElementById("root");
-
-// ReactDOM.render(
-//   React.createElement(AutoSizer, null, function(params) {
-//     gparms.height = params.height;
-//     gparms.width = params.width;
-//     return React.createElement(StickyGrid, gparms, GridColumn);
-//   }),
-//   rootElement
-// );
-
-// const rootElement = document.getElementById("root");
-
-// render(
-//   <StickyGrid
-//     height={500}
-//     width={500}
-//     columnCount={1000}
-//     rowCount={1000}
-//     rowHeight={getRowHeight}
-//     columnWidth={getColumnWidth}
-//     stickyHeight={50}
-//     stickyWidth={150}
-//   >
-//     {GridColumn}
-//   </StickyGrid>,
-//   rootElement
-// );
-
+// - * - * - * - * - * - * - * - * - * - * - * - * 
+// - * - * - * - * - * - * - * - * - * - * - * - * 
 
 class VirtualGrid extends React.Component {
   constructor(props) {
@@ -410,6 +414,7 @@ class VirtualGrid extends React.Component {
               columnWidth={getColumnWidth}
               stickyHeight={50}
               stickyWidth={150}
+              onScroll={handleScroll}
             >
               {GridColumn}
             </StickyGrid>
