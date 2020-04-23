@@ -1,3 +1,4 @@
+werkzeug==0.16.0
 flask
 flask_compress
 flask_caching
@@ -9,4 +10,3 @@ boto3
 requests
 pysam==0.9
 sqlalchemy
-
