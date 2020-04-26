@@ -82,7 +82,7 @@ class Gene extends React.Component {
 
             <Container maxWidth='xl'>
               <Paper className={classes.paper}>
-                <VirtualGrid />
+                <VirtualGrid mycolumns={this.state.geneInfo.variants.colNames} myrows={this.state.geneInfo.variants.data} />
                 {/* <ReactVirtualizedTable results={this.state.geneInfo.variants} data={this.state.geneInfo.variants.data} mycolumn={this.state.geneInfo.variants.colNames} /> */}
                 {/* <Variants variants={this.state.geneInfo.variants} title={t('Gene.Variants_Analysis')} subtitle={t('Gene.Variants Analysis_subtitle')} configureLink="gene/variants" /> */}
               </Paper>
