@@ -60,8 +60,8 @@ const styles = theme => ({
     'flex-direction': 'row',
     'align-items': 'center',
     paddingLeft: '10px',
-    borderRight: '1px solid gray',
-    borderBottom: '1px solid gray',
+    borderRight: '1px solid lightgray',
+    borderBottom: '1px solid lightgray',
     fontSize: '14px'
   },
   chip: {

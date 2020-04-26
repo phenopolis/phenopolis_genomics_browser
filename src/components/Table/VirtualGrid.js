@@ -8,6 +8,7 @@ import AutoSizer from "react-virtualized-auto-sizer";
 import calculateSize from 'calculate-size'
 
 import GridColumn from "./GridColumn"
+import StickyHeader from "./StickyHeader"
 
 import "./styles.css";
 
@@ -45,7 +46,7 @@ const getRenderedCursor = children =>
     ]
   );
 
-const headerBuilder = (minColumn, maxColumn, columnWidth, stickyHeight) => {
+const headerBuilder = (minColumn, maxColumn, columnWidth, stickyHeight, mycolumns) => {
   const columns = [];
   let left = [0], pos = 0;
 
@@ -59,7 +60,7 @@ const headerBuilder = (minColumn, maxColumn, columnWidth, stickyHeight) => {
       height: stickyHeight,
       width: columnWidth(i),
       left: left[i],
-      label: `Sticky Col ${i}`
+      label: mycolumns[i].name
     });
   }
 
@@ -86,38 +87,6 @@ const columnsBuilder = (minRow, maxRow, rowHeight, stickyWidth) => {
   }
 
   return rows;
-};
-
-const StickyHeader = ({ stickyHeight, stickyWidth, headerColumns }) => {
-  const baseStyle = {
-    height: stickyHeight,
-    width: stickyWidth
-  };
-  const scrollableStyle = {
-    left: stickyWidth
-  };
-
-  return (
-    <div className={"sticky-grid__header"}>
-      <div className={"sticky-grid__header__base"} style={baseStyle}>
-        Sticky Base
-      </div>
-      <div className={"sticky-grid__header__scrollable"} style={scrollableStyle}>
-        {
-          headerColumns.map(({ label, ...style }, i) => {
-            return (
-              <div
-                className={"sticky-grid__header__scrollable__column"}
-                style={style}
-                key={i}>
-                {label}
-              </div>
-            )
-          })
-        }
-      </div>
-    </div>
-  )
 };
 
 const StickyColumns = ({ rows, stickyHeight, stickyWidth }) => {
@@ -157,9 +126,11 @@ const innerGridElementType = React.forwardRef(({ children, ...rest }, ref) =>
         headerBuilder,
         columnsBuilder,
         columnWidth,
-        rowHeight,
-        myrows
+        mycolumns,
+        rowHeight
       }) => {
+
+        console.log(mycolumns)
 
         const [minRow, maxRow, minColumn, maxColumn] = getRenderedCursor(
           children
@@ -169,7 +140,8 @@ const innerGridElementType = React.forwardRef(({ children, ...rest }, ref) =>
           minColumn,
           maxColumn,
           columnWidth,
-          stickyHeight
+          stickyHeight,
+          mycolumns
         );
 
         const leftSideRows = columnsBuilder(
@@ -202,11 +174,11 @@ const innerGridElementType = React.forwardRef(({ children, ...rest }, ref) =>
               stickyHeight={stickyHeight}
               stickyWidth={stickyWidth}
             />
-            <StickyColumns
+            {/* <StickyColumns
               rows={leftSideRows}
               stickyHeight={stickyHeight}
               stickyWidth={stickyWidth}
-            />
+            /> */}
             <div className="sticky-grid__data__container" style={gridDataContainerStyle}>
               {children}
             </div>
@@ -223,7 +195,7 @@ const StickyGrid = ({
   columnWidth,
   rowHeight,
   myrows,
-  test,
+  mycolumns,
   children,
   ...rest
 }) => {
@@ -241,7 +213,7 @@ const StickyGrid = ({
           rowHeight,
           headerBuilder,
           columnsBuilder,
-          test,
+          mycolumns,
           myrows
         }
       },
@@ -289,13 +261,18 @@ class VirtualGrid extends React.Component {
     var mycolumns = this.props.mycolumns
 
     let maxColumn = 400
-    let minColumn = 100
+    let minColumn = 80
 
     let minHeight = 40
     let HeightIncrease = 30
 
     let tmpWidth = Array(mycolumns.length).fill(minColumn)
     let tmpHeight = Array(myrows.length).fill(minHeight)
+
+    for (let j = 0; j < mycolumns.length; j++) {
+      let headSize = calculateSize(mycolumns[j].name, { font: 'Arial', fontSize: '14px' })
+      if (headSize.width + 20 > tmpWidth[j]) tmpWidth[j] = headSize.width + 20
+    }
 
     var keys = Object.keys(myrows[0]);
 
@@ -306,14 +283,18 @@ class VirtualGrid extends React.Component {
         if (typeof cellData === 'object') {
 
           let chipsSize = 0
+          var tmpMax = maxColumn
 
           cellData.forEach((chip) => {
             let size = calculateSize(chip.display, { font: 'Arial', fontSize: '12px' })
-            chipsSize = chipsSize + size.width + 15
+            if (size.width + 60 > tmpMax) {
+              tmpMax = size.width + 60
+            }
+            chipsSize = chipsSize + size.width + 20
           })
 
-          let cellHeight = minHeight + (Math.round(chipsSize / maxColumn) * HeightIncrease)
-          let cellWidth = chipsSize % maxColumn
+          let cellHeight = minHeight + (Math.round(chipsSize / tmpMax) * HeightIncrease)
+          let cellWidth = chipsSize / tmpMax > 1 ? tmpMax : chipsSize
 
           if (cellWidth > tmpWidth[j]) tmpWidth[j] = cellWidth
           if (cellHeight > tmpHeight[i]) tmpHeight[i] = cellHeight
@@ -321,10 +302,8 @@ class VirtualGrid extends React.Component {
         } else {
           let cellSize = calculateSize(cellData, { font: 'Arial', fontSize: '14px' })
 
-          let cellWidth = cellSize.width + 15
-
+          let cellWidth = cellSize.width + 20
           if (cellWidth > tmpWidth[j]) tmpWidth[j] = cellWidth
-
         }
       }
     }
@@ -349,7 +328,7 @@ class VirtualGrid extends React.Component {
   }
 
   render() {
-    const { classes, myrows, mycolumn } = this.props;
+    const { classes, myrows, mycolumns } = this.props;
 
     return (
       <div className={classes.root}>
@@ -363,10 +342,10 @@ class VirtualGrid extends React.Component {
               rowHeight={this.getRowHeight}
               columnWidth={this.getColumnWidth}
               stickyHeight={50}
-              stickyWidth={150}
+              stickyWidth={0}
               onScroll={handleScroll}
               myrows={myrows}
-              test={"my_context_test"}
+              mycolumns={mycolumns}
             >
               {GridColumn}
             </StickyGrid>
@@ -384,7 +363,7 @@ VirtualGrid.propTypes = {
 const styles = theme => ({
   root: {
     margin: '10',
-    height: '60vh',
+    height: '70vh',
     width: '100%',
     overflow: 'hidden',
     'scroll-behavior': 'smooth'
