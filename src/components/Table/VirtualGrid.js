@@ -6,6 +6,7 @@ import { VariableSizeGrid as Grid } from "react-window";
 import AutoSizer from "react-virtualized-auto-sizer";
 
 import calculateSize from 'calculate-size'
+import memoize from 'memoize-one'
 
 import GridColumn from "./GridColumn"
 import StickyHeader from "./StickyHeader"
@@ -130,8 +131,6 @@ const innerGridElementType = React.forwardRef(({ children, ...rest }, ref) =>
         rowHeight
       }) => {
 
-        console.log(mycolumns)
-
         const [minRow, maxRow, minColumn, maxColumn] = getRenderedCursor(
           children
         ); // TODO maybe there is more elegant way to get this
@@ -189,6 +188,14 @@ const innerGridElementType = React.forwardRef(({ children, ...rest }, ref) =>
   </StickyGridContext.Consumer>
 );
 
+
+const createItemData = memoize((rows, columns, toggleItemActive, currentRow) => ({
+  rows,
+  columns,
+  toggleItemActive,
+  currentRow
+}));
+
 const StickyGrid = ({
   stickyHeight,
   stickyWidth,
@@ -197,10 +204,12 @@ const StickyGrid = ({
   myrows,
   mycolumns,
   children,
+  toggleItemActive,
+  currentRow,
   ...rest
 }) => {
 
-  console.log(children)
+  const itemData = createItemData(myrows, mycolumns, toggleItemActive, currentRow);
 
   return (
     React.createElement(
@@ -223,7 +232,7 @@ const StickyGrid = ({
           columnWidth: columnWidth,
           rowHeight: rowHeight,
           innerElementType: innerGridElementType,
-          itemData: myrows,
+          itemData: itemData,
           ...rest
         },
         children
@@ -253,6 +262,8 @@ class VirtualGrid extends React.Component {
       TableRowHeight: [120, 80, 100, 60],
       rowCount: 0,
       colCount: 0,
+      currentRow: null,
+      currentColumn: null,
     };
   }
 
@@ -274,12 +285,12 @@ class VirtualGrid extends React.Component {
       if (headSize.width + 20 > tmpWidth[j]) tmpWidth[j] = headSize.width + 20
     }
 
-    var keys = Object.keys(myrows[0]);
-
     for (let i = 0; i < myrows.length; i++) {
       for (let j = 0; j < mycolumns.length; j++) {
-        var key = keys[j]
-        var cellData = myrows[i][key]
+
+        var key = mycolumns[j].key
+        let cellData = myrows[i][key]
+
         if (typeof cellData === 'object') {
 
           let chipsSize = 0
@@ -290,7 +301,7 @@ class VirtualGrid extends React.Component {
             if (size.width + 60 > tmpMax) {
               tmpMax = size.width + 60
             }
-            chipsSize = chipsSize + size.width + 20
+            chipsSize = chipsSize + size.width + 60
           })
 
           let cellHeight = minHeight + (Math.round(chipsSize / tmpMax) * HeightIncrease)
@@ -327,11 +338,17 @@ class VirtualGrid extends React.Component {
     return this.state.TableColumnWidth[index]
   }
 
+  toggleItemActive = (rowIndex, columnIndex) => {
+    // window.alert(rowIndex, collumIndex)
+    this.setState({ currentRow: rowIndex, currentColumn: columnIndex })
+  }
+
   render() {
     const { classes, myrows, mycolumns } = this.props;
 
     return (
       <div className={classes.root}>
+        {/* {this.state.currentRow} */}
         <AutoSizer>
           {({ height, width }) => (
             <StickyGrid
@@ -346,6 +363,9 @@ class VirtualGrid extends React.Component {
               onScroll={handleScroll}
               myrows={myrows}
               mycolumns={mycolumns}
+              toggleItemActive={this.toggleItemActive}
+              currentRow={this.state.currentRow}
+              currentColumn={this.state.currentColumn}
             >
               {GridColumn}
             </StickyGrid>
