@@ -12,16 +12,14 @@ class GridColumn extends React.Component {
     };
   }
   componentWillMount() {
-    var mystyle = this.props.style
+    var mystyle = JSON.parse(JSON.stringify(this.props.style))
     mystyle['backgroundColor'] = 'white'
     this.setState({ mystyle: mystyle })
   }
 
   componentWillReceiveProps(nextProps) {
-    // console.log(nextProps.style)
     // var mystyle = nextProps.style
     if (nextProps.data.currentRow === nextProps.rowIndex) {
-      // console.log(nextProps.style)
       var mystyle = JSON.parse(JSON.stringify(nextProps.style))
       mystyle.backgroundColor = '#eeee'
       this.setState({ mystyle: mystyle })
@@ -54,7 +52,7 @@ class GridColumn extends React.Component {
         className={classes.tableCell}
         id={rowIndex + 1 + "," + (columnIndex + 1)}
         style={this.state.mystyle}
-        onClick={this.myfunction}
+        onMouseEnter={this.myfunction}
       >
         <div>
           {typeof cellData === 'object' ? (

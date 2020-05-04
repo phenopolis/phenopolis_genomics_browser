@@ -1,0 +1,12 @@
+//  Core
+
+.timeline-list {
+  @each $color, $value in $theme-colors {
+    &.timeline-list--#{$color} {
+      .timeline-item--icon,
+      &::before {
+        background: $value;
+      }
+    }
+  }
+}

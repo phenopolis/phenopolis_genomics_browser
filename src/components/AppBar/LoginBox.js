@@ -83,7 +83,7 @@ class LoginBox extends React.Component {
     const { t, i18n } = this.props;
 
     if (this.state.redirect) {
-      return <Redirect to={this.props.redirectLink ? this.props.redirectLink : '/search'} />;
+      return <Redirect to={this.props.redirectLink & this.props.redirectLink !== 'timeout' ? this.props.redirectLink : '/search'} />;
     }
 
     return (

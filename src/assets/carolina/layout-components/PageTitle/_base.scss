@@ -1,0 +1,157 @@
+//  Core
+
+.app-page-title {
+  margin: (-$layout-spacer) (-$layout-spacer) $layout-spacer;
+  padding: $layout-spacer ($layout-spacer * 3) $layout-spacer $layout-spacer;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: rgba($white, .5);
+  transition: $transition-base;
+  position: relative;
+
+  @include media-breakpoint-down(md) {
+    flex-direction: column;
+    padding-right: $layout-spacer;
+  }
+  &--dark {
+
+    .MuiBreadcrumbs-li,
+    .MuiBreadcrumbs-li a,
+    .MuiBreadcrumbs-li p,
+    .MuiBreadcrumbs-separator,
+    .app-page-title--heading {
+      color: rgba($white, 1);
+    }
+  }
+
+  &--first {
+    flex-grow: 1;
+    display: flex;
+    align-items: center;
+
+    @include media-breakpoint-down(md) {
+      flex-direction: column;
+      margin-bottom: ($spacer * 1.5);
+    }
+  }
+
+  &--second {
+    display: flex;
+    align-items: center;
+  }
+  &--heading {
+    padding-right: ($spacer);
+
+    @include media-breakpoint-down(md) {
+      padding-right: 0;
+      text-align: center;
+    }
+
+    h1 {
+      font-size: $display4-size / 1.1;
+      font-weight: 700;
+      margin: 0;
+    }
+  }
+  &--iconbox {
+    background: $white;
+    @include border-radius(100%);
+    display: flex;
+    margin: 0 ($spacer * 1.5) 0 0;
+    justify-content: center;
+    align-items: center;
+
+    @include media-breakpoint-down(md) {
+      margin: 0 0 ($spacer * 1.5);
+    }
+
+    @include media-breakpoint-down(sm) {
+      display: none !important;
+    }
+
+  }
+
+  &--description {
+    margin: ($spacer / 2) 0 0;
+    font-size: $font-size-base * 1.1;
+    opacity: .6;
+    font-weight: normal;
+  }
+
+  // Alternate style 1
+
+  &.app-page-title-alt-1 {
+    background: $white;
+    padding-top: ($spacer);
+    padding-bottom: ($spacer);
+
+    .app-page-title--heading {
+      display: flex;
+      align-items: center;
+
+      h1 {
+        font-size: $font-size-lg;
+      }
+    }
+
+    .app-page-title--description {
+      width: 75%;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      margin: 0 0 0 ($spacer / 2);
+      font-size: $font-size-base;
+    }
+
+    .app-page-title--iconbox {
+      box-shadow: none;
+      background: none;
+      margin-right: ($spacer / 2);
+
+      width: 32px !important;
+      height: 32px !important;
+
+      .d-70 {
+        width: 32px !important;
+        height: 32px !important;
+
+        .display-3 {
+          font-size: $font-size-lg !important;
+        }
+      }
+    }
+  }
+
+  // Alternate style 2
+
+  &.app-page-title-alt-2 {
+    margin: (-$layout-spacer) 0 $layout-spacer;
+    padding: $layout-spacer;
+    @include border-bottom-radius($border-radius);
+  }
+
+  // Alternate style 3
+
+  &.app-page-title-alt-3 {
+    margin: 0 0 $layout-spacer;
+    padding: ($layout-spacer / 1.5) $layout-spacer;
+    @include border-radius($border-radius);
+
+    .app-page-title--iconbox {
+      @include border-radius(100%);
+    }
+  }
+}
+
+.speedial-wrapper {
+  position: absolute;
+  top: 50%;
+  right: ($spacer);
+  margin-top: -28px;
+
+  .MuiSpeedDial-root {
+    right: 0;
+    position: absolute;
+  }
+}

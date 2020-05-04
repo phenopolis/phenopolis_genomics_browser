@@ -1,0 +1,65 @@
+//  Core
+
+.card-img-wrapper {
+  position: relative;
+  @include border-top-radius(inherit);
+
+  .img-wrapper-overlay {
+    width: 100%;
+    height: 100%;
+    transition: $transition-base;
+    opacity: 0;
+    visibility: hidden;
+    position: absolute;
+    left: 0;
+    top: 0;
+    box-shadow: inset 0 0 2.3rem .5rem $black;
+    display: flex;
+    align-items: center;
+    align-content: center;
+    color: $white;
+    @include border-top-radius(inherit);
+
+    @include media-breakpoint-down(sm) {
+      & + img {
+        width: 100% !important;
+      }
+    }
+
+    .overlay-btn-wrapper {
+      position: relative;
+      z-index: 3;
+      text-align: center;
+      width: 100%;
+    }
+
+    &:before {
+      z-index: 2;
+      position: absolute;
+      left: 0;
+      top: 0;
+      content: "";
+      width: 100%;
+      height: 100%;
+      transition: $transition-base;
+      background: $black;
+      opacity: .85;
+    }
+  }
+
+  .card-badges {
+    z-index: 5;
+  }
+}
+
+a.card-img-wrapper {
+  display: block;
+  overflow: hidden;
+
+  &:hover {
+    .img-wrapper-overlay {
+      opacity: 1;
+      visibility: visible;
+    }
+  }
+}

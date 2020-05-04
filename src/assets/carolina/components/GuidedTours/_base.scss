@@ -1,0 +1,24 @@
+//  Core
+
+.react-joyride__overlay {
+  z-index: 1200 !important;
+  display: none !important;
+
+  .react-joyride__spotlight {
+    z-index: 1300 !important;
+    display: none !important;
+  }
+}
+
+.__floater {
+  z-index: 1400 !important;
+}
+
+.joyride-button {
+  @include border-radius($btn-border-radius !important);
+}
+
+.joyride-step__container {
+  @include border-radius($card-border-radius !important);
+  box-shadow: $modal-content-box-shadow-xs !important;
+}

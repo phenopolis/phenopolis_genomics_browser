@@ -81,11 +81,11 @@ class Gene extends React.Component {
             <MetaData metadata={this.state.geneInfo.metadata} name={this.state.geneInfo.metadata.data[0].gene_name + ' - ' + this.state.geneInfo.metadata.data[0].full_gene_name} />
 
             <Container maxWidth='xl'>
-              <Paper className={classes.paper}>
-                <VirtualGrid mycolumns={this.state.geneInfo.variants.colNames} myrows={this.state.geneInfo.variants.data} />
-                {/* <ReactVirtualizedTable results={this.state.geneInfo.variants} data={this.state.geneInfo.variants.data} mycolumn={this.state.geneInfo.variants.colNames} /> */}
-                {/* <Variants variants={this.state.geneInfo.variants} title={t('Gene.Variants_Analysis')} subtitle={t('Gene.Variants Analysis_subtitle')} configureLink="gene/variants" /> */}
-              </Paper>
+              {/* <Paper elevation={0} className={classes.paper}> */}
+              <VirtualGrid mycolumns={this.state.geneInfo.variants.colNames} myrows={this.state.geneInfo.variants.data} variants={this.state.geneInfo.variants} title={t('Gene.Variants_Analysis')} subtitle={t('Gene.Variants Analysis_subtitle')} configureLink="gene/variants" />
+              {/* <ReactVirtualizedTable results={this.state.geneInfo.variants} data={this.state.geneInfo.variants.data} mycolumn={this.state.geneInfo.variants.colNames} /> */}
+              {/* <Variants variants={this.state.geneInfo.variants} title={t('Gene.Variants_Analysis')} subtitle={t('Gene.Variants Analysis_subtitle')} configureLink="gene/variants" /> */}
+              {/* </Paper> */}
             </Container>
           </div>
         </React.Fragment>

@@ -1,0 +1,20 @@
+//  Core
+
+.popover-custom-lg {
+    max-width: $popover-max-width * 1.5;
+}
+
+.popover-custom-md {
+    width: $popover-max-width * 1.5;
+    max-width: $popover-max-width * 1.5;
+}
+
+.popover-custom-xl {
+    width: $popover-max-width * 2;
+    max-width: $popover-max-width * 2;
+}
+
+.popover-custom-xxl {
+    width: $popover-max-width * 3;
+    max-width: $popover-max-width * 3;
+}

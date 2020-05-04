@@ -1,0 +1,18 @@
+// Core
+
+.app-sidebar-footer-wrapper {
+  background: rgba(0,0,0,.03);
+  margin: $spacer;
+  border-radius: $border-radius-sm;
+  transition: $transition-base;
+}
+
+.app-sidebar-footer {
+  list-style: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: $sidebar-footer-height;
+  padding: 0 $spacer;
+  margin: 0;
+}

@@ -1,0 +1,87 @@
+  // Core
+body {
+  .app-header {
+    height: $header-height;
+    display: flex;
+    flex-direction: row;
+  }
+
+  .app-header-collapsed-sidebar {
+    @include media-breakpoint-up(lg) {
+      padding-left: $sidebar-width-collapsed / 8;
+    }
+  }
+
+  .app-header-toolbar {
+    height: 100%;
+    flex: 1;
+    display: flex;
+    justify-content: space-between;
+    padding-left: ($spacer);
+    padding-right: ($spacer);
+
+    .btn-inverse:hover {
+      background: rgba(255,255,255,.07);
+    }
+  }
+
+  .btn-toggle-collapse {
+    margin-left: -75px;
+    padding-right: 30px;
+    transition: all 0.5s cubic-bezier(0.685, 0.0473, 0.346, 1);
+
+    @include media-breakpoint-down(md) {
+      display: none;
+    }
+  }
+
+  .btn-toggle-collapse-closed {
+    margin-left: 0;
+    margin-right: ($spacer);
+    padding-right: 0;
+  }
+
+  .app-logo-img {
+    width: 28px;
+    height: 28px;
+  }
+
+  .app-logo-wrapper {
+    display: flex;
+    align-items: center;
+  }
+
+  .app-logo-btn {
+    padding: $spacer / 2;
+    background: rgba(255,255,255,.05);
+
+    &:hover {
+      background: rgba(255,255,255,.08);
+    }
+  }
+
+  .app-logo-link {
+    text-decoration: none;
+    @include media-breakpoint-up(lg) {
+      margin-top: ($spacer * 2);
+    }
+    @include media-breakpoint-down(lg) {
+      margin-right: $spacer;
+    }
+  }
+
+  .app-logo-text {
+    font-size: $font-size-base;
+    font-weight: bold;
+    width: auto;
+    display: block;
+  }
+
+  .toggle-sidebar-btn-mobile {
+    display: none;
+
+    @include media-breakpoint-down(md) {
+      display: block;
+    }
+  }
+}

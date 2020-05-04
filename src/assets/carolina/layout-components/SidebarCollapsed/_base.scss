@@ -1,0 +1,51 @@
+// Core
+
+.app-sidebar-collapsed-wrapper {
+  width: $sidebar-width-collapsed;
+  position: fixed;
+  left: 0;
+  top: 0;
+  z-index: 1100;
+  height: 100vh;
+
+  .app-sidebar--content ul {
+    listStyle: none;
+    margin: 0;
+    padding: $spacer 0;
+  }
+
+  .app-sidebar--content ul li {
+    text-align: center;
+    padding: ($spacer / 2) $spacer;
+  }
+}
+
+.app-sidebar-btn-wrapper {
+  text-align: center;
+  display: block;
+  padding: $spacer 0;
+  border-radius: $border-radius;
+
+  &.active,
+  &:hover {
+    color: theme-color("primary");
+    background: $primary-neutral;
+  }
+
+  transition: $transition-base;
+}
+
+.app-sidebar-btn-icon {
+  stroke: $first;
+  fill: $first-neutral;
+}
+
+.sidebar-collapsed-logo {
+  height: $header-height;
+  width: $sidebar-width-collapsed;
+  display: flex;
+  align-items: center;
+  background: rgba(255, 255, 255, .08);
+  justify-content: center;
+  transition: $transition-base;
+}

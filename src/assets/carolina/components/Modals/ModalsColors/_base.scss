@@ -1,0 +1,10 @@
+//  Core
+
+.modal-dark {
+  color: $white !important;
+
+  .MuiDialogActions-root,
+  .MuiDialogTitle-root {
+    border: rgba(255,255,255, .1) solid 1px;
+  }
+}

@@ -88,15 +88,20 @@ class HomeBanner extends React.Component {
                       onClick={this.DemoLogin}
                     >
                       {t('HomePage.HomeBanner.button_no_login')}
-                    </Button>) : (<Button
-                      variant='outlined'
-                      color='inherit'
-                      className={classes.button}
-                      component={Link}
-                      to='/search'
-                    >
-                      {t('HomePage.HomeBanner.button_login')}
-                    </Button>)}
+                    </Button>) : (
+                      <Link style={{ textDecoration: 'none' }} to='/search'>
+                        <Button
+                          variant='outlined'
+                          color='inherit'
+                          className={classes.button}
+                        // component={Link}
+                        // to='/search'
+                        >
+                          {t('HomePage.HomeBanner.button_login')}
+                        </Button>
+                      </Link>
+                    )}
+
                 </div>
               </Box>
             </Grid>
@@ -113,7 +118,8 @@ HomeBanner.propTypes = {
 
 const styles = theme => ({
   button: {
-    margin: theme.spacing(1)
+    margin: theme.spacing(1),
+    color: 'white'
   },
   bannertext: {
     textAlign: 'center',

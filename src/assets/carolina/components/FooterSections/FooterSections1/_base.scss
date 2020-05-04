@@ -1,0 +1,34 @@
+//  Core
+
+.nav-logo {
+  a {
+    font-weight: bold;
+    display: flex;
+    align-items: center;
+    font-size: $nav-logo-font-size;
+
+    span {
+      opacity: 1;
+      visibility: visible;
+      transition: $transition-base;
+    }
+
+    i {
+      height: 40px;
+      width: 40px;
+      background: rgba($white, .5);
+      display: flex;
+      align-items: center;
+      @include border-radius($border-radius);
+      margin: 0 ($layout-spacer / 2.5) 0 0;
+      position: relative;
+      left: 0;
+      transition: $transition-base;
+
+      img {
+        width: 28px;
+        margin: 0 auto;
+      }
+    }
+  }
+}

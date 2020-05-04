@@ -1,0 +1,73 @@
+// Core
+body {
+  .app-sidebar-userbox {
+    background: $gray-200;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    padding: $spacer;
+    margin: 0;
+    border-radius: 0;
+    text-align: center;
+    white-space: nowrap;
+
+    .app-sidebar-userbox-avatar {
+      width: 54px;
+      height: 54px;
+      margin-left: auto;
+      margin-right: auto;
+      margin-bottom: $spacer / 2;
+      transition: $transition-base;
+    }
+
+    .app-sidebar-userbox-name {
+      transition: $transition-base;
+      opacity: 1;
+      height: auto;
+      white-space: nowrap;
+    }
+
+    .app-sidebar-userbox-description {
+      opacity: .7;
+      margin-bottom: $spacer / 2;
+    }
+
+    .app-sidebar-userbox-btn {
+      position: absolute;
+      right: ($spacer);
+      top: ($spacer);
+    }
+
+    .app-sidebar-userbox-btn-profile {
+      opacity: 1;
+      visibility: visible;
+      transition: $transition-base;
+    }
+  }
+
+  .app-sidebar-userbox--collapsed {
+    padding-left: $spacer;
+    padding-right: $spacer;
+    background: transparent;
+
+    .app-sidebar-userbox-avatar {
+      width: 34px;
+      height: 34px;
+      margin-bottom: 0;
+    }
+
+    .app-sidebar-userbox-name {
+      opacity: 0;
+      height: 0;
+    }
+
+    .app-sidebar-userbox-btn {
+      opacity: 0;
+    }
+
+    .app-sidebar-userbox-btn-profile {
+      opacity: 0;
+      visibility: hidden;
+    }
+  }
+}

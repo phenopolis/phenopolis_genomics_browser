@@ -1,6 +1,7 @@
 import React from "react";
 import PropTypes from 'prop-types';
 import { withStyles } from '@material-ui/core/styles';
+import clsx from 'clsx';
 
 import { VariableSizeGrid as Grid } from "react-window";
 import AutoSizer from "react-virtualized-auto-sizer";
@@ -10,9 +11,11 @@ import memoize from 'memoize-one'
 
 import GridColumn from "./GridColumn"
 import StickyHeader from "./StickyHeader"
+import VirtualTableFilter from "./VirtualTableFilter"
 
 import "./styles.css";
-
+import { Toolbar, Paper, IconButton, Typography, Box, Icon, Popover, Dialog } from "@material-ui/core";
+import MenuIcon from '@material-ui/icons/Menu';
 var focusField;
 
 const getRenderedCursor = children =>
@@ -189,11 +192,12 @@ const innerGridElementType = React.forwardRef(({ children, ...rest }, ref) =>
 );
 
 
-const createItemData = memoize((rows, columns, toggleItemActive, currentRow) => ({
+const createItemData = memoize((rows, columns, toggleItemActive, currentRow, currentColumn) => ({
   rows,
   columns,
   toggleItemActive,
-  currentRow
+  currentRow,
+  currentColumn
 }));
 
 const StickyGrid = ({
@@ -206,10 +210,11 @@ const StickyGrid = ({
   children,
   toggleItemActive,
   currentRow,
+  currentColumn,
   ...rest
 }) => {
 
-  const itemData = createItemData(myrows, mycolumns, toggleItemActive, currentRow);
+  const itemData = createItemData(myrows, mycolumns, toggleItemActive, currentRow, currentColumn);
 
   return (
     React.createElement(
@@ -264,6 +269,8 @@ class VirtualGrid extends React.Component {
       colCount: 0,
       currentRow: null,
       currentColumn: null,
+      anchorEl: null,
+      filterPopoverOpen: true
     };
   }
 
@@ -339,8 +346,15 @@ class VirtualGrid extends React.Component {
   }
 
   toggleItemActive = (rowIndex, columnIndex) => {
-    // window.alert(rowIndex, collumIndex)
     this.setState({ currentRow: rowIndex, currentColumn: columnIndex })
+  }
+
+  handleFilterPopoverOpen = (event) => {
+    this.state.ancherEl ? this.setState({ anchorEl: null, filterPopoverOpen: false }) : this.setState({ anchorEl: event.currentTarget, filterPopoverOpen: true });
+  }
+
+  handleFilterPopoverClose = () => {
+    this.setState({ anchorEl: null, filterPopoverOpen: false })
   }
 
   render() {
@@ -348,29 +362,69 @@ class VirtualGrid extends React.Component {
 
     return (
       <div className={classes.root}>
-        {/* {this.state.currentRow} */}
-        <AutoSizer>
-          {({ height, width }) => (
-            <StickyGrid
-              height={height}
-              width={width}
-              columnCount={this.state.colCount}
-              rowCount={this.state.rowCount}
-              rowHeight={this.getRowHeight}
-              columnWidth={this.getColumnWidth}
-              stickyHeight={50}
-              stickyWidth={0}
-              onScroll={handleScroll}
-              myrows={myrows}
-              mycolumns={mycolumns}
-              toggleItemActive={this.toggleItemActive}
-              currentRow={this.state.currentRow}
-              currentColumn={this.state.currentColumn}
-            >
-              {GridColumn}
-            </StickyGrid>
-          )}
-        </AutoSizer>
+        <Typography component='div'>
+          <Box fontWeight='fontWeightBold' fontSize='h4.fontSize' mb={0}>
+            {this.props.title}
+          </Box>
+          <Box fontWeight='fontWeightLight' mb={2}>
+            {this.props.subtitle}
+          </Box>
+        </Typography>
+        <Toolbar className={classes.toolbar}>
+          <IconButton
+            edge="start"
+            className={classes.menuButton}
+            color="inherit"
+            aria-label="open drawer"
+            onClick={(event) => this.handleFilterPopoverOpen(event)}
+          >
+            <Icon className={clsx(classes.iconHover, 'fas fa-filter')} />
+          </IconButton>
+          {/* <Popover
+            id={'FilterPopover'}
+            open={this.state.filterPopoverOpen}
+            anchorEl={this.state.anchorEl}
+            onClose={this.handleFilterPopoverClose}
+            anchorOrigin={{
+              vertical: 'center',
+              horizontal: 'right',
+            }}
+            transformOrigin={{
+              vertical: 'top',
+              horizontal: 'left',
+            }}
+          > */}
+          <Dialog onClose={this.handleFilterPopoverClose} aria-labelledby="simple-dialog-title" open={this.state.filterPopoverOpen}>
+            <VirtualTableFilter />
+          </Dialog>
+          {/* </Popover> */}
+        </Toolbar>
+        <Paper elevation={5} className={classes.paper}>
+          <div className={classes.tableframe}>
+            <AutoSizer>
+              {({ height, width }) => (
+                <StickyGrid
+                  height={height}
+                  width={width}
+                  columnCount={this.state.colCount}
+                  rowCount={this.state.rowCount}
+                  rowHeight={this.getRowHeight}
+                  columnWidth={this.getColumnWidth}
+                  stickyHeight={50}
+                  stickyWidth={0}
+                  onScroll={handleScroll}
+                  myrows={myrows}
+                  mycolumns={mycolumns}
+                  toggleItemActive={this.toggleItemActive}
+                  currentRow={this.state.currentRow}
+                  currentColumn={this.state.currentColumn}
+                >
+                  {GridColumn}
+                </StickyGrid>
+              )}
+            </AutoSizer>
+          </div>
+        </Paper>
       </div>
     );
   }
@@ -382,11 +436,33 @@ VirtualGrid.propTypes = {
 
 const styles = theme => ({
   root: {
+    marginTop: theme.spacing(5),
+  },
+  tableframe: {
     margin: '10',
     height: '70vh',
     width: '100%',
     overflow: 'hidden',
     'scroll-behavior': 'smooth'
+  },
+  toolbar: {
+    backgroundColor: '#eeeee',
+    opacity: 1,
+    // border: '1px solid red'
+  },
+  paper: {
+    overflowX: 'auto',
+  },
+  menuButton: {
+    marginRight: theme.spacing(2),
+    '&:hover': {
+      cursor: 'pointer',
+      color: '#2E84CF'
+    }
+  },
+  iconHover: {
+    fontSize: 15,
+    margin: theme.spacing(0),
   }
 });
 

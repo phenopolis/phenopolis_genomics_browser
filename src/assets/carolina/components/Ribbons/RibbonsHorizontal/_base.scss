@@ -1,0 +1,58 @@
+//  Core
+
+.ribbon-horizontal {
+  display: block;
+  width: calc(100% + 20px);
+  height: 50px;
+  line-height: 50px;
+  text-align: center;
+  margin-left: -10px;
+  margin-right: -10px;
+  top: $spacer;
+  position: absolute;
+  z-index: 8;
+  font-weight: bold;
+  box-shadow: $box-shadow-layout-bottom;
+
+  &:before, &:after {
+    content: "";
+    position: absolute;
+    height: 0;
+    width: 0;
+    bottom: -10px;
+    border-top: 10px solid transparent;
+  }
+
+  &:before {
+    left: 0;
+    border-left: 10px solid transparent;
+  }
+
+  &:after {
+    right: 0;
+    border-right: 10px solid transparent;
+  }
+
+  &--bottom {
+    top: auto;
+    bottom: $spacer;
+  }
+
+  @each $color, $value in $theme-colors {
+    &--#{$color} {
+      background: $value;
+      color: color-yiq($value);
+
+      &:after,
+      &:before {
+        border-top-color: darken($value, 20%);
+      }
+    }
+  }
+
+  &.btn {
+    line-height: 30px;
+    border: 0;
+    border-radius: 0;
+  }
+}

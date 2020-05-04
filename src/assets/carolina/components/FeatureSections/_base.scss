@@ -1,0 +1,12 @@
+//  Core
+
+.feature-box-img {
+  position: relative;
+  border: $black solid 5px;
+  background: $white;
+  @include border-radius($border-radius-lg);
+
+  @include media-breakpoint-up(xl) {
+    margin-left: -($spacer * 5);
+  }
+}
