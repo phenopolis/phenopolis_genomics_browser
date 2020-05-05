@@ -2,16 +2,8 @@
   publish = "build"
   command = "npm run build"
 
-[[redirects]]
-  from = "/api/*"
-  to = "https://api-live.phenopolis.org/:splat"
-  status = 200
-  force = true
-  headers = {X-From = "Netlify"}
+[context.dev]
+  command = "npm run build; cp _redirects_dev build/_redirects"
 
-[[redirects]]	
-  from = "/*"	
-  to = "/index.html"	
-  status = 200	
-  headers = {X-From = "Netlify"} 
-
+[context.live]
+  command = "npm run build; cp _redirects_live build/_redirects"
