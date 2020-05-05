@@ -19,7 +19,7 @@ Install all dependencys
 ```bash
 npm install
 
-npm install -g netlify-cli concurrently
+npm install -g netlify-cli
 ```
 
 ## Set up Netlify
@@ -40,16 +40,13 @@ netlify link
 # Then Select `phenopolis-react-dev`
 ```
 
-## Run Dev Server
-
-Start Dev server:
+3. Start Dev server:
 
 ```bash
 # copy _redirects_dev to _redirects
 cp _redirects_dev _redirects
 
-
 netlify dev
-
-# (Any issues remove the node_modules folder and re-install)...
 ```
+
+> Note: If there are any issues remove the node_modules folder and re-install
