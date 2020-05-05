@@ -1,6 +1,7 @@
 # Phenopolis React Frontend
 
-[![Netlify Status](https://api.netlify.com/api/v1/badges/b51ae4bc-d393-4f78-8303-0ec6ee4f2825/deploy-status)](https://app.netlify.com/sites/phenopolis-react-dev/deploys)
+DEV: [![Netlify Status](https://api.netlify.com/api/v1/badges/b51ae4bc-d393-4f78-8303-0ec6ee4f2825/deploy-status)](https://app.netlify.com/sites/phenopolis-react-dev/deploys)
+LIVE: [![Netlify Status](https://api.netlify.com/api/v1/badges/bb56af63-0d92-4259-9884-b6795cffad1d/deploy-status)](https://app.netlify.com/sites/phenopolis/deploys)
 
 
 Note: pushing to the master branch triggers an automatic build at
