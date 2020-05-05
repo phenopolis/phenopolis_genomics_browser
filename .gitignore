@@ -23,3 +23,6 @@ yarn-debug.log*
 yarn-error.log*
 _redirects
 yarn.lock
+
+# Local Netlify folder
+.netlify
