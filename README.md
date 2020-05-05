@@ -51,15 +51,34 @@ netlify link will connect this folder to a site on Netlify
 ```
 Select `Use current git remote origin...`
 
-Then Select `phenopolis-react-dev`
+```
+? How do you want to link this folder to a site? Use current git remote origin (https://github.com/phenopolis/phenopolis_frontend_react)
+
+Looking for sites connected to 'https://github.com/phenopolis/phenopolis_frontend_react'...
+
+Found 2 matching sites!
+? Which site do you want to link? (Use arrow keys)
+❯ phenopolis-react-dev - https://dev.phenopolis.org
+  phenopolis - https://phenopolis.org
+```
+
+Then select `phenopolis-react-dev...`
 
 3. Start Dev server:
 
+If you are communicating with dev API on AWS:
 ```bash
 # copy _redirects_dev to _redirects
 cp _redirects_dev _redirects
 
 netlify dev
+```
+
+If you are communicating with local Flask API server running on port 5000:
+```
+# create file _redirects with following lines:
+/api/*	https://localhost:5000/:splat	200!
+/*	/index.html	200
 ```
 
 > Note: If there are any issues remove the node_modules folder and re-install
