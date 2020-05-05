@@ -15,7 +15,7 @@ Note: pushing to the master branch triggers an automatic build at
 
 ### Dependencies
 
-Install all dependencys
+Install all dependencies
 
 ```bash
 npm install
@@ -37,9 +37,21 @@ netlify login
 
 ```bash
 netlify link
-# Select `Use current git remote origin`
-# Then Select `phenopolis-react-dev`
 ```
+This will display:
+```
+netlify link will connect this folder to a site on Netlify
+
+? How do you want to link this folder to a site?
+❯ Use current git remote origin (https://github.com/phenopolis/phenopolis_frontend_react)
+  Search by full or partial site name
+  Choose from a list of your recently updated sites
+  Enter a site ID
+
+```
+Select `Use current git remote origin...`
+
+Then Select `phenopolis-react-dev`
 
 3. Start Dev server:
 
