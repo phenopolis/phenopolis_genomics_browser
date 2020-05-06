@@ -77,7 +77,7 @@ netlify dev
 If you are communicating with local Flask API server running on port 5000:
 ```
 # create file _redirects with following lines:
-/api/*	https://localhost:5000/:splat	200!
+/api/*	http://localhost:5000/:splat	200!
 /*	/index.html	200
 ```
 
