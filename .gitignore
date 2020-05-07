@@ -26,3 +26,5 @@ yarn.lock
 
 # Local Netlify folder
 .netlify
+# env file containing the env variables
+env.sh
