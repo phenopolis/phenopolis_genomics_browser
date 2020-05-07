@@ -1,8 +1,8 @@
 [build]
   publish = "build"
-  command = "npm run build"
+  command = "npm run build; cp _redirects_dev build/_redirects"
 
-[context.master]
+[context.dev]
   command = "npm run build; cp _redirects_dev build/_redirects"
 
 [context.live]
