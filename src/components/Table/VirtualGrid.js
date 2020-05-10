@@ -39,7 +39,6 @@ const getRenderedCursor = children =>
       if (columnIndex > maxColumn) {
         maxColumn = columnIndex;
       }
-
       return [minRow, maxRow, minColumn, maxColumn];
     },
     [
@@ -159,8 +158,6 @@ const innerGridElementType = React.forwardRef(({ children, ...rest }, ref) =>
           height: `${parseFloat(rest.style.height) + stickyHeight}px`
         };
 
-        console.log(containerStyle)
-
         const containerProps = {
           ...rest,
           style: containerStyle
@@ -202,27 +199,40 @@ const createItemData = memoize((rows, columns, toggleItemActive, currentRow, cur
   currentColumn
 }));
 
-const StickyGrid = ({
-  stickyHeight,
-  stickyWidth,
-  columnWidth,
-  rowHeight,
-  myrows,
-  mycolumns,
-  children,
-  toggleItemActive,
-  currentRow,
-  currentColumn,
-  ...rest
-}) => {
 
-  const itemData = createItemData(myrows, mycolumns, toggleItemActive, currentRow, currentColumn);
 
-  return (
-    React.createElement(
-      StickyGridContext.Provider,
-      {
-        value: {
+class StickyGrid extends React.Component {
+  constructor(props) {
+    super(props);
+    this.state = {
+    };
+    this.listRef = React.createRef();
+  }
+
+  listRef = React.createRef();
+
+  componentWillReceiveProps(nextProps) {
+
+    // window.alert("Test")
+    if (nextProps.myrows !== this.props.myrows) {
+      this.handleActive()
+    }
+  }
+
+  handleActive = () => {
+    console.log(this.listRef.current)
+    if (this.listRef.current) {
+      this.listRef.current.resetAfterRowIndex(0);
+    }
+  }
+
+  render() {
+    const { stickyHeight, stickyWidth, columnWidth, rowHeight, myrows, mycolumns, children, toggleItemActive, currentRow, currentColumn, ...rest } = this.props
+    const itemData = createItemData(myrows, mycolumns, toggleItemActive, currentRow, currentColumn);
+
+    return (
+      <StickyGridContext.Provider
+        value={{
           stickyHeight,
           stickyWidth,
           columnWidth,
@@ -231,22 +241,64 @@ const StickyGrid = ({
           columnsBuilder,
           mycolumns,
           myrows
-        }
-      },
-      React.createElement(
-        Grid,
-        {
-          columnWidth: columnWidth,
-          rowHeight: rowHeight,
-          innerElementType: innerGridElementType,
-          itemData: itemData,
-          ...rest
-        },
-        children
-      )
-    )
-  )
+        }}
+      >
+        <Grid
+          ref={this.listRef}
+          columnWidth={columnWidth}
+          rowHeight={rowHeight}
+          innerElementType={innerGridElementType}
+          itemData={itemData}
+          {...rest}>
+          {children}
+        </Grid>
+      </StickyGridContext.Provider>
+    );
+  }
 }
+
+// const StickyGrid = ({
+//   stickyHeight,
+//   stickyWidth,
+//   columnWidth,
+//   rowHeight,
+//   myrows,
+//   mycolumns,
+//   children,
+//   toggleItemActive,
+//   currentRow,
+//   currentColumn,
+//   ...rest
+// }) => {
+
+//   const itemData = createItemData(myrows, mycolumns, toggleItemActive, currentRow, currentColumn);
+
+//   return (
+//     <StickyGridContext.Provider
+//       value={{
+//         stickyHeight,
+//         stickyWidth,
+//         columnWidth,
+//         rowHeight,
+//         headerBuilder,
+//         columnsBuilder,
+//         mycolumns,
+//         myrows
+//       }}
+//     >
+
+//       <Grid
+//         ref={listRef}
+//         columnWidth={columnWidth}
+//         rowHeight={rowHeight}
+//         innerElementType={innerGridElementType}
+//         itemData={itemData}
+//         {...rest}>
+//         {children}
+//       </Grid>
+//     </StickyGridContext.Provider>
+//   )
+// }
 
 // Cause a grid cell to blur when scrolling
 function handleScroll(event) {
