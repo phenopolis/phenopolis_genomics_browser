@@ -159,6 +159,8 @@ const innerGridElementType = React.forwardRef(({ children, ...rest }, ref) =>
           height: `${parseFloat(rest.style.height) + stickyHeight}px`
         };
 
+        console.log(containerStyle)
+
         const containerProps = {
           ...rest,
           style: containerStyle
@@ -270,13 +272,24 @@ class VirtualGrid extends React.Component {
       currentRow: null,
       currentColumn: null,
       anchorEl: null,
-      filterPopoverOpen: true
+      filterPopoverOpen: true,
+      colNames: [],
+      tableFilter: [],
+
+      fullData: [],
+      fullColumn: [],
+      filteredData: [],
+      filteredColumn: [],
+      filteredColumnWidth: [],
+      filteredRowHeight: []
     };
   }
 
   componentWillMount() {
-    var myrows = this.props.myrows
-    var mycolumns = this.props.mycolumns
+    var tableData = JSON.parse(JSON.stringify(this.props.tableData))
+    var myrows = tableData.data
+    var mycolumns = tableData.colNames
+
 
     let maxColumn = 400
     let minColumn = 80
@@ -287,9 +300,13 @@ class VirtualGrid extends React.Component {
     let tmpWidth = Array(mycolumns.length).fill(minColumn)
     let tmpHeight = Array(myrows.length).fill(minHeight)
 
+    var tmpColnames = []
+
     for (let j = 0; j < mycolumns.length; j++) {
       let headSize = calculateSize(mycolumns[j].name, { font: 'Arial', fontSize: '14px' })
       if (headSize.width + 20 > tmpWidth[j]) tmpWidth[j] = headSize.width + 20
+
+      tmpColnames.push({ name: mycolumns[j].name, key: mycolumns[j].key })
     }
 
     for (let i = 0; i < myrows.length; i++) {
@@ -330,19 +347,28 @@ class VirtualGrid extends React.Component {
       TableColumnWidth: tmpWidth,
       TableRowHeight: tmpHeight,
       rowCount: myrows.length,
-      colCount: mycolumns.length
+      colCount: mycolumns.length,
+      colNames: tmpColnames,
+
+      fullData: myrows,
+      fullColumn: mycolumns,
+      filteredData: myrows,
+      filteredColumn: mycolumns,
+
+      filteredColumnWidth: tmpWidth,
+      filteredRowHeight: tmpHeight
     })
     // myrows
   }
 
   getRowHeight = (index) => {
     // return index % 2 ? 60 : 30;
-    return this.state.TableRowHeight[index]
+    return this.state.filteredRowHeight[index]
   }
 
   getColumnWidth = (index) => {
     // return index % 2 ? 240 : 120;
-    return this.state.TableColumnWidth[index]
+    return this.state.filteredColumnWidth[index]
   }
 
   toggleItemActive = (rowIndex, columnIndex) => {
@@ -357,8 +383,96 @@ class VirtualGrid extends React.Component {
     this.setState({ anchorEl: null, filterPopoverOpen: false })
   }
 
+  handleUpdateFilter = (newFilter) => {
+    console.log(newFilter)
+    this.setState({ tableFilter: newFilter }, () => {
+      this.columnFilter(this.state.fullData, this.state.tableFilter);
+    })
+  }
+
+  columnFilter = (data, filters) => {
+
+    var tmpNewRowHeight = []
+
+    var filtered = data.filter((item, rowIndex) => {
+      var judge = true;
+      Array.prototype.forEach.call(filters, (filter, index) => {
+
+        switch (filter.operation) {
+          case '>':
+            if (Number(item[filter.column.key]) > Number(filter.value)) {
+              break;
+            } else {
+              judge = false;
+              break;
+            }
+          case '>=':
+            if (Number(item[filter.column.key]) >= Number(filter.value)) {
+              break;
+            } else {
+              judge = false;
+              break;
+            }
+          case '<':
+            if (Number(item[filter.column.key]) < Number(filter.value)) {
+              break;
+            } else {
+              judge = false;
+              break;
+            }
+          case '<=':
+            if (Number(item[filter.column.key]) <= Number(filter.value)) {
+              break;
+            } else {
+              judge = false;
+              break;
+            }
+          case '*':
+            if (typeof item[filter.column.key] !== 'object') {
+              if (RegExp(filter.value).test(item[filter.column.key])) {
+                break;
+              } else {
+                judge = false;
+                break;
+              }
+            } else {
+              if (typeof item[filter.column.key][0] === 'object' & item[filter.column.key][0] !== null) {
+                let displays = item[filter.column.key].filter(chip => {
+                  return RegExp(filter.value).test(chip.display);
+                });
+                if (displays.length > 0) {
+                  break;
+                } else {
+                  judge = false;
+                  break;
+                }
+              } else {
+                if (RegExp(filter.value).test(item[filter.column.key].join(','))) {
+                  break;
+                } else {
+                  judge = false;
+                  break;
+                }
+              }
+            }
+          default:
+            break;
+        }
+      });
+      if (judge) {
+        tmpNewRowHeight.push(this.state.TableRowHeight[rowIndex])
+      }
+      return judge;
+    });
+    // return filtered;
+    console.log(this.state.TableRowHeight)
+    console.log(tmpNewRowHeight)
+
+    this.setState({ filteredData: filtered, filteredRowHeight: tmpNewRowHeight });
+  };
+
   render() {
-    const { classes, myrows, mycolumns } = this.props;
+    const { classes } = this.props;
 
     return (
       <div className={classes.root}>
@@ -395,7 +509,7 @@ class VirtualGrid extends React.Component {
             }}
           > */}
           <Dialog onClose={this.handleFilterPopoverClose} aria-labelledby="simple-dialog-title" open={this.state.filterPopoverOpen}>
-            <VirtualTableFilter />
+            <VirtualTableFilter variableList={this.state.colNames} tableFilter={this.state.tableFilter} UpdateFilter={this.handleUpdateFilter} onClickClose={this.handleFilterPopoverClose} />
           </Dialog>
           {/* </Popover> */}
         </Toolbar>
@@ -407,14 +521,14 @@ class VirtualGrid extends React.Component {
                   height={height}
                   width={width}
                   columnCount={this.state.colCount}
-                  rowCount={this.state.rowCount}
+                  rowCount={this.state.filteredData.length}
                   rowHeight={this.getRowHeight}
                   columnWidth={this.getColumnWidth}
                   stickyHeight={50}
                   stickyWidth={0}
                   onScroll={handleScroll}
-                  myrows={myrows}
-                  mycolumns={mycolumns}
+                  myrows={this.state.filteredData}
+                  mycolumns={this.state.filteredColumn}
                   toggleItemActive={this.toggleItemActive}
                   currentRow={this.state.currentRow}
                   currentColumn={this.state.currentColumn}

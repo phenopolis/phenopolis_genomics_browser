@@ -19,7 +19,8 @@ class GridColumn extends React.Component {
 
   componentWillReceiveProps(nextProps) {
     // var mystyle = nextProps.style
-    if (nextProps.data.currentRow === nextProps.rowIndex) {
+
+    if (nextProps.data.currentRow === nextProps.rowIndex | nextProps.data.currentColumn === nextProps.columnIndex) {
       var mystyle = JSON.parse(JSON.stringify(nextProps.style))
       mystyle.backgroundColor = '#eeee'
       this.setState({ mystyle: mystyle })
