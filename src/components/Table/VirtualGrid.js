@@ -8,13 +8,14 @@ import AutoSizer from "react-virtualized-auto-sizer";
 
 import calculateSize from 'calculate-size'
 import memoize from 'memoize-one'
+import CountUp from 'react-countup';
 
 import GridColumn from "./GridColumn"
 import StickyHeader from "./StickyHeader"
 import VirtualTableFilter from "./VirtualTableFilter"
 
 import "./styles.css";
-import { Toolbar, Paper, IconButton, Typography, Box, Icon, Popover, Dialog } from "@material-ui/core";
+import { Toolbar, Paper, IconButton, Typography, Box, Icon, Popover, Dialog, Button } from "@material-ui/core";
 import MenuIcon from '@material-ui/icons/Menu';
 var focusField;
 
@@ -220,7 +221,6 @@ class StickyGrid extends React.Component {
   }
 
   handleActive = () => {
-    console.log(this.listRef.current)
     if (this.listRef.current) {
       this.listRef.current.resetAfterRowIndex(0);
     }
@@ -257,49 +257,6 @@ class StickyGrid extends React.Component {
   }
 }
 
-// const StickyGrid = ({
-//   stickyHeight,
-//   stickyWidth,
-//   columnWidth,
-//   rowHeight,
-//   myrows,
-//   mycolumns,
-//   children,
-//   toggleItemActive,
-//   currentRow,
-//   currentColumn,
-//   ...rest
-// }) => {
-
-//   const itemData = createItemData(myrows, mycolumns, toggleItemActive, currentRow, currentColumn);
-
-//   return (
-//     <StickyGridContext.Provider
-//       value={{
-//         stickyHeight,
-//         stickyWidth,
-//         columnWidth,
-//         rowHeight,
-//         headerBuilder,
-//         columnsBuilder,
-//         mycolumns,
-//         myrows
-//       }}
-//     >
-
-//       <Grid
-//         ref={listRef}
-//         columnWidth={columnWidth}
-//         rowHeight={rowHeight}
-//         innerElementType={innerGridElementType}
-//         itemData={itemData}
-//         {...rest}>
-//         {children}
-//       </Grid>
-//     </StickyGridContext.Provider>
-//   )
-// }
-
 // Cause a grid cell to blur when scrolling
 function handleScroll(event) {
   document.activeElement.blur();
@@ -324,7 +281,7 @@ class VirtualGrid extends React.Component {
       currentRow: null,
       currentColumn: null,
       anchorEl: null,
-      filterPopoverOpen: true,
+      filterPopoverOpen: false,
       colNames: [],
       tableFilter: [],
 
@@ -436,7 +393,6 @@ class VirtualGrid extends React.Component {
   }
 
   handleUpdateFilter = (newFilter) => {
-    console.log(newFilter)
     this.setState({ tableFilter: newFilter }, () => {
       this.columnFilter(this.state.fullData, this.state.tableFilter);
     })
@@ -447,45 +403,46 @@ class VirtualGrid extends React.Component {
     var tmpNewRowHeight = []
 
     var filtered = data.filter((item, rowIndex) => {
-      var judge = true;
+      // var judge = true;
+      var tmpJudge = new Array(filters.length).fill(true);
+
       Array.prototype.forEach.call(filters, (filter, index) => {
 
         switch (filter.operation) {
           case '>':
             if (Number(item[filter.column.key]) > Number(filter.value)) {
-              break;
             } else {
-              judge = false;
-              break;
+              // judge = false; 
+              tmpJudge[index] = false
             }
-          case '>=':
+            break;
+          case '≥':
             if (Number(item[filter.column.key]) >= Number(filter.value)) {
-              break;
             } else {
-              judge = false;
-              break;
+              // judge = false;
+              tmpJudge[index] = false
             }
+            break;
           case '<':
             if (Number(item[filter.column.key]) < Number(filter.value)) {
-              break;
             } else {
-              judge = false;
-              break;
+              // judge = false;
+              tmpJudge[index] = false
             }
-          case '<=':
+            break;
+          case '≤':
             if (Number(item[filter.column.key]) <= Number(filter.value)) {
-              break;
             } else {
-              judge = false;
-              break;
+              // judge = false;
+              tmpJudge[index] = false
             }
-          case '*':
+            break
+          case '=':
             if (typeof item[filter.column.key] !== 'object') {
               if (RegExp(filter.value).test(item[filter.column.key])) {
-                break;
               } else {
-                judge = false;
-                break;
+                // judge = false;
+                tmpJudge[index] = false
               }
             } else {
               if (typeof item[filter.column.key][0] === 'object' & item[filter.column.key][0] !== null) {
@@ -493,32 +450,61 @@ class VirtualGrid extends React.Component {
                   return RegExp(filter.value).test(chip.display);
                 });
                 if (displays.length > 0) {
-                  break;
                 } else {
-                  judge = false;
-                  break;
+                  // judge = false;
+                  tmpJudge[index] = false
                 }
               } else {
                 if (RegExp(filter.value).test(item[filter.column.key].join(','))) {
-                  break;
                 } else {
-                  judge = false;
-                  break;
+                  // judge = false;
+                  tmpJudge[index] = false
                 }
               }
             }
+            break;
+          case '==':
+            if (JSON.stringify(item[filter.column.key]) === JSON.stringify(filter.value)) {
+            } else {
+              // judge = false;
+              tmpJudge[index] = false
+            }
+            break;
           default:
             break;
         }
       });
+
+
+
+      if (filters.length === 0) {
+        var judge = true
+      } else {
+        for (let i = 0; i < filters.length; i++) {
+
+          var stringForEval = ''
+
+          stringForEval = stringForEval.concat(tmpJudge[i])
+          if (i !== (filters.length - 1)) {
+            if (filters[i].andor === 'and') {
+              stringForEval = stringForEval.concat(' & ')
+            } else {
+              stringForEval = stringForEval.concat(' | ')
+            }
+          }
+        }
+
+        var judge = eval(stringForEval)
+      }
+
+
+
       if (judge) {
         tmpNewRowHeight.push(this.state.TableRowHeight[rowIndex])
       }
       return judge;
     });
     // return filtered;
-    console.log(this.state.TableRowHeight)
-    console.log(tmpNewRowHeight)
 
     this.setState({ filteredData: filtered, filteredRowHeight: tmpNewRowHeight });
   };
@@ -537,6 +523,7 @@ class VirtualGrid extends React.Component {
           </Box>
         </Typography>
         <Toolbar className={classes.toolbar}>
+
           <IconButton
             edge="start"
             className={classes.menuButton}
@@ -546,7 +533,8 @@ class VirtualGrid extends React.Component {
           >
             <Icon className={clsx(classes.iconHover, 'fas fa-filter')} />
           </IconButton>
-          {/* <Popover
+
+          <Popover
             id={'FilterPopover'}
             open={this.state.filterPopoverOpen}
             anchorEl={this.state.anchorEl}
@@ -559,11 +547,17 @@ class VirtualGrid extends React.Component {
               vertical: 'top',
               horizontal: 'left',
             }}
-          > */}
-          <Dialog onClose={this.handleFilterPopoverClose} aria-labelledby="simple-dialog-title" open={this.state.filterPopoverOpen}>
+          >
+            {/* <Dialog onClose={this.handleFilterPopoverClose} aria-labelledby="simple-dialog-title" open={this.state.filterPopoverOpen}> */}
             <VirtualTableFilter variableList={this.state.colNames} tableFilter={this.state.tableFilter} UpdateFilter={this.handleUpdateFilter} onClickClose={this.handleFilterPopoverClose} />
-          </Dialog>
-          {/* </Popover> */}
+            {/* </Dialog> */}
+          </Popover>
+
+          <div style={{ position: 'absolute', right: '1em' }}>
+            <b style={{ fontSize: '1.3em', color: '#2196f3' }}><CountUp end={this.state.filteredData.length} /></b> records selected
+            {/* <b style={{ fontSize: '25', color: '#f44336' }}> { this.state.filteredData.length } </b> records selected */}
+          </div>
+
         </Toolbar>
         <Paper elevation={5} className={classes.paper}>
           <div className={classes.tableframe}>
@@ -591,6 +585,12 @@ class VirtualGrid extends React.Component {
             </AutoSizer>
           </div>
         </Paper>
+        <Toolbar className={classes.toolbar}>
+          <div style={{ position: 'absolute', left: '1em' }}>
+            <b style={{ fontSize: '1.3em', color: '#2196f3' }}><CountUp end={this.state.filteredData.length} /></b> records selected
+            {/* <b style={{ fontSize: '25', color: '#f44336' }}> { this.state.filteredData.length } </b> records selected */}
+          </div>
+        </Toolbar>
       </div>
     );
   }
@@ -614,6 +614,7 @@ const styles = theme => ({
   toolbar: {
     backgroundColor: '#eeeee',
     opacity: 1,
+    flexGrow: 1,
     // border: '1px solid red'
   },
   paper: {
@@ -621,6 +622,7 @@ const styles = theme => ({
   },
   menuButton: {
     marginRight: theme.spacing(2),
+    fontSize: 15,
     '&:hover': {
       cursor: 'pointer',
       color: '#2E84CF'

@@ -15,12 +15,15 @@ class VirtualTableFilter extends React.Component {
       anchorEl: null,
       myfilter: [],
       operationOptions: [
-        { des: 'Substring', icon: '*' },
-        { des: 'Equal', icon: '=' },
-        { des: 'Greater', icon: '>' },
-        { des: 'Smaller', icon: '<' },
+        { des: 'SubString', icon: '=' },
+        { des: 'Equal to', icon: '==' },
+        { des: 'Greater than', icon: '>' },
+        { des: 'No Smaller than', icon: '≥' },
+        { des: 'Smaller than', icon: '<' },
+        { des: 'No Larger than', icon: '≤' },
         { des: 'Include', icon: '⊂' },
         { des: 'Exclude', icon: '⊄' }
+
       ],
       tmpFilter: 0
     };
@@ -36,7 +39,7 @@ class VirtualTableFilter extends React.Component {
       myfilter: [...this.state.myfilter,
       {
         column: null,
-        operation: '*',
+        operation: '=',
         value: '',
         andor: 'and'
       }
@@ -188,14 +191,20 @@ class VirtualTableFilter extends React.Component {
                       </Grid>
 
                       <Grid item xs={2} className={classes.centerGrid}>
-                        <Button
-                          size="small"
-                          variant="contained"
-                          color={item.andor === "and" ? 'secondary' : 'primary'}
-                          className={classes.andorButton}
-                          onClick={() => this.handleAndOrChange(index)}>
-                          {item.andor}
-                        </Button>
+                        {
+                          index !== (this.state.myfilter.length - 1) ?
+
+                            <Button
+                              size="small"
+                              variant="contained"
+                              color={item.andor === "and" ? 'secondary' : 'primary'}
+                              className={classes.andorButton}
+                              onClick={() => this.handleAndOrChange(index)}>
+                              {item.andor}
+                            </Button>
+                            : null
+                        }
+
                       </Grid>
 
                       <Grid item xs={1} className={classes.centerGrid}>
