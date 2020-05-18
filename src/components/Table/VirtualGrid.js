@@ -315,11 +315,10 @@ class VirtualGrid extends React.Component {
       let headSize = calculateSize(mycolumns[j].name, { font: 'Arial', fontSize: '14px' })
       if (headSize.width + 20 > tmpWidth[j]) tmpWidth[j] = headSize.width + 20
 
-      tmpColnames.push({ name: mycolumns[j].name, key: mycolumns[j].key })
+      tmpColnames.push({ name: mycolumns[j].name, key: mycolumns[j].key, type: typeof myrows[0][mycolumns[j].key], chips: [] })
     }
-
-    for (let i = 0; i < myrows.length; i++) {
-      for (let j = 0; j < mycolumns.length; j++) {
+    for (let j = 0; j < mycolumns.length; j++) {
+      for (let i = 0; i < myrows.length; i++) {
 
         var key = mycolumns[j].key
         let cellData = myrows[i][key]
@@ -330,6 +329,9 @@ class VirtualGrid extends React.Component {
           var tmpMax = maxColumn
 
           cellData.forEach((chip) => {
+
+            tmpColnames[j].chips.push(chip.display)
+
             let size = calculateSize(chip.display, { font: 'Arial', fontSize: '12px' })
             if (size.width + 60 > tmpMax) {
               tmpMax = size.width + 60
@@ -350,6 +352,7 @@ class VirtualGrid extends React.Component {
           if (cellWidth > tmpWidth[j]) tmpWidth[j] = cellWidth
         }
       }
+      tmpColnames[j].chips = [...new Set(tmpColnames[j].chips)]
     }
 
     this.setState({
@@ -399,6 +402,7 @@ class VirtualGrid extends React.Component {
   }
 
   columnFilter = (data, filters) => {
+    console.log(filters)
 
     var tmpNewRowHeight = []
 
@@ -470,6 +474,43 @@ class VirtualGrid extends React.Component {
               tmpJudge[index] = false
             }
             break;
+
+          case '⊂':
+            if (typeof item[filter.column.key] !== 'object') {
+              break
+            } else {
+              if (typeof item[filter.column.key][0] === 'object' & item[filter.column.key][0] !== null) {
+                let displays = item[filter.column.key].filter(chip => {
+                  return filter.value.includes(chip.display)
+                });
+
+                if (displays.length > 0) {
+                } else {
+                  tmpJudge[index] = false
+                }
+              } else {
+                tmpJudge[index] = false
+              }
+            }
+            break;
+
+          case '⊄':
+            if (typeof item[filter.column.key] !== 'object') {
+              break
+            } else {
+              if (typeof item[filter.column.key][0] === 'object' & item[filter.column.key][0] !== null) {
+                let displays = item[filter.column.key].filter(chip => {
+                  return filter.value.includes(chip.display)
+                });
+                if (displays.length > 0) {
+                  tmpJudge[index] = false
+                } else {
+
+                }
+              } else {
+              }
+            }
+            break;
           default:
             break;
         }
@@ -480,20 +521,19 @@ class VirtualGrid extends React.Component {
       if (filters.length === 0) {
         var judge = true
       } else {
+        var stringForEval = ''
         for (let i = 0; i < filters.length; i++) {
 
-          var stringForEval = ''
+          stringForEval = stringForEval + tmpJudge[i]
 
-          stringForEval = stringForEval.concat(tmpJudge[i])
           if (i !== (filters.length - 1)) {
             if (filters[i].andor === 'and') {
-              stringForEval = stringForEval.concat(' & ')
+              stringForEval = stringForEval + ' & '
             } else {
-              stringForEval = stringForEval.concat(' | ')
+              stringForEval = stringForEval + ' | '
             }
           }
         }
-
         var judge = eval(stringForEval)
       }
 

@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 import { withStyles } from '@material-ui/core/styles';
 import compose from 'recompose/compose';
 
-import { Card, CardContent, Button, Typography, Grid, TextField, IconButton, Icon, List, ListItem, Container, Menu, MenuItem, ListItemIcon } from '@material-ui/core';
+import { Card, CardContent, Button, Typography, Grid, TextField, IconButton, Icon, List, ListItem, Container, Menu, MenuItem, ListItemIcon, Chip } from '@material-ui/core';
 import Autocomplete from '@material-ui/lab/Autocomplete';
 import clsx from 'clsx';
 
@@ -14,23 +14,28 @@ class VirtualTableFilter extends React.Component {
       value: 0,
       anchorEl: null,
       myfilter: [],
-      operationOptions: [
-        { des: 'SubString', icon: '=' },
-        { des: 'Equal to', icon: '==' },
-        { des: 'Greater than', icon: '>' },
-        { des: 'No Smaller than', icon: '≥' },
-        { des: 'Smaller than', icon: '<' },
-        { des: 'No Larger than', icon: '≤' },
-        { des: 'Include', icon: '⊂' },
-        { des: 'Exclude', icon: '⊄' }
-
-      ],
+      operationOptions: {
+        other: [
+          { des: 'SubString', icon: '=' },
+          { des: 'Equal to', icon: '==' },
+          { des: 'Greater than', icon: '>' },
+          { des: 'No Smaller than', icon: '≥' },
+          { des: 'Smaller than', icon: '<' },
+          { des: 'No Larger than', icon: '≤' }
+        ],
+        object: [
+          { des: 'SubString', icon: '=' },
+          { des: 'Include', icon: '⊂' },
+          { des: 'Exclude', icon: '⊄' }
+        ]
+      },
       tmpFilter: 0
     };
   }
 
   componentDidMount() {
     console.log(this.props.tableFilter)
+    console.log(this.props.variableList)
     this.setState({ myfilter: JSON.parse(JSON.stringify(this.props.tableFilter)) })
   }
 
@@ -40,7 +45,7 @@ class VirtualTableFilter extends React.Component {
       {
         column: null,
         operation: '=',
-        value: '',
+        value: [],
         andor: 'and'
       }
       ]
@@ -50,7 +55,30 @@ class VirtualTableFilter extends React.Component {
   handleSelectColumn = (event, newValue, index) => {
     const newFilter = [...this.state.myfilter];
     newFilter[index].column = newValue
+
+    console.log(newValue)
+
+    if (newValue === null) {
+      newFilter[index].value = []
+    } else {
+      if (newValue.type === 'object') {
+        newFilter[index].value = []
+      } else {
+        newFilter[index].value = ''
+      }
+    }
+
+
+
     this.setState({ myfilter: newFilter })
+  }
+
+  handleSelectObjectChip = (event, newValue, index) => {
+    const newFilter = [...this.state.myfilter];
+    newFilter[index].value = newValue
+    this.setState({ myfilter: newFilter }, () => {
+      this.handleSubmitFilter()
+    })
   }
 
   handleOperationOpen = (event, index) => {
@@ -64,14 +92,24 @@ class VirtualTableFilter extends React.Component {
   handleOperationChange = (operation) => {
     const newFilter = [...this.state.myfilter];
     newFilter[this.state.tmpFilter].operation = operation
-    this.setState({ myfilter: newFilter })
+
+    if (operation === '⊂' | operation === '⊄') {
+      newFilter[this.state.tmpFilter].value = []
+    }
+
+    this.setState({ myfilter: newFilter }, () => {
+      this.handleSubmitFilter()
+    })
+
     this.handleOperationClose()
   }
 
   handleValueChange = (event, index) => {
     const newFilter = [...this.state.myfilter];
     newFilter[index].value = event.target.value
-    this.setState({ myfilter: newFilter })
+    this.setState({ myfilter: newFilter }, () => {
+      this.handleSubmitFilter()
+    })
   }
 
   handleAndOrChange = (index) => {
@@ -81,17 +119,21 @@ class VirtualTableFilter extends React.Component {
     } else {
       newFilter[index].andor = 'and'
     }
-    this.setState({ myfilter: newFilter })
+    this.setState({ myfilter: newFilter }, () => {
+      this.handleSubmitFilter()
+    })
   }
 
   handleDeleteFilter = (index) => {
     const newFilter = [...this.state.myfilter];
     newFilter.splice(index, 1);
-    this.setState({ myfilter: newFilter })
+    this.setState({ myfilter: newFilter }, () => {
+      this.handleSubmitFilter()
+    })
   }
 
   handleSubmitFilter = () => {
-    this.props.UpdateFilter(this.state.myfilter)
+    this.props.UpdateFilter(this.state.myfilter.filter((item) => item.column !== null))
   }
 
 
@@ -143,6 +185,7 @@ class VirtualTableFilter extends React.Component {
 
                       <Grid item xs={1} className={classes.centerGrid}>
                         <IconButton
+                          disabled={item.column === null}
                           edge="start"
                           size="small"
                           className={classes.menuButton}
@@ -160,37 +203,105 @@ class VirtualTableFilter extends React.Component {
                           onClose={this.handleOperationClose}
                         >
                           {
-                            this.state.operationOptions.map((operationItem, operationIndex) => {
-                              return (
-                                <MenuItem key={operationIndex} onClick={() => this.handleOperationChange(operationItem.icon)}>
-                                  <ListItemIcon>
-                                    <Typography variant="h5" noWrap>
-                                      {operationItem.icon}
+                            item.column === null ? (
+                              this.state.operationOptions.other.map((operationItem, operationIndex) => {
+                                return (
+                                  <MenuItem key={operationIndex} onClick={() => this.handleOperationChange(operationItem.icon)}>
+                                    <ListItemIcon>
+                                      <Typography variant="h5" noWrap>
+                                        {operationItem.icon}
+                                      </Typography>
+                                    </ListItemIcon>
+                                    <Typography variant="body2" noWrap>
+                                      {operationItem.des}
                                     </Typography>
-                                  </ListItemIcon>
-                                  <Typography variant="body2" noWrap>
-                                    {operationItem.des}
-                                  </Typography>
-                                </MenuItem>
-                              )
+                                  </MenuItem>
+                                )
 
-                            })
+                              })
+                            ) : item.column.type === 'object' ? (
+                              this.state.operationOptions.object.map((operationItem, operationIndex) => {
+                                return (
+                                  <MenuItem key={operationIndex} onClick={() => this.handleOperationChange(operationItem.icon)}>
+                                    <ListItemIcon>
+                                      <Typography variant="h5" noWrap>
+                                        {operationItem.icon}
+                                      </Typography>
+                                    </ListItemIcon>
+                                    <Typography variant="body2" noWrap>
+                                      {operationItem.des}
+                                    </Typography>
+                                  </MenuItem>
+                                )
+                              })
+                            ) : (
+                                  this.state.operationOptions.other.map((operationItem, operationIndex) => {
+                                    return (
+                                      <MenuItem key={operationIndex} onClick={() => this.handleOperationChange(operationItem.icon)}>
+                                        <ListItemIcon>
+                                          <Typography variant="h5" noWrap>
+                                            {operationItem.icon}
+                                          </Typography>
+                                        </ListItemIcon>
+                                        <Typography variant="body2" noWrap>
+                                          {operationItem.des}
+                                        </Typography>
+                                      </MenuItem>
+                                    )
+                                  })
+                                )
                           }
 
                         </Menu>
                       </Grid>
 
-                      <Grid item xs={3} className={classes.centerGrid}>
-                        <TextField
-                          label="Value"
-                          variant="outlined"
-                          id="standard-size-small"
-                          size="small"
-                          value={item.value}
-                          onChange={(event) => this.handleValueChange(event, index)} />
+                      <Grid item xs={4} className={classes.centerGrid}>
+                        {
+                          item.column === null ? (
+                            <TextField
+                              disabled={item.column === null}
+                              label="Value"
+                              variant="outlined"
+                              id="standard-size-small"
+                              size="small"
+                              value={item.value}
+                              onChange={(event) => this.handleValueChange(event, index)} />
+                          ) : item.column.type === 'object' & item.operation !== '=' ? (
+                            <Autocomplete
+                              multiple
+                              value={item.value}
+                              onChange={(event, newValue) => this.handleSelectObjectChip(event, newValue, index)}
+                              id="combo-box-demo"
+                              size="small"
+                              options={item.column.chips}
+                              getOptionLabel={(option) => option}
+                              renderInput={(params) => <TextField {...params} label="Select Items" variant="outlined" />}
+                              renderTags={(tagValue, getTagProps) =>
+                                tagValue.map((option, index) => (
+                                  <Chip
+                                    size='small'
+                                    variant="outlined"
+                                    label={option}
+                                    className={classes.chip}
+                                  />
+                                ))
+                              }
+                            />
+                          ) : (
+                                <TextField
+                                  disabled={item.column === null}
+                                  label="Value"
+                                  variant="outlined"
+                                  id="standard-size-small"
+                                  size="small"
+                                  value={item.value}
+                                  onChange={(event) => this.handleValueChange(event, index)} />
+                              )
+                        }
+
                       </Grid>
 
-                      <Grid item xs={2} className={classes.centerGrid}>
+                      <Grid item xs={1} className={classes.centerGrid}>
                         {
                           index !== (this.state.myfilter.length - 1) ?
 
@@ -261,7 +372,7 @@ VirtualTableFilter.propTypes = {
 
 const styles = theme => ({
   root: {
-    width: 600,
+    width: 800,
     maxHeight: 600,
     overflowY: 'auto'
   },
@@ -316,6 +427,11 @@ const styles = theme => ({
     height: '0.8em',
     width: '0.8em',
     color: 'red'
+  },
+  chip: {
+    margin: theme.spacing(0.5),
+    textShadow: 'none',
+    color: '#2E84CF',
   }
 });
 
