@@ -13,6 +13,7 @@ class VirtualTableFilter extends React.Component {
     this.state = {
       value: 0,
       anchorEl: null,
+      anchorElObject: null,
       myfilter: [],
       operationOptions: {
         other: [
@@ -81,12 +82,17 @@ class VirtualTableFilter extends React.Component {
     })
   }
 
-  handleOperationOpen = (event, index) => {
-    this.setState({ anchorEl: event.currentTarget, tmpFilter: index })
+  handleOperationOpen = (event, index, column) => {
+
+    if (column.type === 'object') {
+      this.setState({ anchorElObject: event.currentTarget, tmpFilter: index })
+    } else {
+      this.setState({ anchorEl: event.currentTarget, tmpFilter: index })
+    }
   };
 
   handleOperationClose = () => {
-    this.setState({ anchorEl: null })
+    this.setState({ anchorEl: null, anchorElObject: null })
   };
 
   handleOperationChange = (operation) => {
@@ -190,7 +196,7 @@ class VirtualTableFilter extends React.Component {
                           size="small"
                           className={classes.menuButton}
                           color="inherit"
-                          onClick={(event) => this.handleOperationOpen(event, index)}
+                          onClick={(event) => this.handleOperationOpen(event, index, item.column)}
                         >
                           {item.operation}
                         </IconButton>
@@ -203,56 +209,51 @@ class VirtualTableFilter extends React.Component {
                           onClose={this.handleOperationClose}
                         >
                           {
-                            item.column === null ? (
-                              this.state.operationOptions.other.map((operationItem, operationIndex) => {
-                                return (
-                                  <MenuItem key={operationIndex} onClick={() => this.handleOperationChange(operationItem.icon)}>
-                                    <ListItemIcon>
-                                      <Typography variant="h5" noWrap>
-                                        {operationItem.icon}
-                                      </Typography>
-                                    </ListItemIcon>
-                                    <Typography variant="body2" noWrap>
-                                      {operationItem.des}
+                            this.state.operationOptions.other.map((operationItem, operationIndex) => {
+                              return (
+                                <MenuItem key={operationIndex} onClick={() => this.handleOperationChange(operationItem.icon)}>
+                                  <ListItemIcon>
+                                    <Typography variant="h5" noWrap>
+                                      {operationItem.icon}
                                     </Typography>
-                                  </MenuItem>
-                                )
+                                  </ListItemIcon>
+                                  <Typography variant="body2" noWrap>
+                                    {operationItem.des}
+                                  </Typography>
+                                </MenuItem>
+                              )
 
-                              })
-                            ) : item.column.type === 'object' ? (
-                              this.state.operationOptions.object.map((operationItem, operationIndex) => {
-                                return (
-                                  <MenuItem key={operationIndex} onClick={() => this.handleOperationChange(operationItem.icon)}>
-                                    <ListItemIcon>
-                                      <Typography variant="h5" noWrap>
-                                        {operationItem.icon}
-                                      </Typography>
-                                    </ListItemIcon>
-                                    <Typography variant="body2" noWrap>
-                                      {operationItem.des}
-                                    </Typography>
-                                  </MenuItem>
-                                )
-                              })
-                            ) : (
-                                  this.state.operationOptions.other.map((operationItem, operationIndex) => {
-                                    return (
-                                      <MenuItem key={operationIndex} onClick={() => this.handleOperationChange(operationItem.icon)}>
-                                        <ListItemIcon>
-                                          <Typography variant="h5" noWrap>
-                                            {operationItem.icon}
-                                          </Typography>
-                                        </ListItemIcon>
-                                        <Typography variant="body2" noWrap>
-                                          {operationItem.des}
-                                        </Typography>
-                                      </MenuItem>
-                                    )
-                                  })
-                                )
+                            })
                           }
-
                         </Menu>
+
+                        <Menu
+                          id="simple-menu"
+                          anchorEl={this.state.anchorElObject}
+                          keepMounted
+                          open={Boolean(this.state.anchorElObject)}
+                          onClose={this.handleOperationClose}
+                        >
+                          {
+                            this.state.operationOptions.object.map((operationItem, operationIndex) => {
+                              return (
+                                <MenuItem key={operationIndex} onClick={() => this.handleOperationChange(operationItem.icon)}>
+                                  <ListItemIcon>
+                                    <Typography variant="h5" noWrap>
+                                      {operationItem.icon}
+                                    </Typography>
+                                  </ListItemIcon>
+                                  <Typography variant="body2" noWrap>
+                                    {operationItem.des}
+                                  </Typography>
+                                </MenuItem>
+                              )
+
+                            })
+                          }
+                        </Menu>
+
+
                       </Grid>
 
                       <Grid item xs={4} className={classes.centerGrid}>
