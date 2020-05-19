@@ -2,7 +2,7 @@ import React from "react";
 import PropTypes from 'prop-types';
 import { withStyles } from '@material-ui/core/styles';
 
-import { TableCell, ButtonGroup, Button, Chip } from '@material-ui/core';
+import { TableCell, ButtonGroup, Button, Chip, TableSortLabel } from '@material-ui/core';
 
 class StickyHeader extends React.Component {
   constructor(props) {
@@ -10,6 +10,10 @@ class StickyHeader extends React.Component {
     this.state = {
     };
   }
+
+  createSortHandler = key => event => {
+    this.props.onRequestSort(event, key);
+  };
 
   render() {
 
@@ -31,14 +35,31 @@ class StickyHeader extends React.Component {
       </div> */}
         <div className={"sticky-grid__header__scrollable"} style={scrollableStyle}>
           {
-            headerColumns.map(({ label, ...style }, i) => {
+            headerColumns.map(({ label, key, ...style }, i) => {
               return (
                 <div
                   className={classes.stickyGridHeaderScrollableColumn}
                   style={style}
                   key={i}>
-                  {label}
+                  <TableSortLabel
+                    // className={classes.sortlabel}
+                    active={this.props.orderBy === key}
+                    direction={this.props.order}
+                    onClick={this.createSortHandler(key)}>
+
+                    {label}
+
+                    {this.props.orderBy === key ? (
+                      <span className={classes.visuallyHidden}>
+                        {this.props.order === 'desc'
+                          ? 'sorted descending'
+                          : 'sorted ascending'}
+                      </span>
+                    ) : null}
+                  </TableSortLabel>
+                  {/* {label} */}
                 </div>
+
               )
             })
           }
@@ -74,6 +95,17 @@ const styles = theme => ({
     padding: '20px 0',
     // borderBottom: '1px solid lightgray',
     // borderRight: '1px solid lightgray'
+  },
+  visuallyHidden: {
+    border: 0,
+    clip: 'rect(0 0 0 0)',
+    height: 1,
+    margin: -1,
+    overflow: 'hidden',
+    padding: 0,
+    position: 'absolute',
+    top: 20,
+    width: 1
   }
 });
 

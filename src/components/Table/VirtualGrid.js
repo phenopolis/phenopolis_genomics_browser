@@ -64,7 +64,8 @@ const headerBuilder = (minColumn, maxColumn, columnWidth, stickyHeight, mycolumn
       height: stickyHeight,
       width: columnWidth(i),
       left: left[i],
-      label: mycolumns[i].name
+      label: mycolumns[i].name,
+      key: mycolumns[i].key
     });
   }
 
@@ -131,7 +132,10 @@ const innerGridElementType = React.forwardRef(({ children, ...rest }, ref) =>
         columnsBuilder,
         columnWidth,
         mycolumns,
-        rowHeight
+        rowHeight,
+        order,
+        orderBy,
+        onRequestSort
       }) => {
 
         const [minRow, maxRow, minColumn, maxColumn] = getRenderedCursor(
@@ -175,6 +179,9 @@ const innerGridElementType = React.forwardRef(({ children, ...rest }, ref) =>
               headerColumns={headerColumns}
               stickyHeight={stickyHeight}
               stickyWidth={stickyWidth}
+              order={order}
+              orderBy={orderBy}
+              onRequestSort={onRequestSort}
             />
             {/* <StickyColumns
               rows={leftSideRows}
@@ -227,7 +234,8 @@ class StickyGrid extends React.Component {
   }
 
   render() {
-    const { stickyHeight, stickyWidth, columnWidth, rowHeight, myrows, mycolumns, children, toggleItemActive, currentRow, currentColumn, ...rest } = this.props
+    const { stickyHeight, stickyWidth, columnWidth, rowHeight, myrows, mycolumns, children, toggleItemActive, currentRow, currentColumn, order, orderBy, onRequestSort, ...rest } = this.props
+
     const itemData = createItemData(myrows, mycolumns, toggleItemActive, currentRow, currentColumn);
 
     return (
@@ -240,7 +248,10 @@ class StickyGrid extends React.Component {
           headerBuilder,
           columnsBuilder,
           mycolumns,
-          myrows
+          myrows,
+          order,
+          orderBy,
+          onRequestSort
         }}
       >
         <Grid
@@ -270,6 +281,45 @@ function handleCellChange(props, value) {
 // - * - * - * - * - * - * - * - * - * - * - * - * 
 // - * - * - * - * - * - * - * - * - * - * - * - * 
 
+
+function desc(a, b, orderBy) {
+  if (!isNaN(b[orderBy])) {
+    if (Number(b[orderBy]) < Number(a[orderBy])) {
+      return -1;
+    }
+    if (Number(b[orderBy]) > Number(a[orderBy])) {
+      return 1;
+    }
+    return 0;
+  } else {
+    if (b[orderBy] < a[orderBy]) {
+      return -1;
+    }
+    if (b[orderBy] > a[orderBy]) {
+      return 1;
+    }
+    return 0;
+  }
+
+}
+
+function stableSort(array, cmp) {
+  const stabilizedThis = array.map((el, index) => [el, index]);
+
+  stabilizedThis.sort((a, b) => {
+    const order = cmp(a[0], b[0]);
+    if (order !== 0) return order;
+    return a[1] - b[1];
+  });
+  return stabilizedThis;
+}
+
+function getSorting(order, orderBy) {
+  return order === 'desc'
+    ? (a, b) => desc(a, b, orderBy)
+    : (a, b) => -desc(a, b, orderBy);
+}
+
 class VirtualGrid extends React.Component {
   constructor(props) {
     super(props);
@@ -290,7 +340,10 @@ class VirtualGrid extends React.Component {
       filteredData: [],
       filteredColumn: [],
       filteredColumnWidth: [],
-      filteredRowHeight: []
+      filteredRowHeight: [],
+
+      order: 'asc',
+      orderBy: 'variant_id'
     };
   }
 
@@ -313,7 +366,7 @@ class VirtualGrid extends React.Component {
 
     for (let j = 0; j < mycolumns.length; j++) {
       let headSize = calculateSize(mycolumns[j].name, { font: 'Arial', fontSize: '14px' })
-      if (headSize.width + 20 > tmpWidth[j]) tmpWidth[j] = headSize.width + 20
+      if (headSize.width + 50 > tmpWidth[j]) tmpWidth[j] = headSize.width + 50
 
       tmpColnames.push({ name: mycolumns[j].name, key: mycolumns[j].key, type: typeof myrows[0][mycolumns[j].key], chips: [] })
     }
@@ -399,6 +452,27 @@ class VirtualGrid extends React.Component {
     this.setState({ tableFilter: newFilter }, () => {
       this.columnFilter(this.state.fullData, this.state.tableFilter);
     })
+  }
+
+  handleRequestSort = (event, key) => {
+    const isDesc = this.state.orderBy === key && this.state.order === 'desc';
+    this.setState({ order: isDesc ? 'asc' : 'desc', orderBy: key }, () => {
+      this.SortRowandHeight()
+    });
+  }
+
+  SortRowandHeight = () => {
+    let arraySort = stableSort(
+      this.state.filteredData,
+      getSorting(this.state.order, this.state.orderBy)
+    )
+    var sortedArray = arraySort.map(el => el[0])
+
+    var indices = arraySort.map(el => el[1])
+
+    var newRowHeight = indices.map(i => this.state.filteredRowHeight[i]);
+    // console.log(indices)
+    this.setState({ filteredData: sortedArray, filteredRowHeight: newRowHeight })
   }
 
   columnFilter = (data, filters) => {
@@ -537,8 +611,6 @@ class VirtualGrid extends React.Component {
         var judge = eval(stringForEval)
       }
 
-
-
       if (judge) {
         tmpNewRowHeight.push(this.state.TableRowHeight[rowIndex])
       }
@@ -546,7 +618,9 @@ class VirtualGrid extends React.Component {
     });
     // return filtered;
 
-    this.setState({ filteredData: filtered, filteredRowHeight: tmpNewRowHeight });
+    this.setState({ filteredData: filtered, filteredRowHeight: tmpNewRowHeight }, () => {
+      this.SortRowandHeight()
+    });
   };
 
   render() {
@@ -589,7 +663,12 @@ class VirtualGrid extends React.Component {
             }}
           >
             {/* <Dialog onClose={this.handleFilterPopoverClose} aria-labelledby="simple-dialog-title" open={this.state.filterPopoverOpen}> */}
-            <VirtualTableFilter variableList={this.state.colNames} tableFilter={this.state.tableFilter} UpdateFilter={this.handleUpdateFilter} onClickClose={this.handleFilterPopoverClose} />
+            <VirtualTableFilter
+              variableList={this.state.colNames}
+              tableFilter={this.state.tableFilter}
+              UpdateFilter={this.handleUpdateFilter}
+              onClickClose={this.handleFilterPopoverClose}
+            />
             {/* </Dialog> */}
           </Popover>
 
@@ -613,11 +692,23 @@ class VirtualGrid extends React.Component {
                   stickyHeight={50}
                   stickyWidth={0}
                   onScroll={handleScroll}
-                  myrows={this.state.filteredData}
+                  myrows={
+                    this.state.filteredData
+                    // this.SortRowandHeight(this.state.filteredData)
+                    // stableSort(
+                    //   this.state.filteredData,
+                    //   getSorting(this.state.order, this.state.orderBy)
+                    // )
+                  }
                   mycolumns={this.state.filteredColumn}
                   toggleItemActive={this.toggleItemActive}
                   currentRow={this.state.currentRow}
                   currentColumn={this.state.currentColumn}
+
+
+                  order={this.state.order}
+                  orderBy={this.state.orderBy}
+                  onRequestSort={this.handleRequestSort}
                 >
                   {GridColumn}
                 </StickyGrid>
