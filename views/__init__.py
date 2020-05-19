@@ -59,7 +59,6 @@ port=os.environ['DB_PORT']
 application.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql+psycopg2://%s:%s@%s/%s' % (user,password,host,database,)
 SESSION_TYPE='sqlalchemy'
 SESSION_SQLALCHEMY=create_engine('postgresql+psycopg2://%s:%s@%s/%s' % (user,password,host,database,),echo=True)
-db=SQLAlchemy(application)
 
 mail = Mail(application)
 application.config['MAIL_SERVER']=os.environ['MAIL_SERVER']
@@ -184,6 +183,8 @@ def check_auth(username, password):
 def requires_auth(f):
     @wraps(f)
     def decorated(*args, **kwargs):
+        print(session)
+        print('user' in session)
         if session:
           if 'user' in session: 
              return f(*args, **kwargs)
