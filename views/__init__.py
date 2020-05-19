@@ -31,8 +31,11 @@ from logging.handlers import RotatingFileHandler
 import traceback
 from db import *
 
+from flask_sqlalchemy import SQLAlchemy
+
 # Load default config and override config from an environment variable
 application = Flask(__name__)
+application.secret_key=os.urandom(24)
 
 mail_handler = SMTPHandler(mailhost=(os.environ['MAIL_SERVER'],os.environ['MAIL_PORT']), fromaddr='no-reply@phenopolis.org', toaddrs=['nikolas.pontikos@phenopolis.org','ismail.moghul@phenopolis.org'], subject='Phenopolis Error', credentials=(os.environ['MAIL_USERNAME'],os.environ['MAIL_PASSWORD']))
 mail_handler.setLevel(logging.ERROR)
@@ -47,18 +50,16 @@ Compress(application)
 cache = Cache(application,config={'CACHE_TYPE': 'simple'})
 
 # Check Configuration section for more details
-#SESSION_TYPE = 'redis'
-#SESSION_TYPE='memcached'
-#SESSION_TYPE = 'mongodb'
-SESSION_TYPE='filesystem'
-SESSION_FILE_DIR='/tmp/sessions'
+host=os.environ['DB_HOST']
+database=os.environ['DB_DATABASE']
+user=os.environ['DB_USER']
+password=os.environ['DB_PASSWORD']
+port=os.environ['DB_PORT']
 
-if not os.path.exists(SESSION_FILE_DIR):
-    os.mkdir(SESSION_FILE_DIR)
-
-application.config.from_object(__name__)
-sess=Session()
-sess.init_app(application)
+application.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql+psycopg2://%s:%s@%s/%s' % (user,password,host,database,)
+SESSION_TYPE='sqlalchemy'
+SESSION_SQLALCHEMY=create_engine('postgresql+psycopg2://%s:%s@%s/%s' % (user,password,host,database,),echo=True)
+db=SQLAlchemy(application)
 
 mail = Mail(application)
 application.config['MAIL_SERVER']=os.environ['MAIL_SERVER']

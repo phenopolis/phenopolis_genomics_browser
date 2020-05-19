@@ -4,6 +4,7 @@ flask_compress
 flask_caching
 flask_session
 flask_mail
+Flask-SQLAlchemy
 passlib[argon2]
 psycopg2-binary
 boto3
