@@ -2,7 +2,7 @@ werkzeug==0.16.0
 flask
 flask_compress
 flask_caching
-flask_session
+flask_sessionstore
 flask_mail
 Flask-SQLAlchemy
 passlib[argon2]

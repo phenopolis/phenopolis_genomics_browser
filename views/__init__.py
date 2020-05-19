@@ -2,7 +2,8 @@
 #flask import
 from flask import Flask
 from flask import session
-from flask_session import Session
+from flask_sessionstore import Session, SqlAlchemySessionInterface
+#from flask_session import SqlAlchemySessionInterface
 from flask import current_app, g
 from flask import Response
 from flask import request
@@ -59,6 +60,16 @@ port=os.environ['DB_PORT']
 application.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql+psycopg2://%s:%s@%s/%s' % (user,password,host,database,)
 SESSION_TYPE='sqlalchemy'
 SESSION_SQLALCHEMY=create_engine('postgresql+psycopg2://%s:%s@%s/%s' % (user,password,host,database,),echo=True)
+SESSION_SQLALCHEMY_TABLE='session'
+db=SQLAlchemy(application)
+Session(application)
+db.init_app(application)
+#session.init_app(appplication)
+application.session_interface=SqlAlchemySessionInterface(application, db, "sessions", "sess_")
+db.create_all()
+
+#print(dir(db))
+
 
 mail = Mail(application)
 application.config['MAIL_SERVER']=os.environ['MAIL_SERVER']
@@ -183,6 +194,7 @@ def check_auth(username, password):
 def requires_auth(f):
     @wraps(f)
     def decorated(*args, **kwargs):
+        print(db.Session)
         print(session)
         print('user' in session)
         if session:
@@ -202,6 +214,7 @@ def requires_auth(f):
 @application.before_request
 def make_session_timeout():
     print('session timeout')
+    print(session)
     session.permanent = True
     application.permanent_session_lifetime = datetime.timedelta(hours=2)
     #app.permanent_session_lifetime = datetime.timedelta(seconds=2)
@@ -225,6 +238,7 @@ def login(language='en'):
     else:
         print('LOGIN SUCCESS')
         session['user']=username
+        print(session)
         return jsonify(success="Authenticated", username=username), 200
 
 # 
