@@ -68,6 +68,8 @@ db.init_app(application)
 application.session_interface=SqlAlchemySessionInterface(application, db, "sessions", "sess_")
 db.create_all()
 
+application.permanent_session_lifetime = datetime.timedelta(hours=2)
+
 #print(dir(db))
 
 
@@ -194,8 +196,6 @@ def check_auth(username, password):
 def requires_auth(f):
     @wraps(f)
     def decorated(*args, **kwargs):
-        print(db.Session)
-        print(session)
         print('user' in session)
         if session:
           if 'user' in session: 
@@ -205,19 +205,12 @@ def requires_auth(f):
           password=request.form['password']
           if check_auth(username,password):
              session['user']=username
+             session.permanent = True
              return f(*args, **kwargs)
         print('Not Logged In - Redirect to home to login')
         return jsonify(error='Unauthenticated'), 401
     return decorated
 
-
-@application.before_request
-def make_session_timeout():
-    print('session timeout')
-    print(session)
-    session.permanent = True
-    application.permanent_session_lifetime = datetime.timedelta(hours=2)
-    #app.permanent_session_lifetime = datetime.timedelta(seconds=2)
 
 # 
 @application.route('/<language>/login', methods=['POST'])
