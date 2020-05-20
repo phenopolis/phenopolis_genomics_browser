@@ -66,9 +66,8 @@ Session(application)
 db.init_app(application)
 #session.init_app(appplication)
 application.session_interface=SqlAlchemySessionInterface(application, db, "sessions", "sess_")
-db.create_all()
-
-application.permanent_session_lifetime = datetime.timedelta(hours=2)
+#db.create_all()
+application.permanent_session_lifetime = datetime.timedelta(hours=1)
 
 #print(dir(db))
 
@@ -196,7 +195,7 @@ def check_auth(username, password):
 def requires_auth(f):
     @wraps(f)
     def decorated(*args, **kwargs):
-        if 'user' in session: return f(*args, **kwargs)
+        if session.get('user'): return f(*args, **kwargs)
         elif request.method == 'POST':
           username=request.form['user']
           password=request.form['password']
@@ -243,7 +242,7 @@ def logout(language='en'):
 @application.route('/is_logged_in')
 @requires_auth
 def is_logged_in():
-    return jsonify(username=session['user']), 200
+    return jsonify(username=session.get('user','')), 200
 
 @application.after_request
 def apply_caching(response):
