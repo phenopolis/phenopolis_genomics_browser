@@ -36,7 +36,7 @@ from flask_sqlalchemy import SQLAlchemy
 
 # Load default config and override config from an environment variable
 application = Flask(__name__)
-application.secret_key=os.urandom(24)
+#application.secret_key=os.urandom(24)
 
 mail_handler = SMTPHandler(mailhost=(os.environ['MAIL_SERVER'],os.environ['MAIL_PORT']), fromaddr='no-reply@phenopolis.org', toaddrs=['nikolas.pontikos@phenopolis.org','ismail.moghul@phenopolis.org'], subject='Phenopolis Error', credentials=(os.environ['MAIL_USERNAME'],os.environ['MAIL_PASSWORD']))
 mail_handler.setLevel(logging.ERROR)
