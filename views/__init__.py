@@ -196,18 +196,14 @@ def check_auth(username, password):
 def requires_auth(f):
     @wraps(f)
     def decorated(*args, **kwargs):
-        print('user' in session)
-        if session:
-          if 'user' in session: 
-             return f(*args, **kwargs)
-        if request.method == 'POST':
+        if session and 'user' in session: return f(*args, **kwargs)
+        elif request.method == 'POST':
           username=request.form['user']
           password=request.form['password']
           if check_auth(username,password):
              session['user']=username
              session.permanent = True
              return f(*args, **kwargs)
-        print('Not Logged In - Redirect to home to login')
         return jsonify(error='Unauthenticated'), 401
     return decorated
 
@@ -231,6 +227,7 @@ def login(language='en'):
     else:
         print('LOGIN SUCCESS')
         session['user']=username
+        session.permanent=True
         print(session)
         return jsonify(success="Authenticated", username=username), 200
 
