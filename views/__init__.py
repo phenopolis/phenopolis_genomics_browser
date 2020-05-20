@@ -244,6 +244,11 @@ def logout(language='en'):
 def is_logged_in():
     return jsonify(username=session.get('user','')), 200
 
+@application.route('/check_health')
+def check_health():
+    return jsonify(health='ok'), 200
+
+
 @application.after_request
 def apply_caching(response):
     response.headers['Cache-Control'] = 'no-cache'
