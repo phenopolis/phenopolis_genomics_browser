@@ -33,6 +33,7 @@ import traceback
 from db import *
 
 from flask_sqlalchemy import SQLAlchemy
+#from FlaskSQLAlchemySession import set_db_session_interface
 
 # Load default config and override config from an environment variable
 application = Flask(__name__)
@@ -58,16 +59,18 @@ password=os.environ['DB_PASSWORD']
 port=os.environ['DB_PORT']
 
 application.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql+psycopg2://%s:%s@%s/%s' % (user,password,host,database,)
+SESSION_COOKIE_NAME='phenopolis_api'
 SESSION_TYPE='sqlalchemy'
-SESSION_SQLALCHEMY=create_engine('postgresql+psycopg2://%s:%s@%s/%s' % (user,password,host,database,),echo=True)
-SESSION_SQLALCHEMY_TABLE='session'
+SESSION_SQLALCHEMY=create_engine(application.config['SQLALCHEMY_DATABASE_URI'],echo=True)
+#SESSION_SQLALCHEMY_TABLE='session'
 db=SQLAlchemy(application)
-Session(application)
 db.init_app(application)
-#session.init_app(appplication)
-application.session_interface=SqlAlchemySessionInterface(application, db, "sessions", "sess_")
+application.session_interface=SqlAlchemySessionInterface(application, db, "test_sessions", "test_sess_")
+#set_db_session_interface(application, data_serializer=json)
 #db.create_all()
 application.permanent_session_lifetime = datetime.timedelta(hours=1)
+#sess=Session(application)
+#sess.init_app(application)
 
 #print(dir(db))
 
@@ -100,9 +103,7 @@ def get_db_session():
         user=os.environ['DB_USER']
         password=os.environ['DB_PASSWORD']
         port=os.environ['DB_PORT']
-        #engine = create_engine('postgres://%s:%s@%s:%s/%s'% (user,password,host,port,database))
-        #create_engine('postgresql+psycopg2://scott:tiger@localhost/mydatabase')
-        engine=create_engine('postgresql+psycopg2://%s:%s@%s/%s' % (user,password,host,database,))
+        engine=create_engine(application.config['SQLALCHEMY_DATABASE_URI'],echo=True)
         engine.connect()
         DbSession = sessionmaker(bind=engine)
         DbSession.configure(bind=engine)
@@ -141,14 +142,21 @@ def exceptions(e):
 
 @application.route('/statistics')
 def phenopolis_statistics():
-    total_patients=get_db_session().query(Individual).count()
-    male_patients=get_db_session().query(Individual).filter(Individual.sex=='M').count()
-    female_patients=get_db_session().query(Individual).filter(Individual.sex=='F').count()
-    unknown_patients=get_db_session().query(Individual).filter(Individual.sex=='U').count()
-    total_variants=get_db_session().query(Variant).count()
+    #total_patients=get_db_session().query(Individual).count()
+    total_patients=8000
+    #male_patients=get_db_session().query(Individual).filter(Individual.sex=='M').count()
+    male_patients=3000
+    #female_patients=get_db_session().query(Individual).filter(Individual.sex=='F').count()
+    female_patients=4000
+    #unknown_patients=get_db_session().query(Individual).filter(Individual.sex=='U').count()
+    unknown_patients=1000
+    #total_variants=get_db_session().query(Variant).count()
+    total_variants=8000000
     exac_variants=0
-    pass_variants=get_db_session().query(Variant).filter(Variant.FILTER=='PASS').count()
-    nonpass_variants=get_db_session().query(Variant).filter(Variant.FILTER!='PASS').count()
+    #pass_variants=get_db_session().query(Variant).filter(Variant.FILTER=='PASS').count()
+    pass_variants=700000
+    #nonpass_variants=get_db_session().query(Variant).filter(Variant.FILTER!='PASS').count()
+    nonpass_variants=100000
     pass_exac_variants=0
     pass_nonexac_variants=0
     return jsonify( exomes="{:,}".format(total_patients),
@@ -225,14 +233,17 @@ def login(language='en'):
        return jsonify(error='Invalid Credentials. Please try again.'), 401
     else:
         print('LOGIN SUCCESS')
+        print(session)
         session['user']=username
         #session.permanent=True
-        print(session)
+        print(dir(session))
+        session.update()
         return jsonify(success="Authenticated", username=username), 200
 
 # 
 @application.route('/<language>/logout', methods=['POST'])
 @application.route('/logout', methods=['POST'])
+@requires_auth
 def logout(language='en'):
     print('DELETE SESSION')
     session.pop('user',None)
@@ -247,7 +258,6 @@ def is_logged_in():
 @application.route('/check_health')
 def check_health():
     return jsonify(health='ok'), 200
-
 
 @application.after_request
 def apply_caching(response):
