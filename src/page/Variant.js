@@ -11,7 +11,8 @@ import Loading from '../components/General/Loading';
 import TabPanel from '../components/Tab/Tabpanel'
 
 import MetaData from '../components/Gene/MetaData';
-import Variants from '../components/Gene/Variants';
+import VirtualGrid from '../components/Table/VirtualGrid'
+// import Variants from '../components/Gene/Variants';
 
 import compose from 'recompose/compose';
 import { withTranslation, Trans } from 'react-i18next';
@@ -119,19 +120,24 @@ class Variant extends React.Component {
                   onChangeIndex={this.handleChangeIndex}
                 >
                   <TabPanel value={this.state.value} index={0} dir={this.props.theme.direction}>
-                    <Variants variants={this.state.variantInfo.frequency} title={t("Variant.Frequency")} subtitle={t("Variant.Frequency_subtitle")} configureLink="variant/frequency" />
+                    <VirtualGrid tableData={this.state.variantInfo.frequency} title={t("Variant.Frequency")} subtitle={t("Variant.Frequency_subtitle")} configureLink="variant/frequency" />
+                    {/* <Variants variants={this.state.variantInfo.frequency} title={t("Variant.Frequency")} subtitle={t("Variant.Frequency_subtitle")} configureLink="variant/frequency" /> */}
                   </TabPanel>
                   <TabPanel value={this.state.value} index={1} dir={this.props.theme.direction}>
-                    <Variants variants={this.state.variantInfo.consequence} title={t("Variant.Consequences")} subtitle={t("Variant.Consequences_subtitle")} configureLink="variant/consequence" />
+                    <VirtualGrid tableData={this.state.variantInfo.consequence} title={t("Variant.Consequences")} subtitle={t("Variant.Consequences_subtitle")} configureLink="variant/consequence" />
+                    {/* <Variants variants={this.state.variantInfo.consequence} title={t("Variant.Consequences")} subtitle={t("Variant.Consequences_subtitle")} configureLink="variant/consequence" /> */}
                   </TabPanel>
                   <TabPanel value={this.state.value} index={2} dir={this.props.theme.direction}>
-                    <Variants variants={this.state.variantInfo.quality} title={t("Variant.Quality")} subtitle={t("Variant.Quality_subtitle")} configureLink="variant/quality" />
+                    <VirtualGrid tableData={this.state.variantInfo.quality} title={t("Variant.Quality")} subtitle={t("Variant.Quality_subtitle")} configureLink="variant/quality" />
+                    {/* <Variants variants={this.state.variantInfo.quality} title={t("Variant.Quality")} subtitle={t("Variant.Quality_subtitle")} configureLink="variant/quality" /> */}
                   </TabPanel>
                   <TabPanel value={this.state.value} index={3} dir={this.props.theme.direction}>
-                    <Variants variants={this.state.variantInfo.individuals} title={t("Variant.Individuals")} subtitle={t("Variant.Individuals_subtitle")} configureLink="variant/individuals" />
+                    <VirtualGrid tableData={this.state.variantInfo.individuals} title={t("Variant.Individuals")} subtitle={t("Variant.Individuals_subtitle")} configureLink="variant/individuals" />
+                    {/* <Variants variants={this.state.variantInfo.individuals} title={t("Variant.Individuals")} subtitle={t("Variant.Individuals_subtitle")} configureLink="variant/individuals" /> */}
                   </TabPanel>
                   <TabPanel value={this.state.value} index={4} dir={this.props.theme.direction} >
-                    <Variants variants={this.state.variantInfo.genotypes} title={t("Variant.Genotypes")} subtitle={t("Variant.Genotypes_subtitle")} configureLink="variant/genotypes" />
+                    <VirtualGrid tableData={this.state.variantInfo.genotypes} title={t("Variant.Genotypes")} subtitle={t("Variant.Genotypes_subtitle")} configureLink="variant/genotypes" />
+                    {/* <Variants variants={this.state.variantInfo.genotypes} title={t("Variant.Genotypes")} subtitle={t("Variant.Genotypes_subtitle")} configureLink="variant/genotypes" /> */}
                   </TabPanel>
                 </SwipeableViews>
               </Paper>

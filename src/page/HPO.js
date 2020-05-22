@@ -12,6 +12,7 @@ import TabPanel from '../components/Tab/Tabpanel'
 
 import MetaData from '../components/Gene/MetaData';
 import Variants from '../components/Gene/Variants';
+import VirtualGrid from '../components/Table/VirtualGrid'
 
 import compose from 'recompose/compose';
 import { withTranslation, Trans } from 'react-i18next';
@@ -129,10 +130,12 @@ class HPO extends React.Component {
                   onChangeIndex={this.handleChangeIndex}
                 >
                   <TabPanel value={this.state.value} index={0} dir={this.props.theme.direction}>
-                    <Variants variants={this.state.hpoInfo.individuals} title={t("HPO.Individuals")} subtitle={t("HPO.Individuals_subtitle")} configureLink="hpo/individuals" />
+                    <VirtualGrid tableData={this.state.hpoInfo.individuals} title={t('HPO.Individuals')} subtitle={t('HPO.Individuals_subtitle')} configureLink="hpo/individuals" />
+                    {/* <Variants variants={this.state.hpoInfo.individuals} title={t("HPO.Individuals")} subtitle={t("HPO.Individuals_subtitle")} configureLink="hpo/individuals" /> */}
                   </TabPanel>
                   <TabPanel value={this.state.value} index={1} dir={this.props.theme.direction}>
-                    <Variants variants={this.state.hpoInfo.literature_genes} title={t("HPO.Literature_Genes")} subtitle={t("HPO.Literature_Genes_subtitle")} configureLink="hpo/literature_genes" />
+                    <VirtualGrid tableData={this.state.hpoInfo.literature_genes} title={t('HPO.Literature_Genes')} subtitle={t('HPO.Literature_Genes_subtitle')} configureLink="hpo/literature_genes" />
+                    {/* <Variants variants={this.state.hpoInfo.literature_genes} title={t("HPO.Literature_Genes")} subtitle={t("HPO.Literature_Genes_subtitle")} configureLink="hpo/literature_genes" /> */}
                   </TabPanel>
 
                   {/* Phenogenon tab is more complex. */}
@@ -164,24 +167,39 @@ class HPO extends React.Component {
                       onChangeIndex={this.handleChangePhenogenonIndex}
                     >
                       <TabPanel value={this.state.phenogenonvalue} index={0} dir={this.props.theme.direction}>
-                        <Variants variants={this.state.hpoInfo.phenogenon_recessive} title={t("Recessive")} subtitle={[
+                        <VirtualGrid tableData={this.state.hpoInfo.phenogenon_recessive} title={t('Recessive')} subtitle={[
                           <Trans i18nKey="HPO.RECESSIVE_subtitle">
                             <b>Genotype</b> : With at least two variants on a given gene that have ExAC homozygous count not higher than <b style={{ color: '#2E84CF' }}>2</b>, and CADD phred score not lower than <b style={{ color: '#2E84CF' }}>15</b>.
                           </Trans>
                         ]} configureLink="hpo/phenogenon_recessive" />
+
+                        {/* <Variants variants={this.state.hpoInfo.phenogenon_recessive} title={t("Recessive")} subtitle={[
+                          <Trans i18nKey="HPO.RECESSIVE_subtitle">
+                            <b>Genotype</b> : With at least two variants on a given gene that have ExAC homozygous count not higher than <b style={{ color: '#2E84CF' }}>2</b>, and CADD phred score not lower than <b style={{ color: '#2E84CF' }}>15</b>.
+                          </Trans>
+                        ]} configureLink="hpo/phenogenon_recessive" /> */}
+
                       </TabPanel>
                       <TabPanel value={this.state.phenogenonvalue} index={1} dir={this.props.theme.direction}>
-                        <Variants variants={this.state.hpoInfo.phenogenon_dominant} title={t("Dominant")} subtitle={[
+
+                        <VirtualGrid tableData={this.state.hpoInfo.phenogenon_dominant} title={t('Dominant')} subtitle={[
+                          <Trans i18nKey="HPO.DOMINANT_subtitle">
+                            <b>Genotype</b> : With at least one variant on a given gene that has an ExAC heterozygous count not higher than ", <b style={{ color: '#2E84CF' }}>0.0001</b>, ", and CADD phred score not lower than ", <b style={{ color: '#2E84CF' }}>15</b>, "."
+                        </Trans>
+                        ]} configureLink="hpo/phenogenon_dominant" />
+
+                        {/* <Variants variants={this.state.hpoInfo.phenogenon_dominant} title={t("Dominant")} subtitle={[
                           <Trans i18nKey="HPO.DOMINANT_subtitle">
                             <b>Genotype</b> : With at least one variant on a given gene that has an ExAC heterozygous count not higher than ", <b style={{ color: '#2E84CF' }}>0.0001</b>, ", and CADD phred score not lower than ", <b style={{ color: '#2E84CF' }}>15</b>, "."
                           </Trans>
-                        ]} configureLink="hpo/phenogenon_dominant" />
+                        ]} configureLink="hpo/phenogenon_dominant" /> */}
                       </TabPanel>
                     </SwipeableViews>
                   </TabPanel>
 
                   <TabPanel value={this.state.value} index={3} dir={this.props.theme.direction}>
-                    <Variants variants={this.state.hpoInfo.skat} title={t("HPO.SKAT")} subtitle={t("HPO.SKAT_subtitle")} configureLink="hpo/skat" />
+                    <VirtualGrid tableData={this.state.hpoInfo.skat} title={t('HPO.SKAT')} subtitle={t('HPO.SKAT_subtitle')} configureLink="hpo/skat" />
+                    {/* <Variants variants={this.state.hpoInfo.skat} title={t("HPO.SKAT")} subtitle={t("HPO.SKAT_subtitle")} configureLink="hpo/skat" /> */}
                   </TabPanel>
                 </SwipeableViews>
               </Paper>

@@ -96,39 +96,43 @@ class GridColumn extends React.Component {
         style={this.state.mystyle}
         onMouseEnter={this.myfunction}
       >
-        <div>
-          {typeof cellData === 'object' ? (
-            cellData.map((chip, j) => {
-              if (chip !== null) {
-                return (
-                  <Chip
-                    key={j}
-                    size='small'
-                    variant="outlined"
-                    label={chip.display}
-                    className={classes.chip}
-                    component={Link}
-                    to={chip.end_href ? (h.base_href + '/' + chip.end_href).replace(/\/\//g, '/') : (h.base_href + '/' + chip.display).replace(/\/\//g, '/')}
-                    clickable
 
-                    aria-owns={open ? 'mouse-over-popover' : undefined}
-                    aria-haspopup="true"
-                    onMouseEnter={(event) => this.handlePopoverOpen(chip.display,
-                      chip.end_href ? (h.base_href + '/' + chip.end_href).replace(/\/\//g, '/') : (h.base_href + '/' + chip.display).replace(/\/\//g, '/')
-                      , event)}
-                    onMouseLeave={this.handlePopoverClose}
-                  />
-                )
-              } else {
-                return null
-              }
-            })
-          ) :
-            (
-              <Typography variant="body2" gutterBottom >
-                {cellData}
-              </Typography>
-            )}
+        <div>
+          {typeof cellData !== 'object' | cellData === null
+            ? (<Typography variant="body2" gutterBottom >
+              {cellData}
+            </Typography>)
+            : typeof cellData[0] === 'object' & cellData[0] !== null
+              ? cellData.map((chip, j) => {
+                if (chip !== null) {
+                  return (
+                    <Chip
+                      key={j}
+                      size='small'
+                      variant="outlined"
+                      label={chip.display}
+                      className={classes.chip}
+                      component={Link}
+                      to={chip.end_href ? (h.base_href + '/' + chip.end_href).replace(/\/\//g, '/') : (h.base_href + '/' + chip.display).replace(/\/\//g, '/')}
+                      clickable
+
+                      aria-owns={open ? 'mouse-over-popover' : undefined}
+                      aria-haspopup="true"
+                      onMouseEnter={(event) => this.handlePopoverOpen(chip.display,
+                        chip.end_href ? (h.base_href + '/' + chip.end_href).replace(/\/\//g, '/') : (h.base_href + '/' + chip.display).replace(/\/\//g, '/')
+                        , event)}
+                      onMouseLeave={this.handlePopoverClose}
+                    />
+                  )
+                } else {
+                  return null
+                }
+              }) :
+              <div>
+                {cellData.join(',')}
+              </div>
+          }
+
         </div>
 
         <Popover

@@ -12,7 +12,8 @@ import Loading from '../components/General/Loading';
 import TabPanel from '../components/Tab/Tabpanel'
 
 import MetaData from '../components/Gene/MetaData';
-import Variants from '../components/Gene/Variants';
+// import Variants from '../components/Gene/Variants';
+import VirtualGrid from '../components/Table/VirtualGrid'
 
 import EditIcon from '@material-ui/icons/Edit';
 import Dialog from '@material-ui/core/Dialog';
@@ -145,13 +146,16 @@ class Individual extends React.Component {
                   onChangeIndex={this.handleChangeIndex}
                 >
                   <TabPanel value={this.state.value} index={0} dir={this.props.theme.direction}>
-                    <Variants variants={this.state.individualInfo.rare_homs} title={t("Individual.Rare_HOMs")} subtitle={t("Individual.Rare_HOMs_subtitle")} configureLink="individual/rare_homs" />
+                    <VirtualGrid tableData={this.state.individualInfo.rare_homs} title={t('Individual.Rare_HOMs')} subtitle={t('Individual.Rare_HOMs_subtitle')} configureLink="individual/rare_homs" />
+                    {/* <Variants variants={this.state.individualInfo.rare_homs} title={t("Individual.Rare_HOMs")} subtitle={t("Individual.Rare_HOMs_subtitle")} configureLink="individual/rare_homs" /> */}
                   </TabPanel>
                   <TabPanel value={this.state.value} index={1} dir={this.props.theme.direction}>
-                    <Variants variants={this.state.individualInfo.rare_comp_hets} title={t("Individual.Rare_Comp_Hets")} subtitle={t("Individual.Rare_Comp_Hets_subtitle")} configureLink="individual/rare_comp_hets" />
+                    <VirtualGrid tableData={this.state.individualInfo.rare_comp_hets} title={t('Individual.Rare_Comp_Hets')} subtitle={t('Individual.Rare_Comp_Hets_subtitle')} configureLink="individual/rare_comp_hets" />
+                    {/* <Variants variants={this.state.individualInfo.rare_comp_hets} title={t("Individual.Rare_Comp_Hets")} subtitle={t("Individual.Rare_Comp_Hets_subtitle")} configureLink="individual/rare_comp_hets" /> */}
                   </TabPanel>
                   <TabPanel value={this.state.value} index={2} dir={this.props.theme.direction}>
-                    <Variants variants={this.state.individualInfo.rare_variants} title={t("Individual.Rare_Variants")} subtitle={t("Individual.Rare_Variants_subtitle")} configureLink="individual/rare_variants" />
+                    <VirtualGrid tableData={this.state.individualInfo.rare_variants} title={t('Individual.Rare_Variants')} subtitle={t('Individual.Rare_Variants_subtitle')} configureLink="individual/rare_variants" />
+                    {/* <Variants variants={this.state.individualInfo.rare_variants} title={t("Individual.Rare_Variants")} subtitle={t("Individual.Rare_Variants_subtitle")} configureLink="individual/rare_variants" /> */}
                   </TabPanel>
                 </SwipeableViews>
               </Paper>

@@ -5,7 +5,8 @@ import { withStyles } from '@material-ui/core/styles';
 import { CssBaseline, Paper, Container } from '@material-ui/core';
 import { Redirect } from 'react-router';
 
-import Variants from '../components/Gene/Variants';
+import VirtualGrid from '../components/Table/VirtualGrid'
+// import Variants from '../components/Gene/Variants';
 import Loading from '../components/General/Loading';
 
 import compose from 'recompose/compose';
@@ -63,7 +64,8 @@ class MyPatient extends React.Component {
           <div className={classes.root}>
             <Container maxWidth='xl'>
               <Paper className={classes.paper}>
-                <Variants variants={this.state.AllPatientInfo.individuals} title={t('MyPatient.My_Patients') + ' (' + t('MyPatient.Total') + ' ' + this.state.AllPatientInfo.preview[0][1] + ')'} subtitle=' ' />
+                <VirtualGrid tableData={this.state.AllPatientInfo.individuals} title={t('MyPatient.My_Patients') + ' (' + t('MyPatient.Total') + ' ' + this.state.AllPatientInfo.preview[0][1] + ')'} subtitle=' ' />
+                {/* <Variants variants={this.state.AllPatientInfo.individuals} title={t('MyPatient.My_Patients') + ' (' + t('MyPatient.Total') + ' ' + this.state.AllPatientInfo.preview[0][1] + ')'} subtitle=' ' /> */}
               </Paper>
             </Container>
           </div>

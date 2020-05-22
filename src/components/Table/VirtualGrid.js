@@ -15,8 +15,9 @@ import StickyHeader from "./StickyHeader"
 import VirtualTableFilter from "./VirtualTableFilter"
 
 import "./styles.css";
-import { Toolbar, Paper, IconButton, Typography, Box, Icon, Popover, Dialog, Button } from "@material-ui/core";
+import { Toolbar, Paper, IconButton, Typography, Box, Icon, Popover, Dialog, Button, Container } from "@material-ui/core";
 import MenuIcon from '@material-ui/icons/Menu';
+import { composeInitialProps } from "react-i18next";
 var focusField;
 
 const getRenderedCursor = children =>
@@ -219,16 +220,25 @@ class StickyGrid extends React.Component {
 
   listRef = React.createRef();
 
+  componentDidMount() {
+    this.props.onRecalculateWidth(this.props.width)
+  }
+
   componentWillReceiveProps(nextProps) {
 
-    // window.alert("Test")
-    if (nextProps.myrows !== this.props.myrows) {
+    if (nextProps.myrows !== this.props.myrows | nextProps.columnValue !== this.props.columnValue) {
       this.handleActive()
+    }
+
+    if (nextProps.width !== this.props.width) {
+      this.props.onRecalculateWidth(nextProps.width)
     }
   }
 
   handleActive = () => {
+
     if (this.listRef.current) {
+      this.listRef.current.resetAfterColumnIndex(0)
       this.listRef.current.resetAfterRowIndex(0);
     }
   }
@@ -251,7 +261,7 @@ class StickyGrid extends React.Component {
           myrows,
           order,
           orderBy,
-          onRequestSort
+          onRequestSort,
         }}
       >
         <Grid
@@ -343,7 +353,8 @@ class VirtualGrid extends React.Component {
       filteredRowHeight: [],
 
       order: 'asc',
-      orderBy: 'variant_id'
+      orderBy: 'variant_id',
+      tableReady: false
     };
   }
 
@@ -352,78 +363,85 @@ class VirtualGrid extends React.Component {
     var myrows = tableData.data
     var mycolumns = tableData.colNames
 
+    if (myrows.length !== 0) {
+      let maxColumn = 400
+      let minColumn = 80
 
-    let maxColumn = 400
-    let minColumn = 80
+      let minHeight = 40
+      let HeightIncrease = 30
 
-    let minHeight = 40
-    let HeightIncrease = 30
+      let tmpWidth = Array(mycolumns.length).fill(minColumn)
+      let tmpHeight = Array(myrows.length).fill(minHeight)
 
-    let tmpWidth = Array(mycolumns.length).fill(minColumn)
-    let tmpHeight = Array(myrows.length).fill(minHeight)
+      var tmpColnames = []
 
-    var tmpColnames = []
+      for (let j = 0; j < mycolumns.length; j++) {
+        let headSize = calculateSize(mycolumns[j].name, { font: 'Arial', fontSize: '14px' })
+        if (headSize.width + 50 > tmpWidth[j]) tmpWidth[j] = headSize.width + 50
 
-    for (let j = 0; j < mycolumns.length; j++) {
-      let headSize = calculateSize(mycolumns[j].name, { font: 'Arial', fontSize: '14px' })
-      if (headSize.width + 50 > tmpWidth[j]) tmpWidth[j] = headSize.width + 50
-
-      tmpColnames.push({ name: mycolumns[j].name, key: mycolumns[j].key, type: typeof myrows[0][mycolumns[j].key], chips: [] })
-    }
-    for (let j = 0; j < mycolumns.length; j++) {
-      for (let i = 0; i < myrows.length; i++) {
-
-        var key = mycolumns[j].key
-        let cellData = myrows[i][key]
-
-        if (typeof cellData === 'object') {
-
-          let chipsSize = 0
-          var tmpMax = maxColumn
-
-          cellData.forEach((chip) => {
-
-            tmpColnames[j].chips.push(chip.display)
-
-            let size = calculateSize(chip.display, { font: 'Arial', fontSize: '12px' })
-            if (size.width + 60 > tmpMax) {
-              tmpMax = size.width + 60
-            }
-            chipsSize = chipsSize + size.width + 60
-          })
-
-          let cellHeight = minHeight + (Math.round(chipsSize / tmpMax) * HeightIncrease)
-          let cellWidth = chipsSize / tmpMax > 1 ? tmpMax : chipsSize
-
-          if (cellWidth > tmpWidth[j]) tmpWidth[j] = cellWidth
-          if (cellHeight > tmpHeight[i]) tmpHeight[i] = cellHeight
-
-        } else {
-          let cellSize = calculateSize(cellData, { font: 'Arial', fontSize: '14px' })
-
-          let cellWidth = cellSize.width + 20
-          if (cellWidth > tmpWidth[j]) tmpWidth[j] = cellWidth
-        }
+        tmpColnames.push({ name: mycolumns[j].name, key: mycolumns[j].key, type: typeof myrows[0][mycolumns[j].key], chips: [] })
       }
-      tmpColnames[j].chips = [...new Set(tmpColnames[j].chips)]
+      for (let j = 0; j < mycolumns.length; j++) {
+        for (let i = 0; i < myrows.length; i++) {
+
+          var key = mycolumns[j].key
+          let cellData = myrows[i][key]
+
+          if (typeof cellData === 'object') {
+
+            let chipsSize = 0
+            var tmpMax = maxColumn
+
+            cellData.forEach((chip) => {
+              if (typeof chip === 'object' & chip !== null) {
+                tmpColnames[j].chips.push(chip.display)
+                var size = calculateSize(chip.display, { font: 'Arial', fontSize: '12px' })
+              } else {
+                tmpColnames[j].chips.push(chip)
+                var size = calculateSize(chip, { font: 'Arial', fontSize: '12px' })
+              }
+
+
+              if (size.width + 60 > tmpMax) {
+                tmpMax = size.width + 60
+              }
+              chipsSize = chipsSize + size.width + 60
+            })
+
+            let cellHeight = minHeight + (Math.round(chipsSize / tmpMax) * HeightIncrease)
+            let cellWidth = chipsSize / tmpMax > 1 ? tmpMax : chipsSize
+
+            if (cellWidth > tmpWidth[j]) tmpWidth[j] = cellWidth
+            if (cellHeight > tmpHeight[i]) tmpHeight[i] = cellHeight
+
+          } else {
+            let cellSize = calculateSize(cellData, { font: 'Arial', fontSize: '14px' })
+
+            let cellWidth = cellSize.width + 20
+            if (cellWidth > tmpWidth[j]) tmpWidth[j] = cellWidth
+          }
+        }
+        tmpColnames[j].chips = [...new Set(tmpColnames[j].chips)]
+      }
+
+      this.setState({
+        TableColumnWidth: tmpWidth,
+        TableRowHeight: tmpHeight,
+        rowCount: myrows.length,
+        colCount: mycolumns.length,
+        colNames: tmpColnames,
+
+        fullData: myrows,
+        fullColumn: mycolumns,
+        filteredData: myrows,
+        filteredColumn: mycolumns,
+
+        filteredColumnWidth: tmpWidth,
+        filteredRowHeight: tmpHeight,
+
+        tableReady: true
+      })
     }
-
-    this.setState({
-      TableColumnWidth: tmpWidth,
-      TableRowHeight: tmpHeight,
-      rowCount: myrows.length,
-      colCount: mycolumns.length,
-      colNames: tmpColnames,
-
-      fullData: myrows,
-      fullColumn: mycolumns,
-      filteredData: myrows,
-      filteredColumn: mycolumns,
-
-      filteredColumnWidth: tmpWidth,
-      filteredRowHeight: tmpHeight
-    })
-    // myrows
   }
 
   getRowHeight = (index) => {
@@ -459,6 +477,21 @@ class VirtualGrid extends React.Component {
     this.setState({ order: isDesc ? 'asc' : 'desc', orderBy: key }, () => {
       this.SortRowandHeight()
     });
+  }
+
+  handleRecalculateWidth = (currentWidth) => {
+
+    let sumWidth = this.state.filteredColumnWidth.reduce(function (a, b) { return a + b; }, 0)
+
+    if (currentWidth > sumWidth) {
+      var expendedWidth = this.state.filteredColumnWidth.map((item) => {
+        return item + (item / sumWidth) * (currentWidth - 15 - sumWidth)
+      })
+
+      console.log(expendedWidth)
+
+      this.setState({ filteredColumnWidth: expendedWidth })
+    }
   }
 
   SortRowandHeight = () => {
@@ -679,41 +712,64 @@ class VirtualGrid extends React.Component {
 
         </Toolbar>
         <Paper elevation={5} className={classes.paper}>
+
           <div className={classes.tableframe}>
-            <AutoSizer>
-              {({ height, width }) => (
-                <StickyGrid
-                  height={height}
-                  width={width}
-                  columnCount={this.state.colCount}
-                  rowCount={this.state.filteredData.length}
-                  rowHeight={this.getRowHeight}
-                  columnWidth={this.getColumnWidth}
-                  stickyHeight={50}
-                  stickyWidth={0}
-                  onScroll={handleScroll}
-                  myrows={
-                    this.state.filteredData
-                    // this.SortRowandHeight(this.state.filteredData)
-                    // stableSort(
-                    //   this.state.filteredData,
-                    //   getSorting(this.state.order, this.state.orderBy)
-                    // )
-                  }
-                  mycolumns={this.state.filteredColumn}
-                  toggleItemActive={this.toggleItemActive}
-                  currentRow={this.state.currentRow}
-                  currentColumn={this.state.currentColumn}
+            {
+              this.state.tableReady ? (
+                <AutoSizer>
+                  {({ height, width }) => (
+                    <StickyGrid
+                      height={height}
+                      width={width}
+                      columnCount={this.state.colCount}
+                      rowCount={this.state.filteredData.length}
+                      rowHeight={this.getRowHeight}
+                      columnWidth={this.getColumnWidth}
+                      stickyHeight={50}
+                      stickyWidth={0}
+                      onScroll={handleScroll}
+                      myrows={
+                        this.state.filteredData
+                        // this.SortRowandHeight(this.state.filteredData)
+                        // stableSort(
+                        //   this.state.filteredData,
+                        //   getSorting(this.state.order, this.state.orderBy)
+                        // )
+                      }
+                      mycolumns={this.state.filteredColumn}
+                      toggleItemActive={this.toggleItemActive}
+                      currentRow={this.state.currentRow}
+                      currentColumn={this.state.currentColumn}
+                      columnValue={this.state.filteredColumnWidth}
 
 
-                  order={this.state.order}
-                  orderBy={this.state.orderBy}
-                  onRequestSort={this.handleRequestSort}
-                >
-                  {GridColumn}
-                </StickyGrid>
-              )}
-            </AutoSizer>
+                      order={this.state.order}
+                      orderBy={this.state.orderBy}
+                      onRequestSort={this.handleRequestSort}
+
+                      onRecalculateWidth={this.handleRecalculateWidth}
+                    >
+                      {GridColumn}
+                    </StickyGrid>
+                  )}
+                </AutoSizer>
+              ) : (
+                  <Container>
+                    <Box
+                      display="flex"
+                      justifyContent="center"
+                      alignItems="center"
+                      minHeight="50vh"
+                    >
+                      <Typography variant="h4" gutterBottom style={{ color: 'grey' }}>
+                        Sorry, not even one record exist or passed your filter criteria...
+                        </Typography>
+                    </Box>
+
+                  </Container>
+                )
+            }
+
           </div>
         </Paper>
         <Toolbar className={classes.toolbar}>
