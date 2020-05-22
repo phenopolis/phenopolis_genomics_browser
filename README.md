@@ -9,29 +9,55 @@ The actual data fields in the JSON gets populated by the endpoints as explained 
 Endpoints are called by [phenopolis_frontend](https://github.com/phenopolis/phenopolis_frontend]) which also takes care of the rendering.
 
 
-##  How to start the API srver
+##  How to start the API server
 
 
 First create the postgres`phenopolis_db_demo` db owned by the `demo` user with password `demo123`:
-```
-
-```
 
 Then load data into postgres db:
+
 ```
 psql -U demo -W phenopolis_db_demo < demo/phenopolis_db_demo.sql
 ```
 
 Then source the `demo_env.sh` file to set the env variables:
+
 ```
 source demo_env.sh
 ```
 
 Then you can start the server:
+
 ```
 python application.py
 ```
 
+## Docker version for development
+
+First, build the image:
+
+```
+docker build -t phenopolis_api .
+```
+Then, run it, but note that ENV variables must be defined in your shell, e.g. `.bashrc`:
+
+```
+docker run -dp 5432:5432 -p 5000:5000 \
+-e DB_HOST=host.docker.internal \
+-e DB_DATABASE=$DB_DATABASE \
+-e DB_USER=$DB_USER \
+-e DB_PASSWORD=$DB_PASSWORD \
+-e DB_PORT=$DB_PORT \
+-e MAIL_USERNAME=no-reply@phenopolis.org \
+-e MAIL_PASSWORD="$MAIL_USERNAME" \
+-e MAIL_SERVER=$MAIL_SERVER \
+-e MAIL_PORT=$MAIL_PORT \
+-e MAIL_USE_TLS=true \
+-e MAIL_USE_SSL=true \
+-e VCF_S3_SECRET=$VCF_S3_SECRET \
+-e VCF_S3_KEY=$VCF_S3_KEY \
+phenopolis_api
+```
 
 ### Overview
 
@@ -198,7 +224,7 @@ CREATE INDEX i_hpo_name on hpo (hpo_name);
 
 ##### users
 
-* Users of Phenopolis (i.e customers) have their data stored here (could also potentially store configs here). Users conntribute genetic patients stored in the `individuals` table. 
+* Users of Phenopolis (i.e customers) have their data stored here (could also potentially store configs here). Users conntribute genetic patients stored in the `individuals` table.
 * n=7
 * PK user
 * FK `users_indivdiuals`
@@ -213,7 +239,7 @@ CREATE INDEX i_user on users (user)
 ```
 
 ##### individuals
- 
+
 * Individuals with genetic data. These have Phenpolis id (`internal_id`) and an `external_id` which is the name the customer (user) has given to us. The ownership of `individuals` by `users` is stored in the join table `users_individuals`.
 * n=8659
 * PK `internal_id`. PK `external_id`
