@@ -53,7 +53,7 @@ class SearchBox extends React.Component {
     }
 
     axios
-      .get('/api/best_guess?query=' + guessText, { withCredentials: true })
+      .get('/api/best_guess/' + guessText, { withCredentials: true })
       .then(res => {
         console.log(res)
         this.setState({ redirect: true, guesslink: res.data.redirect });
