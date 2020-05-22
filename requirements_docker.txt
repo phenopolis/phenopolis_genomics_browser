@@ -2,8 +2,9 @@ werkzeug
 flask
 flask_compress
 flask_caching
-git+https://github.com/rayluo/flask-session@0.3.x#egg=flask-session
+flask_sessionstore
 flask_mail
+Flask-SQLAlchemy
 passlib[argon2]
 psycopg2-binary
 boto3
