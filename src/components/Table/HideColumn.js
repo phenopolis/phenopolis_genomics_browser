@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 import { withStyles } from '@material-ui/core/styles';
 import compose from 'recompose/compose';
 
-import { Card, CardContent, Chip, Icon, Avatar } from '@material-ui/core';
+import { Card, CardContent, Chip, Icon, Avatar, Grid, Typography, Box, Container } from '@material-ui/core';
 import clsx from 'clsx';
 
 class HideColumn extends React.Component {
@@ -20,12 +20,24 @@ class HideColumn extends React.Component {
     this.props.onHideColumn(index)
   }
 
+  handleSelectAll = () => {
+    this.props.onHideColumn(-1)
+  }
+
   render() {
     const { classes } = this.props;
 
     return (
       <Card elevation={0} className={classes.root}>
-
+        <CardContent style={{ marginBottom: 0, paddingBottom: 0 }}>
+          <Chip
+            color="secondary"
+            variant={this.props.columnHide.every(x => x.show === true) ? 'default' : 'outlined'}
+            icon={<Icon className={clsx('fas fa-check-circle')} />}
+            label={'Select All'}
+            className={classes.chip}
+            onClick={() => this.handleSelectAll()} />
+        </CardContent>
         <CardContent>
           {
             this.props.columnHide.map((item, index) => {
@@ -68,6 +80,25 @@ class HideColumn extends React.Component {
               )
             })
           }
+          <Grid
+            container
+            direction="row"
+            justify="center"
+            alignItems="center"
+            className="m-4"
+          >
+            <Typography component='div'>
+              <Box fontWeight='fontWeightLight' fontSize='subtitle.fontSize' mb={0}>
+                Click above chips to hide/show a column.
+                </Box>
+              <Box fontWeight='fontWeightLight' fontSize='body2.fontSize' mb={0}>
+                &nbsp;<b style={{ fontSize: 20, color: '#2E84CF' }}>S</b> means this column is "text";
+                &nbsp;<b style={{ fontSize: 20, color: '#2E84CF' }}>9</b> means this column is numeric;&nbsp;
+                <Icon className='fas fa-ellipsis-h' style={{ fontSize: 20, color: '#2E84CF' }} /> means this column contains a list;
+                &nbsp;<b style={{ fontSize: 20, color: '#2E84CF' }}>?</b> means this column's type is not any of above 3.
+            </Box>
+            </Typography>
+          </Grid>
         </CardContent>
       </Card >
     )

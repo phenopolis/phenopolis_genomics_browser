@@ -513,8 +513,17 @@ class VirtualGrid extends React.Component {
   }
 
   handleHideColumn = (index) => {
+
     const newHide = [...this.state.columnHide];
-    newHide[index].show = !newHide[index].show
+
+    if (index === -1) {
+      for (let i = 0; i < newHide.length - 1; i++) {
+        newHide[i].show = true
+      }
+    } else {
+      newHide[index].show = !newHide[index].show
+    }
+
     this.setState({ columnHide: newHide }, () => {
       this.columnFilter(this.state.columnHide)
     })
