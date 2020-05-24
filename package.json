@@ -23,6 +23,7 @@
     "react-cookie": "^4.0.3",
     "react-countup": "^4.3.3",
     "react-dom": "^16.13.1",
+    "react-feather": "^2.0.8",
     "react-i18next": "^11.4.0",
     "react-parallax": "^2.2.4",
     "react-perfect-scrollbar": "^1.5.8",

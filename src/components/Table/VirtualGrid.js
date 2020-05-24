@@ -1,4 +1,4 @@
-import React from "react";
+import React, { Fragment } from 'react';
 import PropTypes from 'prop-types';
 import { withStyles } from '@material-ui/core/styles';
 import clsx from 'clsx';
@@ -12,10 +12,15 @@ import CountUp from 'react-countup';
 
 import GridColumn from "./GridColumn"
 import StickyHeader from "./StickyHeader"
+
 import VirtualTableFilter from "./VirtualTableFilter"
+import HideColumn from "./HideColumn"
+
+import { Filter, EyeOff, Briefcase, LifeBuoy } from 'react-feather';
+import DeleteIcon from '@material-ui/icons/Delete';
 
 import "./styles.css";
-import { Toolbar, Paper, IconButton, Typography, Box, Icon, Popover, Dialog, Button, Container } from "@material-ui/core";
+import { Toolbar, Paper, IconButton, Typography, Box, Icon, Popover, Dialog, Button, Container, Card, Collapse } from "@material-ui/core";
 import MenuIcon from '@material-ui/icons/Menu';
 import { composeInitialProps } from "react-i18next";
 var focusField;
@@ -285,7 +290,6 @@ function handleScroll(event) {
 
 // Record cell changes
 function handleCellChange(props, value) {
-  console.log(value + ", " + focusField);
 }
 
 // - * - * - * - * - * - * - * - * - * - * - * - * 
@@ -341,7 +345,9 @@ class VirtualGrid extends React.Component {
       currentRow: null,
       currentColumn: null,
       anchorEl: null,
-      filterPopoverOpen: false,
+
+      filterPopoverOpen: -1,
+
       colNames: [],
       tableFilter: [],
 
@@ -354,7 +360,17 @@ class VirtualGrid extends React.Component {
 
       order: 'asc',
       orderBy: 'variant_id',
-      tableReady: false
+      tableReady: false,
+
+      toolButtons: [
+        { label: 'Filter Rows', icon: 'fas fa-filter' },
+        { label: 'Hide Columns', icon: 'fas fa-eye-slash' },
+        { label: 'Plots', icon: 'fas fa-chart-bar' },
+        { label: 'Genome', icon: 'fas fa-dna' },
+        { label: 'Export Excel', icon: 'fas fa-file-download' },
+      ],
+
+      columnHide: []
     };
   }
 
@@ -379,7 +395,7 @@ class VirtualGrid extends React.Component {
         let headSize = calculateSize(mycolumns[j].name, { font: 'Arial', fontSize: '14px' })
         if (headSize.width + 50 > tmpWidth[j]) tmpWidth[j] = headSize.width + 50
 
-        tmpColnames.push({ name: mycolumns[j].name, key: mycolumns[j].key, type: typeof myrows[0][mycolumns[j].key], chips: [] })
+        tmpColnames.push({ name: mycolumns[j].name, key: mycolumns[j].key, type: typeof myrows[0][mycolumns[j].key], chips: [], show: mycolumns[j].default })
       }
       for (let j = 0; j < mycolumns.length; j++) {
         for (let i = 0; i < myrows.length; i++) {
@@ -387,7 +403,7 @@ class VirtualGrid extends React.Component {
           var key = mycolumns[j].key
           let cellData = myrows[i][key]
 
-          if (typeof cellData === 'object') {
+          if (typeof cellData === 'object' & cellData !== null) {
 
             let chipsSize = 0
             var tmpMax = maxColumn
@@ -430,6 +446,7 @@ class VirtualGrid extends React.Component {
         rowCount: myrows.length,
         colCount: mycolumns.length,
         colNames: tmpColnames,
+        columnHide: tmpColnames,
 
         fullData: myrows,
         fullColumn: mycolumns,
@@ -440,6 +457,8 @@ class VirtualGrid extends React.Component {
         filteredRowHeight: tmpHeight,
 
         tableReady: true
+      }, () => {
+        this.columnFilter(this.state.columnHide)
       })
     }
   }
@@ -458,17 +477,18 @@ class VirtualGrid extends React.Component {
     this.setState({ currentRow: rowIndex, currentColumn: columnIndex })
   }
 
-  handleFilterPopoverOpen = (event) => {
-    this.state.ancherEl ? this.setState({ anchorEl: null, filterPopoverOpen: false }) : this.setState({ anchorEl: event.currentTarget, filterPopoverOpen: true });
+  handleFilterPopoverOpen = (index) => {
+    this.setState(index !== this.state.filterPopoverOpen ? { filterPopoverOpen: index } : { filterPopoverOpen: -1 })
+    // this.state.ancherEl ? this.setState({ anchorEl: null, filterPopoverOpen: false }) : this.setState({ anchorEl: event.currentTarget, filterPopoverOpen: true });
   }
 
-  handleFilterPopoverClose = () => {
-    this.setState({ anchorEl: null, filterPopoverOpen: false })
-  }
+  // handleFilterPopoverClose = () => {
+  //   this.setState({ anchorEl: null, filterPopoverOpen: false })
+  // }
 
   handleUpdateFilter = (newFilter) => {
     this.setState({ tableFilter: newFilter }, () => {
-      this.columnFilter(this.state.fullData, this.state.tableFilter);
+      this.rowFilter(this.state.fullData, this.state.tableFilter);
     })
   }
 
@@ -488,10 +508,16 @@ class VirtualGrid extends React.Component {
         return item + (item / sumWidth) * (currentWidth - 15 - sumWidth)
       })
 
-      console.log(expendedWidth)
-
       this.setState({ filteredColumnWidth: expendedWidth })
     }
+  }
+
+  handleHideColumn = (index) => {
+    const newHide = [...this.state.columnHide];
+    newHide[index].show = !newHide[index].show
+    this.setState({ columnHide: newHide }, () => {
+      this.columnFilter(this.state.columnHide)
+    })
   }
 
   SortRowandHeight = () => {
@@ -504,12 +530,24 @@ class VirtualGrid extends React.Component {
     var indices = arraySort.map(el => el[1])
 
     var newRowHeight = indices.map(i => this.state.filteredRowHeight[i]);
-    // console.log(indices)
     this.setState({ filteredData: sortedArray, filteredRowHeight: newRowHeight })
   }
 
-  columnFilter = (data, filters) => {
-    console.log(filters)
+  columnFilter = (columnHide) => {
+
+    let indices = columnHide.map((x, idx) => x.show ? idx : '').filter(String);
+    console.log(indices)
+    let tmpNewColumnWidth = indices.map(i => this.state.TableColumnWidth[i]);
+    let tmpfilteredColumn = indices.map(i => this.state.fullColumn[i]);
+
+    console.log(tmpNewColumnWidth)
+
+    this.setState({ filteredColumn: tmpfilteredColumn, filteredColumnWidth: tmpNewColumnWidth, tableReady: tmpNewColumnWidth.length > 0 }, () => {
+      this.SortRowandHeight()
+    });
+  }
+
+  rowFilter = (data, filters) => {
 
     var tmpNewRowHeight = []
 
@@ -651,7 +689,7 @@ class VirtualGrid extends React.Component {
     });
     // return filtered;
 
-    this.setState({ filteredData: filtered, filteredRowHeight: tmpNewRowHeight }, () => {
+    this.setState({ filteredData: filtered, filteredRowHeight: tmpNewRowHeight, tableReady: filtered.length > 0 }, () => {
       this.SortRowandHeight()
     });
   };
@@ -664,50 +702,66 @@ class VirtualGrid extends React.Component {
         <Typography component='div'>
           <Box fontWeight='fontWeightBold' fontSize='h4.fontSize' mb={0}>
             {this.props.title}
+            {/* <span style={{ fontSize: '0.5em' }}>
+              <b style={{ color: '#2196f3' }}> <CountUp end={this.state.filteredData.length} /> </b>
+            rows and
+            <b style={{ color: '#2196f3' }}> <CountUp end={this.state.filteredColumn.length} /></b>
+            columns
+            </span> */}
           </Box>
           <Box fontWeight='fontWeightLight' mb={2}>
             {this.props.subtitle}
           </Box>
         </Typography>
+
+        <Fragment>
+          <Paper>
+            <Card elevation={0} className="card-box mb-0 d-flex flex-row flex-wrap justify-content-center">
+              {
+                this.state.toolButtons.map((button, buttonIndex) => {
+                  return (
+                    <div className={clsx(classes.toolButton, 'py-4 px-5 d-flex align-items-center')} onClick={() => this.handleFilterPopoverOpen(buttonIndex)} style={buttonIndex === this.state.filterPopoverOpen ? { color: '#2E84CF' } : null}>
+                      <Icon className={clsx(classes.iconHover, 'd-30 opacity-5 mr-3', button.icon)} />
+                      <div>
+                        <span className="d-block opacity-7"> {button.label} </span>
+                      </div>
+                    </div>
+                  )
+                })
+              }
+            </Card>
+
+            <Collapse in={this.state.filterPopoverOpen === 0}>
+              <Card elevation={0} className="card-box mb-0 d-flex flex-row flex-wrap justify-content-center">
+                <VirtualTableFilter
+                  variableList={this.state.colNames}
+                  tableFilter={this.state.tableFilter}
+                  UpdateFilter={this.handleUpdateFilter}
+                // onClickClose={this.handleFilterPopoverClose}
+                />
+              </Card>
+            </Collapse>
+
+            <Collapse in={this.state.filterPopoverOpen === 1}>
+              <Card elevation={0} className="card-box mb-0 d-flex flex-row flex-wrap justify-content-center">
+                <HideColumn
+                  columnHide={this.state.columnHide}
+                  onHideColumn={this.handleHideColumn}
+                // UpdateFilter={this.handleUpdateFilter}
+                // onClickClose={this.handleFilterPopoverClose}
+                />
+              </Card>
+            </Collapse>
+          </Paper>
+        </Fragment>
+
         <Toolbar className={classes.toolbar}>
 
-          <IconButton
-            edge="start"
-            className={classes.menuButton}
-            color="inherit"
-            aria-label="open drawer"
-            onClick={(event) => this.handleFilterPopoverOpen(event)}
-          >
-            <Icon className={clsx(classes.iconHover, 'fas fa-filter')} />
-          </IconButton>
-
-          <Popover
-            id={'FilterPopover'}
-            open={this.state.filterPopoverOpen}
-            anchorEl={this.state.anchorEl}
-            onClose={this.handleFilterPopoverClose}
-            anchorOrigin={{
-              vertical: 'center',
-              horizontal: 'right',
-            }}
-            transformOrigin={{
-              vertical: 'top',
-              horizontal: 'left',
-            }}
-          >
-            {/* <Dialog onClose={this.handleFilterPopoverClose} aria-labelledby="simple-dialog-title" open={this.state.filterPopoverOpen}> */}
-            <VirtualTableFilter
-              variableList={this.state.colNames}
-              tableFilter={this.state.tableFilter}
-              UpdateFilter={this.handleUpdateFilter}
-              onClickClose={this.handleFilterPopoverClose}
-            />
-            {/* </Dialog> */}
-          </Popover>
-
           <div style={{ position: 'absolute', right: '1em' }}>
-            <b style={{ fontSize: '1.3em', color: '#2196f3' }}><CountUp end={this.state.filteredData.length} /></b> records selected
-            {/* <b style={{ fontSize: '25', color: '#f44336' }}> { this.state.filteredData.length } </b> records selected */}
+            <b style={{ fontSize: '1.3em', color: '#2196f3' }}><CountUp end={this.state.filteredData.length} /></b>
+            &nbsp;rows and&nbsp;
+            <b style={{ fontSize: '1.3em', color: '#2196f3' }}><CountUp end={this.state.filteredColumn.length} /></b>
+            &nbsp;columns selected
           </div>
 
         </Toolbar>
@@ -721,23 +775,19 @@ class VirtualGrid extends React.Component {
                     <StickyGrid
                       height={height}
                       width={width}
-                      columnCount={this.state.colCount}
+                      columnCount={this.state.filteredColumn.length}
                       rowCount={this.state.filteredData.length}
                       rowHeight={this.getRowHeight}
                       columnWidth={this.getColumnWidth}
                       stickyHeight={50}
                       stickyWidth={0}
                       onScroll={handleScroll}
-                      myrows={
-                        this.state.filteredData
-                        // this.SortRowandHeight(this.state.filteredData)
-                        // stableSort(
-                        //   this.state.filteredData,
-                        //   getSorting(this.state.order, this.state.orderBy)
-                        // )
-                      }
+
+                      myrows={this.state.filteredData}
                       mycolumns={this.state.filteredColumn}
+
                       toggleItemActive={this.toggleItemActive}
+
                       currentRow={this.state.currentRow}
                       currentColumn={this.state.currentColumn}
                       columnValue={this.state.filteredColumnWidth}
@@ -774,8 +824,10 @@ class VirtualGrid extends React.Component {
         </Paper>
         <Toolbar className={classes.toolbar}>
           <div style={{ position: 'absolute', left: '1em' }}>
-            <b style={{ fontSize: '1.3em', color: '#2196f3' }}><CountUp end={this.state.filteredData.length} /></b> records selected
-            {/* <b style={{ fontSize: '25', color: '#f44336' }}> { this.state.filteredData.length } </b> records selected */}
+            <b style={{ fontSize: '1.3em', color: '#2196f3' }}><CountUp end={this.state.filteredData.length} /></b>
+            &nbsp;rows and&nbsp;
+            <b style={{ fontSize: '1.3em', color: '#2196f3' }}><CountUp end={this.state.filteredColumn.length} /></b>
+            &nbsp;columns selected
           </div>
         </Toolbar>
       </div>
@@ -809,16 +861,25 @@ const styles = theme => ({
   },
   menuButton: {
     marginRight: theme.spacing(2),
-    fontSize: 15,
+    // fontSize: 15,
     '&:hover': {
       cursor: 'pointer',
       color: '#2E84CF'
     }
   },
   iconHover: {
-    fontSize: 15,
+    fontSize: '1.8em',
     margin: theme.spacing(0),
-  }
+  },
+  toolButton: {
+    '&:hover': {
+      cursor: 'pointer',
+      color: '#2E84CF'
+    }
+  },
+  collapsePaper: {
+    // margin: theme.spacing(1),
+  },
 });
 
 

@@ -56,6 +56,7 @@ class GridColumn extends React.Component {
           previewInfo: respond[0],
           previewLoaded: true
         });
+
       })
       .catch(err => {
         console.log(err);
@@ -155,41 +156,45 @@ class GridColumn extends React.Component {
           disableRestoreFocus
           elevation={0}
         >
-          < Container className="arrow_box">
+          < Container className="arrow_box" style={this.state.previewLoaded !== true ? { 'border-bottom-left-radius': '0.3em', 'border-bottom-right-radius': '0.3em' } : { 'border-bottom-left-radius': '0em', 'border-bottom-right-radius': '0em' }}>
             <Typography variant="subtitle1" style={{ 'font-weight': 'bold', color: 'yellow' }}>
               {this.state.previewName}
 
               {
-                this.state.previewLoaded !== true &&
-                <small style={{ color: 'white' }}>  &nbsp;(Loading ...
+                this.state.previewLoaded !== true ?
+                  <small style={{ color: 'white' }}>  &nbsp;(Loading ...
                 <CircularProgress size={18} color="white" />
                   &nbsp; &nbsp;)
                 </small>
+                  : null
               }
             </Typography>
           </Container>
 
           {
             this.state.previewLoaded === true &&
-            < Container style={{ background: '#242424', 'min-width': '25em', 'border-radius': '0.3em', 'padding-bottom': '1em' }}>
+            < Container style={{ background: '#242424', 'min-width': '25em', 'border-bottom-left-radius': '0.3em', 'border-bottom-right-radius': '0.3em', 'padding-bottom': '1em' }}>
               {
-                this.state.previewInfo.preview.map((item, index) => {
-                  return (
-                    <Grid
-                      container
-                      spacing={1}
-                      key={index}
-                      className={classes.blockgrid}>
-                      <Grid item xs={4} className={classes.namegrid}>
-                        {item[0]}
-                      </Grid>
+                this.state.previewInfo === null ?
+                  <span> Can not Fetch preview information </span>
+                  :
+                  this.state.previewInfo.preview.map((item, index) => {
+                    return (
+                      <Grid
+                        container
+                        spacing={1}
+                        key={index}
+                        className={classes.blockgrid}>
+                        <Grid item xs={4} className={classes.namegrid}>
+                          {item[0]}
+                        </Grid>
 
-                      <Grid item xs={8} className={classes.datagrid}>
-                        {item[1]}
+                        <Grid item xs={8} className={classes.datagrid}>
+                          {item[1]}
+                        </Grid>
                       </Grid>
-                    </Grid>
-                  )
-                })
+                    )
+                  })
               }
             </Container>
           }
