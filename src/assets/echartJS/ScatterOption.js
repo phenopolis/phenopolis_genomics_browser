@@ -1,4 +1,4 @@
-{
+export default {
   "title": {
     "text": "Scatter Plot between X and Y",
     "subtext": ""

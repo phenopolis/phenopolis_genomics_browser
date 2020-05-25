@@ -6,18 +6,12 @@ import compose from 'recompose/compose';
 import { prepareBoxplotData } from 'echarts/extension/dataTool';
 import ReactEcharts from 'echarts-for-react';
 
-import { Card, CardContent, Grid, TextField, CardActions } from '@material-ui/core';
+import { Card, CardContent, Grid, TextField, CardActions, Paper } from '@material-ui/core';
 import Autocomplete from '@material-ui/lab/Autocomplete';
 
-import ScatterOptions from '../../assets/json/ScatterOption.json'
+import BoxplotOption from '../../assets/echartJS/BoxplotOption'
+import ScatterOption from '../../assets/echartJS/ScatterOption.js';
 
-const tmpdata = prepareBoxplotData([
-  [850, 740, 900, 1070, 930, 850, 950, 980, 980, 880, 1000, 980, 930, 650, 760, 810, 1000, 1000, 960, 960],
-  [960, 940, 960, 940, 880, 800, 850, 880, 900, 840, 830, 790, 810, 880, 880, 830, 800, 790, 760, 800],
-  [880, 880, 880, 860, 720, 720, 620, 860, 970, 950, 880, 910, 850, 870, 840, 840, 850, 840, 840, 840],
-  [890, 810, 810, 820, 800, 770, 760, 740, 750, 760, 910, 920, 890, 860, 880, 720, 840, 850, 850, 780],
-  [890, 840, 780, 810, 760, 810, 790, 810, 820, 850, 870, 870, 810, 740, 810, 940, 950, 800, 810, 870]
-]);
 
 class Plots extends React.Component {
   constructor(props) {
@@ -26,83 +20,8 @@ class Plots extends React.Component {
       xAxis: null,
       yAxis: null,
       msg: 'Neither of two axises are selected',
-
-      ScatterOption: ScatterOptions,
-      // BoxplotOption: {
-      //   title: [
-      //     {
-      //       text: 'Michelson-Morley Experiment',
-      //       left: 'center',
-      //     },
-      //     {
-      //       text: 'upper: Q3 + 1.5 * IQR \nlower: Q1 - 1.5 * IQR',
-      //       borderColor: '#999',
-      //       borderWidth: 1,
-      //       textStyle: {
-      //         fontSize: 14
-      //       },
-      //       left: '10%',
-      //       top: '90%'
-      //     }
-      //   ],
-      //   tooltip: {
-      //     trigger: 'item',
-      //     axisPointer: {
-      //       type: 'shadow'
-      //     }
-      //   },
-      //   grid: {
-      //     left: '10%',
-      //     right: '10%',
-      //     bottom: '15%'
-      //   },
-      //   xAxis: {
-      //     type: 'category',
-      //     data: tmpdata.axisData,
-      //     boundaryGap: true,
-      //     nameGap: 30,
-      //     splitArea: {
-      //       show: false
-      //     },
-      //     axisLabel: {
-      //       formatter: 'expr {value}'
-      //     },
-      //     splitLine: {
-      //       show: false
-      //     }
-      //   },
-      //   yAxis: {
-      //     type: 'value',
-      //     name: 'km/s minus 299,000',
-      //     splitArea: {
-      //       show: true
-      //     }
-      //   },
-      //   series: [
-      //     {
-      //       name: 'boxplot',
-      //       type: 'boxplot',
-      //       data: tmpdata.boxData,
-      //       tooltip: {
-      //         formatter: function (param) {
-      //           return [
-      //             'Experiment ' + param.name + ': ',
-      //             'upper: ' + param.data[5],
-      //             'Q3: ' + param.data[4],
-      //             'median: ' + param.data[3],
-      //             'Q1: ' + param.data[2],
-      //             'lower: ' + param.data[1]
-      //           ].join('<br/>');
-      //         }
-      //       }
-      //     },
-      //     {
-      //       name: 'outlier',
-      //       type: 'scatter',
-      //       data: tmpdata.outliers
-      //     }
-      //   ]
-      // }
+      option: [],
+      plotReady: false
     }
   }
 
@@ -127,25 +46,73 @@ class Plots extends React.Component {
     if (xAxis === null & yAxis === null) {
       this.setState({ msg: "Neither of two axises is selected." })
     }
-    if (xAxis !== null & yAxis !== null) {
-      let tmpData = this.props.dataRows.map((row) => {
-        return [row[xAxis.key], row[yAxis.key]]
-      })
-
-      const newScatterOption = JSON.parse(JSON.stringify(this.state.ScatterOption));
-
-      newScatterOption.series[0].data = tmpData
-      newScatterOption.title.text = 'Scatter Plot between ' + xAxis.name + ' and ' + yAxis.name
-
-      let tmpMsg = "Now you have chose two axis, scatter plot has been drawed on the left. \n\n" +
-        "The dashline box represents the max values for two dimensions.\n\n" +
-        "The top and bottom balloons represents the max and min value for Y axis.\n\n" +
-        "If you use row filter and column filter, the plot will change promptly"
-      this.setState({ ScatterOption: newScatterOption, msg: tmpMsg })
+    else if (xAxis !== null & yAxis !== null) {
+      if (xAxis.type === 'number' & yAxis.type === 'number') {
+        this.CreateScatterPlot(xAxis, yAxis)
+      } else if (xAxis.type === 'string' & yAxis.type === 'number') {
+        this.CreateBoxplot(xAxis, yAxis, false)
+      } else if (xAxis.type === 'number' & yAxis.type === 'string') {
+        this.CreateBoxplot(yAxis, xAxis, true)
+      }
     } else {
       this.setState({ msg: "Now please select the other axis." })
     }
+  }
 
+  CreateScatterPlot = (xAxis, yAxis) => {
+
+    let tmpData = this.props.dataRows.map((row) => {
+      return [row[xAxis.key], row[yAxis.key]]
+    })
+
+    const newScatterOption = JSON.parse(JSON.stringify(ScatterOption))
+
+    newScatterOption.series[0].data = tmpData
+    newScatterOption.title.text = 'Scatter Plot between ' + xAxis.name + ' and ' + yAxis.name
+
+    let tmpMsg = "Now you have chose two axis, scatter plot has been drawed on the left. \n\n" +
+      "The dashline box represents the max values for two dimensions.\n\n" +
+      "The top and bottom balloons represents the max and min value for Y axis.\n\n" +
+      "If you use row filter and column filter, the plot will change promptly"
+
+    this.setState({ option: newScatterOption, msg: tmpMsg, plotReady: true })
+  }
+
+  CreateBoxplot = (xAxis, yAxis, rotate) => {
+
+    Array.prototype.groupBy = function (k, m) {
+      return this.reduce((acc, item) => ((acc[item[k]] = [...(acc[item[k]] || []), item[m]]), acc), {});
+    };
+
+    let groupedByxAxis = this.props.dataRows.groupBy(xAxis.key, yAxis.key)
+
+    let labels = Object.keys(groupedByxAxis)
+
+    if (rotate) {
+      var tmpData = prepareBoxplotData(Object.values(groupedByxAxis), { layout: 'vertical' });
+    } else {
+      var tmpData = prepareBoxplotData(Object.values(groupedByxAxis));
+    }
+
+
+    const newBoxplotOption = JSON.parse(JSON.stringify(BoxplotOption))
+
+    newBoxplotOption.xAxis.data = labels
+    newBoxplotOption.series[0].data = tmpData.boxData
+    newBoxplotOption.series[1].data = tmpData.outliers
+
+    if (rotate) {
+      let tmpSwap = newBoxplotOption.xAxis
+      newBoxplotOption.xAxis = newBoxplotOption.yAxis
+      newBoxplotOption.yAxis = tmpSwap
+    }
+
+
+    let tmpMsg = "Now you have chose two axis, boxplot plot has been drawed on the left. \n\n" +
+      "Dots represents outlier for each box.\n\n" +
+      "If you use row filter and column filter, the plot will change promptly"
+
+    this.setState({ option: newBoxplotOption, msg: tmpMsg, plotReady: true })
   }
 
   render() {
@@ -169,7 +136,7 @@ class Plots extends React.Component {
                   onChange={(event, newValue) => this.handleSelectYAxis(event, newValue)}
                   id="combo-box-demo"
                   size="small"
-                  options={this.props.variableList.filter(x => x.type === 'number' & x.show)}
+                  options={this.props.variableList.filter(x => (x.type === 'number' | x.type === 'string') & x.show)}
                   getOptionLabel={(option) => option.type + '  -  ' + option.name}
                   renderInput={(params) => <TextField {...params} label="Select Y Axis" variant="outlined" />}
                   // style={{ width: 300 }}
@@ -178,13 +145,18 @@ class Plots extends React.Component {
               </Grid>
             </Grid>
             <Grid item xs={6}>
-
-              <ReactEcharts
-                option={this.state.ScatterOption}
-                // options={this.state.BoxplotOption}
-                notMerge={true}
-                lazyUpdate={true}
-                style={{ height: 600 }} />
+              {
+                this.state.plotReady ? (
+                  <ReactEcharts
+                    option={this.state.option}
+                    // options={this.state.BoxplotOption}
+                    notMerge={true}
+                    lazyUpdate={true}
+                    style={{ height: '40em' }} />
+                ) : (
+                    <div style={{ height: '40em' }} />
+                  )
+              }
 
               <Grid
                 container
@@ -200,7 +172,7 @@ class Plots extends React.Component {
                   onChange={(event, newValue) => this.handleSelectXAxis(event, newValue)}
                   id="combo-box-demo"
                   size="small"
-                  options={this.props.variableList.filter(x => x.type === 'number' & x.show)}
+                  options={this.props.variableList.filter(x => (x.type === 'number' | x.type === 'string') & x.show)}
                   getOptionLabel={(option) => option.type + '  -  ' + option.name}
                   renderInput={(params) => <TextField {...params} label="Select X Axis" variant="outlined" />}
                   // style={{ width: 300 }}

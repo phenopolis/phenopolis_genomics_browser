@@ -52,10 +52,8 @@ class HideColumn extends React.Component {
                   avatar={<Avatar>
                     {
                       item.type === 'string' ?
-                        // <Icon className={clsx(classes.smallFilter, 'fas fa-font')} />
                         "T"
                         : item.type === 'number' ?
-                          // <Icon className={clsx(classes.smallFilter, 'fas fa-sort-numeric-up-alt')} />
                           "9"
                           : item.type === 'object' ?
                             <Icon className={clsx(classes.smallFilter, 'fas fa-ellipsis-h')} />
@@ -63,17 +61,6 @@ class HideColumn extends React.Component {
                             "?"
                     }
                   </Avatar>}
-                  // icon={
-                  //   item.type === 'string' ?
-                  //     <Icon className={clsx(classes.smallFilter, 'fas fa-font')} />
-                  //     : item.type === 'numeric' ?
-                  //       // <Icon className={clsx(classes.smallFilter, 'far fa-trash-alt')} />
-                  //       9
-                  //       : item.type === 'object' ?
-                  //         <Icon className={clsx(classes.smallFilter, 'fas fa-list')} />
-                  //         :
-                  //         <Icon className={clsx(classes.smallFilter, 'fas fa-question')} />
-                  // }
                   className={classes.chip}
                   style={item.show ? null : { color: 'darkgrey' }}
                 />
