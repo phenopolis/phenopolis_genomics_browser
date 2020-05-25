@@ -13,10 +13,6 @@ import CountUp from 'react-countup';
 import GridColumn from "./GridColumn"
 import StickyHeader from "./StickyHeader"
 
-// Import Toolbar components for the table
-import VirtualTableFilter from "./VirtualTableFilter"
-import HideColumn from "./HideColumn"
-import Plots from "./Plots"
 
 import { Filter, EyeOff, Briefcase, LifeBuoy } from 'react-feather';
 import DeleteIcon from '@material-ui/icons/Delete';
@@ -25,6 +21,12 @@ import "./styles.css";
 import { Toolbar, Paper, IconButton, Typography, Box, Icon, Popover, Dialog, Button, Container, Card, Collapse } from "@material-ui/core";
 import MenuIcon from '@material-ui/icons/Menu';
 import { composeInitialProps } from "react-i18next";
+
+// Import Toolbar components for the table
+const VirtualTableFilter = React.lazy(() => import('./VirtualTableFilter'));
+const HideColumn = React.lazy(() => import('./HideColumn'));
+const Plots = React.lazy(() => import('./Plots'));
+
 var focusField;
 
 const getRenderedCursor = children =>
