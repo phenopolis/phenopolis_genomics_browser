@@ -10,7 +10,8 @@ import { Card, CardContent, Grid, TextField, CardActions, Paper } from '@materia
 import Autocomplete from '@material-ui/lab/Autocomplete';
 
 import BoxplotOption from '../../assets/echartJS/BoxplotOption'
-import ScatterOption from '../../assets/echartJS/ScatterOption.js';
+import ScatterOption from '../../assets/echartJS/ScatterOption';
+import StackBarOption from '../../assets/echartJS/StackBarOption';
 
 
 class Plots extends React.Component {
@@ -53,6 +54,8 @@ class Plots extends React.Component {
         this.CreateBoxplot(xAxis, yAxis, false)
       } else if (xAxis.type === 'number' & yAxis.type === 'string') {
         this.CreateBoxplot(yAxis, xAxis, true)
+      } else {
+        this.CreateStackBarPlot(xAxis, yAxis)
       }
     } else {
       this.setState({ msg: "Now please select the other axis." })
@@ -113,6 +116,62 @@ class Plots extends React.Component {
       "If you use row filter and column filter, the plot will change promptly"
 
     this.setState({ option: newBoxplotOption, msg: tmpMsg, plotReady: true })
+  }
+
+  CreateStackBarPlot = (xAxis, yAxis) => {
+
+    const tmpMap = this.props.dataRows.reduce((tally, item) => {
+      tally[item[xAxis.key] + "-" + item[yAxis.key]] = (tally[item[[xAxis.key]] + "-" + item[yAxis.key]] || 0) + 1;
+      return tally;
+    }, {});
+
+    console.log(tmpMap)
+
+    var JoinCount = Object.keys(tmpMap).map((a) => {
+      var obj = {
+        x: a.split("-")[0],
+        y: a.split("-")[1],
+        tally: tmpMap[a]
+      };
+      return obj;
+    });
+
+    var xOptions = Array.from(new Set(JoinCount.map((item) => item.x)))
+    var yOptions = Array.from(new Set(JoinCount.map((item) => item.y)))
+
+    var newSeries = []
+    yOptions.forEach(y => {
+      let tmp = []
+      xOptions.forEach(x => {
+        if (tmpMap[x + '-' + y] !== undefined) {
+          tmp.push(tmpMap[x + '-' + y])
+        } else {
+          tmp.push(0)
+        }
+      })
+
+      newSeries.push(
+        {
+          "name": y,
+          "type": "bar",
+          "stack": "count",
+          "label": {
+            "show": true,
+            "position": "insideRight"
+          },
+          "data": tmp
+        }
+      )
+    })
+
+    const newStackBarOption = JSON.parse(JSON.stringify(StackBarOption))
+    newStackBarOption.series = newSeries
+    newStackBarOption.legend.data = yOptions
+    newStackBarOption.xAxis.data = xOptions
+
+    let tmpMsg = "This is stacked bar plot."
+
+    this.setState({ option: newStackBarOption, msg: tmpMsg, plotReady: true })
   }
 
   render() {
