@@ -191,7 +191,7 @@ class LoginBar extends React.Component {
 					</Grid>
 
 					<Hidden smDown>
-						<Grid item md={5} lg={7} direction='row' justify='flex-end' alignItems='center'>
+						<Grid item md={5} lg={7}>
 							<NavSearch />
 						</Grid>
 					</Hidden>

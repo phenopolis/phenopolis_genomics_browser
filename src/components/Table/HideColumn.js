@@ -86,18 +86,12 @@ class HideColumn extends React.Component {
             justify="center"
             alignItems="center"
             className="m-4"
+            style={{ paddingTop: '1em', color: 'darkgrey' }}
           >
-            <Typography component='div'>
-              <Box fontWeight='fontWeightLight' fontSize='subtitle.fontSize' mb={0}>
-                Click above chips to hide/show a column.
-                </Box>
-              <Box fontWeight='fontWeightLight' fontSize='body2.fontSize' mb={0}>
-                &nbsp;<b style={{ fontSize: 20, color: '#2E84CF' }}>S</b> means this column is "text";
-                &nbsp;<b style={{ fontSize: 20, color: '#2E84CF' }}>9</b> means this column is numeric;&nbsp;
-                <Icon className='fas fa-ellipsis-h' style={{ fontSize: 20, color: '#2E84CF' }} /> means this column contains a list;
-                &nbsp;<b style={{ fontSize: 20, color: '#2E84CF' }}>?</b> means this column's type is not any of above 3.
-            </Box>
-            </Typography>
+            &nbsp;<b style={{ fontSize: 20, color: '#2E84CF' }}>S</b>  &nbsp;means this column is text;
+                &nbsp;<b style={{ fontSize: 20, color: '#2E84CF' }}>9</b> &nbsp; means this column is numeric;&nbsp;
+                <Icon className='fas fa-ellipsis-h' style={{ fontSize: 20, color: '#2E84CF' }} />&nbsp; means this column contains a list;
+                &nbsp;<b style={{ fontSize: 20, color: '#2E84CF' }}>?</b>&nbsp; means this column's type is not any of above 3.
           </Grid>
         </CardContent>
       </Card >

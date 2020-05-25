@@ -13,8 +13,10 @@ import CountUp from 'react-countup';
 import GridColumn from "./GridColumn"
 import StickyHeader from "./StickyHeader"
 
+// Import Toolbar components for the table
 import VirtualTableFilter from "./VirtualTableFilter"
 import HideColumn from "./HideColumn"
+import Plots from "./Plots"
 
 import { Filter, EyeOff, Briefcase, LifeBuoy } from 'react-feather';
 import DeleteIcon from '@material-ui/icons/Delete';
@@ -545,11 +547,8 @@ class VirtualGrid extends React.Component {
   columnFilter = (columnHide) => {
 
     let indices = columnHide.map((x, idx) => x.show ? idx : '').filter(String);
-    console.log(indices)
     let tmpNewColumnWidth = indices.map(i => this.state.TableColumnWidth[i]);
     let tmpfilteredColumn = indices.map(i => this.state.fullColumn[i]);
-
-    console.log(tmpNewColumnWidth)
 
     this.setState({ filteredColumn: tmpfilteredColumn, filteredColumnWidth: tmpNewColumnWidth, tableReady: tmpNewColumnWidth.length > 0 }, () => {
       this.SortRowandHeight()
@@ -743,7 +742,7 @@ class VirtualGrid extends React.Component {
             <Collapse in={this.state.filterPopoverOpen === 0}>
               <Card elevation={0} className="card-box mb-0 d-flex flex-row flex-wrap justify-content-center">
                 <VirtualTableFilter
-                  variableList={this.state.colNames}
+                  variableList={this.state.filteredColumn}
                   tableFilter={this.state.tableFilter}
                   UpdateFilter={this.handleUpdateFilter}
                 // onClickClose={this.handleFilterPopoverClose}
@@ -756,8 +755,15 @@ class VirtualGrid extends React.Component {
                 <HideColumn
                   columnHide={this.state.columnHide}
                   onHideColumn={this.handleHideColumn}
-                // UpdateFilter={this.handleUpdateFilter}
-                // onClickClose={this.handleFilterPopoverClose}
+                />
+              </Card>
+            </Collapse>
+
+            <Collapse in={this.state.filterPopoverOpen === 2}>
+              <Card elevation={0} className="card-box mb-0 d-flex flex-row flex-wrap justify-content-center">
+                <Plots
+                  variableList={this.state.columnHide}
+                  dataRows={this.state.filteredData}
                 />
               </Card>
             </Collapse>
