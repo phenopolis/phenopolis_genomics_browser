@@ -28,3 +28,5 @@ yarn.lock
 .netlify
 # env file containing the env variables
 env.sh
+
+.setting*
