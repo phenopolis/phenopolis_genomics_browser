@@ -47,7 +47,8 @@ class Variant extends React.Component {
   getVariantInformation = (variantId) => {
     var self = this;
     axios
-      .get('/api/' + i18next.t('Variant.entry') + '/variant/' + this.props.match.params.variantId, {
+      // .get('/api/' + i18next.t('Variant.entry') + '/variant/' + this.props.match.params.variantId, {
+      .get('/api/variant/' + this.props.match.params.variantId, {
         withCredentials: true
       })
       .then(res => {

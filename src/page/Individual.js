@@ -54,7 +54,8 @@ class Individual extends React.Component {
   getIndividualInformation = (individualId) => {
     var self = this;
     axios
-      .get('/api/' + i18next.t('Individual.entry') + '/individual/' + individualId, {
+      // .get('/api/' + i18next.t('Individual.entry') + '/individual/' + individualId, {
+      .get('/api/individual/' + individualId, {
         withCredentials: true
       })
       .then(res => {

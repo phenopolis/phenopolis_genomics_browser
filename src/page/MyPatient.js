@@ -26,7 +26,8 @@ class MyPatient extends React.Component {
   getAllPatientInformation = () => {
     var self = this;
     axios
-      .get('/api/' + i18next.t('MyPatient.entry') + '/hpo/HP:0000001', {
+      // .get('/api/' + i18next.t('MyPatient.entry') + '/hpo/HP:0000001', {
+      .get('/api/hpo/HP:0000001', {
         withCredentials: true
       })
       .then(res => {

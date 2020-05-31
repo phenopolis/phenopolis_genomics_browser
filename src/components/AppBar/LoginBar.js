@@ -20,7 +20,8 @@ import {
 	ListItemIcon,
 	ListItemText,
 	Drawer,
-	Avatar
+	Avatar,
+	Paper
 } from '@material-ui/core';
 
 import SearchIcon from '@material-ui/icons/Search';
@@ -34,8 +35,9 @@ import AccountCircleIcon from '@material-ui/icons/AccountCircle';
 import SupervisedUserCircleIcon from '@material-ui/icons/SupervisedUserCircle';
 import ShoppingCartIcon from '@material-ui/icons/ShoppingCart';
 
-import Sidebar from './Sidebar';
-import NavSearch from './NavSearch';
+// import Sidebar from './Sidebar';
+// import NavSearch from './NavSearch';
+import DrawerSearch from './DrawerSearch'
 
 import { getUsername } from '../../redux/selectors';
 import { setUser } from '../../redux/actions';
@@ -48,6 +50,9 @@ import GB from '../../assets/svg/gb.svg'
 import CN from '../../assets/svg/cn.svg'
 import JP from '../../assets/svg/jp.svg'
 import DE from '../../assets/svg/de.svg'
+
+const Sidebar = React.lazy(() => import('./Sidebar'));
+// const DrawerSearch = React.lazy(() => import('./DrawerSearch'));
 
 const cookies = new Cookies();
 
@@ -64,7 +69,8 @@ class LoginBar extends React.Component {
 			openLan: false,
 			openExplore: false,
 			anchorExplore: null,
-			intervalId: null
+			intervalId: null,
+			openSearchDrawer: false,
 		};
 	}
 
@@ -144,6 +150,10 @@ class LoginBar extends React.Component {
 		});
 	}
 
+	handletoggleDrawer = () => {
+		this.setState({ openSearchDrawer: !this.state.openSearchDrawer })
+	}
+
 
 	render() {
 		const { classes } = this.props;
@@ -192,7 +202,7 @@ class LoginBar extends React.Component {
 
 					<Hidden smDown>
 						<Grid item md={5} lg={7}>
-							<NavSearch />
+							{/* <NavSearch /> */}
 						</Grid>
 					</Hidden>
 
@@ -203,9 +213,23 @@ class LoginBar extends React.Component {
 								label={t('AppBar.LoginBar.Label_Search')}
 								showLabel
 								icon={<SearchIcon />}
+								onClick={this.handletoggleDrawer}
+							// component={Link}
+							// to='/search'
+							/>
+
+							<Drawer anchor="top" open={this.state.openSearchDrawer} onClose={this.handletoggleDrawer}>
+								<DrawerSearch onRequestClose={this.handletoggleDrawer} />
+							</Drawer>
+
+							{/* <BottomNavigationAction
+								className={classes.navigationbutton}
+								label={t('AppBar.LoginBar.Label_Search')}
+								showLabel
+								icon={<SearchIcon />}
 								component={Link}
 								to='/search'
-							/>
+							/> */}
 							<BottomNavigationAction
 								className={classes.navigationbutton}
 								label={t('AppBar.LoginBar.Label_Patients')}

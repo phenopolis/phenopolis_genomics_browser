@@ -56,7 +56,8 @@ class HPO extends React.Component {
   getHPOinformation = (hpoId) => {
     var self = this;
     axios
-      .get('/api/' + i18next.t('HPO.entry') + '/hpo/' + hpoId, {
+      // .get('/api/' + i18next.t('HPO.entry') + '/hpo/' + hpoId, {
+      .get('/api/hpo/' + hpoId, {
         withCredentials: true
       })
       .then(res => {

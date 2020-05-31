@@ -28,7 +28,8 @@ class Gene extends React.Component {
   getGeneInformation = (geneId) => {
     var self = this;
     axios
-      .get('/api/' + i18next.t('Gene.entry') + '/gene/' + geneId, {
+      // .get('/api/' + i18next.t('Gene.entry') + '/gene/' + geneId, {
+      .get('/api/gene/' + geneId, {
         withCredentials: true
       })
       .then(res => {
