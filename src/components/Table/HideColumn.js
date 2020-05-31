@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 import { withStyles } from '@material-ui/core/styles';
 import compose from 'recompose/compose';
 
-import { Card, CardContent, Chip, Icon, Avatar, Grid, Typography, Box, Container } from '@material-ui/core';
+import { Card, CardContent, Chip, Icon, Avatar, Grid, Tooltip } from '@material-ui/core';
 import clsx from 'clsx';
 
 class HideColumn extends React.Component {
@@ -25,7 +25,8 @@ class HideColumn extends React.Component {
   }
 
   render() {
-    const { classes } = this.props;
+    const { classes, columnHide } = this.props;
+    console.log(columnHide)
 
     return (
       <Card elevation={0} className={classes.root}>
@@ -40,30 +41,33 @@ class HideColumn extends React.Component {
         </CardContent>
         <CardContent>
           {
-            this.props.columnHide.map((item, index) => {
+            columnHide.map((item, index) => {
+
               return (
-                <Chip
-                  key={index}
-                  variant="outlined"
-                  color={item.show ? 'primary' : 'default'}
-                  deleteIcon={<Icon className={clsx(classes.smallFilter, 'far fa-trash-alt')} />}
-                  onClick={() => this.handleClick(index)}
-                  label={item.name}
-                  avatar={<Avatar>
-                    {
-                      item.type === 'string' ?
-                        "T"
-                        : item.type === 'number' ?
-                          "9"
-                          : item.type === 'object' ?
-                            <Icon className={clsx(classes.smallFilter, 'fas fa-ellipsis-h')} />
-                            :
-                            "?"
-                    }
-                  </Avatar>}
-                  className={classes.chip}
-                  style={item.show ? null : { color: 'darkgrey' }}
-                />
+                <Tooltip key={index} title={item.des} placement='top'>
+                  <Chip
+                    key={index}
+                    variant="outlined"
+                    color={item.show ? 'primary' : 'default'}
+                    deleteIcon={<Icon className={clsx(classes.smallFilter, 'far fa-trash-alt')} />}
+                    onClick={() => this.handleClick(index)}
+                    label={item.name}
+                    avatar={<Avatar>
+                      {
+                        item.type === 'string' ?
+                          "T"
+                          : item.type === 'number' ?
+                            "9"
+                            : item.type === 'object' ?
+                              <Icon className={clsx(classes.smallFilter, 'fas fa-ellipsis-h')} />
+                              :
+                              "?"
+                      }
+                    </Avatar>}
+                    className={classes.chip}
+                    style={item.show ? null : { color: 'darkgrey' }}
+                  />
+                </Tooltip>
               )
             })
           }

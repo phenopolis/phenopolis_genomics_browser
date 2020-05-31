@@ -2,7 +2,14 @@ import React from "react";
 import PropTypes from 'prop-types';
 import { withStyles } from '@material-ui/core/styles';
 
-import { TableCell, ButtonGroup, Button, Chip, TableSortLabel } from '@material-ui/core';
+import { TableCell, ButtonGroup, Button, Chip, TableSortLabel, Tooltip } from '@material-ui/core';
+
+
+const StyledTooltip = withStyles({
+  tooltip: {
+    fontSize: '0.9em'
+  }
+})(Tooltip);
 
 class StickyHeader extends React.Component {
   constructor(props) {
@@ -35,31 +42,32 @@ class StickyHeader extends React.Component {
       </div> */}
         <div className={"sticky-grid__header__scrollable"} style={scrollableStyle}>
           {
-            headerColumns.map(({ label, key, ...style }, i) => {
+            headerColumns.map(({ label, des, key, ...style }, i) => {
               return (
-                <div
-                  className={classes.stickyGridHeaderScrollableColumn}
-                  style={style}
-                  key={i}>
-                  <TableSortLabel
-                    // className={classes.sortlabel}
-                    active={this.props.orderBy === key}
-                    direction={this.props.order}
-                    onClick={this.createSortHandler(key)}>
+                <StyledTooltip key={i} title={des} placement='top'>
+                  <div
+                    className={classes.stickyGridHeaderScrollableColumn}
+                    style={style}
+                  >
+                    <TableSortLabel
+                      // className={classes.sortlabel}
+                      active={this.props.orderBy === key}
+                      direction={this.props.order}
+                      onClick={this.createSortHandler(key)}>
 
-                    {label}
+                      {label}
 
-                    {this.props.orderBy === key ? (
-                      <span className={classes.visuallyHidden}>
-                        {this.props.order === 'desc'
-                          ? 'sorted descending'
-                          : 'sorted ascending'}
-                      </span>
-                    ) : null}
-                  </TableSortLabel>
-                  {/* {label} */}
-                </div>
-
+                      {this.props.orderBy === key ? (
+                        <span className={classes.visuallyHidden}>
+                          {this.props.order === 'desc'
+                            ? 'sorted descending'
+                            : 'sorted ascending'}
+                        </span>
+                      ) : null}
+                    </TableSortLabel>
+                    {/* {label} */}
+                  </div>
+                </StyledTooltip>
               )
             })
           }

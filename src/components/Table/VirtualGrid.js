@@ -9,16 +9,13 @@ import AutoSizer from "react-virtualized-auto-sizer";
 import calculateSize from 'calculate-size'
 import memoize from 'memoize-one'
 import CountUp from 'react-countup';
+import csvDownload from 'json-to-csv-export'
 
 import GridColumn from "./GridColumn"
 import StickyHeader from "./StickyHeader"
 
-
-import { Filter, EyeOff, Briefcase, LifeBuoy } from 'react-feather';
-import DeleteIcon from '@material-ui/icons/Delete';
-
 import "./styles.css";
-import { Toolbar, Paper, IconButton, Typography, Box, Icon, Popover, Dialog, Button, Container, Card, Collapse } from "@material-ui/core";
+import { Toolbar, Paper, IconButton, Typography, Box, Icon, Popover, Dialog, Button, Container, Card, Collapse, CardContent } from "@material-ui/core";
 import MenuIcon from '@material-ui/icons/Menu';
 import { composeInitialProps } from "react-i18next";
 
@@ -26,6 +23,7 @@ import { composeInitialProps } from "react-i18next";
 const VirtualTableFilter = React.lazy(() => import('./VirtualTableFilter'));
 const HideColumn = React.lazy(() => import('./HideColumn'));
 const Plots = React.lazy(() => import('./Plots'));
+const ExportExcel = React.lazy(() => import('./ExportExcel'));
 
 var focusField;
 
@@ -75,7 +73,8 @@ const headerBuilder = (minColumn, maxColumn, columnWidth, stickyHeight, mycolumn
       width: columnWidth(i),
       left: left[i],
       label: mycolumns[i].name,
-      key: mycolumns[i].key
+      key: mycolumns[i].key,
+      des: mycolumns[i].description
     });
   }
 
@@ -370,7 +369,7 @@ class VirtualGrid extends React.Component {
         { label: 'Filter Rows', icon: 'fas fa-filter' },
         { label: 'Hide Columns', icon: 'fas fa-eye-slash' },
         { label: 'Plots', icon: 'fas fa-chart-bar' },
-        { label: 'Genome', icon: 'fas fa-dna' },
+        // { label: 'Genome', icon: 'fas fa-dna' },
         { label: 'Export Excel', icon: 'fas fa-file-download' },
       ],
 
@@ -399,7 +398,15 @@ class VirtualGrid extends React.Component {
         let headSize = calculateSize(mycolumns[j].name, { font: 'Arial', fontSize: '14px' })
         if (headSize.width + 50 > tmpWidth[j]) tmpWidth[j] = headSize.width + 50
 
-        tmpColnames.push({ name: mycolumns[j].name, key: mycolumns[j].key, type: typeof myrows[0][mycolumns[j].key], chips: [], show: mycolumns[j].default })
+        // Add a quick patch here to assign variable's type and class.
+
+        if (['AC', 'AF', 'AN', 'DP', 'POS', 'HET_COUNT', 'af_converge', 'af_gnomad_genomes', 'af_hgvd', 'af_jirdc', 'af_kaviar', 'af_krgdb', 'af_tommo', 'cadd_phred', 'dann'].includes(mycolumns[j].key)) {
+          var tmpType = "number"
+        } else {
+          var tmpType = typeof myrows[0][mycolumns[j].key]
+        }
+
+        tmpColnames.push({ name: mycolumns[j].name, key: mycolumns[j].key, type: tmpType, chips: [], show: mycolumns[j].default, des: mycolumns[j].description })
       }
       for (let j = 0; j < mycolumns.length; j++) {
         for (let i = 0; i < myrows.length; i++) {
@@ -555,6 +562,28 @@ class VirtualGrid extends React.Component {
     this.setState({ filteredColumn: tmpfilteredColumn, filteredColumnWidth: tmpNewColumnWidth, tableReady: tmpNewColumnWidth.length > 0 }, () => {
       this.SortRowandHeight()
     });
+  }
+
+  handleDownloadCSV = () => {
+    console.log(this.state.columnHide)
+    var prepareDownload = this.state.filteredData.map((row) => {
+      var tmpRow = {}
+      this.state.columnHide.map((i) => {
+        if (i.type !== 'object') {
+          tmpRow[i.key] = row[i.key]
+        } else if (typeof row[i.key][0] === "object" & row[i.key][0] !== null) {
+          tmpRow[i.key] = row[i.key].map(chip => chip.display).join(';')
+        } else {
+          tmpRow[i.key] = row[i.key].join(';')
+        }
+      })
+      return tmpRow
+    })
+
+    var d = new Date();
+    let filename = "phenopolis" + "_" + d.getDate() + "_" + d.getMonth() + "_" + d.getFullYear() + ".csv"
+
+    csvDownload(prepareDownload, filename = filename)
   }
 
   rowFilter = (data, filters) => {
@@ -767,6 +796,15 @@ class VirtualGrid extends React.Component {
                   variableList={this.state.columnHide}
                   dataRows={this.state.filteredData}
                 />
+              </Card>
+            </Collapse>
+
+            <Collapse in={this.state.filterPopoverOpen === 3}>
+              <Card elevation={0} className="card-box mb-5 mt-5 d-flex flex-row flex-wrap justify-content-center">
+                <ExportExcel onRequestDownload={this.handleDownloadCSV} />
+                {/* "1. Please click above button to download current table.\n" +
+                      "2. This is the table after your filtering.\n" +
+                      "3. If one cell in below table contains multiple chips, they will be joined by \';\'." */}
               </Card>
             </Collapse>
           </Paper>
