@@ -456,7 +456,6 @@ class VirtualGrid extends React.Component {
         TableRowHeight: tmpHeight,
         rowCount: myrows.length,
         colCount: mycolumns.length,
-        colNames: tmpColnames,
         columnHide: tmpColnames,
 
         fullData: myrows,
@@ -773,7 +772,7 @@ class VirtualGrid extends React.Component {
             <Collapse in={this.state.filterPopoverOpen === 0}>
               <Card elevation={0} className="card-box mb-0 d-flex flex-row flex-wrap justify-content-center">
                 <VirtualTableFilter
-                  variableList={this.state.filteredColumn}
+                  variableList={this.state.columnHide}
                   tableFilter={this.state.tableFilter}
                   UpdateFilter={this.handleUpdateFilter}
                 // onClickClose={this.handleFilterPopoverClose}

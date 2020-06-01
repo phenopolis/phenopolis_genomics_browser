@@ -7,6 +7,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { Card, CardContent, Button, Typography, Grid, TextField, IconButton, Icon, List, ListItem, Container, Menu, MenuItem, ListItemIcon, Chip, Checkbox, FormControlLabel, FormControl, Avatar } from '@material-ui/core';
 import Autocomplete from '@material-ui/lab/Autocomplete';
 import clsx from 'clsx';
+import { Cpu } from 'react-feather';
 
 class VirtualTableFilter extends React.Component {
   constructor(props) {
@@ -14,10 +15,16 @@ class VirtualTableFilter extends React.Component {
     this.state = {
       value: 0,
       anchorEl: null,
+      anchorElString: null,
+      anchorElNumber: null,
       anchorElObject: null,
       myfilter: [],
       operationOptions: {
-        other: [
+        string: [
+          { des: 'SubString', icon: '=' },
+          { des: 'Equal to', icon: '==' }
+        ],
+        number: [
           { des: 'SubString', icon: '=' },
           { des: 'Equal to', icon: '==' },
           { des: 'Greater than', icon: '>' },
@@ -29,6 +36,14 @@ class VirtualTableFilter extends React.Component {
           { des: 'SubString', icon: '=' },
           { des: 'Include', icon: '⊂' },
           { des: 'Exclude', icon: '⊄' }
+        ],
+        other: [
+          { des: 'SubString', icon: '=' },
+          { des: 'Equal to', icon: '==' },
+          { des: 'Greater than', icon: '>' },
+          { des: 'No Smaller than', icon: '≥' },
+          { des: 'Smaller than', icon: '<' },
+          { des: 'No Larger than', icon: '≤' }
         ]
       },
       tmpFilter: 0
@@ -89,16 +104,20 @@ class VirtualTableFilter extends React.Component {
   }
 
   handleOperationOpen = (event, index, column) => {
-
     if (column.type === 'object') {
       this.setState({ anchorElObject: event.currentTarget, tmpFilter: index })
-    } else {
+    } else if (column.type === 'string') {
+      this.setState({ anchorElString: event.currentTarget, tmpFilter: index })
+    } else if (column.type === 'number') {
+      this.setState({ anchorElNumber: event.currentTarget, tmpFilter: index })
+    }
+    else {
       this.setState({ anchorEl: event.currentTarget, tmpFilter: index })
     }
   };
 
   handleOperationClose = () => {
-    this.setState({ anchorEl: null, anchorElObject: null })
+    this.setState({ anchorEl: null, anchorElObject: null, anchorElString: null, anchorElNumber: null })
   };
 
   handleOperationChange = (operation) => {
@@ -184,8 +203,8 @@ class VirtualTableFilter extends React.Component {
                               onChange={(event, newValue) => this.handleSelectColumn(event, newValue, index)}
                               id="combo-box-demo"
                               size="small"
-                              options={this.props.variableList}
-                              getOptionLabel={(option) => option.name}
+                              options={this.props.variableList.filter(x => x.show)}
+                              getOptionLabel={(option) => option.type + '  -  ' + option.name}
                               renderInput={(params) => <TextField {...params} label="Select Column" variant="outlined" />}
                               // style={{ width: 300 }}
                               className={classes.valueInput}
@@ -207,6 +226,7 @@ class VirtualTableFilter extends React.Component {
                               <b>{item.operation}</b>
                             </Avatar>
                           </IconButton>
+
                           <Menu
                             id="simple-menu"
                             anchorEl={this.state.anchorEl}
@@ -242,6 +262,58 @@ class VirtualTableFilter extends React.Component {
                           >
                             {
                               this.state.operationOptions.object.map((operationItem, operationIndex) => {
+                                return (
+                                  <MenuItem key={operationIndex} onClick={() => this.handleOperationChange(operationItem.icon)}>
+                                    <ListItemIcon>
+                                      <Typography variant="h5" noWrap>
+                                        {operationItem.icon}
+                                      </Typography>
+                                    </ListItemIcon>
+                                    <Typography variant="body2" noWrap>
+                                      {operationItem.des}
+                                    </Typography>
+                                  </MenuItem>
+                                )
+
+                              })
+                            }
+                          </Menu>
+
+                          <Menu
+                            id="simple-menu"
+                            anchorEl={this.state.anchorElString}
+                            keepMounted
+                            open={Boolean(this.state.anchorElString)}
+                            onClose={this.handleOperationClose}
+                          >
+                            {
+                              this.state.operationOptions.string.map((operationItem, operationIndex) => {
+                                return (
+                                  <MenuItem key={operationIndex} onClick={() => this.handleOperationChange(operationItem.icon)}>
+                                    <ListItemIcon>
+                                      <Typography variant="h5" noWrap>
+                                        {operationItem.icon}
+                                      </Typography>
+                                    </ListItemIcon>
+                                    <Typography variant="body2" noWrap>
+                                      {operationItem.des}
+                                    </Typography>
+                                  </MenuItem>
+                                )
+
+                              })
+                            }
+                          </Menu>
+
+                          <Menu
+                            id="simple-menu"
+                            anchorEl={this.state.anchorElNumber}
+                            keepMounted
+                            open={Boolean(this.state.anchorElNumber)}
+                            onClose={this.handleOperationClose}
+                          >
+                            {
+                              this.state.operationOptions.number.map((operationItem, operationIndex) => {
                                 return (
                                   <MenuItem key={operationIndex} onClick={() => this.handleOperationChange(operationItem.icon)}>
                                     <ListItemIcon>
