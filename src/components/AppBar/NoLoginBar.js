@@ -35,6 +35,8 @@ import GB from '../../assets/svg/gb.svg'
 import CN from '../../assets/svg/cn.svg'
 import JP from '../../assets/svg/jp.svg'
 import DE from '../../assets/svg/de.svg'
+import GR from '../../assets/svg/gr.svg'
+import ES from '../../assets/svg/es.svg'
 
 import { withTranslation } from 'react-i18next';
 
@@ -199,6 +201,18 @@ class NoLoginBar extends React.Component {
 							<img className={classes.imageIcon} src={DE} />
 						</ListItemIcon>
 						<ListItemText classes={{ primary: classes.listItemText }} primary='Deutsch' />
+					</MenuItem>
+					<MenuItem onClick={() => changeLanguage('gr')}>
+						<ListItemIcon>
+							<img className={classes.imageIcon} src={GR} />
+						</ListItemIcon>
+						<ListItemText classes={{ primary: classes.listItemText }} primary='Ελληνικά' />
+					</MenuItem>
+					<MenuItem onClick={() => changeLanguage('es')}>
+						<ListItemIcon>
+							<img className={classes.imageIcon} src={ES} />
+						</ListItemIcon>
+						<ListItemText classes={{ primary: classes.listItemText }} primary='Español' />
 					</MenuItem>
 				</Menu>
 

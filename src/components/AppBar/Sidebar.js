@@ -24,6 +24,8 @@ import GB from '../../assets/svg/gb.svg'
 import CN from '../../assets/svg/cn.svg'
 import JP from '../../assets/svg/jp.svg'
 import DE from '../../assets/svg/de.svg'
+import GR from '../../assets/svg/gr.svg'
+import ES from '../../assets/svg/es.svg'
 
 class SideBar extends React.Component {
 	constructor(props) {
@@ -148,6 +150,20 @@ class SideBar extends React.Component {
 									<img className={classes.imageIcon} src={DE} />
 								</ListItemIcon>
 								<ListItemText primary="Deutsch" classes={{ primary: classes.listItemText }} />
+							</ListItem>
+
+							<ListItem button onClick={() => changeLanguage('gr')} className={classes.nested}>
+								<ListItemIcon>
+									<img className={classes.imageIcon} src={GR} />
+								</ListItemIcon>
+								<ListItemText primary="Ελληνικά" classes={{ primary: classes.listItemText }} />
+							</ListItem>
+
+							<ListItem button onClick={() => changeLanguage('es')} className={classes.nested}>
+								<ListItemIcon>
+									<img className={classes.imageIcon} src={ES} />
+								</ListItemIcon>
+								<ListItemText primary="Español" classes={{ primary: classes.listItemText }} />
 							</ListItem>
 						</List>
 					</Collapse>
