@@ -2,8 +2,12 @@ import React from 'react';
 import PropTypes from 'prop-types';
 
 import { withStyles } from '@material-ui/core/styles';
-import { CssBaseline, Paper, Container, Box, Typography,
-         LinearProgress } from '@material-ui/core';
+import {
+  CssBaseline, Paper, Container, Box, Typography, Grid,
+  LinearProgress
+} from '@material-ui/core';
+
+import "../../assets/css/loading.css";
 
 class Loading extends React.Component {
   constructor(props) {
@@ -19,12 +23,38 @@ class Loading extends React.Component {
         <div className={classes.root}>
           <Container maxWidth='md'>
             <Paper className={classes.paper}>
-              <Typography component='div'>
-                <Box fontWeight='fontWeightBold' fontSize='h4.fontSize' m={1}>
-                  {this.props.message}
-                </Box>
-              </Typography>
-              <LinearProgress color='secondary' className={classes.progress} />
+              <Grid
+                container
+                spacing={0}
+                direction="column"
+                alignItems="center"
+                justify="center"
+                style={{ minHeight: '30vh' }}
+              >
+
+                <Grid item xs={3}>
+                  <div class="loader">
+                    <div class="dot dot1"><i></i></div>
+                    <div class="dot dot2"><i></i></div>
+                    <div class="dot dot3"><i></i></div>
+                    <div class="dot dot4"><i></i></div>
+                    <div class="dot dot5"><i></i></div>
+                    <div class="dot dot6"><i></i></div>
+                    <div class="dot dot7"><i></i></div>
+                    <div class="dot dot8"><i></i></div>
+                    <div class="dot dot9"><i></i></div>
+                  </div>
+                </Grid>
+                <Grid item xs={10} className="mt-5 mb-3">
+                  <Typography component='div'>
+                    <Box fontSize='h5.fontSize' style={{ color: 'grey' }} m={2}>
+                      {this.props.message}
+                    </Box>
+                  </Typography>
+                </Grid>
+
+              </Grid>
+              {/* <LinearProgress color='secondary' className={classes.progress} /> */}
             </Paper>
           </Container>
         </div>
