@@ -49,10 +49,10 @@ cache = Cache(application, config={'CACHE_TYPE': 'simple'})
 host = os.environ['DB_HOST']
 database = os.environ['DB_DATABASE']
 user = os.environ['DB_USER']
-password = os.environ['DB_PASSWORD']
+apassword = os.environ['DB_PASSWORD']
 port = os.environ['DB_PORT']
 
-application.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql+psycopg2://%s:%s@%s/%s' % (user, password, host, database,)
+application.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql+psycopg2://%s:%s@%s/%s' % (user, apassword, host, database,)
 SESSION_COOKIE_NAME = 'phenopolis_api'
 SESSION_TYPE = 'sqlalchemy'
 SESSION_SQLALCHEMY = create_engine(application.config['SQLALCHEMY_DATABASE_URI'], echo=True)
@@ -214,15 +214,15 @@ def process_for_display(data):
             x2['hpo_ancestors'] = [{'display': x3} for x3 in x2['hpo_ancestors'].split(';') if x3]
 
 
-def check_auth(username, apassword):
+def check_auth(username, password):
     """
     This function is called to check if a username / password combination is valid.
     """
     data = get_db_session().query(User).filter(User.user == username)
-    user_ = [p.as_dict() for p in data]
-    if not user_:
+    auser = [p.as_dict() for p in data]
+    if not auser:
         return False
-    return argon2.verify(apassword, user[0]['argon_password'])
+    return argon2.verify(password, auser[0]['argon_password'])
 
 
 def requires_auth(f):
@@ -237,8 +237,8 @@ def requires_auth(f):
             return f(*args, **kwargs)
         if request.method == 'POST':
             username = request.form['user']
-            passw = request.form['password']
-            if check_auth(username, passw):
+            password = request.form['password']
+            if check_auth(username, password):
                 session['user'] = username
                 # session.permanent = True
                 return f(*args, **kwargs)
@@ -258,10 +258,10 @@ def login():
     print('LOGIN form')
     print(request.form.keys())
     username = request.form['name']
-    passw = request.form['password']
+    password = request.form['password']
     print(username)
-    print(check_auth(username, passw))
-    if not check_auth(username, passw):
+    print(check_auth(username, password))
+    if not check_auth(username, password):
         logging.error('Login failed')
         msg = Message("bad login " + username + " from " + request.remote_addr, sender="no-reply@phenopolis.org", recipients=["no-reply@phenopolis.org"])
         mail.send(msg)
