@@ -11,6 +11,31 @@ export default {
       "type": "shadow"
     }
   },
+  "toolbox": {
+    "feature": {
+      "dataZoom": {
+        "title": {
+          "zoom": "Zoom In",
+          "back": "Zoom Reset"
+        }
+      },
+      "brush": {
+        "type": [
+          "rect",
+          "polygon",
+          "clear"
+        ],
+        "title": {
+          "rect": "Rectangle Area",
+          "polygon": "Random Shape",
+          "clear": "Area Reset"
+        }
+      },
+      "saveAsImage": {
+        title: 'Save As Image'
+      }
+    }
+  },
   "color": [
     "#2E84CF"
   ],

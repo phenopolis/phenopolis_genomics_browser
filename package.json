@@ -13,6 +13,7 @@
     "calculate-size": "^1.1.1",
     "echarts": "^4.7.0",
     "echarts-for-react": "^2.0.16",
+    "echarts-stat": "github:urbanzoom/echarts-stat",
     "fg-loadcss": "^2.1.0",
     "i18next": "^19.4.4",
     "i18next-browser-languagedetector": "^4.1.1",
@@ -42,6 +43,7 @@
     "redux": "^4.0.5",
     "styled-components": "^5.1.0",
     "typeface-roboto": "0.0.75",
+    "underscore": "^1.10.2",
     "universal-cookie": "^4.0.3"
   },
   "scripts": {

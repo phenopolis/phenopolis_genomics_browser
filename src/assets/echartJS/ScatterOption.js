@@ -23,13 +23,26 @@ export default {
   },
   "toolbox": {
     "feature": {
-      "dataZoom": {},
+      "dataZoom": {
+        "title": {
+          "zoom": "Zoom In",
+          "back": "Zoom Reset"
+        }
+      },
       "brush": {
         "type": [
           "rect",
           "polygon",
           "clear"
-        ]
+        ],
+        "title": {
+          "rect": "Rectangle Area",
+          "polygon": "Random Shape",
+          "clear": "Area Reset"
+        }
+      },
+      "saveAsImage": {
+        title: 'Save As Image'
       }
     }
   },

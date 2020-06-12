@@ -4,6 +4,7 @@ import { withStyles } from '@material-ui/core/styles';
 import compose from 'recompose/compose';
 
 import { prepareBoxplotData } from 'echarts/extension/dataTool';
+import ecStat from 'echarts-stat'
 import ReactEcharts from 'echarts-for-react';
 
 import { Card, CardContent, Grid, TextField, CardActions, Paper } from '@material-ui/core';
@@ -12,7 +13,8 @@ import Autocomplete from '@material-ui/lab/Autocomplete';
 import BoxplotOption from '../../assets/echartJS/BoxplotOption'
 import ScatterOption from '../../assets/echartJS/ScatterOption';
 import StackBarOption from '../../assets/echartJS/StackBarOption';
-
+import HistogramOption from '../../assets/echartJS/HistogramOption';
+import Barplotption from '../../assets/echartJS/BarplotOption';
 
 class Plots extends React.Component {
   constructor(props) {
@@ -45,7 +47,7 @@ class Plots extends React.Component {
   getSeriesData = (xAxis, yAxis) => {
 
     if (xAxis === null & yAxis === null) {
-      this.setState({ msg: "Neither of two axises is selected." })
+      this.setState({ msg: "Neither of two axises is selected.", plotReady: false })
     }
     else if (xAxis !== null & yAxis !== null) {
       if (xAxis.type === 'number' & yAxis.type === 'number') {
@@ -57,9 +59,42 @@ class Plots extends React.Component {
       } else {
         this.CreateStackBarPlot(xAxis, yAxis)
       }
-    } else {
-      this.setState({ msg: "Now please select the other axis." })
+    } else if (xAxis !== null & yAxis === null) {
+      if (xAxis.type === 'number') {
+        this.CreateHistogram(xAxis)
+      } else if (xAxis.type === 'string') {
+        this.CreateBarplot(xAxis)
+      }
+    } else if (xAxis === null & yAxis !== null) {
+      if (yAxis.type === 'number') {
+        this.CreateHistogram(yAxis)
+      }
     }
+  }
+
+  CreateBarplot = (Axis) => {
+    let tmpValue = this.props.dataRows.map(x => x[Axis.key]);
+
+    var _ = require('underscore')
+
+    console.log(_)
+    tmpValue = _.countBy(tmpValue);
+
+    console.log(tmpValue)
+  }
+
+  CreateHistogram = (Axis) => {
+    let tmpValue = this.props.dataRows.map(x => x[Axis.key]);
+
+    var bins = ecStat.histogram(tmpValue);
+
+    const newHistogramOption = JSON.parse(JSON.stringify(HistogramOption))
+    newHistogramOption.title.text = "Histogram of " + Axis.name
+    newHistogramOption.series[0].data = bins.data
+
+    let tmpMsg = "Now you have chose one number axis, histogram will be plotted one the left."
+
+    this.setState({ option: newHistogramOption, msg: tmpMsg, plotReady: true })
   }
 
   CreateScatterPlot = (xAxis, yAxis) => {
@@ -180,70 +215,67 @@ class Plots extends React.Component {
     return (
       <Card elevation={0} className={classes.root}>
         <CardContent>
+
+          <Grid container justify="center" spacing={5} style={{ marginBottom: "2em" }}>
+            <Grid item xs={2}>
+              <Autocomplete
+                freeSolo
+                value={this.state.yAxis}
+                onChange={(event, newValue) => this.handleSelectYAxis(event, newValue)}
+                id="combo-box-demo"
+                size="small"
+                options={this.props.variableList.filter(x => (x.type === 'number' | x.type === 'string') & x.show)}
+                getOptionLabel={(option) => option.type + '  -  ' + option.name}
+                renderInput={(params) => <TextField {...params} label="Select Y Axis" variant="outlined" />}
+                style={{ width: "100%" }}
+              />
+            </Grid>
+            <Grid item xs={2}>
+              <Autocomplete
+                freeSolo
+                value={this.state.xAxis}
+                onChange={(event, newValue) => this.handleSelectXAxis(event, newValue)}
+                id="combo-box-demo"
+                size="small"
+                options={this.props.variableList.filter(x => (x.type === 'number' | x.type === 'string') & x.show)}
+                getOptionLabel={(option) => option.type + '  -  ' + option.name}
+                renderInput={(params) => <TextField {...params} label="Select X Axis" variant="outlined" />}
+                style={{ width: "100%" }}
+              />
+            </Grid>
+          </Grid>
+
           <Grid container justify="center" spacing={0}>
-            <Grid item xs={3}>
-              <Grid
-                container
-                direction="row"
-                justify="flex-end"
-                alignItems="center"
-                className={classes.rotateSelect}
-              >
-                <Autocomplete
-                  freeSolo
-                  value={this.state.yAxis}
-                  onChange={(event, newValue) => this.handleSelectYAxis(event, newValue)}
-                  id="combo-box-demo"
-                  size="small"
-                  options={this.props.variableList.filter(x => (x.type === 'number' | x.type === 'string') & x.show)}
-                  getOptionLabel={(option) => option.type + '  -  ' + option.name}
-                  renderInput={(params) => <TextField {...params} label="Select Y Axis" variant="outlined" />}
-                  // style={{ width: 300 }}
-                  style={{ width: 200 }}
-                />
-              </Grid>
+            <Grid item xs={2}>
             </Grid>
             <Grid item xs={6}>
               {
                 this.state.plotReady ? (
                   <ReactEcharts
                     option={this.state.option}
-                    // options={this.state.BoxplotOption}
                     notMerge={true}
                     lazyUpdate={true}
                     style={{ height: '40em' }} />
                 ) : (
-                    <div style={{ height: '40em' }} />
+                    <div style={{ paddingTop: '2em', color: 'darkgrey', textAlign: "center" }}>
+                      Please Select variables for X axis and Y axis to draw Scatter Plot.
+                      <div style={{ marginTop: '1em', 'white-space': 'pre-wrap' }}>
+                        {this.state.msg}
+                      </div>
+                    </div>
                   )
               }
-
-              <Grid
-                container
-                direction="row"
-                justify="center"
-                alignItems="center"
-                className="m-4"
-              >
-
-                <Autocomplete
-                  freeSolo
-                  value={this.state.xAxis}
-                  onChange={(event, newValue) => this.handleSelectXAxis(event, newValue)}
-                  id="combo-box-demo"
-                  size="small"
-                  options={this.props.variableList.filter(x => (x.type === 'number' | x.type === 'string') & x.show)}
-                  getOptionLabel={(option) => option.type + '  -  ' + option.name}
-                  renderInput={(params) => <TextField {...params} label="Select X Axis" variant="outlined" />}
-                  // style={{ width: 300 }}
-                  style={{ width: 200 }}
-                />
-              </Grid>
             </Grid>
-            <Grid item xs={3} style={{ paddingTop: '5em', color: 'darkgrey' }}>
-              Please Select variables for X axis and Y axis to draw Scatter Plot.
-              <div style={{ marginTop: '3em', 'white-space': 'pre-wrap' }}>
-                {this.state.msg}
-              </div>
+            <Grid item xs={2} style={{ paddingTop: '5em', color: 'darkgrey' }}>
+              {
+                this.state.plotReady ? (
+                  <div style={{ paddingTop: '2em', color: 'darkgrey' }}>
+                    <div style={{ marginTop: '1em', 'white-space': 'pre-wrap' }}>
+                      {this.state.msg}
+                    </div>
+                  </div>
+                ) : (null)
+              }
             </Grid>
           </Grid>
 
@@ -259,7 +291,7 @@ Plots.propTypes = {
 
 const styles = theme => ({
   root: {
-    width: 1400,
+    width: "100%",
     maxHeight: 800,
     overflowY: 'auto'
   },
