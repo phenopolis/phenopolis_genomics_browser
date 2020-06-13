@@ -52,9 +52,9 @@ class Plots extends React.Component {
     else if (xAxis !== null & yAxis !== null) {
       if (xAxis.type === 'number' & yAxis.type === 'number') {
         this.CreateScatterPlot(xAxis, yAxis)
-      } else if (xAxis.type === 'string' & yAxis.type === 'number') {
+      } else if (xAxis.type !== "number" & yAxis.type === 'number') {
         this.CreateBoxplot(xAxis, yAxis, false)
-      } else if (xAxis.type === 'number' & yAxis.type === 'string') {
+      } else if (xAxis.type === 'number' & yAxis.type !== "number") {
         this.CreateBoxplot(yAxis, xAxis, true)
       } else {
         this.CreateStackBarPlot(xAxis, yAxis)
@@ -135,12 +135,27 @@ class Plots extends React.Component {
   }
 
   CreateBoxplot = (xAxis, yAxis, rotate) => {
+    console.log("- - - - - - - - - - - - - -")
+    console.log("Create Boxplot")
+
+    var flattenData = []
+    if (xAxis.type === "object") {
+      this.props.dataRows.forEach((item) => {
+        item[xAxis.key].forEach((chip) => {
+          flattenData.push({ keyX: chip.display, keyY: item[yAxis.key] })
+        })
+      })
+    } else {
+      this.props.dataRows.forEach((item) => {
+        flattenData.push({ keyX: item[xAxis.key], keyY: item[yAxis.key] })
+      })
+    }
 
     Array.prototype.groupBy = function (k, m) {
       return this.reduce((acc, item) => ((acc[item[k]] = [...(acc[item[k]] || []), item[m]]), acc), {});
     };
 
-    let groupedByxAxis = this.props.dataRows.groupBy(xAxis.key, yAxis.key)
+    let groupedByxAxis = flattenData.groupBy("keyX", "keyY")
 
     let labels = Object.keys(groupedByxAxis)
 
@@ -172,9 +187,6 @@ class Plots extends React.Component {
   }
 
   CreateStackBarPlot = (xAxis, yAxis) => {
-
-    console.log("- - - - - - - - - - - - - - - - ")
-    console.log("Enter Stack Bar Plot Section")
 
     var flattenData = []
     if (xAxis.type === "object" & yAxis.type === "object") {
