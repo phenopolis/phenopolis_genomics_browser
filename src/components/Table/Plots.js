@@ -14,7 +14,7 @@ import BoxplotOption from '../../assets/echartJS/BoxplotOption'
 import ScatterOption from '../../assets/echartJS/ScatterOption';
 import StackBarOption from '../../assets/echartJS/StackBarOption';
 import HistogramOption from '../../assets/echartJS/HistogramOption';
-import Barplotption from '../../assets/echartJS/BarplotOption';
+import BarplotOption from '../../assets/echartJS/BarplotOption';
 
 class Plots extends React.Component {
   constructor(props) {
@@ -68,6 +68,8 @@ class Plots extends React.Component {
     } else if (xAxis === null & yAxis !== null) {
       if (yAxis.type === 'number') {
         this.CreateHistogram(yAxis)
+      } else if (yAxis.type === 'string') {
+        this.CreateBarplot(yAxis)
       }
     }
   }
@@ -76,11 +78,17 @@ class Plots extends React.Component {
     let tmpValue = this.props.dataRows.map(x => x[Axis.key]);
 
     var _ = require('underscore')
-
-    console.log(_)
     tmpValue = _.countBy(tmpValue);
 
-    console.log(tmpValue)
+    const newBarplotOption = JSON.parse(JSON.stringify(BarplotOption))
+    newBarplotOption.xAxis.data = Object.keys(tmpValue)
+    newBarplotOption.series[0].data = Object.values(tmpValue)
+    newBarplotOption.series[0].name = Axis.name
+    newBarplotOption.title.text = "Barplot of " + Axis.name
+
+    let tmpMsg = "Now you have chose one categorical axis, barplot will be plotted one the left."
+
+    this.setState({ option: newBarplotOption, msg: tmpMsg, plotReady: true })
   }
 
   CreateHistogram = (Axis) => {

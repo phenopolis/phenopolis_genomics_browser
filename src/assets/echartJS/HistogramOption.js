@@ -4,6 +4,12 @@ export default {
     left: 'center',
     top: 20
   },
+  tooltip: {
+    trigger: 'axis',
+    axisPointer: {
+      type: 'shadow'
+    }
+  },
   color: ['#2E84CF'],
   grid: {
     left: '3%',
@@ -45,7 +51,7 @@ export default {
     }
   },
   series: [{
-    name: 'height',
+    name: 'Number',
     type: 'bar',
     barWidth: '99.3%',
     label: {
