@@ -564,7 +564,6 @@ class VirtualGrid extends React.Component {
   }
 
   handleDownloadCSV = () => {
-    console.log(this.state.columnHide)
     var prepareDownload = this.state.filteredData.map((row) => {
       var tmpRow = {}
       this.state.columnHide.map((i) => {

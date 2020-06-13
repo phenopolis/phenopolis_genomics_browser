@@ -32,8 +32,6 @@ class GridColumn extends React.Component {
       mystyle.backgroundColor = '#eeee'
       this.setState({ mystyle: mystyle })
     } else {
-      // mystyle['backgroundColor'] = 'white'
-      // console.log(nextProps.style)
       var mystyle = JSON.parse(JSON.stringify(nextProps.style))
       mystyle.backgroundColor = 'white'
       this.setState({ mystyle: mystyle })
@@ -59,7 +57,6 @@ class GridColumn extends React.Component {
 
       })
       .catch(err => {
-        console.log(err);
       });
   }
 
@@ -77,8 +74,6 @@ class GridColumn extends React.Component {
   }
 
   render() {
-    // console.log(this.props)
-
     const { data, index, rowIndex, columnIndex, style, classes } = this.props;
 
     const open = Boolean(this.state.anchorEl);

@@ -78,12 +78,11 @@ class LoginBar extends React.Component {
 
 	componentDidMount() {
 		var intervalId = setInterval(() => {
-			// let A = { name: this.props.reduxName }
-			// console.log(A)
 			if (this.props.reduxName !== '') {
 				let name = cookies.get('username')
 				if (name === undefined) {
 					this.handleLogout('/login?link=timeout')
+					clearInterval(this.state.intervalId)
 				}
 			}
 		}, 1000 * 60);
@@ -92,8 +91,7 @@ class LoginBar extends React.Component {
 	}
 
 	componentWillUnmount() {
-		// use intervalId from the state to clear the interval
-		clearInterval(this.state.intervalId);
+		// clearInterval(this.state.intervalId);
 	}
 
 	OpenMenu() {
@@ -121,12 +119,10 @@ class LoginBar extends React.Component {
 				cookies.remove('username');
 				this.setState({ redirect: true, relink: relink });
 				this.props.setUser('');
-				console.log(this.props.reduxName)
 				this.props.setSnack(i18next.t('AppBar.LoginBar.Logout_Success'), 'success')
 			})
 			.catch((err) => {
 				this.props.setSnack(i18next.t('AppBar.LoginBar.Logout_Failed'), 'error')
-				console.log(err);
 			});
 	};
 

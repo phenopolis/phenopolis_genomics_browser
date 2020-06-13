@@ -26,7 +26,6 @@ class HideColumn extends React.Component {
 
   render() {
     const { classes, columnHide } = this.props;
-    console.log(columnHide)
 
     return (
       <Card elevation={0} className={classes.root}>

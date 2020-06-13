@@ -120,9 +120,6 @@ class Variant extends React.Component {
   };
 
   handleCheckChange = index => event => {
-    // console.log(index);
-    // console.log(event.target.checked);
-    // this.setState({ checkedB: event.target.checked });
 
     const newHeader = [...this.state.header];
     newHeader[index].default = event.target.checked;
@@ -215,7 +212,6 @@ class Variant extends React.Component {
         });
       })
       .catch(err => {
-        console.log(err);
       });
   }
 
@@ -251,7 +247,6 @@ class Variant extends React.Component {
       .post('/api/save_configuration/' + this.props.configureLink, formData, { withCredentials: true })
       .then(res => {
         let respond = res.data;
-        console.log(respond)
         // if (respond.success === true) {
         //   this.props.refreshData(this.props.patientName)
         //   this.handleClose()

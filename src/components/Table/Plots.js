@@ -135,9 +135,6 @@ class Plots extends React.Component {
   }
 
   CreateBoxplot = (xAxis, yAxis, rotate) => {
-    console.log("- - - - - - - - - - - - - -")
-    console.log("Create Boxplot")
-
     var flattenData = []
     if (xAxis.type === "object") {
       this.props.dataRows.forEach((item) => {
@@ -215,14 +212,10 @@ class Plots extends React.Component {
       })
     }
 
-    console.log(flattenData)
-
     const tmpMap = flattenData.reduce((tally, item) => {
       tally[item["keyX"] + "-" + item["keyY"]] = (tally[item[["keyX"]] + "-" + item["keyY"]] || 0) + 1;
       return tally;
     }, {});
-
-    console.log(tmpMap)
 
     var JoinCount = Object.keys(tmpMap).map((a) => {
       var obj = {

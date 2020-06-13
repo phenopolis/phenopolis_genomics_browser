@@ -55,7 +55,6 @@ class SearchBox extends React.Component {
     axios
       .get('/api/best_guess/' + guessText, { withCredentials: true })
       .then(res => {
-        console.log(res)
         this.setState({ redirect: true, guesslink: res.data.redirect });
       })
       .catch(err => {
@@ -89,7 +88,6 @@ class SearchBox extends React.Component {
     axios
       .get('/api/autocomplete/' + searchText, { withCredentials: true })
       .then(res => {
-        console.log(res.data)
         self.setState({ autoCompleteContent: res.data, searchLoaded: false })
       })
       .catch(err => {

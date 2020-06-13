@@ -32,8 +32,6 @@ class ReactVirtualizedTable extends React.Component {
         }
       )
     });
-    console.log(newHeader)
-    console.log(this.props.mycolumn)
     this.setState({ header: newHeader, filtered: this.props.data, variants: this.props.data, loaded: true })
   }
 
