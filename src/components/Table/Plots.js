@@ -62,20 +62,30 @@ class Plots extends React.Component {
     } else if (xAxis !== null & yAxis === null) {
       if (xAxis.type === 'number') {
         this.CreateHistogram(xAxis)
-      } else if (xAxis.type === 'string') {
+      } else if (xAxis.type === 'string' | xAxis.type === 'object') {
         this.CreateBarplot(xAxis)
       }
     } else if (xAxis === null & yAxis !== null) {
       if (yAxis.type === 'number') {
         this.CreateHistogram(yAxis)
-      } else if (yAxis.type === 'string') {
+      } else if (yAxis.type === 'string' | yAxis.type === 'object') {
         this.CreateBarplot(yAxis)
       }
     }
   }
 
   CreateBarplot = (Axis) => {
-    let tmpValue = this.props.dataRows.map(x => x[Axis.key]);
+
+    if (Axis.type === "string") {
+      var tmpValue = this.props.dataRows.map(x => x[Axis.key]);
+    } else {
+      if (typeof this.props.dataRows[0][Axis.key] === "object") {
+        var tmpValue = this.props.dataRows.map(x => x[Axis.key].map(y => y.display)).flat();
+      } else {
+        var tmpValue = this.props.dataRows.map(x => x[Axis.key].map(y => y)).flat();
+      }
+
+    }
 
     var _ = require('underscore')
     tmpValue = _.countBy(tmpValue);
@@ -163,8 +173,40 @@ class Plots extends React.Component {
 
   CreateStackBarPlot = (xAxis, yAxis) => {
 
-    const tmpMap = this.props.dataRows.reduce((tally, item) => {
-      tally[item[xAxis.key] + "-" + item[yAxis.key]] = (tally[item[[xAxis.key]] + "-" + item[yAxis.key]] || 0) + 1;
+    console.log("- - - - - - - - - - - - - - - - ")
+    console.log("Enter Stack Bar Plot Section")
+
+    var flattenData = []
+    if (xAxis.type === "object" & yAxis.type === "object") {
+      this.props.dataRows.forEach((item) => {
+        item[xAxis.key].forEach((chipX) => {
+          item[yAxis.key].forEach(chipY => {
+            flattenData.push({ keyX: chipX.display, keyY: chipY.display })
+          })
+        })
+      })
+    } else if (xAxis.type === "object" & yAxis.type === "string") {
+      this.props.dataRows.forEach((item) => {
+        item[xAxis.key].forEach((chip) => {
+          flattenData.push({ keyX: chip.display, keyY: item[yAxis.key] })
+        })
+      })
+    } else if (xAxis.type === "string" & yAxis.type === "object") {
+      this.props.dataRows.forEach((item) => {
+        item[yAxis.key].forEach((chip) => {
+          flattenData.push({ keyX: item[xAxis.key], keyY: chip.display })
+        })
+      })
+    } else {
+      flattenData = this.props.dataRows.map(item => {
+        return { keyX: item[xAxis.key], keyY: item[yAxis.key] }
+      })
+    }
+
+    console.log(flattenData)
+
+    const tmpMap = flattenData.reduce((tally, item) => {
+      tally[item["keyX"] + "-" + item["keyY"]] = (tally[item[["keyX"]] + "-" + item["keyY"]] || 0) + 1;
       return tally;
     }, {});
 
@@ -232,7 +274,7 @@ class Plots extends React.Component {
                 onChange={(event, newValue) => this.handleSelectYAxis(event, newValue)}
                 id="combo-box-demo"
                 size="small"
-                options={this.props.variableList.filter(x => (x.type === 'number' | x.type === 'string') & x.show)}
+                options={this.props.variableList.filter(x => (x.type === 'number' | x.type === 'string' | x.type === 'object') & x.show)}
                 getOptionLabel={(option) => option.type + '  -  ' + option.name}
                 renderInput={(params) => <TextField {...params} label="Select Y Axis" variant="outlined" />}
                 style={{ width: "100%" }}
@@ -245,7 +287,7 @@ class Plots extends React.Component {
                 onChange={(event, newValue) => this.handleSelectXAxis(event, newValue)}
                 id="combo-box-demo"
                 size="small"
-                options={this.props.variableList.filter(x => (x.type === 'number' | x.type === 'string') & x.show)}
+                options={this.props.variableList.filter(x => (x.type === 'number' | x.type === 'string' | x.type === 'object') & x.show)}
                 getOptionLabel={(option) => option.type + '  -  ' + option.name}
                 renderInput={(params) => <TextField {...params} label="Select X Axis" variant="outlined" />}
                 style={{ width: "100%" }}
