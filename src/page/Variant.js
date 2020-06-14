@@ -15,6 +15,9 @@ import VirtualGrid from '../components/Table/VirtualGrid'
 // import Variants from '../components/Gene/Variants';
 
 import compose from 'recompose/compose';
+import { connect } from 'react-redux';
+import { setSnack } from '../redux/actions'
+
 import { withTranslation, Trans } from 'react-i18next';
 import i18next from "i18next";
 
@@ -25,7 +28,8 @@ class Variant extends React.Component {
       variantInfo: {},
       loaded: false,
       value: 0,
-      redirect: false
+      redirect: false,
+      reLink: ""
     };
   }
 
@@ -54,15 +58,21 @@ class Variant extends React.Component {
       .then(res => {
         let respond = res.data;
         console.log(respond[0]);
-        self.setState({
-          variantInfo: respond[0],
-          loaded: true
-        });
+
+        if (respond[0] === undefined) {
+          this.setState({ redirect: true, reLink: "/search" });
+          this.props.setSnack("Variant not exist.", "warning")
+        } else {
+          self.setState({
+            variantInfo: respond[0],
+            loaded: true
+          });
+        }
       })
       .catch(err => {
         console.log(err);
-        if (err.response.data.error === 'Unauthenticated') {
-          this.setState({ redirect: true });
+        if (err.response.status === 401) {
+          this.setState({ redirect: true, reLink: '/login?link=' + window.location.pathname });
         }
       });
   }
@@ -86,7 +96,7 @@ class Variant extends React.Component {
     const { t } = this.props;
 
     if (this.state.redirect) {
-      return <Redirect to={'/login?link=' + window.location.pathname} />;
+      return <Redirect to={this.state.reLink} />;
     }
 
     if (this.state.loaded) {
@@ -174,4 +184,11 @@ const styles = theme => ({
   }
 });
 
-export default compose(withStyles(styles, { withTheme: true }), withTranslation())(Variant)
+export default compose(
+  withStyles(styles, { withTheme: true }),
+  withTranslation(),
+  connect(
+    null,
+    { setSnack }
+  )
+)(Variant)

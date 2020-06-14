@@ -40,7 +40,7 @@ class MyPatient extends React.Component {
       })
       .catch(err => {
         console.log(err);
-        if (err.response.data.error === 'Unauthenticated') {
+        if (err.response.status === 401) {
           this.setState({ redirect: true });
         }
       });

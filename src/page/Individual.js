@@ -2,6 +2,8 @@ import React from 'react';
 import axios from 'axios';
 import { Redirect } from 'react-router';
 import compose from 'recompose/compose';
+import { connect } from 'react-redux';
+import { setSnack } from '../redux/actions'
 
 import PropTypes from 'prop-types';
 import { withStyles } from '@material-ui/core/styles';
@@ -32,7 +34,8 @@ class Individual extends React.Component {
       loaded: false,
       value: 0,
       EditOpen: false,
-      redirect: false
+      redirect: false,
+      reLink: ""
     };
   }
 
@@ -68,8 +71,11 @@ class Individual extends React.Component {
       })
       .catch(err => {
         console.log(err);
-        if (err.response.data.error === 'Unauthenticated') {
-          this.setState({ redirect: true });
+        if (err.response.status === 401) {
+          this.setState({ redirect: true, reLink: '/login?link=' + window.location.pathname });
+        } else if (err.response.status === 404) {
+          this.setState({ redirect: true, reLink: "/search" });
+          this.props.setSnack("Patient not exist.", "warning")
         }
       });
   }
@@ -107,7 +113,7 @@ class Individual extends React.Component {
     const { t } = this.props;
 
     if (this.state.redirect) {
-      return <Redirect to={'/login?link=' + window.location.pathname} />;
+      return <Redirect to={this.state.reLink} />;
     }
 
     if (this.state.loaded) {
@@ -207,4 +213,11 @@ const styles = theme => ({
   }
 });
 
-export default compose(withStyles(styles, { withTheme: true }), withTranslation())(Individual)
+export default compose(
+  withStyles(styles, { withTheme: true }),
+  withTranslation(),
+  connect(
+    null,
+    { setSnack }
+  )
+)(Individual)

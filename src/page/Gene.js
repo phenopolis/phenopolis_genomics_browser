@@ -8,6 +8,10 @@ import { Redirect } from 'react-router';
 import Loading from '../components/General/Loading';
 
 import compose from 'recompose/compose';
+
+import { connect } from 'react-redux';
+import { setSnack } from '../redux/actions'
+
 import { withTranslation, Trans } from 'react-i18next';
 import i18next from "i18next";
 
@@ -21,7 +25,8 @@ class Gene extends React.Component {
       geneInfo: {},
       variants: [],
       loaded: false,
-      redirect: false
+      redirect: false,
+      reLink: ""
     };
   }
 
@@ -42,9 +47,12 @@ class Gene extends React.Component {
         });
       })
       .catch(err => {
-        console.log(err.response.data.error);
-        if (err.response.data.error === 'Unauthenticated') {
-          this.setState({ redirect: true });
+        console.log(err.response);
+        if (err.response.status === 401) {
+          this.setState({ redirect: true, reLink: '/login?link=' + window.location.pathname });
+        } else if (err.response.status === 404) {
+          this.setState({ redirect: true, reLink: "/search" });
+          this.props.setSnack("Gene not exist.", "warning")
         }
       });
   }
@@ -68,7 +76,7 @@ class Gene extends React.Component {
     const { t } = this.props;
 
     if (this.state.redirect) {
-      return <Redirect to={'/login?link=' + window.location.pathname} />;
+      return <Redirect to={this.state.reLink} />;
     }
 
     if (this.state.loaded) {
@@ -109,4 +117,10 @@ const styles = theme => ({
   }
 });
 
-export default compose(withStyles(styles), withTranslation())(Gene)
+export default compose(
+  withStyles(styles),
+  withTranslation(),
+  connect(
+    null,
+    { setSnack }
+  ))(Gene)
