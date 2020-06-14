@@ -42,6 +42,10 @@ class Gene extends React.Component {
         });
       })
       .catch(err => {
+        console.log(err.response.data.error);
+        if (err.response.data.error === 'Unauthenticated') {
+          this.setState({ redirect: true });
+        }
       });
   }
 

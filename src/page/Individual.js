@@ -68,9 +68,9 @@ class Individual extends React.Component {
       })
       .catch(err => {
         console.log(err);
-        // if (err.response.data.error === 'Unauthenticated') {
-        //   this.setState({ redirect: true });
-        // }
+        if (err.response.data.error === 'Unauthenticated') {
+          this.setState({ redirect: true });
+        }
       });
   }
 
