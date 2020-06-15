@@ -47,7 +47,7 @@ class Loading extends React.Component {
                 </Grid>
                 <Grid item xs={10} className="mt-5 mb-3">
                   <Typography component='div'>
-                    <Box fontSize='h5.fontSize' style={{ color: 'grey' }} m={2}>
+                    <Box fontSize='h5.fontSize' style={{ color: 'grey', fontWeight: '700' }} m={2}>
                       {this.props.message}
                     </Box>
                   </Typography>

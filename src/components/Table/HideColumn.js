@@ -78,7 +78,7 @@ class HideColumn extends React.Component {
             className="m-4"
             style={{ paddingTop: '1em', color: 'darkgrey' }}
           >
-            &nbsp;<b style={{ fontSize: 20, color: '#2E84CF' }}>S</b>  &nbsp;means this column is text;
+            &nbsp;<b style={{ fontSize: 20, color: '#2E84CF' }}>T</b>  &nbsp;means this column is text;
                 &nbsp;<b style={{ fontSize: 20, color: '#2E84CF' }}>9</b> &nbsp; means this column is numeric;&nbsp;
                 <Icon className='fas fa-ellipsis-h' style={{ fontSize: 20, color: '#2E84CF' }} />&nbsp; means this column contains a list;
                 &nbsp;<b style={{ fontSize: 20, color: '#2E84CF' }}>?</b>&nbsp; means this column's type is not any of above 3.

@@ -10,7 +10,7 @@ export default {
     "containLabel": true
   },
   "tooltip": {
-    "trigger": "axis",
+    "trigger": "item",
     "showDelay": 0,
     "axisPointer": {
       "show": true,
@@ -47,21 +47,12 @@ export default {
     }
   },
   "brush": {},
-  "legend": {
-    "data": [
-      "points"
-    ],
-    "type": "scroll",
-    "orient": "vertical",
-    "x": "right",
-    "y": "center",
-    "show": false
-  },
   "color": [
     "#2E84CF"
   ],
   "xAxis": [
     {
+      "name": '',
       "type": "value",
       "scale": true,
       "axisLabel": {
@@ -74,6 +65,7 @@ export default {
   ],
   "yAxis": [
     {
+      "name": '',
       "type": "value",
       "scale": true,
       "axisLabel": {
@@ -95,32 +87,7 @@ export default {
           "color": "transparent",
           "borderWidth": 1,
           "borderType": "dashed"
-        },
-        "data": [
-          [
-            {
-              "name": "",
-              "xAxis": "min",
-              "yAxis": "min"
-            },
-            {
-              "xAxis": "max",
-              "yAxis": "max"
-            }
-          ]
-        ]
-      },
-      "markPoint": {
-        "data": [
-          {
-            "type": "max",
-            "name": "Max"
-          },
-          {
-            "type": "min",
-            "name": "Min"
-          }
-        ]
+        }
       }
     }
   ]

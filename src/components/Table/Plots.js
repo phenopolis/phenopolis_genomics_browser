@@ -123,6 +123,7 @@ class Plots extends React.Component {
 
     const newScatterOption = JSON.parse(JSON.stringify(ScatterOption))
 
+    newScatterOption.series[0].name = yAxis.name
     newScatterOption.series[0].data = tmpData
     newScatterOption.title.text = 'Scatter Plot between ' + xAxis.name + ' and ' + yAxis.name
 

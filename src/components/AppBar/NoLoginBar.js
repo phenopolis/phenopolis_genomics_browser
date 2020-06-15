@@ -119,12 +119,19 @@ class NoLoginBar extends React.Component {
 
 					<Hidden smDown>
 						<div>
-							<BottomNavigationAction
+							{/* <BottomNavigationAction
 								className={classes.navigationbutton}
 								label={t('AppBar.NoLoginBar.Label_Explore')}
 								showLabel
 								icon={<Avatar src={require('../../assets/image/phenopolis_logo_white.png')} className={classes.avatar} />}
 								onClick={(event) => this.handleExploreClick(event)}
+							/> */}
+							<BottomNavigationAction
+								className={classes.navigationbutton}
+								label={t('AppBar.NoLoginBar.Label_Publication')}
+								showLabel
+								icon={<DescriptionIcon />}
+								component={Link} to='/publications'
 							/>
 							<BottomNavigationAction
 								className={classes.navigationbutton}
@@ -156,12 +163,6 @@ class NoLoginBar extends React.Component {
 							<DescriptionIcon />
 						</ListItemIcon>
 						<ListItemText classes={{ primary: classes.listItemText }} primary={t('AppBar.NoLoginBar.Label_Publication')} />
-					</MenuItem>
-					<MenuItem component={Link} to='/about' onClick={() => this.OpenExplore()}>
-						<ListItemIcon>
-							<SupervisedUserCircleIcon />
-						</ListItemIcon>
-						<ListItemText classes={{ primary: classes.listItemText }} primary={t('AppBar.NoLoginBar.Label_About')} />
 					</MenuItem>
 					<MenuItem component={Link} to='/product' onClick={() => this.OpenExplore()}>
 						<ListItemIcon>

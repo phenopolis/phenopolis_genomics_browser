@@ -79,13 +79,20 @@ class SideBar extends React.Component {
 						<ListItemText primary={t('AppBar.SideBar.Label_Patients')} classes={{ primary: classes.listItemText }} />
 					</ListItem>
 
-					<ListItem button onClick={this.handleExploreClick}>
+					<ListItem button component={Link} to='/publications'>
+						<ListItemIcon>
+							<DescriptionIcon />
+						</ListItemIcon>
+						<ListItemText primary={t('AppBar.SideBar.Label_Publication')} classes={{ primary: classes.listItemText }} />
+					</ListItem>
+
+					{/* <ListItem button onClick={this.handleExploreClick}>
 						<ListItemIcon>
 							<Avatar src={require('../../assets/image/phenopolis_logo_grey.png')} className={classes.avatar} />
 						</ListItemIcon>
 						<ListItemText primary={t('AppBar.SideBar.Label_Explore')} classes={{ primary: classes.listItemText }} />
 						{this.state.exploreOpen ? <ExpandLess /> : <ExpandMore />}
-					</ListItem>
+					</ListItem> */}
 
 					<Collapse in={this.state.exploreOpen} timeout="auto" unmountOnExit>
 						<List component="div" disablePadding>
@@ -95,13 +102,6 @@ class SideBar extends React.Component {
 									<DescriptionIcon />
 								</ListItemIcon>
 								<ListItemText primary={t('AppBar.SideBar.Label_Publication')} classes={{ primary: classes.listItemText }} />
-							</ListItem>
-
-							<ListItem button component={Link} to='/about' onClick={this.toggleDrawer} className={classes.nested}>
-								<ListItemIcon>
-									<SupervisedUserCircleIcon />
-								</ListItemIcon>
-								<ListItemText primary={t('AppBar.SideBar.Label_About')} classes={{ primary: classes.listItemText }} />
 							</ListItem>
 
 							<ListItem button component={Link} to='/product' onClick={this.toggleDrawer} className={classes.nested}>

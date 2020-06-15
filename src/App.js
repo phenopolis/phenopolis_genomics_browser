@@ -9,7 +9,6 @@ import HomeAppBar from './page/HomeAppBar';
 import Footer from './page/Footer';
 import Login from './page/Login';
 import Home from './page/Home';
-import About from './page/About';
 import Product from './page/Product';
 import Publication from './page/Publication';
 import Search from './page/Search';
@@ -53,7 +52,6 @@ function App() {
             <Route exact path='/' component={Home} />
             <Route path='/login' component={Login} />
             <Route path='/publications' component={Publication} />
-            <Route path='/about' component={About} />
             <Route path='/product' component={Product} />
             <Route path='/search' component={Search} />
             <Route path='/my_patients' component={MyPatient} />
