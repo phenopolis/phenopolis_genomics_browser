@@ -198,13 +198,35 @@ class VirtualTableFilter extends React.Component {
                         <td>
                           <div>
                             <Autocomplete
-                              freeSolo
                               value={item.column}
                               onChange={(event, newValue) => this.handleSelectColumn(event, newValue, index)}
                               id="combo-box-demo"
                               size="small"
                               options={this.props.variableList.filter(x => x.show)}
                               getOptionLabel={(option) => option.type + '  -  ' + option.name}
+                              renderOption={(option) => (
+                                <React.Fragment>
+                                  {
+                                    option.type === 'string' ?
+                                      <Avatar className={classes.smallAvatar} style={{ color: 'white', backgroundColor: '#26a69a' }}>
+                                        T
+                                        </Avatar>
+                                      : option.type === 'number' ?
+                                        <Avatar className={classes.smallAvatar} style={{ color: 'white', backgroundColor: '#ef5350' }}>
+                                          9
+                                          </Avatar>
+                                        : option.type === 'object' ?
+                                          <Avatar className={classes.smallAvatar} style={{ color: 'white', backgroundColor: '#42a5f5' }}>
+                                            <Icon className={clsx(classes.smallFilter, 'fas fa-ellipsis-h')} />
+                                          </Avatar>
+                                          :
+                                          <Avatar className={classes.smallAvatar} style={{ color: 'white', backgroundColor: 'black' }}>
+                                            ?
+                                            </Avatar>
+                                  }
+                                  <span>{option.name}</span>
+                                </React.Fragment>
+                              )}
                               renderInput={(params) => <TextField {...params} label="Select Column" variant="outlined" />}
                               // style={{ width: 300 }}
                               className={classes.valueInput}
@@ -534,7 +556,18 @@ const styles = theme => ({
   },
   valueInput: {
     width: '300'
-  }
+  },
+  smallAvatar: {
+    fontSize: 12,
+    margin: theme.spacing(0),
+    width: theme.spacing(3),
+    height: theme.spacing(3),
+    marginRight: theme.spacing(1)
+  },
+  smallFilter: {
+    fontSize: 12,
+    margin: theme.spacing(0),
+  },
 });
 
 export default compose(withStyles(styles))(VirtualTableFilter)

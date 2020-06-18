@@ -7,7 +7,8 @@ import { prepareBoxplotData } from 'echarts/extension/dataTool';
 import ecStat from 'echarts-stat'
 import ReactEcharts from 'echarts-for-react';
 
-import { Card, CardContent, Grid, TextField, CardActions, Paper } from '@material-ui/core';
+import { Card, CardContent, Grid, TextField, Avatar, Icon } from '@material-ui/core';
+import clsx from 'clsx';
 import Autocomplete from '@material-ui/lab/Autocomplete';
 
 import BoxplotOption from '../../assets/echartJS/BoxplotOption'
@@ -275,25 +276,69 @@ class Plots extends React.Component {
           <Grid container justify="center" spacing={5} style={{ marginBottom: "2em" }}>
             <Grid item xs={2}>
               <Autocomplete
-                freeSolo
                 value={this.state.yAxis}
                 onChange={(event, newValue) => this.handleSelectYAxis(event, newValue)}
                 id="combo-box-demo"
                 size="small"
                 options={this.props.variableList.filter(x => (x.type === 'number' | x.type === 'string' | x.type === 'object') & x.show)}
                 getOptionLabel={(option) => option.type + '  -  ' + option.name}
+                renderOption={(option) => (
+                  <React.Fragment>
+                    {
+                      option.type === 'string' ?
+                        <Avatar className={classes.smallAvatar} style={{ color: 'white', backgroundColor: '#26a69a' }}>
+                          T
+                          </Avatar>
+                        : option.type === 'number' ?
+                          <Avatar className={classes.smallAvatar} style={{ color: 'white', backgroundColor: '#ef5350' }}>
+                            9
+                            </Avatar>
+                          : option.type === 'object' ?
+                            <Avatar className={classes.smallAvatar} style={{ color: 'white', backgroundColor: '#42a5f5' }}>
+                              <Icon className={clsx(classes.smallFilter, 'fas fa-ellipsis-h')} />
+                            </Avatar>
+                            :
+                            <Avatar className={classes.smallAvatar} style={{ color: 'white', backgroundColor: 'black' }}>
+                              ?
+                              </Avatar>
+                    }
+                    <span>{option.name}</span>
+                  </React.Fragment>
+                )}
                 renderInput={(params) => <TextField {...params} label="Select Y Axis" variant="outlined" />}
                 style={{ width: "100%" }}
               />
             </Grid>
             <Grid item xs={2}>
               <Autocomplete
-                freeSolo
                 value={this.state.xAxis}
                 onChange={(event, newValue) => this.handleSelectXAxis(event, newValue)}
                 id="combo-box-demo"
                 size="small"
                 options={this.props.variableList.filter(x => (x.type === 'number' | x.type === 'string' | x.type === 'object') & x.show)}
+                renderOption={(option) => (
+                  <React.Fragment>
+                    {
+                      option.type === 'string' ?
+                        <Avatar className={classes.smallAvatar} style={{ color: 'white', backgroundColor: '#26a69a' }}>
+                          T
+                          </Avatar>
+                        : option.type === 'number' ?
+                          <Avatar className={classes.smallAvatar} style={{ color: 'white', backgroundColor: '#ef5350' }}>
+                            9
+                            </Avatar>
+                          : option.type === 'object' ?
+                            <Avatar className={classes.smallAvatar} style={{ color: 'white', backgroundColor: '#42a5f5' }}>
+                              <Icon className={clsx(classes.smallFilter, 'fas fa-ellipsis-h')} />
+                            </Avatar>
+                            :
+                            <Avatar className={classes.smallAvatar} style={{ color: 'white', backgroundColor: 'black' }}>
+                              ?
+                              </Avatar>
+                    }
+                    <span>{option.name}</span>
+                  </React.Fragment>
+                )}
                 getOptionLabel={(option) => option.type + '  -  ' + option.name}
                 renderInput={(params) => <TextField {...params} label="Select X Axis" variant="outlined" />}
                 style={{ width: "100%" }}
@@ -359,7 +404,18 @@ const styles = theme => ({
     // '-o-transform': 'rotate(270deg)',
     // '-ms-transform': 'rotate(270deg)',
     // 'transform': 'rotate(270deg)',
-  }
+  },
+  smallAvatar: {
+    fontSize: 12,
+    margin: theme.spacing(0),
+    width: theme.spacing(3),
+    height: theme.spacing(3),
+    marginRight: theme.spacing(1)
+  },
+  smallFilter: {
+    fontSize: 12,
+    margin: theme.spacing(0),
+  },
 });
 
 export default compose(withStyles(styles))(Plots)

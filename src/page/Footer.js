@@ -42,7 +42,7 @@ export default function StickyFooter() {
       {location.pathname === "/" ? (
         <Container component="main" className={classes.main} maxWidth="xl" >
           <Grid container direction='row' justify='center' alignItems='center'>
-            <Grid item xs={12} md={6}>
+            <Grid item xs={12} md={8}>
               <Typography component='div'>
                 <Box fontWeight='fontWeightBold' fontSize='h5.fontSize' m={1}>
                   {t("Footer.About_Us")}
@@ -52,7 +52,8 @@ export default function StickyFooter() {
                 </Box>
               </Typography>
             </Grid>
-            <Grid item xs={6} md={2}>
+
+            <Grid item xs={6} md={2} >
               <Typography component='div'>
                 <Box fontWeight='fontWeightBold' fontSize='h5.fontSize' m={1}>
                   {i18next.t("Footer.Useful_Links")}
@@ -66,9 +67,13 @@ export default function StickyFooter() {
                 <Box fontWeight='fontWeightRegular' fontSize='body2.fontSize' m={1}>
                   <a href="mailto:info@phenopolis.org" className={classes.a}> {i18next.t("Contact")} </a>
                 </Box>
+                <Box fontWeight='fontWeightRegular' fontSize='body2.fontSize' m={1}>
+                  &nbsp;
+                </Box>
               </Typography>
             </Grid>
-            <Grid item xs={6} md={2}>
+            {/* <Grid item xs={6} md={2}></Grid> */}
+            {/* <Grid item xs={6} md={2}>
               <Typography component='div'>
                 <Box fontWeight='fontWeightBold' fontSize='h5.fontSize' m={1}>
                   {i18next.t("Footer.External_Links")}
@@ -86,7 +91,7 @@ export default function StickyFooter() {
                   <a href="https://decipher.sanger.ac.uk/" className={classes.a}>DECIPHER</a>
                 </Box>
               </Typography>
-            </Grid>
+            </Grid> */}
           </Grid>
         </Container>
       ) : (null)}

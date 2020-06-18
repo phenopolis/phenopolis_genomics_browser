@@ -47,24 +47,25 @@ class HideColumn extends React.Component {
                   <Chip
                     key={index}
                     variant="outlined"
-                    color={item.show ? 'primary' : 'default'}
-                    deleteIcon={<Icon className={clsx(classes.smallFilter, 'far fa-trash-alt')} />}
+                    color='default'
+                    // color={item.show ? 'black' : 'default'}
+                    // deleteIcon={<Icon className={clsx(classes.smallFilter, 'far fa-trash-alt')} />}
                     onClick={() => this.handleClick(index)}
                     label={item.name}
-                    avatar={<Avatar>
-                      {
-                        item.type === 'string' ?
-                          "T"
-                          : item.type === 'number' ?
-                            "9"
-                            : item.type === 'object' ?
+                    avatar={
+                      item.type === 'string' ?
+                        <Avatar style={{ backgroundColor: "#26a69a", color: 'white' }}>T</Avatar>
+                        : item.type === 'number' ?
+                          <Avatar style={{ backgroundColor: "#ef5350", color: 'white' }}>9</Avatar>
+                          : item.type === 'object' ?
+                            <Avatar style={{ backgroundColor: "#42a5f5", color: 'white' }}>
                               <Icon className={clsx(classes.smallFilter, 'fas fa-ellipsis-h')} />
-                              :
-                              "?"
-                      }
-                    </Avatar>}
+                            </Avatar>
+                            :
+                            <Avatar style={{ backgroundColor: "black", color: 'white' }}>?</Avatar>
+                    }
                     className={classes.chip}
-                    style={item.show ? null : { color: 'darkgrey' }}
+                    style={item.show ? { color: 'white', fontWeight: "900", backgroundColor: "#9e9e9e" } : { color: 'darkgrey' }}
                   />
                 </Tooltip>
               )
@@ -78,10 +79,12 @@ class HideColumn extends React.Component {
             className="m-4"
             style={{ paddingTop: '1em', color: 'darkgrey' }}
           >
-            &nbsp;<b style={{ fontSize: 20, color: '#2E84CF' }}>T</b>  &nbsp;means this column is text;
-                &nbsp;<b style={{ fontSize: 20, color: '#2E84CF' }}>9</b> &nbsp; means this column is numeric;&nbsp;
-                <Icon className='fas fa-ellipsis-h' style={{ fontSize: 20, color: '#2E84CF' }} />&nbsp; means this column contains a list;
-                &nbsp;<b style={{ fontSize: 20, color: '#2E84CF' }}>?</b>&nbsp; means this column's type is not any of above 3.
+            <Avatar className={classes.smallAvatar} style={{ backgroundColor: "#26a69a", color: 'white' }}>T</Avatar> means this column is text;
+              <Avatar className={classes.smallAvatar} style={{ backgroundColor: "#ef5350", color: 'white' }}>9</Avatar>means this column is numeric;
+              <Avatar className={classes.smallAvatar} style={{ backgroundColor: "#42a5f5", color: 'white' }}>
+              <Icon className={clsx(classes.smallFilter, 'fas fa-ellipsis-h')} />
+            </Avatar>means this column contains a list;
+            <Avatar className={classes.smallAvatar} style={{ backgroundColor: "black", color: 'white' }}>?</Avatar>means this column's type is not any of above 3.
           </Grid>
         </CardContent>
       </Card >
@@ -105,6 +108,13 @@ const styles = theme => ({
     // '&:hover': {
     //   textShadow: '-0.06ex 0 white, 0.06ex 0 white'
     // }
+  },
+  smallAvatar: {
+    fontSize: 12,
+    margin: theme.spacing(0),
+    width: theme.spacing(3),
+    height: theme.spacing(3),
+    margin: theme.spacing(1)
   },
   smallFilter: {
     fontSize: 12,
