@@ -67,3 +67,6 @@ target/
 # .elasticbeanstalk/*
 # !.elasticbeanstalk/*.cfg.yml
 # !.elasticbeanstalk/*.global.yml
+
+# pycharm local folders
+.idea

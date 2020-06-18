@@ -8,5 +8,5 @@ passlib[argon2]
 psycopg2-binary
 boto3
 requests
-pysam==0.9
+pysam==0.16.0.1
 sqlalchemy

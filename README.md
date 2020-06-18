@@ -11,15 +11,46 @@ Endpoints are called by [phenopolis_frontend](https://github.com/phenopolis/phen
 
 ##  How to start the API srver
 
-
-First create the postgres`phenopolis_db_demo` db owned by the `demo` user with password `demo123`:
+Create the `demo` user with password `demo123` in postgres:
+```
+# impersonate the postgres user
+$ sudo -i -u postgres
+# create the demo user in the database
+postgres $ createuser --interactive --password
+Enter name of role to add: demo
+Shall the new role be a superuser? (y/n) y
+Password: *****
 ```
 
+Create the postgres`phenopolis_db_demo` db owned by the `demo`:
+```
+# create the demo user in the system
+$ sudo adduser demo
+# impersonate the demo user
+$ sudo -i -u demo
+# create the database
+demo $ createdb phenopolis_db_demo
+```
+
+Make sure that the authentication for postgres users is set to md5 in file `/etc/postgresql/10/main/pg_hba.conf`.
+
+This line:
+```
+local   all             all                                     peer
+```
+is changed to:
+```
+local   all             all                                     md5
 ```
 
 Then load data into postgres db:
 ```
-psql -U demo -W phenopolis_db_demo < demo/phenopolis_db_demo.sql
+psql -U demo -W phenopolis_db_demo < db/phenopolis_db_demo.sql
+```
+
+Install the Python requirements:
+```
+pip install -r requirements.txt
 ```
 
 Then source the `demo_env.sh` file to set the env variables:
