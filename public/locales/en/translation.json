@@ -91,9 +91,9 @@
     }
   },
   "Login": {
-    "redirectionLink": "Oops, seems you don't have access to <1> {{ mylink}}  </1> yet, try login?",
-    "redirectionLink_plural": "Oops, seems you don't have access to <1> {{ mylink}}  </1> yet, try login?",
-    "login": "You have logge in.",
+    "redirectionLink": "Sorry, seems you don't have access to <1> {{ mylink}}  </1> yet, try login?",
+    "redirectionLink_plural": "Sorry, seems you don't have access to <1> {{ mylink}}  </1> yet, try login?",
+    "login": "You are logged in.",
     "login_subtitle": "If you want to log out, click Account Icon on the top right of the page."
   },
   "Footer": {
