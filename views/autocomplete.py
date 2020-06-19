@@ -52,14 +52,14 @@ def autocomplete(query, query_type=''):
    #headers=[h[0] for h in c.description]
    #variant_hits=[dict(zip(headers,r)) for r in c.fetchall()]
    #variant_results = ['variant:'+x['variant_id'] for x in variant_hits]
-   results = patient_results+gene_results+hpo_results
+   results = list(set(patient_results+gene_results+hpo_results))
    suggestions = list(itertools.islice(results, 0, 20))
    return Response(json.dumps(suggestions),  mimetype='application/json')
 
-@application.route('/best_guess')
+@application.route('/best_guess/<query>')
 @requires_auth
-def best_guess():
-     query = str(request.args.get('query'))
+def best_guess(query=''):
+     print(query)
      if query.startswith('gene:'): return jsonify(redirect='/gene/{}'.format(query.replace('gene:','')))
      elif query.startswith('patient:') or query.startswith('PH'): return jsonify(redirect='/individual/{}'.format(query.replace('patient:','')))
      elif query.startswith('phenotype:'): return jsonify(redirect='/hpo/{}'.format(query.replace('phenotype:','')))

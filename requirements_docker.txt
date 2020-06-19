@@ -1,4 +1,4 @@
-werkzeug==0.16.0
+werkzeug
 flask
 flask_compress
 flask_caching
@@ -9,5 +9,4 @@ passlib[argon2]
 psycopg2-binary
 boto3
 requests
-pysam==0.9
 sqlalchemy
