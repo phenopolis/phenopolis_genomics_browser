@@ -8,7 +8,7 @@ class Home extends React.Component {
     return (
       <React.Fragment>
         <CssBaseline />
-        <HomeBanner BannerText='Phenopolis Dev Version' />
+        <HomeBanner BannerText='Phenopolis' />
         <HomeMainPart />
       </React.Fragment>
     );
