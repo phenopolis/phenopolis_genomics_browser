@@ -1,7 +1,7 @@
 branch-defaults:
-  master:
+  prod-live:
     environment: Phenopolisapi-env
-  dev:
+  dev-live:
     environment: Phenopolisapi-dev-env
 environment-defaults:
   Phenopolisapi-env:
