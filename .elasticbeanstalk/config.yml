@@ -1,17 +1,17 @@
 branch-defaults:
   prod-live:
-    environment: Phenopolisapi-env
+    environment: Phenopolis-api-production-env
   dev-live:
     environment: Phenopolisapi-dev-env
 environment-defaults:
-  Phenopolisapi-env:
+  Phenopolis-api-production-env:
     branch: null
     repository: null
 global:
   application_name: phenopolis
   default_ec2_keyname: phenogenon
-  default_platform: arn:aws:elasticbeanstalk:eu-west-2::platform/Python 3.6 running
-    on 64bit Amazon Linux/2.9.2
+  default_platform: arn:aws:elasticbeanstalk:eu-west-2::platform/Python 3.7 running
+    on 64bit Amazon Linux 2/3.0.2
   default_region: eu-west-2
   include_git_submodules: true
   instance_profile: null
