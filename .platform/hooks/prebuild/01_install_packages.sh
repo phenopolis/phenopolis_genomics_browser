@@ -7,3 +7,4 @@ amazon-linux-extras enable postgresql11
 yum install -y postgresql
 
 "${PYTHONPATH}/pip3" install cython
+"${PYTHONPATH}/pip3" install pysam==0.16.0.1
