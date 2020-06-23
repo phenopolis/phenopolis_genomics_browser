@@ -6,4 +6,4 @@ amazon-linux-extras enable postgresql11
 
 yum install -y postgresql
 
-/opt/python/run/venv/bin/pip3 install cython
+"${PYTHONPATH}/pip3" install cython
