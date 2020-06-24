@@ -23,7 +23,7 @@ yarn-debug.log*
 yarn-error.log*
 _redirects
 yarn.lock
-
+.idea/
 # Local Netlify folder
 .netlify
 # env file containing the env variables
