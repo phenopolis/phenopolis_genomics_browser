@@ -23,7 +23,7 @@ const variantIcon = {
   info: InfoIcon,
 };
 
-const useStyles1 = makeStyles(theme => ({
+const useStyles1 = makeStyles((theme) => ({
   success: {
     backgroundColor: green[600],
   },
@@ -87,15 +87,14 @@ class CustomizedSnackbars extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      open: false
+      open: false,
     };
   }
 
   handleClose = () => {
-    this.props.setMessage("");
-  }
+    this.props.setMessage('');
+  };
   render() {
-
     return (
       <Snackbar
         anchorOrigin={{
@@ -104,8 +103,7 @@ class CustomizedSnackbars extends React.Component {
         }}
         open={this.props.reduxSnackMessage !== ''}
         autoHideDuration={6000}
-        onClose={this.handleClose}
-      >
+        onClose={this.handleClose}>
         <MySnackbarContentWrapper
           onClose={this.handleClose}
           variant={this.props.reduxSnackVariant}
@@ -138,17 +136,24 @@ class CustomizedSnackbars extends React.Component {
 
 CustomizedSnackbars.propTypes = {
   classes: PropTypes.object.isRequired,
-  width: PropTypes.oneOf(['lg', 'md', 'sm', 'xl', 'xs']).isRequired
+  width: PropTypes.oneOf(['lg', 'md', 'sm', 'xl', 'xs']).isRequired,
 };
 
 const styles = (theme) => ({
   margin: {
     margin: theme.spacing(1),
-  }
-})
+  },
+});
 
-const mapStateToProps = (state) => ({ reduxSnackMessage: getSnackMessage(state), reduxSnackVariant: getSnackVariant(state) });
-export default compose(connect(null, { setMessage }), withStyles(styles), withWidth(), connect(mapStateToProps, {}))(CustomizedSnackbars);
-
+const mapStateToProps = (state) => ({
+  reduxSnackMessage: getSnackMessage(state),
+  reduxSnackVariant: getSnackVariant(state),
+});
+export default compose(
+  connect(null, { setMessage }),
+  withStyles(styles),
+  withWidth(),
+  connect(mapStateToProps, {})
+)(CustomizedSnackbars);
 
 // **************************************************************

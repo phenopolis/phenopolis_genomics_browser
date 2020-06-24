@@ -25,7 +25,7 @@
       "Label_User_Name": "Benutzername",
       "Label_Password": "Passwort",
       "Button": "Registrieren",
-      "Hint": "Klicken Sie auf <1> Als Demo-Nutzer anmelden <\/1>, um es zu auszuprobieren",
+      "Hint": "Klicken Sie auf <1> Als Demo-Nutzer anmelden </1>, um es zu auszuprobieren",
       "Login_Success": "Anmelden erfolgreich!",
       "Login_Failed": "Anmelden fehlgeschlagen!"
     },
@@ -72,7 +72,7 @@
     "Publications": "Veröffentlichungen",
     "Contact": "Kontakt",
     "External_Links": "Externe Links",
-    "Citation": "Wenn Sie Phenopolis benutzen, zitieren Sie uns bitte als: <1>Pontikos, N. et al. (2017) \nPhenopolis: eine offene Plattform zur Harmonisierung und Analyse von genetischen\n und phänotypischen Daten. Bioinformatik, 9, 7<\/1>\n"
+    "Citation": "Wenn Sie Phenopolis benutzen, zitieren Sie uns bitte als: <1>Pontikos, N. et al. (2017) \nPhenopolis: eine offene Plattform zur Harmonisierung und Analyse von genetischen\n und phänotypischen Daten. Bioinformatik, 9, 7</1>\n"
   },
   "Gene": {
     "entry": "de",
@@ -91,7 +91,7 @@
     "HomeMainPart": {
       "contact": {
         "title": "Kontakt",
-        "description": "Für Rückmeldungen bzw. etwaige Fehlermeldungen,\n können Sie uns gerne <1>hier<\/1> kontaktieren."
+        "description": "Für Rückmeldungen bzw. etwaige Fehlermeldungen,\n können Sie uns gerne <1>hier</1> kontaktieren."
       },
       "statistic": {
         "title": "Phenopolis-Statistiken",
@@ -127,8 +127,8 @@
     "Literature_Genes_subtitle": "Unten befindet sich eine Liste der in der wissenschaftlichen Literatur\nerwähnten Gene aus der OMIM-Datenbank, \nwelche mit diesem Phänotyp verbunden sind.",
     "Phenogenon_subtitle": "Unten befindet eine Liste der wichtigen Phenogenon-Gene.",
     "SKAT_subtitle": "Unten befindet sich eine Liste von Genen und ihren Varianten aus dem\nSequence Kernel Association Test (SKAT).",
-    "RECESSIVE_subtitle": "<0>Genotyp<\/0> : Mit mindestens zwei Varianten pro Gen, \nderen ExAC-Homozygotie-Ergebnis nicht höher als <2>2<\/2> ist\n und deren CADD-phred-Ergebnis nicht niedriger als <4>15<\/4> ist.",
-    "DOMINANT_subtitle": "<0>Genotyp<\/0> : Mit mindestens einer Variante pro Gen, \nderen ExAC-Heterozygotie-Ergebnis nicht höher als <2>0.0001<\/2> ist, \nund deren CADD-phred-Ergebnis nicht niedriger als <4>15<\/4> ist.",
+    "RECESSIVE_subtitle": "<0>Genotyp</0> : Mit mindestens zwei Varianten pro Gen, \nderen ExAC-Homozygotie-Ergebnis nicht höher als <2>2</2> ist\n und deren CADD-phred-Ergebnis nicht niedriger als <4>15</4> ist.",
+    "DOMINANT_subtitle": "<0>Genotyp</0> : Mit mindestens einer Variante pro Gen, \nderen ExAC-Heterozygotie-Ergebnis nicht höher als <2>0.0001</2> ist, \nund deren CADD-phred-Ergebnis nicht niedriger als <4>15</4> ist.",
     "message": "HPO-Information wird vom Server heruntergeladen..."
   },
   "Individual": {
@@ -146,8 +146,8 @@
     "edit_message": "Bearbeitung von Patient-Information erfolgt, wird erneut hochgeladen..."
   },
   "Login": {
-    "redirectionLink": "Entschuldigung, Sie haben anscheinend noch keinen Zugang zu <1> {{ mylink}} <\/1>, \nAnmelden versuchen?",
-    "redirectionLink_plural": "Entschuldigung, Sie haben anscheinend noch keinen Zugang zu <1> {{ mylink}} <\/1>,\n Anmelden versuchen?",
+    "redirectionLink": "Entschuldigung, Sie haben anscheinend noch keinen Zugang zu <1> {{ mylink}} </1>, \nAnmelden versuchen?",
+    "redirectionLink_plural": "Entschuldigung, Sie haben anscheinend noch keinen Zugang zu <1> {{ mylink}} </1>,\n Anmelden versuchen?",
     "login": "Sie haben sich angemeldet.",
     "login_subtitle": "Wenn Sie sich abmelden wollen, klicken Sie auf das Konto-Symbol in\n der oberen rechten Ecke."
   },
@@ -161,7 +161,7 @@
     "Title": "Einkaufs-Analysen-Service",
     "Exome_Analysis_Title": "Exom-Analyse",
     "Exome_Analysis_Content": "Wir helfen Ihnen dabei, ganze Exom-Analysen durchzuführen und\n bauen sie für Sie und Ihre Mannschaft in Phenopolis ein. Unser Service beinhaltet:",
-    "Exome_Analysis_Description": "<0>Genotypisierung.<\/0> <1> Aufnahme von und Suche nach Ihren phänotypischen\n und genetischen Daten.<\/1> <2> Variantenpriorisierung, anhand eines Phänotyps.\n<\/2> <3> Kostenlose Aufbewahrung Ihrer Daten für mindestens 3 Jahre. <\/3>",
+    "Exome_Analysis_Description": "<0>Genotypisierung.</0> <1> Aufnahme von und Suche nach Ihren phänotypischen\n und genetischen Daten.</1> <2> Variantenpriorisierung, anhand eines Phänotyps.\n</2> <3> Kostenlose Aufbewahrung Ihrer Daten für mindestens 3 Jahre. </3>",
     "Exome_Analysis_Close": "Kontaktieren Sie uns für mehr Informationen.",
     "Exome_Price_Title": "Exom-Analyse",
     "Exome_Price_Subtitle": "Most popular service",

@@ -25,7 +25,7 @@
       "Label_User_Name": "ユーザー名",
       "Label_Password": "パスワード",
       "Button": "サインイン",
-      "Hint": "<1>デモ版にログイン<\/1>をクリックしてお試しください！",
+      "Hint": "<1>デモ版にログイン</1>をクリックしてお試しください！",
       "Login_Success": "ログイン完了！",
       "Login_Failed": "ログインに失敗しました。"
     },
@@ -72,7 +72,7 @@
     "Publications": "文献",
     "Contact": "お問い合わせ\n",
     "External_Links": "外部リンク",
-    "Citation": "文献等でPhenopolisを引用する際には以下の表記を使用してください：<1>Pontikos, N. et al. (2017). Phenopolis: an open platform for harmonization and analysis of genetic and phenotypic data. Bioinformatics, 9, 7<\/1>"
+    "Citation": "文献等でPhenopolisを引用する際には以下の表記を使用してください：<1>Pontikos, N. et al. (2017). Phenopolis: an open platform for harmonization and analysis of genetic and phenotypic data. Bioinformatics, 9, 7</1>"
   },
   "Gene": {
     "entry": "ja\n",
@@ -91,7 +91,7 @@
     "HomeMainPart": {
       "contact": {
         "title": "お問い合わせ\n",
-        "description": "ご意見、ご感想、問題の報告は、<1>こちら<\/1>までお気軽にご連絡ください。\n"
+        "description": "ご意見、ご感想、問題の報告は、<1>こちら</1>までお気軽にご連絡ください。\n"
       },
       "statistic": {
         "title": "Phenopolisの統計データ",
@@ -127,8 +127,8 @@
     "Literature_Genes_subtitle": "この表現型に関係し、OMIMの文献で報告されている遺伝子のリストです。\n",
     "Phenogenon_subtitle": "Phenogenonから得られた顕著な遺伝子のリストです。",
     "SKAT_subtitle": "Sequence Kernel Association Test（SKAT）から得られた遺伝子およびそのバリアントのリストです。",
-    "RECESSIVE_subtitle": "<0>遺伝子型<\/0>：\nExACのホモ接合カウントが<2>2<\/2>またはそれ以下で、CADD Phredスコアが<4>15<\/4>またはそれ以上である遺伝子に少なくとも2つのバリアントあるケースを指します。",
-    "DOMINANT_subtitle": "<0>遺伝子型<\/0>：\nExACのホモ接合カウントが<2>0.0001<\/2>またはそれ以下で、CADD Phredスコアが<4>15<\/4>またはそれ以上である遺伝子に少なくとも1つのバリアントがあるケースを指します。",
+    "RECESSIVE_subtitle": "<0>遺伝子型</0>：\nExACのホモ接合カウントが<2>2</2>またはそれ以下で、CADD Phredスコアが<4>15</4>またはそれ以上である遺伝子に少なくとも2つのバリアントあるケースを指します。",
+    "DOMINANT_subtitle": "<0>遺伝子型</0>：\nExACのホモ接合カウントが<2>0.0001</2>またはそれ以下で、CADD Phredスコアが<4>15</4>またはそれ以上である遺伝子に少なくとも1つのバリアントがあるケースを指します。",
     "message": "HPO情報をサーバーからロード中...\n"
   },
   "Individual": {
@@ -146,8 +146,8 @@
     "edit_message": "患者情報の編集が完了しました。再ロード中..."
   },
   "Login": {
-    "redirectionLink": "<1> {{ mylink}} <\/1>にアクセスすることができません。もう一度ログインを試しますか？",
-    "redirectionLink_plural": "<1> {{ mylink}} <\/1>にアクセスすることができません。もう一度ログインを試しますか？",
+    "redirectionLink": "<1> {{ mylink}} </1>にアクセスすることができません。もう一度ログインを試しますか？",
+    "redirectionLink_plural": "<1> {{ mylink}} </1>にアクセスすることができません。もう一度ログインを試しますか？",
     "login": "ログインが完了しました。\n",
     "login_subtitle": "ログアウトする場合は、このページの右上に表示されているアカウントマークをクリックしてください。\n"
   },
@@ -161,7 +161,7 @@
     "Title": "解析サービスを購入",
     "Exome_Analysis_Title": "エクソーム解析",
     "Exome_Analysis_Content": "全エクソーム解析をお手伝いし、そのデータをPhenopolisに取り込むサービスです。含まれる内容：",
-    "Exome_Analysis_Description": "<0>ジェノタイピング<\/0> <1>表現型および遺伝子データの取り込みおよび検索<\/1> <2>表現型に基づいたバリアントの優先順位化<\/2> <3>無料でデータをホスティング（少なくとも3年間） <\/3>",
+    "Exome_Analysis_Description": "<0>ジェノタイピング</0> <1>表現型および遺伝子データの取り込みおよび検索</1> <2>表現型に基づいたバリアントの優先順位化</2> <3>無料でデータをホスティング（少なくとも3年間） </3>",
     "Exome_Analysis_Close": "詳細はお問い合わせください。",
     "Exome_Price_Title": "エクソーム解析",
     "Exome_Price_Subtitle": "人気ナンバー1",

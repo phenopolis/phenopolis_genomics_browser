@@ -18,8 +18,8 @@ import CustomizedSnackbars from './page/CustomizedSnackbars';
 import Gene from './page/Gene';
 import HPO from './page/HPO';
 import Individual from './page/Individual';
-import Variant from './page/Variant'
-import MyPatient from './page/MyPatient'
+import Variant from './page/Variant';
+import MyPatient from './page/MyPatient';
 
 import { BrowserRouter as Router, Route } from 'react-router-dom';
 import { CookiesProvider } from 'react-cookie';
@@ -32,15 +32,14 @@ const outerTheme = createMuiTheme({
       main: blue[500],
     },
     secondary: {
-      main: red[500]
-    }
+      main: red[500],
+    },
   },
 });
 
 function App() {
   return (
     <CookiesProvider>
-
       <Suspense fallback={<Loading message={'Loading Phenopolis...'} />}>
         <Router>
           <AuthCheck />
@@ -49,25 +48,23 @@ function App() {
           <ThemeProvider theme={outerTheme}>
             <HomeAppBar />
 
-            <Route exact path='/' component={Home} />
-            <Route path='/login' component={Login} />
-            <Route path='/publications' component={Publication} />
-            <Route path='/product' component={Product} />
-            <Route path='/search' component={Search} />
-            <Route path='/my_patients' component={MyPatient} />
-            <Route path='/gene/:geneId' component={Gene} />
-            <Route path='/hpo/:hpoId' component={HPO} />
-            <Route path='/individual/:individualId' component={Individual} />
-            <Route path='/variant/:variantId' component={Variant} />
+            <Route exact path="/" component={Home} />
+            <Route path="/login" component={Login} />
+            <Route path="/publications" component={Publication} />
+            <Route path="/product" component={Product} />
+            <Route path="/search" component={Search} />
+            <Route path="/my_patients" component={MyPatient} />
+            <Route path="/gene/:geneId" component={Gene} />
+            <Route path="/hpo/:hpoId" component={HPO} />
+            <Route path="/individual/:individualId" component={Individual} />
+            <Route path="/variant/:variantId" component={Variant} />
 
             <Footer />
           </ThemeProvider>
-
         </Router>
       </Suspense>
-
     </CookiesProvider>
   );
 }
 
-export default App
+export default App;

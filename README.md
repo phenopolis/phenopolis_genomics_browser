@@ -39,6 +39,7 @@ netlify login
 ```bash
 netlify link
 ```
+
 This will display:
 
 ```bash

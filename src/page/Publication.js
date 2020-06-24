@@ -19,4 +19,4 @@ class Publication extends React.Component {
   }
 }
 
-export default withTranslation()(Publication)
+export default withTranslation()(Publication);

@@ -5,7 +5,20 @@ import clsx from 'clsx';
 import { loadCSS } from 'fg-loadcss';
 
 import { withStyles } from '@material-ui/core/styles';
-import { withWidth, Grid, Box, Container, Typography, Card, Paper, CardContent, CardActions, Button, Avatar, Icon } from '@material-ui/core';
+import {
+  withWidth,
+  Grid,
+  Box,
+  Container,
+  Typography,
+  Card,
+  Paper,
+  CardContent,
+  CardActions,
+  Button,
+  Avatar,
+  Icon,
+} from '@material-ui/core';
 
 import { withTranslation, Trans } from 'react-i18next';
 
@@ -17,112 +30,123 @@ class TeamMember extends React.Component {
         {
           name: 'Nikolas',
           small: 'Co-Founder and CEO',
-          des: 'Some information about Niko, like background, graduated university, interests, hobby. eg.',
+          des:
+            'Some information about Niko, like background, graduated university, interests, hobby. eg.',
           icons: [
             {
               name: 'github',
-              url: 'https://github.com/'
+              url: 'https://github.com/',
             },
             {
               name: 'twitter',
-              url: 'https://twitter.com/'
+              url: 'https://twitter.com/',
             },
             {
               name: 'linkedin',
-              url: 'https://linkedin.com/'
-            }
-          ]
+              url: 'https://linkedin.com/',
+            },
+          ],
         },
         {
           name: 'Ismail',
           small: 'Co-Founder and CTO',
-          des: 'Some information about Ismail, like background, graduated university, interests, hobby. eg.',
+          des:
+            'Some information about Ismail, like background, graduated university, interests, hobby. eg.',
           icons: [
             {
               name: 'github',
-              url: 'https://github.com/'
+              url: 'https://github.com/',
             },
             {
               name: 'twitter',
-              url: 'https://twitter.com/'
+              url: 'https://twitter.com/',
             },
             {
               name: 'facebook',
-              url: 'https://facebook.com/'
+              url: 'https://facebook.com/',
             },
             {
               name: 'linkedin',
-              url: 'https://linkedin.com/'
-            }
-          ]
+              url: 'https://linkedin.com/',
+            },
+          ],
         },
         {
           name: 'Jing',
           small: 'Full-Stack Developer',
-          des: 'Some information about Jing, like background, graduated university, interests, hobby. eg. ',
+          des:
+            'Some information about Jing, like background, graduated university, interests, hobby. eg. ',
           icons: [
             {
               name: 'github',
-              url: 'https://github.com/'
+              url: 'https://github.com/',
             },
             {
               name: 'twitter',
-              url: 'https://twitter.com/'
+              url: 'https://twitter.com/',
             },
             {
               name: 'facebook',
-              url: 'https://linkedin.com/'
-            }
-          ]
+              url: 'https://linkedin.com/',
+            },
+          ],
         },
         {
           name: 'Tian',
           small: 'Front-end Developer',
-          des: 'Some information about Tian, like background, graduated university, interests, hobby. eg.',
+          des:
+            'Some information about Tian, like background, graduated university, interests, hobby. eg.',
           icons: [
             {
               name: 'twitter',
-              url: 'https://twitter.com/'
+              url: 'https://twitter.com/',
             },
             {
               name: 'linkedin',
-              url: 'https://linkedin.com/'
-            }
-          ]
-        }
+              url: 'https://linkedin.com/',
+            },
+          ],
+        },
       ],
       contributors: [
         {
           name: 'Dr. Cian Murphy',
           small: 'UCL Genetics Institute;',
-          des: 'Some information about this contributor, like background, interests, hobby. eg. But not too long I hope.'
+          des:
+            'Some information about this contributor, like background, interests, hobby. eg. But not too long I hope.',
         },
         {
           name: 'Daniel Greene',
-          small: 'Department of Haematology, University of Cambridge / Medical Research Council Biostatistics Unit, Cambridge;',
-          des: 'Some information about this contributor, like background, interests, hobby. eg. But not too long I hope.'
+          small:
+            'Department of Haematology, University of Cambridge / Medical Research Council Biostatistics Unit, Cambridge;',
+          des:
+            'Some information about this contributor, like background, interests, hobby. eg. But not too long I hope.',
         },
         {
           name: 'Dr. Tom Vulliamy',
           small: 'Blizard Institute, Queen Mary University of London',
-          des: 'Some information about this contributor, like background, interests, hobby. eg. But not too long I hope.'
+          des:
+            'Some information about this contributor, like background, interests, hobby. eg. But not too long I hope.',
         },
         {
           name: 'Dr. Fiona Blanco-Kelly',
           small: 'Institute of Ophthalmology, UCL / Moorfields Eye Hospital, London;',
-          des: 'Some information about this contributor, like background, interests, hobby. eg. But not too long I hope.'
+          des:
+            'Some information about this contributor, like background, interests, hobby. eg. But not too long I hope.',
         },
         {
           name: 'Baron Koylass',
           small: 'UCL Genetics Institute',
-          des: 'Some information about this contributor, like background, interests, hobby. eg. But not too long I hope.'
+          des:
+            'Some information about this contributor, like background, interests, hobby. eg. But not too long I hope.',
         },
         {
           name: 'Sajid Mughal',
           small: 'UCL Genetics Institute',
-          des: 'Some information about this contributor, like background, interests, hobby. eg. But not too long I hope.'
-        }
-      ]
+          des:
+            'Some information about this contributor, like background, interests, hobby. eg. But not too long I hope.',
+        },
+      ],
     };
   }
 
@@ -134,20 +158,19 @@ class TeamMember extends React.Component {
       <div>
         {/* End hero unit */}
         <Grid container className={classes.root2}>
-          <Grid container justify='center'>
+          <Grid container justify="center">
             <Grid item xs={12} md={8} className={classes.gridpaper2}>
               <Paper elevation={0} className={classes.paper2}>
-                <Typography component='div'>
-                  <Box fontWeight='fontWeightBold' fontSize='h4.fontSize' m={1}>
-                    {t("About.Mission_Title")}
+                <Typography component="div">
+                  <Box fontWeight="fontWeightBold" fontSize="h4.fontSize" m={1}>
+                    {t('About.Mission_Title')}
                   </Box>
                   <Box
-                    fontWeight='fontWeightLight'
-                    fontSize='h6.fontSize'
+                    fontWeight="fontWeightLight"
+                    fontSize="h6.fontSize"
                     m={1}
-                    style={{ textAlign: 'left' }}
-                  >
-                    {t("About.Mission_Content")}
+                    style={{ textAlign: 'left' }}>
+                    {t('About.Mission_Content')}
                   </Box>
                   {/* <Box
                     fontWeight='fontWeightLight'
@@ -164,17 +187,26 @@ class TeamMember extends React.Component {
         </Grid>
 
         <Container className={classes.cardGrid} maxWidth="lg">
-          <Typography component='div' style={{ textAlign: 'center', paddingBottom: '1em' }}>
-            <Box fontWeight='fontWeightBold' fontSize='h4.fontSize' m={1} gutterBottom>
-              {t("About.Core_Team")}
+          <Typography component="div" style={{ textAlign: 'center', paddingBottom: '1em' }}>
+            <Box fontWeight="fontWeightBold" fontSize="h4.fontSize" m={1} gutterBottom>
+              {t('About.Core_Team')}
             </Box>
           </Typography>
           <Grid container spacing={4}>
             {this.state.cards.map((card, index) => (
-              <Grid item key={card} xs={12} sm={6} md={3} style={index !== 3 ? { borderRight: '1px solid gray' } : {}}>
+              <Grid
+                item
+                key={card}
+                xs={12}
+                sm={6}
+                md={3}
+                style={index !== 3 ? { borderRight: '1px solid gray' } : {}}>
                 <Card elevation={0} className={classes.card}>
                   <Grid container justify="center" alignItems="center">
-                    <Avatar src={require('../../assets/image/TmpAvatar.jpg')} className={classes.bigAvatar} />
+                    <Avatar
+                      src={require('../../assets/image/TmpAvatar.jpg')}
+                      className={classes.bigAvatar}
+                    />
                   </Grid>
                   <CardContent className={classes.cardContent}>
                     <Typography gutterBottom variant="h5" component="h2">
@@ -182,18 +214,17 @@ class TeamMember extends React.Component {
                     </Typography>
                     <Typography gutterBottom variant="body2" className={classes.small}>
                       {card.small}
-                    </Typography >
-                    <Typography style={{ textAlign: 'left' }} >
-                      {card.des}
                     </Typography>
+                    <Typography style={{ textAlign: 'left' }}>{card.des}</Typography>
                   </CardContent>
                   <div className={classes.IconContent}>
                     {card.icons.map((icon, j) => {
                       return (
-                        <a className={classes.a} href={icon.url}><Icon className={clsx(classes.iconHover, 'fab fa-' + icon.name)} /></a>
-                      )
-                    })
-                    }
+                        <a className={classes.a} href={icon.url}>
+                          <Icon className={clsx(classes.iconHover, 'fab fa-' + icon.name)} />
+                        </a>
+                      );
+                    })}
                   </div>
                 </Card>
               </Grid>
@@ -202,12 +233,12 @@ class TeamMember extends React.Component {
         </Container>
 
         <Grid container className={classes.root2}>
-          <Grid container justify='center'>
+          <Grid container justify="center">
             <Grid item xs={12} md={8} className={classes.gridpaper2}>
               <Paper elevation={0} className={classes.paper2}>
-                <Typography component='div'>
-                  <Box fontWeight='fontWeightBold' fontSize='h4.fontSize' m={1}>
-                    {t("About.Contributor")}
+                <Typography component="div">
+                  <Box fontWeight="fontWeightBold" fontSize="h4.fontSize" m={1}>
+                    {t('About.Contributor')}
                   </Box>
                 </Typography>
               </Paper>
@@ -216,7 +247,10 @@ class TeamMember extends React.Component {
                   <Grid item key={card} xs={12} sm={6} md={3}>
                     <Card elevation={0} className={classes.card}>
                       <Grid container justify="center" alignItems="center">
-                        <Avatar src={require('../../assets/image/TmpAvatar.jpg')} className={classes.bigAvatar} />
+                        <Avatar
+                          src={require('../../assets/image/TmpAvatar.jpg')}
+                          className={classes.bigAvatar}
+                        />
                       </Grid>
                       <CardContent className={classes.cardContent}>
                         <Typography gutterBottom variant="h5" component="h2">
@@ -224,10 +258,8 @@ class TeamMember extends React.Component {
                         </Typography>
                         <Typography gutterBottom variant="body2" className={classes.small}>
                           {card.small}
-                        </Typography >
-                        <Typography style={{ textAlign: 'left' }} >
-                          {card.des}
                         </Typography>
+                        <Typography style={{ textAlign: 'left' }}>{card.des}</Typography>
                       </CardContent>
                     </Card>
                   </Grid>
@@ -243,10 +275,10 @@ class TeamMember extends React.Component {
 
 TeamMember.propTypes = {
   classes: PropTypes.object.isRequired,
-  width: PropTypes.oneOf(['lg', 'md', 'sm', 'xl', 'xs']).isRequired
+  width: PropTypes.oneOf(['lg', 'md', 'sm', 'xl', 'xs']).isRequired,
 };
 
-const styles = theme => ({
+const styles = (theme) => ({
   cardGrid: {
     paddingTop: theme.spacing(8),
     paddingBottom: theme.spacing(8),
@@ -254,36 +286,36 @@ const styles = theme => ({
   root2: {
     flexGrow: 1,
     backgroundColor: '#eeeeee',
-    padding: '2em 0em 2em 0em'
+    padding: '2em 0em 2em 0em',
   },
   gridpaper2: {
-    textAlign: 'center'
+    textAlign: 'center',
   },
   paper2: {
     padding: '2em 1em 2em 1em',
-    backgroundColor: '#eeeeee'
+    backgroundColor: '#eeeeee',
   },
   card: {
     height: '100%',
     display: 'flex',
     flexDirection: 'column',
-    backgroundColor: '#fafafa'
+    backgroundColor: '#fafafa',
   },
   cardMedia: {
     paddingTop: '56.25%', // 16:9
   },
   cardContent: {
     flexGrow: 1,
-    textAlign: 'center'
+    textAlign: 'center',
   },
   IconContent: {
     paddingLeft: '1em',
-    textAlign: 'left'
+    textAlign: 'left',
   },
   bigAvatar: {
     margin: 10,
     width: 200,
-    height: 200
+    height: 200,
   },
   a: {
     textDecoration: 'none',
@@ -291,16 +323,12 @@ const styles = theme => ({
     color: '#0279d3',
     '&:hover': {
       textShadow: '-0.06ex 0 white, 0.06ex 0 white',
-    }
+    },
   },
   small: {
     color: 'gray',
-    marginBottom: '0.5em'
-  }
+    marginBottom: '0.5em',
+  },
 });
 
-export default compose(
-  withStyles(styles),
-  withWidth(),
-  withTranslation()
-)(TeamMember);
+export default compose(withStyles(styles), withWidth(), withTranslation())(TeamMember);

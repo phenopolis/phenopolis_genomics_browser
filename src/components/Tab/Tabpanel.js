@@ -12,8 +12,7 @@ export default function TabPanel(props) {
       hidden={value !== index}
       id={`full-width-tabpanel-${index}`}
       aria-labelledby={`full-width-tab-${index}`}
-      {...other}
-    >
+      {...other}>
       <Box p={3}>{children}</Box>
     </Typography>
   );

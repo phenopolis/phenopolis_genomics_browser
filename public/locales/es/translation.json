@@ -25,7 +25,7 @@
       "Label_User_Name": "Nombre de usuario",
       "Label_Password": "Contraseña",
       "Button": "Registrarse",
-      "Hint": "Haga clic en <1> Iniciar sesión de prueba <\/ 1> para probarlo!",
+      "Hint": "Haga clic en <1> Iniciar sesión de prueba </ 1> para probarlo!",
       "Login_Success": "¡Inicio de sesión exitoso!",
       "Login_Failed": "¡Inicio de sesión fallido!"
     },
@@ -72,7 +72,7 @@
     "Publications": "Publicaciones",
     "Contact": "Contacto",
     "External_Links": "Enlaces externos",
-    "Citation": "Si utiliza Phenopolis, por favor citarnos como: <1>Pontikos, N. et al. (2017). Phenopolis: an open platform for harmonization and analysis of genetic and phenotypic data. Bioinformatics, 9, 7<\/1>"
+    "Citation": "Si utiliza Phenopolis, por favor citarnos como: <1>Pontikos, N. et al. (2017). Phenopolis: an open platform for harmonization and analysis of genetic and phenotypic data. Bioinformatics, 9, 7</1>"
   },
   "Gene": {
     "entry": "en",
@@ -91,7 +91,7 @@
     "HomeMainPart": {
       "contact": {
         "title": "Contáctenos",
-        "description": "Por favor no dude en contactarnos <1> aquí <\/ 1> para darnos su opinión o informarnos de cualquier problema."
+        "description": "Por favor no dude en contactarnos <1> aquí </ 1> para darnos su opinión o informarnos de cualquier problema."
       },
       "statistic": {
         "title": "Estadísticas de Phenopolis",
@@ -127,8 +127,8 @@
     "Literature_Genes_subtitle": "A continuación, se muestra una lista de los genes descritos en la literatura que están asociadas con este fenotipo según OMIM.",
     "Phenogenon_subtitle": "A continuación, se muestra una lista de los genes significativos según Phenogenon.",
     "SKAT_subtitle": "A continuación, se muestra una lista de genes y sus variantes según la Prueba de Asociación de Secuencia de Kernel (PASK)",
-    "RECESSIVE_subtitle": "<0> Genotipo <\/0>: Con al menos dos variantes en un gen determinado que tienen un recuento de homocigotos de EXac no superior a <2> 2 <\/ 2> y una puntuación CADD Phred no inferior a <4> 15 <\/4>.",
-    "DOMINANT_subtitle": "<0> Genotipo <\/ 0>: Con al menos una variante de un gen determinado que tiene un recuento de heterocigotos EXac no superior a <2> 0,0001 <\/ 2>, y una puntuación CADD Phred no inferior a <4> 15 <\/4 >.",
+    "RECESSIVE_subtitle": "<0> Genotipo </0>: Con al menos dos variantes en un gen determinado que tienen un recuento de homocigotos de EXac no superior a <2> 2 </ 2> y una puntuación CADD Phred no inferior a <4> 15 </4>.",
+    "DOMINANT_subtitle": "<0> Genotipo </ 0>: Con al menos una variante de un gen determinado que tiene un recuento de heterocigotos EXac no superior a <2> 0,0001 </ 2>, y una puntuación CADD Phred no inferior a <4> 15 </4 >.",
     "message": "Cargando términos HPO desde el servidor ..."
   },
   "Individual": {
@@ -146,8 +146,8 @@
     "edit_message": "La información del paciente se ha modificado exitosamente, volviendo a cargar..."
   },
   "Login": {
-    "redirectionLink": "Lo sentimos, parece que no tiene acceso a <1> {{mivinculo}} <\/ 1> aun, intentó iniciar sesión?",
-    "redirectionLink_plural": "Lo sentimos, parece que no tiene acceso a <1> {{mivinculo}} <\/ 1> aun, intentó iniciar sesión?",
+    "redirectionLink": "Lo sentimos, parece que no tiene acceso a <1> {{mivinculo}} </ 1> aun, intentó iniciar sesión?",
+    "redirectionLink_plural": "Lo sentimos, parece que no tiene acceso a <1> {{mivinculo}} </ 1> aun, intentó iniciar sesión?",
     "login": "Has iniciado sesión.",
     "login_subtitle": "Si desea finalizar la sesión, haga clic en el icono Cuenta en la parte superior derecha de la página."
   },
@@ -161,7 +161,7 @@
     "Title": "Servicio de análisis de compras",
     "Exome_Analysis_Title": "Análisis del exoma",
     "Exome_Analysis_Content": "Le ayudamos a realizar un análisis del exoma, e integrarlo en Phenopolis para usted y su equipo. Nuestro servicio incluye:",
-    "Exome_Analysis_Description": "<0>Llamado de variantes <\/0> <1> Integración y búsqueda de sus datos fenotípicos y genéticos. <\/1> <2> Priorización de variantes basada en el fenotipo. <\/2> <3> Alojamiento gratuito de sus datos por al menos 3 años. <\/3>",
+    "Exome_Analysis_Description": "<0>Llamado de variantes </0> <1> Integración y búsqueda de sus datos fenotípicos y genéticos. </1> <2> Priorización de variantes basada en el fenotipo. </2> <3> Alojamiento gratuito de sus datos por al menos 3 años. </3>",
     "Exome_Analysis_Close": "Contáctenos para más información.",
     "Exome_Price_Title": "Análisis del exoma",
     "Exome_Price_Subtitle": "Servicio más popular",

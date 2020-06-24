@@ -1,15 +1,15 @@
-import React from "react";
-import ReactDOM from "react-dom";
-import { VariableSizeGrid as Grid } from "react-window";
+import React from 'react';
+import ReactDOM from 'react-dom';
+import { VariableSizeGrid as Grid } from 'react-window';
 
-import "./styles.css";
+import './styles.css';
 
 const createItemData = memoize((rows, columns, toggleItemActive, currentRow, currentColumn) => ({
   rows,
   columns,
   toggleItemActive,
   currentRow,
-  currentColumn
+  currentColumn,
 }));
 
 class StickyGrid extends React.Component {
@@ -17,13 +17,25 @@ class StickyGrid extends React.Component {
     rowSizes: new Array(1000).fill(true).reduce((acc, item, i) => {
       acc[i] = 50;
       return acc;
-    }, {})
+    }, {}),
   };
 
   listRef = React.createRef();
 
   render() {
-    const { stickyHeight, stickyWidth, columnWidth, rowHeight, myrows, mycolumns, children, toggleItemActive, currentRow, currentColumn, ...rest } = this.props
+    const {
+      stickyHeight,
+      stickyWidth,
+      columnWidth,
+      rowHeight,
+      myrows,
+      mycolumns,
+      children,
+      toggleItemActive,
+      currentRow,
+      currentColumn,
+      ...rest
+    } = this.props;
     const itemData = createItemData(myrows, mycolumns, toggleItemActive, currentRow, currentColumn);
 
     return (
@@ -36,9 +48,8 @@ class StickyGrid extends React.Component {
           headerBuilder,
           columnsBuilder,
           mycolumns,
-          myrows
-        }}
-      >
+          myrows,
+        }}>
         <Grid
           ref={this.listRef}
           columnWidth={columnWidth}
@@ -69,5 +80,4 @@ class StickyGrid extends React.Component {
   // };
 }
 
-
-export default StickyGrid
+export default StickyGrid;

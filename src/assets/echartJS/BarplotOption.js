@@ -1,48 +1,46 @@
 export default {
   title: {
-    text: 'Barplot'
+    text: 'Barplot',
   },
   tooltip: {
     trigger: 'axis',
     axisPointer: {
-      type: 'shadow'
-    }
+      type: 'shadow',
+    },
   },
-  "toolbox": {
-    "feature": {
-      "dataZoom": {
-        "title": {
-          "zoom": "Zoom In",
-          "back": "Zoom Reset"
-        }
+  toolbox: {
+    feature: {
+      dataZoom: {
+        title: {
+          zoom: 'Zoom In',
+          back: 'Zoom Reset',
+        },
       },
-      "brush": {
-        "type": [
-          "rect",
-          "polygon",
-          "clear"
-        ],
-        "title": {
-          "rect": "Rectangle Area",
-          "polygon": "Random Shape",
-          "clear": "Area Reset"
-        }
+      brush: {
+        type: ['rect', 'polygon', 'clear'],
+        title: {
+          rect: 'Rectangle Area',
+          polygon: 'Random Shape',
+          clear: 'Area Reset',
+        },
       },
-      "saveAsImage": {
-        title: 'Save As Image'
-      }
-    }
+      saveAsImage: {
+        title: 'Save As Image',
+      },
+    },
   },
   xAxis: {
     type: 'category',
-    data: []
+    data: [],
   },
   yAxis: {
-    type: 'value'
+    type: 'value',
   },
   color: ['#2E84CF'],
-  series: [{
-    data: [],
-    type: 'bar'
-  }]
+  series: [
+    {
+      data: [],
+      type: 'bar',
+    },
+  ],
 };

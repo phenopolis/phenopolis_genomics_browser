@@ -10,8 +10,8 @@ import { Link } from 'react-router-dom';
 const cache = new CellMeasurerCache({
   fixedWidth: true,
   minHeight: 25,
-  defaultHeight: 65 //currently, this is the height the cell sizes to after calling 'toggleHeight'
-})
+  defaultHeight: 65, //currently, this is the height the cell sizes to after calling 'toggleHeight'
+});
 
 class MuiVirtualizedTable extends React.PureComponent {
   static defaultProps = {
@@ -35,9 +35,14 @@ class MuiVirtualizedTable extends React.PureComponent {
     return (
       <div>
         <ButtonGroup size="small" aria-label="text primary button group">
-          <Button color="primary" component={Link} to={"/" + model + "/" + userid}> View </Button>
+          <Button color="primary" component={Link} to={'/' + model + '/' + userid}>
+            {' '}
+            View{' '}
+          </Button>
           {/* <Button color="primary" component={Link} to={"/users/" + userid}> Edit </Button> */}
-          <Button color="secondary" onClick={() => this.props.onClick(userid, 'delete')}>Delete</Button>
+          <Button color="secondary" onClick={() => this.props.onClick(userid, 'delete')}>
+            Delete
+          </Button>
         </ButtonGroup>
       </div>
     );
@@ -46,33 +51,27 @@ class MuiVirtualizedTable extends React.PureComponent {
   cellRenderer = ({ cellData, columnIndex, rowData, model }) => {
     const { columns, classes, rowHeight, onRowClick, dataKey, rowIndex, parent } = this.props;
     return (
-      <CellMeasurer
-        cache={cache}
-        columnIndex={0}
-        key={dataKey}
-        parent={parent}
-        rowIndex={rowIndex}
-      >
+      <CellMeasurer cache={cache} columnIndex={0} key={dataKey} parent={parent} rowIndex={rowIndex}>
         {({ measure, registerChild }) => (
           // 'style' attribute required to position cell (within parent List)
           <TableCell ref={registerChild} style={{ height: cache.getHeight(rowIndex) }}>
-            {typeof cellData === 'object' ? (
-              cellData.map((chip, j) => {
-                if (chip !== null) {
-                  return (
-                    <Chip
-                      key={j}
-                      size='small'
-                      variant="outlined"
-                      label={chip.display}
-                    // className={classes.chip}
-                    />
-                  )
-                } else {
-                  return null
-                }
-              })
-            ) : cellData}
+            {typeof cellData === 'object'
+              ? cellData.map((chip, j) => {
+                  if (chip !== null) {
+                    return (
+                      <Chip
+                        key={j}
+                        size="small"
+                        variant="outlined"
+                        label={chip.display}
+                        // className={classes.chip}
+                      />
+                    );
+                  } else {
+                    return null;
+                  }
+                })
+              : cellData}
           </TableCell>
         )}
         {/* <Cell
@@ -91,11 +90,15 @@ class MuiVirtualizedTable extends React.PureComponent {
     return (
       <TableCell
         // component="div"
-        className={clsx(classes.tableCell, classes.flexContainer, classes.noClick, classes.tableHeader)}
+        className={clsx(
+          classes.tableCell,
+          classes.flexContainer,
+          classes.noClick,
+          classes.tableHeader
+        )}
         // variant="head"
         style={{ height: headerHeight }}
-        align='center'
-      >
+        align="center">
         <span>{label}</span>
       </TableCell>
     );
@@ -103,7 +106,7 @@ class MuiVirtualizedTable extends React.PureComponent {
 
   render() {
     const { classes, columns, rowHeight, headerHeight, ...tableProps } = this.props;
-    const model = this.props.model
+    const model = this.props.model;
 
     const { width } = this.props;
 
@@ -120,25 +123,24 @@ class MuiVirtualizedTable extends React.PureComponent {
             headerHeight={headerHeight}
             className={classes.table}
             {...tableProps}
-            rowClassName={this.getRowClassName}
-          >
+            rowClassName={this.getRowClassName}>
             {columns.map(({ dataKey, ...other }, index) => {
               return (
                 <Column
                   key={dataKey}
-                  headerRenderer={headerProps =>
+                  headerRenderer={(headerProps) =>
                     this.headerRenderer({
                       ...headerProps,
                       columnIndex: index,
                     })
                   }
                   className={classes.flexContainer}
-                  cellRenderer={cellProps => this.cellRenderer(
-                    {
+                  cellRenderer={(cellProps) =>
+                    this.cellRenderer({
                       ...cellProps,
                       model: model,
-                    }
-                  )}
+                    })
+                  }
                   dataKey={dataKey}
                   {...other}
                 />
@@ -159,23 +161,23 @@ MuiVirtualizedTable.propTypes = {
       label: PropTypes.string.isRequired,
       numeric: PropTypes.bool,
       width: PropTypes.number.isRequired,
-    }),
+    })
   ).isRequired,
   headerHeight: PropTypes.number,
   onRowClick: PropTypes.func,
-  rowHeight: PropTypes.number
+  rowHeight: PropTypes.number,
 };
 
-const styles = theme => ({
+const styles = (theme) => ({
   flexContainer: {
     display: 'flex',
     alignItems: 'center',
-    boxSizing: 'border-box'
+    boxSizing: 'border-box',
   },
   tableHeader: {
     backgroundColor: 'black',
     color: 'white',
-    fontWeight: '900'
+    fontWeight: '900',
   },
   table: {
     'flex-basis': 'auto !important',
@@ -190,7 +192,7 @@ const styles = theme => ({
     cursor: 'pointer',
     '&:hover': {
       backgroundColor: theme.palette.grey[200],
-    }
+    },
   },
   tableRowHover: {
     '&:hover': {
@@ -198,7 +200,7 @@ const styles = theme => ({
     },
   },
   tableCell: {
-    flex: 1
+    flex: 1,
   },
   noClick: {
     cursor: 'initial',
@@ -208,9 +210,9 @@ const styles = theme => ({
     textShadow: 'none',
     color: '#2E84CF',
     '&:hover': {
-      textShadow: '-0.06ex 0 #2E84CF, 0.06ex 0 #2E84CF'
-    }
+      textShadow: '-0.06ex 0 #2E84CF, 0.06ex 0 #2E84CF',
+    },
   },
 });
 
-export default withStyles(styles)(MuiVirtualizedTable)
+export default withStyles(styles)(MuiVirtualizedTable);

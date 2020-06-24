@@ -4,7 +4,15 @@ import { withStyles } from '@material-ui/core/styles';
 import compose from 'recompose/compose';
 import { Link } from 'react-router-dom';
 
-import { withWidth, List, ListItem, ListItemIcon, ListItemText, Collapse, Avatar } from '@material-ui/core';
+import {
+  withWidth,
+  List,
+  ListItem,
+  ListItemIcon,
+  ListItemText,
+  Collapse,
+  Avatar,
+} from '@material-ui/core';
 
 import SearchIcon from '@material-ui/icons/Search';
 import ExitToAppIcon from '@material-ui/icons/ExitToApp';
@@ -20,73 +28,82 @@ import ShoppingCartIcon from '@material-ui/icons/ShoppingCart';
 
 import { withTranslation } from 'react-i18next';
 
-import GB from '../../assets/svg/gb.svg'
-import CN from '../../assets/svg/cn.svg'
-import JP from '../../assets/svg/jp.svg'
-import DE from '../../assets/svg/de.svg'
-import GR from '../../assets/svg/gr.svg'
-import ES from '../../assets/svg/es.svg'
+import GB from '../../assets/svg/gb.svg';
+import CN from '../../assets/svg/cn.svg';
+import JP from '../../assets/svg/jp.svg';
+import DE from '../../assets/svg/de.svg';
+import GR from '../../assets/svg/gr.svg';
+import ES from '../../assets/svg/es.svg';
 
 class SideBar extends React.Component {
-	constructor(props) {
-		super(props);
-		this.state = {
-			exploreOpen: false,
-			languageOpen: false
-		};
-	}
+  constructor(props) {
+    super(props);
+    this.state = {
+      exploreOpen: false,
+      languageOpen: false,
+    };
+  }
 
-	toggleDrawer = () => {
-		this.props.SidebarClicked();
-	};
+  toggleDrawer = () => {
+    this.props.SidebarClicked();
+  };
 
-	toggleLogout = () => {
-		this.props.SidebarLogout();
-		this.toggleDrawer()
-	};
+  toggleLogout = () => {
+    this.props.SidebarLogout();
+    this.toggleDrawer();
+  };
 
-	handleExploreClick = () => {
-		this.setState({ exploreOpen: !this.state.exploreOpen })
-	}
+  handleExploreClick = () => {
+    this.setState({ exploreOpen: !this.state.exploreOpen });
+  };
 
-	handleLanguageClick = () => {
-		this.setState({ languageOpen: !this.state.languageOpen })
-	}
+  handleLanguageClick = () => {
+    this.setState({ languageOpen: !this.state.languageOpen });
+  };
 
-	render() {
-		const { classes } = this.props;
-		const { t, i18n } = this.props;
+  render() {
+    const { classes } = this.props;
+    const { t, i18n } = this.props;
 
-		const changeLanguage = lng => {
-			i18n.changeLanguage(lng);
-			this.toggleDrawer()
-		};
+    const changeLanguage = (lng) => {
+      i18n.changeLanguage(lng);
+      this.toggleDrawer();
+    };
 
-		return (
-			<div className={classes.list} role='presentation'>
-				<List>
-					<ListItem button component={Link} to='/search' onClick={this.toggleDrawer}>
-						<ListItemIcon>
-							<SearchIcon />
-						</ListItemIcon>
-						<ListItemText primary={t('AppBar.SideBar.Label_Search')} classes={{ primary: classes.listItemText }} />
-					</ListItem>
+    return (
+      <div className={classes.list} role="presentation">
+        <List>
+          <ListItem button component={Link} to="/search" onClick={this.toggleDrawer}>
+            <ListItemIcon>
+              <SearchIcon />
+            </ListItemIcon>
+            <ListItemText
+              primary={t('AppBar.SideBar.Label_Search')}
+              classes={{ primary: classes.listItemText }}
+            />
+          </ListItem>
 
-					<ListItem button component={Link} to='/my_patients' onClick={this.toggleDrawer}>
-						<ListItemIcon>
-							<PeopleIcon />
-						</ListItemIcon>
-						<ListItemText primary={t('AppBar.SideBar.Label_Patients')} classes={{ primary: classes.listItemText }} />
-					</ListItem>
+          <ListItem button component={Link} to="/my_patients" onClick={this.toggleDrawer}>
+            <ListItemIcon>
+              <PeopleIcon />
+            </ListItemIcon>
+            <ListItemText
+              primary={t('AppBar.SideBar.Label_Patients')}
+              classes={{ primary: classes.listItemText }}
+            />
+          </ListItem>
 
-					<ListItem button component={Link} to='/publications'>
-						<ListItemIcon>
-							<DescriptionIcon />
-						</ListItemIcon>
-						<ListItemText primary={t('AppBar.SideBar.Label_Publication')} classes={{ primary: classes.listItemText }} />
-					</ListItem>
+          <ListItem button component={Link} to="/publications">
+            <ListItemIcon>
+              <DescriptionIcon />
+            </ListItemIcon>
+            <ListItemText
+              primary={t('AppBar.SideBar.Label_Publication')}
+              classes={{ primary: classes.listItemText }}
+            />
+          </ListItem>
 
-					{/* <ListItem button onClick={this.handleExploreClick}>
+          {/* <ListItem button onClick={this.handleExploreClick}>
 						<ListItemIcon>
 							<Avatar src={require('../../assets/image/phenopolis_logo_grey.png')} className={classes.avatar} />
 						</ListItemIcon>
@@ -94,123 +111,146 @@ class SideBar extends React.Component {
 						{this.state.exploreOpen ? <ExpandLess /> : <ExpandMore />}
 					</ListItem> */}
 
-					<Collapse in={this.state.exploreOpen} timeout="auto" unmountOnExit>
-						<List component="div" disablePadding>
+          <Collapse in={this.state.exploreOpen} timeout="auto" unmountOnExit>
+            <List component="div" disablePadding>
+              <ListItem
+                button
+                component={Link}
+                to="/publications"
+                onClick={this.toggleDrawer}
+                className={classes.nested}>
+                <ListItemIcon>
+                  <DescriptionIcon />
+                </ListItemIcon>
+                <ListItemText
+                  primary={t('AppBar.SideBar.Label_Publication')}
+                  classes={{ primary: classes.listItemText }}
+                />
+              </ListItem>
 
-							<ListItem button component={Link} to='/publications' onClick={this.toggleDrawer} className={classes.nested}>
-								<ListItemIcon>
-									<DescriptionIcon />
-								</ListItemIcon>
-								<ListItemText primary={t('AppBar.SideBar.Label_Publication')} classes={{ primary: classes.listItemText }} />
-							</ListItem>
+              <ListItem
+                button
+                component={Link}
+                to="/product"
+                onClick={this.toggleDrawer}
+                className={classes.nested}>
+                <ListItemIcon>
+                  <ShoppingCartIcon />
+                </ListItemIcon>
+                <ListItemText
+                  primary={t('AppBar.SideBar.Label_Product')}
+                  classes={{ primary: classes.listItemText }}
+                />
+              </ListItem>
+            </List>
+          </Collapse>
 
-							<ListItem button component={Link} to='/product' onClick={this.toggleDrawer} className={classes.nested}>
-								<ListItemIcon>
-									<ShoppingCartIcon />
-								</ListItemIcon>
-								<ListItemText primary={t('AppBar.SideBar.Label_Product')} classes={{ primary: classes.listItemText }} />
-							</ListItem>
-						</List>
-					</Collapse>
+          <ListItem button onClick={this.handleLanguageClick}>
+            <ListItemIcon>
+              <TranslateIcon />
+            </ListItemIcon>
+            <ListItemText
+              primary={t('AppBar.SideBar.Label_Language')}
+              classes={{ primary: classes.listItemText }}
+            />
+            {this.state.languageOpen ? <ExpandLess /> : <ExpandMore />}
+          </ListItem>
 
-					<ListItem button onClick={this.handleLanguageClick}>
-						<ListItemIcon>
-							<TranslateIcon />
-						</ListItemIcon>
-						<ListItemText primary={t('AppBar.SideBar.Label_Language')} classes={{ primary: classes.listItemText }} />
-						{this.state.languageOpen ? <ExpandLess /> : <ExpandMore />}
-					</ListItem>
+          <Collapse in={this.state.languageOpen} timeout="auto" unmountOnExit>
+            <List component="div" disablePadding>
+              <ListItem button onClick={() => changeLanguage('en')} className={classes.nested}>
+                <ListItemIcon>
+                  <img className={classes.imageIcon} src={GB} />
+                </ListItemIcon>
+                <ListItemText primary="English" classes={{ primary: classes.listItemText }} />
+              </ListItem>
 
-					<Collapse in={this.state.languageOpen} timeout="auto" unmountOnExit>
-						<List component="div" disablePadding>
+              <ListItem button onClick={() => changeLanguage('cn')} className={classes.nested}>
+                <ListItemIcon>
+                  <img className={classes.imageIcon} src={CN} />
+                </ListItemIcon>
+                <ListItemText primary="中文" classes={{ primary: classes.listItemText }} />
+              </ListItem>
 
-							<ListItem button onClick={() => changeLanguage('en')} className={classes.nested}>
-								<ListItemIcon>
-									<img className={classes.imageIcon} src={GB} />
-								</ListItemIcon>
-								<ListItemText primary="English" classes={{ primary: classes.listItemText }} />
-							</ListItem>
+              <ListItem button onClick={() => changeLanguage('ja')} className={classes.nested}>
+                <ListItemIcon>
+                  <img className={classes.imageIcon} src={JP} />
+                </ListItemIcon>
+                <ListItemText primary="日本語" classes={{ primary: classes.listItemText }} />
+              </ListItem>
 
-							<ListItem button onClick={() => changeLanguage('cn')} className={classes.nested}>
-								<ListItemIcon>
-									<img className={classes.imageIcon} src={CN} />
-								</ListItemIcon>
-								<ListItemText primary="中文" classes={{ primary: classes.listItemText }} />
-							</ListItem>
+              <ListItem button onClick={() => changeLanguage('de')} className={classes.nested}>
+                <ListItemIcon>
+                  <img className={classes.imageIcon} src={DE} />
+                </ListItemIcon>
+                <ListItemText primary="Deutsch" classes={{ primary: classes.listItemText }} />
+              </ListItem>
 
-							<ListItem button onClick={() => changeLanguage('ja')} className={classes.nested}>
-								<ListItemIcon>
-									<img className={classes.imageIcon} src={JP} />
-								</ListItemIcon>
-								<ListItemText primary="日本語" classes={{ primary: classes.listItemText }} />
-							</ListItem>
+              <ListItem button onClick={() => changeLanguage('gr')} className={classes.nested}>
+                <ListItemIcon>
+                  <img className={classes.imageIcon} src={GR} />
+                </ListItemIcon>
+                <ListItemText primary="Ελληνικά" classes={{ primary: classes.listItemText }} />
+              </ListItem>
 
-							<ListItem button onClick={() => changeLanguage('de')} className={classes.nested}>
-								<ListItemIcon>
-									<img className={classes.imageIcon} src={DE} />
-								</ListItemIcon>
-								<ListItemText primary="Deutsch" classes={{ primary: classes.listItemText }} />
-							</ListItem>
+              <ListItem button onClick={() => changeLanguage('es')} className={classes.nested}>
+                <ListItemIcon>
+                  <img className={classes.imageIcon} src={ES} />
+                </ListItemIcon>
+                <ListItemText primary="Español" classes={{ primary: classes.listItemText }} />
+              </ListItem>
+            </List>
+          </Collapse>
 
-							<ListItem button onClick={() => changeLanguage('gr')} className={classes.nested}>
-								<ListItemIcon>
-									<img className={classes.imageIcon} src={GR} />
-								</ListItemIcon>
-								<ListItemText primary="Ελληνικά" classes={{ primary: classes.listItemText }} />
-							</ListItem>
+          <ListItem button>
+            <ListItemIcon>
+              <LockIcon />
+            </ListItemIcon>
+            <ListItemText
+              primary={t('AppBar.SideBar.Label_Change_Password')}
+              classes={{ primary: classes.listItemText }}
+            />
+          </ListItem>
 
-							<ListItem button onClick={() => changeLanguage('es')} className={classes.nested}>
-								<ListItemIcon>
-									<img className={classes.imageIcon} src={ES} />
-								</ListItemIcon>
-								<ListItemText primary="Español" classes={{ primary: classes.listItemText }} />
-							</ListItem>
-						</List>
-					</Collapse>
-
-					<ListItem button>
-						<ListItemIcon>
-							<LockIcon />
-						</ListItemIcon>
-						<ListItemText primary={t('AppBar.SideBar.Label_Change_Password')} classes={{ primary: classes.listItemText }} />
-					</ListItem>
-
-					<ListItem button onClick={this.toggleLogout}>
-						<ListItemIcon>
-							<ExitToAppIcon />
-						</ListItemIcon>
-						<ListItemText primary={t('AppBar.SideBar.Label_Logout')} classes={{ primary: classes.listItemText }} />
-					</ListItem>
-				</List>
-			</div>
-		);
-	}
+          <ListItem button onClick={this.toggleLogout}>
+            <ListItemIcon>
+              <ExitToAppIcon />
+            </ListItemIcon>
+            <ListItemText
+              primary={t('AppBar.SideBar.Label_Logout')}
+              classes={{ primary: classes.listItemText }}
+            />
+          </ListItem>
+        </List>
+      </div>
+    );
+  }
 }
 
 SideBar.propTypes = {
-	classes: PropTypes.object.isRequired,
-	width: PropTypes.oneOf(['lg', 'md', 'sm', 'xl', 'xs']).isRequired
+  classes: PropTypes.object.isRequired,
+  width: PropTypes.oneOf(['lg', 'md', 'sm', 'xl', 'xs']).isRequired,
 };
 
 const styles = (theme) => ({
-	list: {
-		width: 250
-	},
-	listItemText: {
-		fontSize: '0.97em'
-	},
-	nested: {
-		paddingLeft: theme.spacing(4),
-	},
-	avatar: {
-		width: 23,
-		height: 23
-	},
-	imageIcon: {
-		height: '1.2em',
-		width: '1.2em',
-		boxShadow: '0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19)'
-	}
+  list: {
+    width: 250,
+  },
+  listItemText: {
+    fontSize: '0.97em',
+  },
+  nested: {
+    paddingLeft: theme.spacing(4),
+  },
+  avatar: {
+    width: 23,
+    height: 23,
+  },
+  imageIcon: {
+    height: '1.2em',
+    width: '1.2em',
+    boxShadow: '0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19)',
+  },
 });
 
 export default compose(withStyles(styles), withWidth(), withTranslation())(SideBar);

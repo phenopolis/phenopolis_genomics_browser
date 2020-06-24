@@ -34,33 +34,22 @@ function TablePaginationActions(props) {
       <IconButton
         onClick={handleFirstPageButtonClick}
         disabled={page === 0}
-        aria-label='first page'>
+        aria-label="first page">
         {theme.direction === 'rtl' ? <LastPageIcon /> : <FirstPageIcon />}
       </IconButton>
-      <IconButton
-        onClick={handleBackButtonClick}
-        disabled={page === 0}
-        aria-label='previous page'>
-        {theme.direction === 'rtl' ? (
-          <KeyboardArrowRight />
-        ) : (
-          <KeyboardArrowLeft />
-        )}
+      <IconButton onClick={handleBackButtonClick} disabled={page === 0} aria-label="previous page">
+        {theme.direction === 'rtl' ? <KeyboardArrowRight /> : <KeyboardArrowLeft />}
       </IconButton>
       <IconButton
         onClick={handleNextButtonClick}
         disabled={page >= Math.ceil(count / rowsPerPage) - 1}
-        aria-label='next page'>
-        {theme.direction === 'rtl' ? (
-          <KeyboardArrowLeft />
-        ) : (
-          <KeyboardArrowRight />
-        )}
+        aria-label="next page">
+        {theme.direction === 'rtl' ? <KeyboardArrowLeft /> : <KeyboardArrowRight />}
       </IconButton>
       <IconButton
         onClick={handleLastPageButtonClick}
         disabled={page >= Math.ceil(count / rowsPerPage) - 1}
-        aria-label='last page'>
+        aria-label="last page">
         {theme.direction === 'rtl' ? <FirstPageIcon /> : <LastPageIcon />}
       </IconButton>
     </div>
@@ -71,15 +60,15 @@ TablePaginationActions.propTypes = {
   count: PropTypes.number.isRequired,
   onChangePage: PropTypes.func.isRequired,
   page: PropTypes.number.isRequired,
-  rowsPerPage: PropTypes.number.isRequired
+  rowsPerPage: PropTypes.number.isRequired,
 };
 
-const useStyles1 = makeStyles(theme => ({
+const useStyles1 = makeStyles((theme) => ({
   root: {
     flexShrink: 0,
     color: theme.palette.text.secondary,
-    marginLeft: theme.spacing(2.5)
-  }
+    marginLeft: theme.spacing(2.5),
+  },
 }));
 
 export default TablePaginationActions;

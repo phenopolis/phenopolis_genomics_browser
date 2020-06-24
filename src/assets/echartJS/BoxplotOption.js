@@ -1,96 +1,90 @@
 export default {
-  "title": [
+  title: [
     {
-      "text": "Boxplot",
-      "left": "center"
-    }
+      text: 'Boxplot',
+      left: 'center',
+    },
   ],
-  "tooltip": {
-    "trigger": "item",
-    "axisPointer": {
-      "type": "shadow"
-    }
+  tooltip: {
+    trigger: 'item',
+    axisPointer: {
+      type: 'shadow',
+    },
   },
-  "toolbox": {
-    "feature": {
-      "dataZoom": {
-        "title": {
-          "zoom": "Zoom In",
-          "back": "Zoom Reset"
-        }
+  toolbox: {
+    feature: {
+      dataZoom: {
+        title: {
+          zoom: 'Zoom In',
+          back: 'Zoom Reset',
+        },
       },
-      "brush": {
-        "type": [
-          "rect",
-          "polygon",
-          "clear"
-        ],
-        "title": {
-          "rect": "Rectangle Area",
-          "polygon": "Random Shape",
-          "clear": "Area Reset"
-        }
+      brush: {
+        type: ['rect', 'polygon', 'clear'],
+        title: {
+          rect: 'Rectangle Area',
+          polygon: 'Random Shape',
+          clear: 'Area Reset',
+        },
       },
-      "saveAsImage": {
-        title: 'Save As Image'
-      }
-    }
-  },
-  "color": [
-    "#2E84CF"
-  ],
-  "grid": {
-    "left": "10%",
-    "right": "10%",
-    "bottom": "15%"
-  },
-  "xAxis": {
-    "type": "category",
-    "data": [],
-    "boundaryGap": true,
-    "nameGap": 30,
-    "splitArea": {
-      "show": false
+      saveAsImage: {
+        title: 'Save As Image',
+      },
     },
-    "axisLabel": {
-      "formatter": "{value}"
-    },
-    "splitLine": {
-      "show": false
-    }
   },
-  "yAxis": {
-    "type": "value",
-    "name": "",
-    "splitArea": {
-      "show": false
-    },
-    "splitLine": {
-      "show": false
-    }
+  color: ['#2E84CF'],
+  grid: {
+    left: '10%',
+    right: '10%',
+    bottom: '15%',
   },
-  "series": [
+  xAxis: {
+    type: 'category',
+    data: [],
+    boundaryGap: true,
+    nameGap: 30,
+    splitArea: {
+      show: false,
+    },
+    axisLabel: {
+      formatter: '{value}',
+    },
+    splitLine: {
+      show: false,
+    },
+  },
+  yAxis: {
+    type: 'value',
+    name: '',
+    splitArea: {
+      show: false,
+    },
+    splitLine: {
+      show: false,
+    },
+  },
+  series: [
     {
-      "name": "boxplot",
-      "type": "boxplot",
-      "data": [],
-      "tooltip": {
-        "formatter": function (param) {
+      name: 'boxplot',
+      type: 'boxplot',
+      data: [],
+      tooltip: {
+        formatter: function (param) {
           return [
             'Stats: ' + param.name + ': ',
             'upper: ' + param.data[5],
             'Q3: ' + param.data[4],
             'median: ' + param.data[3],
             'Q1: ' + param.data[2],
-            'lower: ' + param.data[1]
+            'lower: ' + param.data[1],
           ].join('<br/>');
-        }
-      }
+        },
+      },
     },
     {
-      "name": "outlier",
-      "type": "scatter",
-      "data": []
-    }
-  ]
-}
+      name: 'outlier',
+      type: 'scatter',
+      data: [],
+    },
+  ],
+};

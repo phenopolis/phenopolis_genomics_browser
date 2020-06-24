@@ -15,7 +15,7 @@ import { setSnack } from '../../redux/actions';
 import { getUsername } from '../../redux/selectors';
 
 import { withTranslation } from 'react-i18next';
-import i18next from "i18next";
+import i18next from 'i18next';
 
 import axios from 'axios';
 const qs = require('querystring');
@@ -24,7 +24,7 @@ class HomeBanner extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      BannerText: null
+      BannerText: null,
     };
   }
 
@@ -37,29 +37,32 @@ class HomeBanner extends React.Component {
 
     const loginData = qs.stringify({
       name: 'demo',
-      password: 'demo123'
+      password: 'demo123',
     });
 
     axios
       .post('/api/login', loginData, { withCredentials: true })
-      .then(res => {
+      .then((res) => {
         let respond = res.data;
         if (respond.success === 'Authenticated') {
           cookies.set('username', respond.username, {
             path: '/',
-            maxAge: 60 * 60 * 2
+            maxAge: 60 * 60 * 2,
           });
           this.setState({ redirect: true });
           this.props.setUser(respond.username);
-          this.props.setSnack(respond.username + i18next.t("HomePage.HomeBanner.login_success"), "success")
+          this.props.setSnack(
+            respond.username + i18next.t('HomePage.HomeBanner.login_success'),
+            'success'
+          );
         } else {
-          this.props.setSnack(i18next.t("HomePage.HomeBanner.login_fail"), 'error')
+          this.props.setSnack(i18next.t('HomePage.HomeBanner.login_fail'), 'error');
         }
       })
-      .catch(err => {
-        this.props.setSnack(i18next.t("HomePage.HomeBanner.login_fail"), 'error')
+      .catch((err) => {
+        this.props.setSnack(i18next.t('HomePage.HomeBanner.login_fail'), 'error');
       });
-  }
+  };
 
   render() {
     const { classes } = this.props;
@@ -67,41 +70,38 @@ class HomeBanner extends React.Component {
 
     return (
       <div>
-        <Parallax
-          bgImage={require('../../assets/image/Homebanner.jpg')}
-          strength={500}>
+        <Parallax bgImage={require('../../assets/image/Homebanner.jpg')} strength={500}>
           <div style={{ height: 500 }}>
-            <Grid container justify='center'>
-              <Box display='flex' alignItems='center' css={{ height: 500 }}>
+            <Grid container justify="center">
+              <Box display="flex" alignItems="center" css={{ height: 500 }}>
                 <div className={classes.bannertext}>
-                  <Typography variant='h2' align='center' gutterBottom>
+                  <Typography variant="h2" align="center" gutterBottom>
                     <b>{this.props.BannerText}</b>
                   </Typography>
-                  <Typography variant='h6' align='center' gutterBottom>
+                  <Typography variant="h6" align="center" gutterBottom>
                     {t('HomePage.HomeBanner.subtitle')}
                   </Typography>
-                  {this.props.reduxName === '' ?
-                    (<Button
-                      variant='outlined'
-                      color='inherit'
+                  {this.props.reduxName === '' ? (
+                    <Button
+                      variant="outlined"
+                      color="inherit"
                       className={classes.button}
-                      onClick={this.DemoLogin}
-                    >
+                      onClick={this.DemoLogin}>
                       {t('HomePage.HomeBanner.button_no_login')}
-                    </Button>) : (
-                      <Link style={{ textDecoration: 'none' }} to='/search'>
-                        <Button
-                          variant='outlined'
-                          color='inherit'
-                          className={classes.button}
+                    </Button>
+                  ) : (
+                    <Link style={{ textDecoration: 'none' }} to="/search">
+                      <Button
+                        variant="outlined"
+                        color="inherit"
+                        className={classes.button}
                         // component={Link}
                         // to='/search'
-                        >
-                          {t('HomePage.HomeBanner.button_login')}
-                        </Button>
-                      </Link>
-                    )}
-
+                      >
+                        {t('HomePage.HomeBanner.button_login')}
+                      </Button>
+                    </Link>
+                  )}
                 </div>
               </Box>
             </Grid>
@@ -113,26 +113,23 @@ class HomeBanner extends React.Component {
 }
 
 HomeBanner.propTypes = {
-  classes: PropTypes.object.isRequired
+  classes: PropTypes.object.isRequired,
 };
 
-const styles = theme => ({
+const styles = (theme) => ({
   button: {
     margin: theme.spacing(1),
-    color: 'white'
+    color: 'white',
   },
   bannertext: {
     textAlign: 'center',
-    color: 'white'
-  }
+    color: 'white',
+  },
 });
 
-const mapStateToProps = state => ({ reduxName: getUsername(state) });
+const mapStateToProps = (state) => ({ reduxName: getUsername(state) });
 export default compose(
   withStyles(styles),
-  connect(
-    mapStateToProps,
-    { setUser, setSnack }
-  ),
+  connect(mapStateToProps, { setUser, setSnack }),
   withTranslation()
 )(HomeBanner);

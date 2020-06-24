@@ -2,8 +2,13 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import { fade, withStyles } from '@material-ui/core/styles';
 import {
-  TableCell, TableHead, TableRow, TableSortLabel, InputBase, Grid,
-  Tooltip
+  TableCell,
+  TableHead,
+  TableRow,
+  TableSortLabel,
+  InputBase,
+  Grid,
+  Tooltip,
 } from '@material-ui/core';
 
 class FilterInput extends React.Component {
@@ -13,11 +18,11 @@ class FilterInput extends React.Component {
     this.timeout = 0;
     this.state = {
       column: JSON.parse(JSON.stringify(this.props.value.column)),
-      name: ''
+      name: '',
     };
   }
 
-  changeName = event => {
+  changeName = (event) => {
     var searchText = event.target.value; // this is the search text
     var operation = null;
     var filter = '';
@@ -25,7 +30,6 @@ class FilterInput extends React.Component {
     let self = this;
     if (this.timeout) clearTimeout(this.timeout);
     this.timeout = setTimeout(() => {
-
       switch (true) {
         case />=/.test(searchText):
           operation = '>=';
@@ -67,15 +71,15 @@ class FilterInput extends React.Component {
   };
 
   render() {
-    return <BootstrapInput fullWidth placeholder='Filter' onChange={this.changeName} />;
+    return <BootstrapInput fullWidth placeholder="Filter" onChange={this.changeName} />;
   }
 }
 
 // **************************************************
 
-const styles = theme => ({
+const styles = (theme) => ({
   head: {
-    backgroundColor: '#bdbdbd'
+    backgroundColor: '#bdbdbd',
   },
   headcell: {
     fontSize: '1em',
@@ -83,13 +87,13 @@ const styles = theme => ({
     margin: 0,
     position: 'sticky',
     top: '0',
-    backgroundColor: '#bdbdbd'
+    backgroundColor: '#bdbdbd',
   },
   sortlabel: {
     color: 'white',
     '&:focus': {
-      color: 'red'
-    }
+      color: 'red',
+    },
   },
   visuallyHidden: {
     border: 0,
@@ -100,28 +104,28 @@ const styles = theme => ({
     padding: 0,
     position: 'absolute',
     top: 20,
-    width: 1
+    width: 1,
   },
   input: {
-    margin: theme.spacing(1)
+    margin: theme.spacing(1),
   },
   textField: {
     margin: theme.spacing(0),
     borderColor: 'lightgray',
     '&:focus': {
       color: '#2E84CF',
-      backgroundColor: 'white'
-    }
+      backgroundColor: 'white',
+    },
   },
   dense: {
-    marginTop: theme.spacing(1)
-  }
+    marginTop: theme.spacing(1),
+  },
 });
 
 const StyledTooltip = withStyles({
   tooltip: {
-    fontSize: '1em'
-  }
+    fontSize: '1em',
+  },
 })(Tooltip);
 
 class TableHeader extends React.Component {
@@ -130,7 +134,7 @@ class TableHeader extends React.Component {
     this.state = {};
   }
 
-  createSortHandler = property => event => {
+  createSortHandler = (property) => (event) => {
     this.props.onRequestSort(event, property);
   };
 
@@ -147,76 +151,62 @@ class TableHeader extends React.Component {
         <TableRow>
           {this.props.header.map((h, i) => {
             if (h.default) {
-              return (
-                h.description ?
-                  (
-                    <StyledTooltip key={i} title={h.description} placement='top'>
-                      <TableCell
-                        align='center'
-                        key={i}
-                        className={classes.headcell}>
-                        <Grid
-                          direction='column'>
-                          <Grid item xs={12} style={{ height: '3em' }}>
-                            <TableSortLabel
-                              // className={classes.sortlabel}
-                              active={this.props.orderBy === h.key}
-                              direction={this.props.order}
-                              onClick={this.createSortHandler(h.key)}>
-                              {h.name}
-                              {this.props.orderBy === h.key ? (
-                                <span className={classes.visuallyHidden}>
-                                  {this.props.order === 'desc'
-                                    ? 'sorted descending'
-                                    : 'sorted ascending'}
-                                </span>
-                              ) : null}
-                            </TableSortLabel>
-                          </Grid>
-                          <Grid item xs={12}>
-                            <FilterInput
-                              value={this.props.filter[i]}
-                              index={i}
-                              onReturnFilter={this.handleUpdateFilter}
-                            />
-                          </Grid>
-                        </Grid>
-                      </TableCell>
-                    </StyledTooltip>
-                  ) :
-                  (
-                    <TableCell
-                      align='center'
-                      key={i}
-                      className={classes.headcell}>
-                      <Grid
-                        direction='column'>
-                        <Grid item xs={12} style={{ height: '3em' }}>
-                          <TableSortLabel
-                            // className={classes.sortlabel}
-                            active={this.props.orderBy === h.key}
-                            direction={this.props.order}
-                            onClick={this.createSortHandler(h.key)}>
-                            {h.name}
-                            {this.props.orderBy === h.key ? (
-                              <span className={classes.visuallyHidden}>
-                                {this.props.order === 'desc'
-                                  ? 'sorted descending'
-                                  : 'sorted ascending'}
-                              </span>
-                            ) : null}
-                          </TableSortLabel>
-                        </Grid>
-                        <Grid item xs={12}>
-                          <FilterInput
-                            value={this.props.filter[i]}
-                            index={i}
-                            onReturnFilter={this.handleUpdateFilter}
-                          />
-                        </Grid>
+              return h.description ? (
+                <StyledTooltip key={i} title={h.description} placement="top">
+                  <TableCell align="center" key={i} className={classes.headcell}>
+                    <Grid direction="column">
+                      <Grid item xs={12} style={{ height: '3em' }}>
+                        <TableSortLabel
+                          // className={classes.sortlabel}
+                          active={this.props.orderBy === h.key}
+                          direction={this.props.order}
+                          onClick={this.createSortHandler(h.key)}>
+                          {h.name}
+                          {this.props.orderBy === h.key ? (
+                            <span className={classes.visuallyHidden}>
+                              {this.props.order === 'desc'
+                                ? 'sorted descending'
+                                : 'sorted ascending'}
+                            </span>
+                          ) : null}
+                        </TableSortLabel>
                       </Grid>
-                    </TableCell>
-                  )
+                      <Grid item xs={12}>
+                        <FilterInput
+                          value={this.props.filter[i]}
+                          index={i}
+                          onReturnFilter={this.handleUpdateFilter}
+                        />
+                      </Grid>
+                    </Grid>
+                  </TableCell>
+                </StyledTooltip>
+              ) : (
+                <TableCell align="center" key={i} className={classes.headcell}>
+                  <Grid direction="column">
+                    <Grid item xs={12} style={{ height: '3em' }}>
+                      <TableSortLabel
+                        // className={classes.sortlabel}
+                        active={this.props.orderBy === h.key}
+                        direction={this.props.order}
+                        onClick={this.createSortHandler(h.key)}>
+                        {h.name}
+                        {this.props.orderBy === h.key ? (
+                          <span className={classes.visuallyHidden}>
+                            {this.props.order === 'desc' ? 'sorted descending' : 'sorted ascending'}
+                          </span>
+                        ) : null}
+                      </TableSortLabel>
+                    </Grid>
+                    <Grid item xs={12}>
+                      <FilterInput
+                        value={this.props.filter[i]}
+                        index={i}
+                        onReturnFilter={this.handleUpdateFilter}
+                      />
+                    </Grid>
+                  </Grid>
+                </TableCell>
               );
             } else {
               return null;
@@ -229,14 +219,14 @@ class TableHeader extends React.Component {
 }
 
 TableHeader.propTypes = {
-  classes: PropTypes.object.isRequired
+  classes: PropTypes.object.isRequired,
 };
 
-const BootstrapInput = withStyles(theme => ({
+const BootstrapInput = withStyles((theme) => ({
   root: {
     'label + &': {
-      marginTop: theme.spacing(2)
-    }
+      marginTop: theme.spacing(2),
+    },
   },
   input: {
     borderRadius: 4,
@@ -261,13 +251,13 @@ const BootstrapInput = withStyles(theme => ({
       'sans-serif',
       '"Apple Color Emoji"',
       '"Segoe UI Emoji"',
-      '"Segoe UI Symbol"'
+      '"Segoe UI Symbol"',
     ].join(','),
     '&:focus': {
       boxShadow: `${fade('#2E84CF', 0.25)} 0 0 0 0.2rem`,
-      borderColor: theme.palette.primary.main
-    }
-  }
+      borderColor: theme.palette.primary.main,
+    },
+  },
 }))(InputBase);
 
 export default withStyles(styles)(TableHeader);

@@ -17,28 +17,25 @@ class PublicationList extends React.Component {
 
     return (
       <div className={classes.root}>
-        <Container maxWidth='md'>
+        <Container maxWidth="md">
           {pl.map((section, sid) => {
             return (
-              <Typography component='div' key={sid}>
-                <Box fontWeight='fontWeightBold' fontSize='h4.fontSize' m={1}>
-                  {t("Publication." + section.title)}
+              <Typography component="div" key={sid}>
+                <Box fontWeight="fontWeightBold" fontSize="h4.fontSize" m={1}>
+                  {t('Publication.' + section.title)}
                 </Box>
                 {section.data.map((subsection, ssid) => {
                   return (
                     <div key={ssid}>
-                      <Box
-                        fontWeight='fontWeightBold'
-                        fontSize='h5.fontSize'
-                        m={1}>
-                        {t("Publication." + subsection.subtitle)}
+                      <Box fontWeight="fontWeightBold" fontSize="h5.fontSize" m={1}>
+                        {t('Publication.' + subsection.subtitle)}
                       </Box>
                       {subsection.publications.map((paper, index) => {
                         return (
                           <Box
                             className={classes.paperbox}
                             key={index}
-                            fontSize='subtitle1.fontSize'
+                            fontSize="subtitle1.fontSize"
                             m={1}>
                             {index + 1} .{' '}
                             <a className={classes.paperlink} href={paper.link}>
@@ -62,31 +59,26 @@ class PublicationList extends React.Component {
 
 PublicationList.propTypes = {
   classes: PropTypes.object.isRequired,
-  width: PropTypes.oneOf(['lg', 'md', 'sm', 'xl', 'xs']).isRequired
+  width: PropTypes.oneOf(['lg', 'md', 'sm', 'xl', 'xs']).isRequired,
 };
 
-
-const styles = theme => ({
+const styles = (theme) => ({
   root: {
     padding: '4em 0em 4em 0em',
-    backgroundColor: '#eeeeee'
+    backgroundColor: '#eeeeee',
   },
   paper: {
     textAlign: 'center',
-    color: theme.palette.text.secondary
+    color: theme.palette.text.secondary,
   },
   paperlink: {
     textDecoration: 'none',
-    color: '#2E84CF'
+    color: '#2E84CF',
   },
   paperbox: {
     textIndent: '-1.35em',
-    paddingLeft: '4em'
-  }
+    paddingLeft: '4em',
+  },
 });
 
-export default compose(
-  withStyles(styles),
-  withWidth(),
-  withTranslation()
-)(PublicationList);
+export default compose(withStyles(styles), withWidth(), withTranslation())(PublicationList);

@@ -11,18 +11,18 @@ class AuthCheck extends React.Component {
     super(props);
     this.state = {
       openLoginDialog: false,
-      redirect: false
+      redirect: false,
     };
   }
 
   componentWillMount() {
     axios
       .get('/api/is_logged_in', { withCredentials: true })
-      .then(res => {
+      .then((res) => {
         let respond = res.data;
         this.props.setUser(respond.username);
       })
-      .catch(err => {
+      .catch((err) => {
         console.log(err);
         if (
           (window.location.pathname !== '/') &
@@ -46,9 +46,4 @@ class AuthCheck extends React.Component {
   }
 }
 
-export default compose(
-  connect(
-    null,
-    { setUser }
-  )
-)(AuthCheck);
+export default compose(connect(null, { setUser }))(AuthCheck);

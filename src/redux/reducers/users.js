@@ -1,16 +1,16 @@
 import { SET_USER } from '../actionTypes';
 
 const initialState = {
-  username: ''
+  username: '',
 };
 
-export default function(state = initialState, action) {
+export default function (state = initialState, action) {
   switch (action.type) {
     case SET_USER: {
       const newUsername = action.payload.newUsername;
       return {
         ...state,
-        username: newUsername
+        username: newUsername,
       };
     }
     default:
