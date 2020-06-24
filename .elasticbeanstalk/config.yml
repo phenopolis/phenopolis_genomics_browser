@@ -1,10 +1,10 @@
 branch-defaults:
   prod-live:
-    environment: Phenopolis-api-production-env
+    environment: Phenopolis-prod
   dev-live:
     environment: Phenopolisapi-dev-env
 environment-defaults:
-  Phenopolis-api-production-env:
+  Phenopolis-prod:
     branch: null
     repository: null
 global:
