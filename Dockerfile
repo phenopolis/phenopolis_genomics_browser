@@ -16,13 +16,11 @@ RUN pip install --upgrade pip
 COPY ./requirements.txt /usr/src/app/requirements.txt
 RUN pip install -r requirements.txt
 
-#RUN apk add cython # that one did not work for pysam
-
 # pysam needs cython, however it only works via pip apparantly
 RUN pip install -U cython
 
 # Both cython and pysam had to be removed from requirements in order for pysam to work installation
-RUN pip install -U pysam==0.16.0.1
+RUN pip install -U pysam==0.15.3
 
 # copy project
 COPY ./application.py ./
