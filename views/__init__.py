@@ -138,7 +138,6 @@ def after_request(response):
     # mail.send(msg)
     return response
 
-
 @application.errorhandler(Exception)
 def exceptions(e):
     '''
@@ -153,9 +152,24 @@ def exceptions(e):
         code = e.code
     msg = Message('internal error ' + request.full_path + ' from ' + request.remote_addr, sender="no-reply@phenopolis.org", recipients=["no-reply@phenopolis.org"])
     msg.body = tb
-    mail.send(msg)
-    return jsonify(error='error', code=code)
+    if code != 404:
+        mail.send(msg)
 
+    # start with the correct headers and status code from the error
+    response = e.get_response()
+    # replace the body with JSON
+    response.data = json.dumps({
+        "code": e.code,
+        "name": e.name,
+        "description": e.description,
+        "remote_addr": request.remote_addr,
+        "method": request.method,
+        "scheme": request.scheme,
+        "full_path": request.full_path,
+        "timestamp": timestamp
+    })
+    response.content_type = "application/json"
+    return response
 
 @application.route('/statistics')
 def phenopolis_statistics():
