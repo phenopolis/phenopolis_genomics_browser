@@ -199,7 +199,7 @@ def process_for_display(data):
     Process for display
     :param data:
     '''
-    my_patients = [x for x in get_db_session().query(User_Individual).filter(User_Individual.user == session['user']).with_entities(User_Individual.internal_id)]
+    my_patients = list(get_db_session().query(User_Individual).filter(User_Individual.user == session['user']).with_entities(User_Individual.internal_id))
     for x2 in data:
         if 'CHROM' in x2 and 'POS' in x2 and 'REF' in x2 and 'ALT' in x2:
             variant_id = '%s-%s-%s-%s' % (x2['CHROM'], x2['POS'], x2['REF'], x2['ALT'],)
