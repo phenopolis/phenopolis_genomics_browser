@@ -1,7 +1,8 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import axios from 'axios';
 import compose from 'recompose/compose';
+import { connect } from 'react-redux';
+import Service  from '../../redux/service';
 
 import { withStyles } from '@material-ui/core/styles';
 import { withWidth, Grid, Box, Typography, Paper } from '@material-ui/core';
@@ -16,6 +17,7 @@ import {
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 
 import { withTranslation, Trans } from 'react-i18next';
+import { getStatistics } from "../../redux/actions/statistic";
 
 class HomeMainPart extends React.Component {
   constructor(props) {
@@ -27,11 +29,10 @@ class HomeMainPart extends React.Component {
   }
 
   componentDidMount() {
+    //TODO continue redux implementation
+    // this.props.getStatistics();
     var self = this;
-    axios
-      .get('/api/statistics', {
-        withCredentials: true,
-      })
+    Service.getStatistics()
       .then((res) => {
         let respond = res.data;
         console.log(respond);
@@ -172,6 +173,7 @@ class HomeMainPart extends React.Component {
 HomeMainPart.propTypes = {
   classes: PropTypes.object.isRequired,
   width: PropTypes.oneOf(['lg', 'md', 'sm', 'xl', 'xs']).isRequired,
+  statistics: PropTypes.object.isRequired,
 };
 
 const styles = (theme) => ({
@@ -219,4 +221,10 @@ const styles = (theme) => ({
   },
 });
 
-export default compose(withStyles(styles), withWidth(), withTranslation())(HomeMainPart);
+const mapStateToProps = state => ({
+  statistics: state.Statistics.data,
+  loading: state.Statistics.loading
+});
+
+
+export default compose(connect(mapStateToProps, { getStatistics }), withStyles(styles), withWidth(), withTranslation())(HomeMainPart);

@@ -14,7 +14,7 @@ import { connect } from 'react-redux';
 import compose from 'recompose/compose';
 import { getSnackMessage, getSnackVariant } from '../redux/selectors';
 
-import { setMessage } from '../redux/actions';
+import { setMessage } from '../redux/actions/snacks';
 
 const variantIcon = {
   success: CheckCircleIcon,

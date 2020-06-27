@@ -9,8 +9,8 @@ import { withStyles } from '@material-ui/core/styles';
 import { Avatar, Button, CssBaseline, TextField, Typography, Container } from '@material-ui/core';
 import LockOutlinedIcon from '@material-ui/icons/LockOutlined';
 
-import { setUser } from '../../redux/actions';
-import { setSnack } from '../../redux/actions';
+import { setUser } from '../../redux/actions/users';
+import { setSnack } from '../../redux/actions/snacks';
 
 import axios from 'axios';
 

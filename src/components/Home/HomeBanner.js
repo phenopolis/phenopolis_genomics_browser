@@ -10,8 +10,8 @@ import { Link } from 'react-router-dom';
 import Cookies from 'universal-cookie';
 import compose from 'recompose/compose';
 import { connect } from 'react-redux';
-import { setUser } from '../../redux/actions';
-import { setSnack } from '../../redux/actions';
+import { setUser } from '../../redux/actions/users';
+import { setSnack } from '../../redux/actions/snacks';
 import { getUsername } from '../../redux/selectors';
 
 import { withTranslation } from 'react-i18next';

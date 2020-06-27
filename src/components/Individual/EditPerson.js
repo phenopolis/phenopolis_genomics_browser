@@ -22,7 +22,7 @@ import CloseIcon from '@material-ui/icons/Close';
 
 import compose from 'recompose/compose';
 import { connect } from 'react-redux';
-import { setSnack } from '../../redux/actions';
+import { setSnack } from '../../redux/actions/snacks';
 
 import SearchAutoComplete from './SearchAutoComplete';
 const qs = require('querystring');

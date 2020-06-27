@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 import compose from 'recompose/compose';
 
 import { connect } from 'react-redux';
-import { setUser } from '../redux/actions';
+import { setUser } from '../redux/actions/users';
 import { getUsername } from '../redux/selectors';
 
 import { withStyles } from '@material-ui/core/styles';

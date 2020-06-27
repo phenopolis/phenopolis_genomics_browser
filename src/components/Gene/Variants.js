@@ -34,7 +34,7 @@ import '../../assets/css/arrowbox.css';
 import TableHeader from '../Table/TableHeader';
 import TablePaginationActions from '../Table/TablePaginationActions';
 
-import { setSnack } from '../../redux/actions';
+import { setSnack } from '../../redux/actions/snacks';
 
 import { withTranslation, Trans } from 'react-i18next';
 import i18next from 'i18next';

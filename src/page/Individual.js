@@ -3,7 +3,7 @@ import axios from 'axios';
 import { Redirect } from 'react-router';
 import compose from 'recompose/compose';
 import { connect } from 'react-redux';
-import { setSnack } from '../redux/actions';
+import { setSnack } from '../redux/actions/snacks';
 
 import PropTypes from 'prop-types';
 import { withStyles } from '@material-ui/core/styles';

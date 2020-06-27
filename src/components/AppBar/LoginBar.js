@@ -40,8 +40,8 @@ import ShoppingCartIcon from '@material-ui/icons/ShoppingCart';
 import DrawerSearch from './DrawerSearch';
 
 import { getUsername } from '../../redux/selectors';
-import { setUser } from '../../redux/actions';
-import { setSnack } from '../../redux/actions';
+import { setUser } from '../../redux/actions/users';
+import { setSnack } from '../../redux/actions/snacks';
 
 import { withTranslation } from 'react-i18next';
 import i18next from 'i18next';

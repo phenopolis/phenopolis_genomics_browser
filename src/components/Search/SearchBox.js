@@ -20,7 +20,7 @@ import SearchIcon from '@material-ui/icons/Search';
 
 import compose from 'recompose/compose';
 import { connect } from 'react-redux';
-import { setSnack } from '../../redux/actions';
+import { setSnack } from '../../redux/actions/snacks';
 
 import { withTranslation } from 'react-i18next';
 import i18next from 'i18next';

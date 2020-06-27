@@ -22,7 +22,7 @@ import CloseTwoToneIcon from '@material-ui/icons/CloseTwoTone';
 import { connect } from 'react-redux';
 import compose from 'recompose/compose';
 
-import { setSnack } from '../../redux/actions';
+import { setSnack } from '../../redux/actions/snacks';
 
 import clsx from 'clsx';
 

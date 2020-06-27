@@ -1,5 +1,5 @@
-import { SET_SNACK } from '../actionTypes';
-import { SET_MESSAGE } from '../actionTypes';
+import { SET_SNACK } from '../types/snacks';
+import { SET_MESSAGE } from '../types/snacks';
 
 const initialState = {
   snackMessage: '',

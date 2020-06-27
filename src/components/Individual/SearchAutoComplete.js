@@ -7,7 +7,7 @@ import { Paper, Typography, Grid, Collapse, Chip } from '@material-ui/core';
 
 import compose from 'recompose/compose';
 import { connect } from 'react-redux';
-import { setSnack } from '../../redux/actions';
+import { setSnack } from '../../redux/actions/snacks';
 
 import ChipInput from 'material-ui-chip-input';
 
