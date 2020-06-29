@@ -37,12 +37,12 @@ python application.py
 First, build the image:
 
 ```
-docker build -t phenopolis_api .
+docker build -f base_dev.dockerfile -t phenopolis_api:base_dev .
 ```
 Then, run it, but note that ENV variables must be defined in your shell, e.g. `.bashrc`:
 
 ```
-docker run -dp 5432:5432 -p 5000:5000 \
+docker run --rm -p 5432:5432 -p 8000:8000 -w /app -v ${PWD}:/app --name pheonopolis_api \
 -e DB_HOST=host.docker.internal \
 -e DB_DATABASE=$DB_DATABASE \
 -e DB_USER=$DB_USER \
@@ -56,8 +56,10 @@ docker run -dp 5432:5432 -p 5000:5000 \
 -e MAIL_USE_SSL=true \
 -e VCF_S3_SECRET=$VCF_S3_SECRET \
 -e VCF_S3_KEY=$VCF_S3_KEY \
-phenopolis_api
+phenopolis_api:base_dev \
+sh -c "gunicorn -b 0.0.0.0:8000 --reload --workers=1 --threads=15 application:application"
 ```
+Now you can edit the source files and `gunicorn` will restart the service automatically.
 
 ### Overview
 
