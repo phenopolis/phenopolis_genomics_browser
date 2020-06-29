@@ -12,7 +12,7 @@ Endpoints are called by [phenopolis_frontend](https://github.com/phenopolis/phen
 ##  How to start the API server
 
 
-First create the postgres`phenopolis_db_demo` db owned by the `demo` user with password `demo123`:
+First create the postgres `phenopolis_db_demo` db owned by the `demo` user with password `demo123`:
 
 Then load data into postgres db:
 
