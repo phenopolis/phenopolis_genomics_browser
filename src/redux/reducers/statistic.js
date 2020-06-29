@@ -12,7 +12,8 @@ const initialState = {
         unknowns: null,
         version_number: null,
     },
-    loading: true
+    loading: true,
+    error: false
 };
 
 const Statistics = (state = initialState, action) => {
@@ -34,7 +35,8 @@ const Statistics = (state = initialState, action) => {
             return {
                 ...state,
                 loading: false,
-                data: action.payload.data
+
+                error: 'Something Went Wrong'
             };
         }
         default:

@@ -95,7 +95,7 @@
       },
       "statistic": {
         "title": "Estadísticas de Phenopolis",
-        "description": "Phenopolis incluye datos de {{ exomas }} exomas que representan un total de {{ variantes }} variantes."
+        "description": "Phenopolis incluye datos de {{ exomes }} exomas que representan un total de {{ variants }} variantes."
       },
       "tab1": {
         "title": "Acelerar el diagnóstico",
