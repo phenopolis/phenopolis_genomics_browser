@@ -30,6 +30,7 @@ import TranslateIcon from '@material-ui/icons/Translate';
 import SupervisedUserCircleIcon from '@material-ui/icons/SupervisedUserCircle';
 import ShoppingCartIcon from '@material-ui/icons/ShoppingCart';
 
+import Footer from '../General/Footer';
 import NoSidebar from './NoSidebar';
 import LoginBox from './LoginBox';
 
@@ -256,7 +257,10 @@ class NoLoginBar extends React.Component {
           </Toolbar>
         </AppBar>
 
-        <main>{this.props.children}</main>
+        <main>
+          {this.props.children}
+          <Footer />
+        </main>
       </div>
     );
   }

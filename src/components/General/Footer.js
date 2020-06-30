@@ -112,7 +112,7 @@ export default function StickyFooter() {
             <Grid item xs={12} md={8}>
               <Typography variant="body2" gutterBottom>
                 <Trans i18nKey="Footer.Citation">
-                  If you use Phenopolis, please cite us as:{' '}
+                  If you use Phenopolis, please cite us as:
                   <a href="https://doi.org/10.1093/bioinformatics/btx147" className={classes.a}>
                     Pontikos, N. et al. (2017). Phenopolis: an open platform for harmonization and
                     analysis of genetic and phenotypic data. Bioinformatics, 9, 7

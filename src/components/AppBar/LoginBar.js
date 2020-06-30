@@ -44,6 +44,7 @@ import ChevronLeftIcon from '@material-ui/icons/ChevronLeft';
 
 // import Sidebar from './Sidebar';
 // import NavSearch from './NavSearch';
+import Footer from '../General/Footer';
 import DrawerSearch from './DrawerSearch';
 
 import { getUsername } from '../../redux/selectors';
@@ -478,6 +479,7 @@ class LoginBar extends React.Component {
         <main className={classes.content}>
           <div className={classes.toolbar} />
           {this.props.children}
+          <Footer />
         </main>
       </div>
     );
