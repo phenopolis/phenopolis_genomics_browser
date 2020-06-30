@@ -19,6 +19,8 @@ import {
   ListItemIcon,
   ListItemText,
   Avatar,
+  AppBar,
+  CssBaseline,
 } from '@material-ui/core';
 
 import MenuIcon from '@material-ui/icons/Menu';
@@ -101,154 +103,161 @@ class NoLoginBar extends React.Component {
     };
 
     return (
-      <Toolbar>
-        <Grid container direction="row" justify="center" alignItems="center">
-          <Hidden mdUp>
-            <Grid item xs={2}>
-              <IconButton size="small" onClick={() => this.OpenSideBar()}>
-                <MenuIcon className={classes.menuicon} />
-              </IconButton>
-            </Grid>
-          </Hidden>
+      <div className={classes.root}>
+        <CssBaseline />
+        <AppBar position="relative" className={classes.appbar}>
+          <Toolbar>
+            <Grid container direction="row" justify="center" alignItems="center">
+              <Hidden mdUp>
+                <Grid item xs={2}>
+                  <IconButton size="small" onClick={() => this.OpenSideBar()}>
+                    <MenuIcon className={classes.menuicon} />
+                  </IconButton>
+                </Grid>
+              </Hidden>
 
-          <Grid item xs={10} md={1} className={classes.grid}>
-            <Typography
-              className={classes.Homelabel}
-              variant="h6"
-              color="inherit"
-              noWrap
-              component={Link}
-              to="/">
-              Phenopolis
-            </Typography>
-          </Grid>
+              <Grid item xs={10} md={1} className={classes.grid}>
+                <Typography
+                  className={classes.Homelabel}
+                  variant="h6"
+                  color="inherit"
+                  noWrap
+                  component={Link}
+                  to="/">
+                  Phenopolis
+                </Typography>
+              </Grid>
 
-          <Hidden smDown>
-            <Grid item xs={6} className={classes.gridpaper} />
-          </Hidden>
+              <Hidden smDown>
+                <Grid item xs={6} className={classes.gridpaper} />
+              </Hidden>
 
-          <Hidden smDown>
-            <div>
-              {/* <BottomNavigationAction
+              <Hidden smDown>
+                <div>
+                  {/* <BottomNavigationAction
 								className={classes.navigationbutton}
 								label={t('AppBar.NoLoginBar.Label_Explore')}
 								showLabel
 								icon={<Avatar src={require('../../assets/image/phenopolis_logo_white.png')} className={classes.avatar} />}
 								onClick={(event) => this.handleExploreClick(event)}
 							/> */}
-              <BottomNavigationAction
-                className={classes.navigationbutton}
-                label={t('AppBar.NoLoginBar.Label_Publication')}
-                showLabel
-                icon={<DescriptionIcon />}
-                component={Link}
-                to="/publications"
+                  <BottomNavigationAction
+                    className={classes.navigationbutton}
+                    label={t('AppBar.NoLoginBar.Label_Publication')}
+                    showLabel
+                    icon={<DescriptionIcon />}
+                    component={Link}
+                    to="/publications"
+                  />
+                  <BottomNavigationAction
+                    className={classes.navigationbutton}
+                    label={t('AppBar.NoLoginBar.Label_Language')}
+                    showLabel
+                    icon={<TranslateIcon />}
+                    onClick={(event) => this.handleLanClick(event)}
+                  />
+                  <BottomNavigationAction
+                    className={classes.navigationbutton}
+                    label={t('AppBar.NoLoginBar.Label_Login')}
+                    showLabel
+                    icon={<AccountCircleIcon />}
+                    onClick={() => this.OpenDialog()}
+                  />
+                </div>
+              </Hidden>
+            </Grid>
+
+            <Menu
+              id="simple-menu"
+              anchorEl={this.state.anchorExplore}
+              keepMounted
+              open={Boolean(this.state.openExplore)}
+              style={{ top: '3em' }}
+              onClose={() => this.OpenExplore()}>
+              <MenuItem component={Link} to="/publications" onClick={() => this.OpenExplore()}>
+                <ListItemIcon>
+                  <DescriptionIcon />
+                </ListItemIcon>
+                <ListItemText
+                  classes={{ primary: classes.listItemText }}
+                  primary={t('AppBar.NoLoginBar.Label_Publication')}
+                />
+              </MenuItem>
+              <MenuItem component={Link} to="/product" onClick={() => this.OpenExplore()}>
+                <ListItemIcon>
+                  <ShoppingCartIcon />
+                </ListItemIcon>
+                <ListItemText
+                  classes={{ primary: classes.listItemText }}
+                  primary={t('AppBar.NoLoginBar.Label_Product')}
+                />
+              </MenuItem>
+            </Menu>
+
+            <Menu
+              id="simple-menu"
+              anchorEl={this.state.anchorEl}
+              keepMounted
+              open={Boolean(this.state.openLan)}
+              style={{ top: '3em' }}
+              onClose={() => this.OpenLan()}>
+              <MenuItem onClick={() => changeLanguage('en')}>
+                <ListItemIcon>
+                  <img className={classes.imageIcon} src={GB} />
+                </ListItemIcon>
+                <ListItemText classes={{ primary: classes.listItemText }} primary="English" />
+              </MenuItem>
+              <MenuItem onClick={() => changeLanguage('cn')}>
+                <ListItemIcon>
+                  <img className={classes.imageIcon} src={CN} />
+                </ListItemIcon>
+                <ListItemText classes={{ primary: classes.listItemText }} primary="中文" />
+              </MenuItem>
+              <MenuItem onClick={() => changeLanguage('ja')}>
+                <ListItemIcon>
+                  <img className={classes.imageIcon} src={JP} />
+                </ListItemIcon>
+                <ListItemText classes={{ primary: classes.listItemText }} primary="日本語" />
+              </MenuItem>
+              <MenuItem onClick={() => changeLanguage('de')}>
+                <ListItemIcon>
+                  <img className={classes.imageIcon} src={DE} />
+                </ListItemIcon>
+                <ListItemText classes={{ primary: classes.listItemText }} primary="Deutsch" />
+              </MenuItem>
+              <MenuItem onClick={() => changeLanguage('gr')}>
+                <ListItemIcon>
+                  <img className={classes.imageIcon} src={GR} />
+                </ListItemIcon>
+                <ListItemText classes={{ primary: classes.listItemText }} primary="Ελληνικά" />
+              </MenuItem>
+              <MenuItem onClick={() => changeLanguage('es')}>
+                <ListItemIcon>
+                  <img className={classes.imageIcon} src={ES} />
+                </ListItemIcon>
+                <ListItemText classes={{ primary: classes.listItemText }} primary="Español" />
+              </MenuItem>
+            </Menu>
+
+            <Dialog
+              open={this.state.openLoginDialog}
+              onClose={() => this.OpenDialog()}
+              aria-labelledby="alert-dialog-title"
+              aria-describedby="alert-dialog-description">
+              <LoginBox onLoginSuccess={() => this.OpenDialog()} />
+            </Dialog>
+
+            <Drawer open={this.state.openSideBar} onClose={() => this.OpenSideBar()}>
+              <NoSidebar
+                SidebarClicked={() => this.OpenSideBar()}
+                SidebarLogin={() => this.OpenDialog()}
               />
-              <BottomNavigationAction
-                className={classes.navigationbutton}
-                label={t('AppBar.NoLoginBar.Label_Language')}
-                showLabel
-                icon={<TranslateIcon />}
-                onClick={(event) => this.handleLanClick(event)}
-              />
-              <BottomNavigationAction
-                className={classes.navigationbutton}
-                label={t('AppBar.NoLoginBar.Label_Login')}
-                showLabel
-                icon={<AccountCircleIcon />}
-                onClick={() => this.OpenDialog()}
-              />
-            </div>
-          </Hidden>
-        </Grid>
+            </Drawer>
+          </Toolbar>
+        </AppBar>
 
-        <Menu
-          id="simple-menu"
-          anchorEl={this.state.anchorExplore}
-          keepMounted
-          open={Boolean(this.state.openExplore)}
-          style={{ top: '3em' }}
-          onClose={() => this.OpenExplore()}>
-          <MenuItem component={Link} to="/publications" onClick={() => this.OpenExplore()}>
-            <ListItemIcon>
-              <DescriptionIcon />
-            </ListItemIcon>
-            <ListItemText
-              classes={{ primary: classes.listItemText }}
-              primary={t('AppBar.NoLoginBar.Label_Publication')}
-            />
-          </MenuItem>
-          <MenuItem component={Link} to="/product" onClick={() => this.OpenExplore()}>
-            <ListItemIcon>
-              <ShoppingCartIcon />
-            </ListItemIcon>
-            <ListItemText
-              classes={{ primary: classes.listItemText }}
-              primary={t('AppBar.NoLoginBar.Label_Product')}
-            />
-          </MenuItem>
-        </Menu>
-
-        <Menu
-          id="simple-menu"
-          anchorEl={this.state.anchorEl}
-          keepMounted
-          open={Boolean(this.state.openLan)}
-          style={{ top: '3em' }}
-          onClose={() => this.OpenLan()}>
-          <MenuItem onClick={() => changeLanguage('en')}>
-            <ListItemIcon>
-              <img className={classes.imageIcon} src={GB} />
-            </ListItemIcon>
-            <ListItemText classes={{ primary: classes.listItemText }} primary="English" />
-          </MenuItem>
-          <MenuItem onClick={() => changeLanguage('cn')}>
-            <ListItemIcon>
-              <img className={classes.imageIcon} src={CN} />
-            </ListItemIcon>
-            <ListItemText classes={{ primary: classes.listItemText }} primary="中文" />
-          </MenuItem>
-          <MenuItem onClick={() => changeLanguage('ja')}>
-            <ListItemIcon>
-              <img className={classes.imageIcon} src={JP} />
-            </ListItemIcon>
-            <ListItemText classes={{ primary: classes.listItemText }} primary="日本語" />
-          </MenuItem>
-          <MenuItem onClick={() => changeLanguage('de')}>
-            <ListItemIcon>
-              <img className={classes.imageIcon} src={DE} />
-            </ListItemIcon>
-            <ListItemText classes={{ primary: classes.listItemText }} primary="Deutsch" />
-          </MenuItem>
-          <MenuItem onClick={() => changeLanguage('gr')}>
-            <ListItemIcon>
-              <img className={classes.imageIcon} src={GR} />
-            </ListItemIcon>
-            <ListItemText classes={{ primary: classes.listItemText }} primary="Ελληνικά" />
-          </MenuItem>
-          <MenuItem onClick={() => changeLanguage('es')}>
-            <ListItemIcon>
-              <img className={classes.imageIcon} src={ES} />
-            </ListItemIcon>
-            <ListItemText classes={{ primary: classes.listItemText }} primary="Español" />
-          </MenuItem>
-        </Menu>
-
-        <Dialog
-          open={this.state.openLoginDialog}
-          onClose={() => this.OpenDialog()}
-          aria-labelledby="alert-dialog-title"
-          aria-describedby="alert-dialog-description">
-          <LoginBox onLoginSuccess={() => this.OpenDialog()} />
-        </Dialog>
-
-        <Drawer open={this.state.openSideBar} onClose={() => this.OpenSideBar()}>
-          <NoSidebar
-            SidebarClicked={() => this.OpenSideBar()}
-            SidebarLogin={() => this.OpenDialog()}
-          />
-        </Drawer>
-      </Toolbar>
+        <main>{this.props.children}</main>
+      </div>
     );
   }
 }
@@ -259,16 +268,22 @@ NoLoginBar.propTypes = {
 };
 
 const styles = (theme) => ({
+  root: {
+    // display: 'flex',
+  },
+  appbar: {
+    backgroundColor: '#2E84CF',
+  },
   menuicon: {
     color: 'white',
   },
   Homelabel: {
     textDecoration: 'none',
   },
-  root: {
-    width: 100,
-    backgroundColor: '#2E84CF',
-  },
+  // root: {
+  //   width: 100,
+  //   backgroundColor: '#2E84CF',
+  // },
   navigationbutton: {
     color: 'white',
     'max-width': 'max-content',

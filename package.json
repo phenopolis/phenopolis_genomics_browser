@@ -29,6 +29,7 @@
     "react-countup": "^4.3.3",
     "react-dom": "^16.13.1",
     "react-feather": "^2.0.8",
+    "react-functional-select": "^2.5.1",
     "react-i18next": "^11.4.0",
     "react-parallax": "^2.2.4",
     "react-perfect-scrollbar": "^1.5.8",
@@ -44,7 +45,7 @@
     "redux": "^4.0.5",
     "redux-devtools-extension": "^2.13.8",
     "redux-thunk": "^2.3.0",
-    "styled-components": "^5.1.0",
+    "styled-components": "^5.1.1",
     "typeface-roboto": "0.0.75",
     "underscore": "^1.10.2",
     "universal-cookie": "^4.0.3"

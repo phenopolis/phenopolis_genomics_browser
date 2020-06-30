@@ -46,19 +46,18 @@ function App() {
           <CustomizedSnackbars />
 
           <ThemeProvider theme={outerTheme}>
-            <HomeAppBar />
-
-            <Route exact path="/" component={Home} />
-            <Route path="/login" component={Login} />
-            <Route path="/publications" component={Publication} />
-            <Route path="/product" component={Product} />
-            <Route path="/search" component={Search} />
-            <Route path="/my_patients" component={MyPatient} />
-            <Route path="/gene/:geneId" component={Gene} />
-            <Route path="/hpo/:hpoId" component={HPO} />
-            <Route path="/individual/:individualId" component={Individual} />
-            <Route path="/variant/:variantId" component={Variant} />
-
+            <HomeAppBar>
+              <Route exact path="/" component={Home} />
+              <Route path="/login" component={Login} />
+              <Route path="/publications" component={Publication} />
+              <Route path="/product" component={Product} />
+              <Route path="/search" component={Search} />
+              <Route path="/my_patients" component={MyPatient} />
+              <Route path="/gene/:geneId" component={Gene} />
+              <Route path="/hpo/:hpoId" component={HPO} />
+              <Route path="/individual/:individualId" component={Individual} />
+              <Route path="/variant/:variantId" component={Variant} />
+            </HomeAppBar>
             <Footer />
           </ThemeProvider>
         </Router>

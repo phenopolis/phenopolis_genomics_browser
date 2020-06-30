@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useCallback } from 'react';
 import PropTypes from 'prop-types';
 import { withStyles } from '@material-ui/core/styles';
 import compose from 'recompose/compose';
@@ -9,7 +9,8 @@ import ReactEcharts from 'echarts-for-react';
 
 import { Card, CardContent, Grid, TextField, Avatar, Icon } from '@material-ui/core';
 import clsx from 'clsx';
-import Autocomplete from '@material-ui/lab/Autocomplete';
+// import Autocomplete from '@material-ui/lab/Autocomplete';
+import { Select } from 'react-functional-select';
 
 import BoxplotOption from '../../assets/echartJS/BoxplotOption';
 import ScatterOption from '../../assets/echartJS/ScatterOption';
@@ -29,21 +30,47 @@ class Plots extends React.Component {
     };
   }
 
-  componentWillReceiveProps(nextProps) {
-    this.getSeriesData(this.state.xAxis, this.state.yAxis);
-  }
+  // componentWillReceiveProps(nextProps) {
+  //   this.getSeriesData(this.state.xAxis, this.state.yAxis);
+  // }
 
-  handleSelectXAxis = (event, newValue, index) => {
-    this.setState({ xAxis: newValue }, () => {
+  // handleSelectXAxis = (event, newValue, index) => {
+  //   this.setState({ xAxis: newValue }, () => {
+  //     this.getSeriesData(this.state.xAxis, this.state.yAxis);
+  //   });
+  // };
+
+  // handleSelectYAxis = (event, newValue, index) => {
+  //   this.setState({ yAxis: newValue }, () => {
+  //     this.getSeriesData(this.state.xAxis, this.state.yAxis);
+  //   });
+  // };
+
+  RectSelectXAxis = (selectedOption) => {
+    this.setState({ xAxis: selectedOption }, () => {
       this.getSeriesData(this.state.xAxis, this.state.yAxis);
     });
   };
 
-  handleSelectYAxis = (event, newValue, index) => {
-    this.setState({ yAxis: newValue }, () => {
+  RectSelectYAxis = (selectedOption) => {
+    this.setState({ yAxis: selectedOption }, () => {
       this.getSeriesData(this.state.xAxis, this.state.yAxis);
     });
   };
+
+  // RectSelectYAxis = (option) => {
+  //   console.log(option)
+
+  //   if (option !== null) {
+  //     // console.log(option)
+  //     // this.setState(option => ({
+  //     //   yAxis: option
+  //     // }))
+  //     // this.setState({ yAxis: option }, () => {
+  //     //   this.getSeriesData(this.state.xAxis, this.state.yAxis);
+  //     // });
+  //   }
+  // }
 
   getSeriesData = (xAxis, yAxis) => {
     if ((xAxis === null) & (yAxis === null)) {
@@ -270,8 +297,53 @@ class Plots extends React.Component {
         <CardContent>
           <Grid container justify="center" spacing={5} style={{ marginBottom: '2em' }}>
             <Grid item xs={2}>
+              <Select
+                options={this.props.variableList.filter(
+                  (x) =>
+                    ((x.type === 'number') | (x.type === 'string') | (x.type === 'object')) & x.show
+                )}
+                isClearable={true}
+                placeholder={'Select Y Axis'}
+                onOptionChange={this.RectSelectYAxis}
+                getOptionValue={(option) => option}
+                getOptionLabel={(option) => option.type + '  -  ' + option.name}
+                renderOptionLabel={(option) => (
+                  <React.Fragment>
+                    <div className={classes.selectOption}>
+                      {option.type === 'string' ? (
+                        <Avatar
+                          className={classes.smallAvatar}
+                          style={{ color: 'white', backgroundColor: '#26a69a' }}>
+                          T
+                        </Avatar>
+                      ) : option.type === 'number' ? (
+                        <Avatar
+                          className={classes.smallAvatar}
+                          style={{ color: 'white', backgroundColor: '#ef5350' }}>
+                          9
+                        </Avatar>
+                      ) : option.type === 'object' ? (
+                        <Avatar
+                          className={classes.smallAvatar}
+                          style={{ color: 'white', backgroundColor: '#42a5f5' }}>
+                          <Icon className={clsx(classes.smallFilter, 'fas fa-ellipsis-h')} />
+                        </Avatar>
+                      ) : (
+                        <Avatar
+                          className={classes.smallAvatar}
+                          style={{ color: 'white', backgroundColor: 'black' }}>
+                          ?
+                        </Avatar>
+                      )}
+                      <span>{option.name}</span>
+                    </div>
+                  </React.Fragment>
+                )}
+              />
+            </Grid>
+            {/* <Grid item xs={2}>
               <Autocomplete
-                value={this.state.yAxis}
+                // value={this.state.yAxis}
                 onChange={(event, newValue) => this.handleSelectYAxis(event, newValue)}
                 id="combo-box-demo"
                 size="small"
@@ -301,12 +373,12 @@ class Plots extends React.Component {
                         <Icon className={clsx(classes.smallFilter, 'fas fa-ellipsis-h')} />
                       </Avatar>
                     ) : (
-                      <Avatar
-                        className={classes.smallAvatar}
-                        style={{ color: 'white', backgroundColor: 'black' }}>
-                        ?
-                      </Avatar>
-                    )}
+                            <Avatar
+                              className={classes.smallAvatar}
+                              style={{ color: 'white', backgroundColor: 'black' }}>
+                              ?
+                            </Avatar>
+                          )}
                     <span>{option.name}</span>
                   </React.Fragment>
                 )}
@@ -315,9 +387,52 @@ class Plots extends React.Component {
                 )}
                 style={{ width: '100%' }}
               />
-            </Grid>
+            </Grid> */}
             <Grid item xs={2}>
-              <Autocomplete
+              <Select
+                options={this.props.variableList.filter(
+                  (x) =>
+                    ((x.type === 'number') | (x.type === 'string') | (x.type === 'object')) & x.show
+                )}
+                isClearable={true}
+                placeholder={'Select X Axis'}
+                onOptionChange={this.RectSelectXAxis}
+                getOptionValue={(option) => option}
+                getOptionLabel={(option) => option.type + '  -  ' + option.name}
+                renderOptionLabel={(option) => (
+                  <React.Fragment>
+                    <div className={classes.selectOption}>
+                      {option.type === 'string' ? (
+                        <Avatar
+                          className={classes.smallAvatar}
+                          style={{ color: 'white', backgroundColor: '#26a69a' }}>
+                          T
+                        </Avatar>
+                      ) : option.type === 'number' ? (
+                        <Avatar
+                          className={classes.smallAvatar}
+                          style={{ color: 'white', backgroundColor: '#ef5350' }}>
+                          9
+                        </Avatar>
+                      ) : option.type === 'object' ? (
+                        <Avatar
+                          className={classes.smallAvatar}
+                          style={{ color: 'white', backgroundColor: '#42a5f5' }}>
+                          <Icon className={clsx(classes.smallFilter, 'fas fa-ellipsis-h')} />
+                        </Avatar>
+                      ) : (
+                        <Avatar
+                          className={classes.smallAvatar}
+                          style={{ color: 'white', backgroundColor: 'black' }}>
+                          ?
+                        </Avatar>
+                      )}
+                      <span>{option.name}</span>
+                    </div>
+                  </React.Fragment>
+                )}
+              />
+              {/* <Autocomplete
                 value={this.state.xAxis}
                 onChange={(event, newValue) => this.handleSelectXAxis(event, newValue)}
                 id="combo-box-demo"
@@ -347,12 +462,12 @@ class Plots extends React.Component {
                         <Icon className={clsx(classes.smallFilter, 'fas fa-ellipsis-h')} />
                       </Avatar>
                     ) : (
-                      <Avatar
-                        className={classes.smallAvatar}
-                        style={{ color: 'white', backgroundColor: 'black' }}>
-                        ?
-                      </Avatar>
-                    )}
+                            <Avatar
+                              className={classes.smallAvatar}
+                              style={{ color: 'white', backgroundColor: 'black' }}>
+                              ?
+                            </Avatar>
+                          )}
                     <span>{option.name}</span>
                   </React.Fragment>
                 )}
@@ -361,7 +476,7 @@ class Plots extends React.Component {
                   <TextField {...params} label="Select X Axis" variant="outlined" />
                 )}
                 style={{ width: '100%' }}
-              />
+              /> */}
             </Grid>
           </Grid>
 
@@ -418,6 +533,12 @@ const styles = (theme) => ({
     // '-o-transform': 'rotate(270deg)',
     // '-ms-transform': 'rotate(270deg)',
     // 'transform': 'rotate(270deg)',
+  },
+  selectOption: {
+    height: `100%`,
+    display: `flex`,
+    alignItems: `center`,
+    flexDirection: `row`,
   },
   smallAvatar: {
     fontSize: 12,

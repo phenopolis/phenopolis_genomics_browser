@@ -39,13 +39,15 @@ class HomeAppBar extends React.Component {
     }
 
     return (
-      <AppBar position="relative" className={classes.appbar}>
+      <div>
+        {/* <AppBar position="relative" className={classes.appbar}> */}
         {this.props.reduxName === '' ? (
-          <NoLoginBar />
+          <NoLoginBar> {this.props.children} </NoLoginBar>
         ) : (
-          <LoginBar username={this.props.reduxName} />
+          <LoginBar username={this.props.reduxName}>{this.props.children}</LoginBar>
         )}
-      </AppBar>
+        {/* </AppBar> */}
+      </div>
     );
   }
 }
@@ -55,27 +57,7 @@ HomeAppBar.propTypes = {
   width: PropTypes.oneOf(['lg', 'md', 'sm', 'xl', 'xs']).isRequired,
 };
 
-const styles = (theme) => ({
-  appbar: {
-    backgroundColor: '#2E84CF',
-  },
-  menuicon: {
-    color: 'white',
-  },
-  Homelabel: {
-    textDecoration: 'none',
-  },
-  root: {
-    width: 100,
-    backgroundColor: '#2E84CF',
-  },
-  navigationbutton: {
-    color: 'white',
-  },
-  grid: {
-    textAlign: 'center',
-  },
-});
+const styles = (theme) => ({});
 
 const mapStateToProps = (state) => ({ reduxName: getUsername(state) });
 export default compose(withStyles(styles), withWidth(), connect(mapStateToProps, {}))(HomeAppBar);
