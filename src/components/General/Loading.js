@@ -1,27 +1,20 @@
 import React from 'react';
+import { makeStyles } from '@material-ui/styles';
 import PropTypes from 'prop-types';
 
-import { withStyles } from '@material-ui/core/styles';
 import {
   CssBaseline,
   Paper,
   Container,
   Box,
   Typography,
-  Grid,
-  LinearProgress,
+  Grid
 } from '@material-ui/core';
 
 import '../../assets/css/loading.css';
 
-class Loading extends React.Component {
-  constructor(props) {
-    super(props);
-  }
-
-  render() {
-    const { classes } = this.props;
-
+const Loading = ({ message }) => {
+  const classes = useStyles();
     return (
       <React.Fragment>
         <CssBaseline />
@@ -69,21 +62,19 @@ class Loading extends React.Component {
                 <Grid item xs={10} className="mt-5 mb-3">
                   <Typography component="div">
                     <Box fontSize="h5.fontSize" style={{ color: 'grey', fontWeight: '700' }} m={2}>
-                      {this.props.message}
+                      {message}
                     </Box>
                   </Typography>
                 </Grid>
               </Grid>
-              {/* <LinearProgress color='secondary' className={classes.progress} /> */}
             </Paper>
           </Container>
         </div>
       </React.Fragment>
-    );
-  }
+)
 }
 
-const styles = (theme) => ({
+const useStyles = makeStyles(theme => ({
   root: {
     height: 'calc(100vh - 64px)',
     position: 'relative',
@@ -91,16 +82,16 @@ const styles = (theme) => ({
     padding: '5em',
   },
   paper: {
-    padding: theme.spacing(5),
+    padding: '5em',
   },
   progress: {
     color: '#2E84CF',
     marginTop: '3em',
   },
-});
+}));
 
 Loading.propTypes = {
   classes: PropTypes.object.isRequired,
 };
 
-export default withStyles(styles)(Loading);
+export default Loading;

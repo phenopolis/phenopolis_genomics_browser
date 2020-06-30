@@ -2,21 +2,18 @@ import React from 'react';
 import CssBaseline from '@material-ui/core/CssBaseline';
 import HomeBanner from '../components/Home/HomeBanner';
 import PublicationList from '../components/Publication/PublicationList';
+import { useTranslation } from 'react-i18next';
 
-import { withTranslation } from 'react-i18next';
+const Publication = () => {
+    const { t } = useTranslation();
 
-class Publication extends React.Component {
-  render() {
-    const { t, i18n } = this.props;
-
-    return (
-      <>
-        <CssBaseline />
-        <HomeBanner BannerText={t('Publication.Title')} />
-        <PublicationList />
-      </>
-    );
-  }
+    return(
+        <>
+          <CssBaseline />
+          <HomeBanner BannerText={t('Publication.Title')} />
+          <PublicationList />
+        </>
+    )
 }
 
-export default withTranslation()(Publication);
+export default Publication

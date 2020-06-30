@@ -1,24 +1,19 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import compose from 'recompose/compose';
-
-import { withStyles } from '@material-ui/core/styles';
-import { withWidth, Container, Box, Typography } from '@material-ui/core';
-
-import { withTranslation } from 'react-i18next';
-
+import { useTranslation } from 'react-i18next';
+import { makeStyles } from '@material-ui/styles';
+import { Container, Box, Typography } from '@material-ui/core';
 import paperlist from '../../assets/js/paperlist';
 
-class PublicationList extends React.Component {
-  render() {
-    const { classes } = this.props;
-    const { t, i18n } = this.props;
-    const pl = paperlist;
+const PublicationList = () => {
+  const { t } = useTranslation();
+  const classes = useStyles();
+  const publications = paperlist;
 
-    return (
+  return (
       <div className={classes.root}>
         <Container maxWidth="md">
-          {pl.map((section, sid) => {
+          {publications.map((section, sid) => {
             return (
               <Typography component="div" key={sid}>
                 <Box fontWeight="fontWeightBold" fontSize="h4.fontSize" m={1}>
@@ -53,16 +48,10 @@ class PublicationList extends React.Component {
           })}
         </Container>
       </div>
-    );
-  }
+  )
 }
 
-PublicationList.propTypes = {
-  classes: PropTypes.object.isRequired,
-  width: PropTypes.oneOf(['lg', 'md', 'sm', 'xl', 'xs']).isRequired,
-};
-
-const styles = (theme) => ({
+const useStyles = makeStyles(theme => ({
   root: {
     padding: '4em 0em 4em 0em',
     backgroundColor: '#eeeeee',
@@ -79,6 +68,11 @@ const styles = (theme) => ({
     textIndent: '-1.35em',
     paddingLeft: '4em',
   },
-});
+}));
 
-export default compose(withStyles(styles), withWidth(), withTranslation())(PublicationList);
+PublicationList.propTypes = {
+  classes: PropTypes.object.isRequired,
+  width: PropTypes.oneOf(['lg', 'md', 'sm', 'xl', 'xs']).isRequired,
+};
+
+export default PublicationList;
