@@ -13,10 +13,8 @@ import logging
 from logging.handlers import SMTPHandler, RotatingFileHandler
 from time import strftime
 import psycopg2
-# flask import
 from flask import Flask, session, current_app, g, Response, request, redirect, jsonify
 from flask_sessionstore import Session, SqlAlchemySessionInterface
-# from flask_session import SqlAlchemySessionInterface
 from flask_compress import Compress
 from flask_caching import Cache
 from flask_mail import Mail
@@ -24,25 +22,17 @@ from flask_mail import Message
 from passlib.hash import argon2
 from werkzeug.exceptions import HTTPException
 from flask_sqlalchemy import SQLAlchemy
-# from FlaskSQLAlchemySession import set_db_session_interface
 import pysam
 from db import *
 
 # Load default config and override config from an environment variable
 application = Flask(__name__)
 application.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = True
-# application.secret_key=os.urandom(24)
-
-mail_handler = SMTPHandler(mailhost=(os.environ['MAIL_SERVER'], os.environ['MAIL_PORT']), fromaddr='no-reply@phenopolis.org', toaddrs=['nikolas.pontikos@phenopolis.org', 'ismail.moghul@phenopolis.org'], subject='Phenopolis Error', credentials=(os.environ['MAIL_USERNAME'], os.environ['MAIL_PASSWORD']))
-mail_handler.setLevel(logging.ERROR)
-application.logger.addHandler(mail_handler)
 
 logging.getLogger().addHandler(logging.StreamHandler())
 logging.getLogger().setLevel(logging.INFO)
 
 Compress(application)
-# app.config['COMPRESS_DEBUG'] = True
-# cache = SimpleCache(default_timeout=70*60*24)
 cache = Cache(application, config={'CACHE_TYPE': 'simple'})
 
 # Check Configuration section for more details
@@ -56,15 +46,10 @@ application.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql+psycopg2://%s:%s@%s/
 SESSION_COOKIE_NAME = 'phenopolis_api'
 SESSION_TYPE = 'sqlalchemy'
 SESSION_SQLALCHEMY = create_engine(application.config['SQLALCHEMY_DATABASE_URI'], echo=True)
-# SESSION_SQLALCHEMY_TABLE='session'
 db = SQLAlchemy(application)
 db.init_app(application)
 application.session_interface = SqlAlchemySessionInterface(application, db, "test_sessions", "test_sess_")
-# set_db_session_interface(application, data_serializer=json)
-# db.create_all()
 application.permanent_session_lifetime = datetime.timedelta(hours=1)
-# sess=Session(application)
-# sess.init_app(application)
 
 # print(dir(db))
 
@@ -76,7 +61,6 @@ application.config['MAIL_PASSWORD'] = os.environ['MAIL_PASSWORD']
 application.config['MAIL_USE_TLS'] = os.environ['MAIL_USE_TLS'] == 'true'
 application.config['MAIL_USE_SSL'] = os.environ['MAIL_USE_SSL'] == 'true'
 mail = Mail(application)
-
 
 def get_db():
     '''
@@ -96,11 +80,6 @@ def get_db_session():
     current application context.
     """
     if not hasattr(g, 'dbsession'):
-        # ahost = os.environ['DB_HOST']
-        # adatabase = os.environ['DB_DATABASE']
-        # auser = os.environ['DB_USER']
-        # apassword = os.environ['DB_PASSWORD']
-        # aport = os.environ['DB_PORT']
         engine = create_engine(application.config['SQLALCHEMY_DATABASE_URI'], echo=True)
         engine.connect()
         DbSession = sessionmaker(bind=engine)
@@ -134,8 +113,6 @@ def after_request(response):
     '''
     timestamp = strftime('[%Y-%b-%d %H:%M]')
     logging.error('%s %s %s %s %s %s', timestamp, request.remote_addr, request.method, request.scheme, request.full_path, response.status)
-    # msg = Message('error', sender="no-reply@phenopolis.org", recipients=["no-reply@phenopolis.org"])
-    # mail.send(msg)
     return response
 
 
