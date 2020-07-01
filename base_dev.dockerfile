@@ -28,9 +28,3 @@ RUN pip install -U gunicorn
 RUN pip cache purge
 RUN apk del postgresql-dev gcc python3-dev musl-dev git libffi-dev zlib-dev bzip2-dev xz-dev curl-dev make
 
-# copy project
-COPY ./application.py ./
-COPY ./views views/
-COPY ./db/__init__.py db/__init__.py
-
-CMD [ "gunicorn", "-b", "0.0.0.0:8000", "--workers=1", "--threads=15", "application:application" ]

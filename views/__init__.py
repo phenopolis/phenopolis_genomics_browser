@@ -138,6 +138,7 @@ def after_request(response):
     # mail.send(msg)
     return response
 
+
 @application.errorhandler(Exception)
 def exceptions(e):
     '''
@@ -170,6 +171,7 @@ def exceptions(e):
     })
     response.content_type = "application/json"
     return response
+
 
 @application.route('/statistics')
 def phenopolis_statistics():
