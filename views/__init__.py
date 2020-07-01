@@ -36,11 +36,11 @@ Compress(application)
 cache = Cache(application, config={'CACHE_TYPE': 'simple'})
 
 # Check Configuration section for more details
-host = os.environ['DB_HOST']
-database = os.environ['DB_DATABASE']
-user = os.environ['DB_USER']
-apassword = os.environ['DB_PASSWORD']
-port = os.environ['DB_PORT']
+host = os.getenv('DB_HOST', '0.0.0.0')
+database = os.getenv('DB_DATABASE', 'phenopolis_db')
+user = os.getenv('DB_USER', 'phenopolis_api')
+apassword = os.getenv('DB_PASSWORD', 'phenopolis_api')
+port = os.getenv('DB_PORT', 5432)
 
 application.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql+psycopg2://%s:%s@%s/%s' % (user, apassword, host, database,)
 SESSION_COOKIE_NAME = 'phenopolis_api'
@@ -51,15 +51,16 @@ db.init_app(application)
 application.session_interface = SqlAlchemySessionInterface(application, db, "test_sessions", "test_sess_")
 application.permanent_session_lifetime = datetime.timedelta(hours=1)
 
-# print(dir(db))
-
-mail = Mail(application)
-application.config['MAIL_SERVER'] = os.environ['MAIL_SERVER']
-application.config['MAIL_PORT'] = os.environ['MAIL_PORT']
-application.config['MAIL_USERNAME'] = os.environ['MAIL_USERNAME']
-application.config['MAIL_PASSWORD'] = os.environ['MAIL_PASSWORD']
-application.config['MAIL_USE_TLS'] = os.environ['MAIL_USE_TLS'] == 'true'
-application.config['MAIL_USE_SSL'] = os.environ['MAIL_USE_SSL'] == 'true'
+application.config['MAIL_SERVER'] = os.getenv('MAIL_SERVER', 'smtp.gmail.com')
+application.config['MAIL_PORT'] = os.getenv('MAIL_PORT', 587)
+application.config['MAIL_USERNAME'] = os.getenv('MAIL_USERNAME', 'no-reply@phenopolis.org')
+application.config['MAIL_PASSWORD'] = os.getenv('MAIL_PASSWORD', 'get_password')
+application.config['MAIL_USE_TLS'] = os.getenv('MAIL_USE_TLS', 'true')
+application.config['MAIL_USE_SSL'] = os.getenv('MAIL_USE_SSL', 'false')
+application.config['MAIL_SUPPRESS_SEND'] = os.getenv('MAIL_SUPPRESS_SEND', 'true')
+application.config['MAIL_USE_TLS'] = application.config['MAIL_USE_TLS'] == 'true'
+application.config['MAIL_USE_SSL'] = application.config['MAIL_USE_SSL'] == 'true'
+application.config['MAIL_SUPPRESS_SEND'] = application.config['MAIL_SUPPRESS_SEND'] == 'true'
 mail = Mail(application)
 
 def get_db():
