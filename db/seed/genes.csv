@@ -1,0 +1,5 @@
+stop,gene_id,chrom,strand,full_gene_name,gene_name_upper,other_names,canonical_transcript,start,xstop,xstart,gene_name
+111682839,ENSG00000156171,1,-,DNA-damage regulated autophagy modulator 2,DRAM2,"[""PRO180"",""RP5-1180E21.1"",""CORD21"",""WWFQ154"",""MGC54289"",""TMEM77""]",ENST00000286692,111659956,1111682839,1111659956,DRAM2
+76421422,ENSG00000119685,14,+,"tubulin tyrosine ligase-like family, member 5",TTLL5,"[""KIAA0998"",""CORD19"",""STAMP""]",ENST00000298832,76099969,14076421422,14076099969,TTLL5
+111682839,ENSG00000156171,1,-,DNA-damage regulated autophagy modulator 2,DRAM2,"[""PRO180"",""RP5-1180E21.1"",""CORD21"",""WWFQ154"",""MGC54289"",""TMEM77""]",ENST00000286692,111659956,1111682839,1111659956,DRAM2
+76421422,ENSG00000119685,14,+,"tubulin tyrosine ligase-like family, member 5",TTLL5,"[""KIAA0998"",""CORD19"",""STAMP""]",ENST00000298832,76099969,14076421422,14076099969,TTLL5
