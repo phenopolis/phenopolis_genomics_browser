@@ -94,7 +94,7 @@ Start services:
 docker-compose up -d
 ```
 Then load data into postgres db, you may be using either `phenopolis_db_demo.sql` or `phenopolis_database.sql.gz`. Tweak the next lines accordingly:
-```
+```bash
 # NOTE: though phenopolis_db_demo.sql may contain the schema, phenopolis_database.sql.gz does not
 docker-compose exec db sh -c 'createuser rdsadmin -U $DB_USER'
 docker-compose exec db sh -c 'psql -U $DB_USER -d $DB_DATABASE -c "GRANT ALL PRIVILEGES ON DATABASE phenopolis_db TO phenopolis_api;"'
