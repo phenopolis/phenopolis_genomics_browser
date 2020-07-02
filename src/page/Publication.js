@@ -5,15 +5,15 @@ import PublicationList from '../components/Publication/PublicationList';
 import { useTranslation } from 'react-i18next';
 
 const Publication = () => {
-    const { t } = useTranslation();
+  const { t } = useTranslation();
 
-    return(
-        <>
-          <CssBaseline />
-          <HomeBanner BannerText={t('Publication.Title')} />
-          <PublicationList />
-        </>
-    )
-}
+  return (
+    <>
+      <CssBaseline />
+      <HomeBanner BannerText={t('Publication.Title')} />
+      <PublicationList />
+    </>
+  );
+};
 
-export default Publication
+export default Publication;

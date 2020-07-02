@@ -11,47 +11,47 @@ const PublicationList = () => {
   const publications = paperlist;
 
   return (
-      <div className={classes.root}>
-        <Container maxWidth="md">
-          {publications.map((section, sid) => {
-            return (
-              <Typography component="div" key={sid}>
-                <Box fontWeight="fontWeightBold" fontSize="h4.fontSize" m={1}>
-                  {t('Publication.' + section.title)}
-                </Box>
-                {section.data.map((subsection, ssid) => {
-                  return (
-                    <div key={ssid}>
-                      <Box fontWeight="fontWeightBold" fontSize="h5.fontSize" m={1}>
-                        {t('Publication.' + subsection.subtitle)}
-                      </Box>
-                      {subsection.publications.map((paper, index) => {
-                        return (
-                          <Box
-                            className={classes.paperbox}
-                            key={index}
-                            fontSize="subtitle1.fontSize"
-                            m={1}>
-                            {index + 1} .{' '}
-                            <a className={classes.paperlink} href={paper.link}>
-                              {paper.title}
-                            </a>
-                            {paper.display}
-                          </Box>
-                        );
-                      })}
-                    </div>
-                  );
-                })}
-              </Typography>
-            );
-          })}
-        </Container>
-      </div>
-  )
-}
+    <div className={classes.root}>
+      <Container maxWidth="md">
+        {publications.map((section, sid) => {
+          return (
+            <Typography component="div" key={sid}>
+              <Box fontWeight="fontWeightBold" fontSize="h4.fontSize" m={1}>
+                {t('Publication.' + section.title)}
+              </Box>
+              {section.data.map((subsection, ssid) => {
+                return (
+                  <div key={ssid}>
+                    <Box fontWeight="fontWeightBold" fontSize="h5.fontSize" m={1}>
+                      {t('Publication.' + subsection.subtitle)}
+                    </Box>
+                    {subsection.publications.map((paper, index) => {
+                      return (
+                        <Box
+                          className={classes.paperbox}
+                          key={index}
+                          fontSize="subtitle1.fontSize"
+                          m={1}>
+                          {index + 1} .{' '}
+                          <a className={classes.paperlink} href={paper.link}>
+                            {paper.title}
+                          </a>
+                          {paper.display}
+                        </Box>
+                      );
+                    })}
+                  </div>
+                );
+              })}
+            </Typography>
+          );
+        })}
+      </Container>
+    </div>
+  );
+};
 
-const useStyles = makeStyles(theme => ({
+const useStyles = makeStyles((theme) => ({
   root: {
     padding: '4em 0em 4em 0em',
     backgroundColor: '#eeeeee',

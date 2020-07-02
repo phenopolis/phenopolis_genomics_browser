@@ -233,6 +233,7 @@ const styles = (theme) => ({
     marginTop: theme.spacing(5),
   },
   fab: {
+    zIndex: 1,
     position: 'absolute',
     right: theme.spacing(15),
     top: theme.spacing(18),
