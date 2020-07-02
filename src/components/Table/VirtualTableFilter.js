@@ -43,6 +43,7 @@ class VirtualTableFilter extends React.Component {
         string: [
           { des: 'SubString', icon: '=' },
           { des: 'Equal to', icon: '==' },
+          { des: 'Not Empty', icon: '∅' },
         ],
         number: [
           { des: 'SubString', icon: '=' },
@@ -51,11 +52,13 @@ class VirtualTableFilter extends React.Component {
           { des: 'No Smaller than', icon: '≥' },
           { des: 'Smaller than', icon: '<' },
           { des: 'No Larger than', icon: '≤' },
+          { des: 'Not Empty', icon: '∅' },
         ],
         object: [
           { des: 'SubString', icon: '=' },
           { des: 'Include', icon: '⊂' },
           { des: 'Exclude', icon: '⊄' },
+          { des: 'Not Empty', icon: '∅' },
         ],
         other: [
           { des: 'SubString', icon: '=' },
@@ -64,6 +67,7 @@ class VirtualTableFilter extends React.Component {
           { des: 'No Smaller than', icon: '≥' },
           { des: 'Smaller than', icon: '<' },
           { des: 'No Larger than', icon: '≤' },
+          { des: 'Not Empty', icon: '∅' },
         ],
       },
       tmpFilter: 0,
@@ -218,6 +222,7 @@ class VirtualTableFilter extends React.Component {
                           />
                         </div>
                       </td>
+
                       <td>
                         <div>
                           <Autocomplete
@@ -408,7 +413,8 @@ class VirtualTableFilter extends React.Component {
                               className={classes.valueInput}
                             />
                           </FormControl>
-                        ) : (item.column.type === 'object') & (item.operation !== '=') ? (
+                        ) : item.operation == '∅' ? null : (item.column.type === 'object') &
+                          (item.operation !== '=') ? (
                           <FormControl fullWidth variant="outlined">
                             <Autocomplete
                               multiple

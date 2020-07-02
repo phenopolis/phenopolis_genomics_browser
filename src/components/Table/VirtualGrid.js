@@ -33,7 +33,6 @@ import {
 import MenuIcon from '@material-ui/icons/Menu';
 import { composeInitialProps } from 'react-i18next';
 
-// Import Toolbar components for the table
 const VirtualTableFilter = React.lazy(() => import('./VirtualTableFilter'));
 const HideColumn = React.lazy(() => import('./HideColumn'));
 const Plots = React.lazy(() => import('./Plots'));
@@ -300,25 +299,57 @@ function handleScroll(event) {
 }
 
 // Record cell changes
-function handleCellChange(props, value) {}
+function handleCellChange(props, value) { }
 
 // - * - * - * - * - * - * - * - * - * - * - * - *
 // - * - * - * - * - * - * - * - * - * - * - * - *
 
 function desc(a, b, orderBy) {
-  if (!isNaN(b[orderBy])) {
-    if (Number(b[orderBy]) < Number(a[orderBy])) {
+  if (typeof a[[orderBy]] === 'object') {
+    if (typeof a[orderBy][0] === 'object') {
+      var aString = Object.values(a[orderBy])
+        .map((item) => item.display)
+        .join(',');
+    } else {
+      var aString = a[[orderBy]].join(',');
+    }
+  } else {
+    var aString = a[[orderBy]];
+  }
+
+  if (typeof b[[orderBy]] === 'object') {
+    if (typeof b[orderBy][0] === 'object') {
+      var bString = Object.values(b[orderBy])
+        .map((item) => item.display)
+        .join(',');
+    } else {
+      var bString = b[[orderBy]].join(',');
+    }
+  } else {
+    var bString = b[[orderBy]];
+  }
+
+  if ((aString === '') & (bString !== '')) {
+    return 1;
+  }
+
+  if ((bString === '') & (aString !== '')) {
+    return -1;
+  }
+
+  if (!isNaN(bString)) {
+    if (Number(bString) < Number(aString)) {
       return -1;
     }
-    if (Number(b[orderBy]) > Number(a[orderBy])) {
+    if (Number(bString) > Number(aString)) {
       return 1;
     }
     return 0;
   } else {
-    if (b[orderBy] < a[orderBy]) {
+    if (bString < aString) {
       return -1;
     }
-    if (b[orderBy] > a[orderBy]) {
+    if (bString > aString) {
       return 1;
     }
     return 0;
@@ -423,6 +454,7 @@ class VirtualGrid extends React.Component {
           ].includes(mycolumns[j].key)
         ) {
           var tmpType = 'number';
+        } else if (['genes'].includes(mycolumns[j].key)) {
         } else {
           var tmpType = typeof myrows[0][mycolumns[j].key];
         }
@@ -698,6 +730,7 @@ class VirtualGrid extends React.Component {
 
           case '⊂':
             if (typeof item[filter.column.key] !== 'object') {
+              tmpJudge[index] = false;
               break;
             } else {
               if (
@@ -734,6 +767,39 @@ class VirtualGrid extends React.Component {
                 } else {
                 }
               } else {
+              }
+            }
+            break;
+          case '∅':
+            if (typeof item[filter.column.key] !== 'object') {
+              if (
+                (item[filter.column.key] === '') |
+                (item[filter.column.key] === null) |
+                (item[filter.column.key] === undefined)
+              )
+                tmpJudge[index] = false;
+            } else {
+              if (item[filter.column.key].length == 0) {
+                tmpJudge[index] = false;
+              } else {
+                if (
+                  (typeof item[filter.column.key][0] === 'object') &
+                  (item[filter.column.key][0] !== null)
+                ) {
+                  let displays = item[filter.column.key].filter((chip) => {
+                    return chip.display !== '';
+                  });
+                  if (displays.length === 0) {
+                    tmpJudge[index] = false;
+                  }
+                } else {
+                  let displays = item[filter.column.key].filter((chip) => {
+                    return chip !== '';
+                  });
+                  if (displays.length === 0) {
+                    tmpJudge[index] = false;
+                  }
+                }
               }
             }
             break;
@@ -829,7 +895,7 @@ class VirtualGrid extends React.Component {
                   variableList={this.state.columnHide}
                   tableFilter={this.state.tableFilter}
                   UpdateFilter={this.handleUpdateFilter}
-                  // onClickClose={this.handleFilterPopoverClose}
+                // onClickClose={this.handleFilterPopoverClose}
                 />
               </Card>
             </Collapse>
@@ -908,14 +974,14 @@ class VirtualGrid extends React.Component {
                 )}
               </AutoSizer>
             ) : (
-              <Container>
-                <Box display="flex" justifyContent="center" alignItems="center" minHeight="50vh">
-                  <Typography variant="h4" gutterBottom style={{ color: 'grey' }}>
-                    Sorry, not even one record exist or passed your filter criteria...
+                <Container>
+                  <Box display="flex" justifyContent="center" alignItems="center" minHeight="50vh">
+                    <Typography variant="h4" gutterBottom style={{ color: 'grey' }}>
+                      Sorry, not even one record exist or passed your filter criteria...
                   </Typography>
-                </Box>
-              </Container>
-            )}
+                  </Box>
+                </Container>
+              )}
           </div>
         </Paper>
         <Toolbar className={classes.toolbar}>
