@@ -27,12 +27,13 @@ class Plots extends React.Component {
       msg: 'Neither of two axises are selected',
       option: [],
       plotReady: false,
+      EventsDict: null,
     };
   }
 
-  // componentWillReceiveProps(nextProps) {
-  //   this.getSeriesData(this.state.xAxis, this.state.yAxis);
-  // }
+  componentWillReceiveProps(nextProps) {
+    this.getSeriesData(this.state.xAxis, this.state.yAxis);
+  }
 
   // handleSelectXAxis = (event, newValue, index) => {
   //   this.setState({ xAxis: newValue }, () => {
@@ -46,6 +47,14 @@ class Plots extends React.Component {
   //   });
   // };
 
+  onScatterClick = (param) => {
+    this.props.highlighRow(param.dataIndex);
+  };
+
+  onBarClick = (param) => {
+    window.alert('Bar Click: ' + param.dataIndex);
+  };
+
   RectSelectXAxis = (selectedOption) => {
     this.setState({ xAxis: selectedOption }, () => {
       this.getSeriesData(this.state.xAxis, this.state.yAxis);
@@ -57,20 +66,6 @@ class Plots extends React.Component {
       this.getSeriesData(this.state.xAxis, this.state.yAxis);
     });
   };
-
-  // RectSelectYAxis = (option) => {
-  //   console.log(option)
-
-  //   if (option !== null) {
-  //     // console.log(option)
-  //     // this.setState(option => ({
-  //     //   yAxis: option
-  //     // }))
-  //     // this.setState({ yAxis: option }, () => {
-  //     //   this.getSeriesData(this.state.xAxis, this.state.yAxis);
-  //     // });
-  //   }
-  // }
 
   getSeriesData = (xAxis, yAxis) => {
     if ((xAxis === null) & (yAxis === null)) {
@@ -122,7 +117,7 @@ class Plots extends React.Component {
 
     let tmpMsg = 'Now you have chose one categorical axis, barplot will be plotted one the left.';
 
-    this.setState({ option: newBarplotOption, msg: tmpMsg, plotReady: true });
+    this.setState({ option: newBarplotOption, EventsDict: {}, msg: tmpMsg, plotReady: true });
   };
 
   CreateHistogram = (Axis) => {
@@ -136,7 +131,7 @@ class Plots extends React.Component {
 
     let tmpMsg = 'Now you have chose one number axis, histogram will be plotted one the left.';
 
-    this.setState({ option: newHistogramOption, msg: tmpMsg, plotReady: true });
+    this.setState({ option: newHistogramOption, EventsDict: {}, msg: tmpMsg, plotReady: true });
   };
 
   CreateScatterPlot = (xAxis, yAxis) => {
@@ -156,7 +151,12 @@ class Plots extends React.Component {
       'The top and bottom balloons represents the max and min value for Y axis.\n\n' +
       'If you use row filter and column filter, the plot will change promptly';
 
-    this.setState({ option: newScatterOption, msg: tmpMsg, plotReady: true });
+    this.setState({
+      option: newScatterOption,
+      EventsDict: { click: this.onScatterClick },
+      msg: tmpMsg,
+      plotReady: true,
+    });
   };
 
   CreateBoxplot = (xAxis, yAxis, rotate) => {
@@ -207,7 +207,7 @@ class Plots extends React.Component {
       'Dots represents outlier for each box.\n\n' +
       'If you use row filter and column filter, the plot will change promptly';
 
-    this.setState({ option: newBoxplotOption, msg: tmpMsg, plotReady: true });
+    this.setState({ option: newBoxplotOption, EventsDict: {}, msg: tmpMsg, plotReady: true });
   };
 
   CreateStackBarPlot = (xAxis, yAxis) => {
@@ -286,7 +286,7 @@ class Plots extends React.Component {
 
     let tmpMsg = 'This is stacked bar plot.';
 
-    this.setState({ option: newStackBarOption, msg: tmpMsg, plotReady: true });
+    this.setState({ option: newStackBarOption, EventsDict: {}, msg: tmpMsg, plotReady: true });
   };
 
   render() {
@@ -488,6 +488,7 @@ class Plots extends React.Component {
                   option={this.state.option}
                   notMerge={true}
                   lazyUpdate={true}
+                  onEvents={this.state.EventsDict}
                   style={{ height: '40em' }}
                 />
               ) : (

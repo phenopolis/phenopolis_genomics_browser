@@ -203,13 +203,16 @@ const innerGridElementType = React.forwardRef(({ children, ...rest }, ref) => (
   </StickyGridContext.Consumer>
 ));
 
-const createItemData = memoize((rows, columns, toggleItemActive, currentRow, currentColumn) => ({
-  rows,
-  columns,
-  toggleItemActive,
-  currentRow,
-  currentColumn,
-}));
+const createItemData = memoize(
+  (rows, columns, toggleItemActive, currentRow, currentColumn, highlightRow) => ({
+    rows,
+    columns,
+    toggleItemActive,
+    currentRow,
+    currentColumn,
+    highlightRow,
+  })
+);
 
 class StickyGrid extends React.Component {
   constructor(props) {
@@ -235,6 +238,14 @@ class StickyGrid extends React.Component {
     if (nextProps.width !== this.props.width) {
       this.props.onRecalculateWidth(nextProps.width);
     }
+
+    if (nextProps.highlightRow !== null) {
+      console.log(this.listRef.current);
+      this.listRef.current.scrollToItem({
+        align: 'start',
+        rowIndex: nextProps.highlightRow,
+      });
+    }
   }
 
   handleActive = () => {
@@ -256,13 +267,21 @@ class StickyGrid extends React.Component {
       toggleItemActive,
       currentRow,
       currentColumn,
+      highlightRow,
       order,
       orderBy,
       onRequestSort,
       ...rest
     } = this.props;
 
-    const itemData = createItemData(myrows, mycolumns, toggleItemActive, currentRow, currentColumn);
+    const itemData = createItemData(
+      myrows,
+      mycolumns,
+      toggleItemActive,
+      currentRow,
+      currentColumn,
+      highlightRow
+    );
 
     return (
       <StickyGridContext.Provider
@@ -299,7 +318,7 @@ function handleScroll(event) {
 }
 
 // Record cell changes
-function handleCellChange(props, value) { }
+function handleCellChange(props, value) {}
 
 // - * - * - * - * - * - * - * - * - * - * - * - *
 // - * - * - * - * - * - * - * - * - * - * - * - *
@@ -408,6 +427,7 @@ class VirtualGrid extends React.Component {
       ],
 
       columnHide: [],
+      highlightIndex: null,
     };
   }
 
@@ -845,6 +865,10 @@ class VirtualGrid extends React.Component {
     );
   };
 
+  highlighRow = (rowIndex) => {
+    this.setState({ highlightIndex: rowIndex });
+  };
+
   render() {
     const { classes } = this.props;
 
@@ -895,7 +919,7 @@ class VirtualGrid extends React.Component {
                   variableList={this.state.columnHide}
                   tableFilter={this.state.tableFilter}
                   UpdateFilter={this.handleUpdateFilter}
-                // onClickClose={this.handleFilterPopoverClose}
+                  // onClickClose={this.handleFilterPopoverClose}
                 />
               </Card>
             </Collapse>
@@ -915,7 +939,11 @@ class VirtualGrid extends React.Component {
               <Card
                 elevation={0}
                 className="card-box mb-0 d-flex flex-row flex-wrap justify-content-center">
-                <Plots variableList={this.state.columnHide} dataRows={this.state.filteredData} />
+                <Plots
+                  variableList={this.state.columnHide}
+                  dataRows={this.state.filteredData}
+                  highlighRow={this.highlighRow}
+                />
               </Card>
             </Collapse>
 
@@ -964,6 +992,7 @@ class VirtualGrid extends React.Component {
                     toggleItemActive={this.toggleItemActive}
                     currentRow={this.state.currentRow}
                     currentColumn={this.state.currentColumn}
+                    highlightRow={this.state.highlightIndex}
                     columnValue={this.state.filteredColumnWidth}
                     order={this.state.order}
                     orderBy={this.state.orderBy}
@@ -974,14 +1003,14 @@ class VirtualGrid extends React.Component {
                 )}
               </AutoSizer>
             ) : (
-                <Container>
-                  <Box display="flex" justifyContent="center" alignItems="center" minHeight="50vh">
-                    <Typography variant="h4" gutterBottom style={{ color: 'grey' }}>
-                      Sorry, not even one record exist or passed your filter criteria...
+              <Container>
+                <Box display="flex" justifyContent="center" alignItems="center" minHeight="50vh">
+                  <Typography variant="h4" gutterBottom style={{ color: 'grey' }}>
+                    Sorry, not even one record exist or passed your filter criteria...
                   </Typography>
-                  </Box>
-                </Container>
-              )}
+                </Box>
+              </Container>
+            )}
           </div>
         </Paper>
         <Toolbar className={classes.toolbar}>
