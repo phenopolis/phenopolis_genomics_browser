@@ -7,7 +7,7 @@ import { withTranslation } from 'react-i18next';
 
 class Product extends React.Component {
   render() {
-    const { t, i18n } = this.props;
+    const { t } = this.props;
 
     return (
       <>

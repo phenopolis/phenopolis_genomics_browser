@@ -27,7 +27,7 @@ class GridColumn extends React.Component {
     };
   }
   componentWillMount() {
-    var mystyle = JSON.parse(JSON.stringify(this.props.style));
+    const mystyle = JSON.parse(JSON.stringify(this.props.style));
     mystyle['backgroundColor'] = 'white';
 
     if (this.props.data.highlightRow === this.props.rowIndex) {
@@ -39,15 +39,15 @@ class GridColumn extends React.Component {
 
   componentWillReceiveProps(nextProps) {
     // var mystyle = nextProps.style
-
+    let mystyle = {};
     if (
       (nextProps.data.currentRow === nextProps.rowIndex) |
       (nextProps.data.currentColumn === nextProps.columnIndex)
     ) {
-      var mystyle = JSON.parse(JSON.stringify(nextProps.style));
+      mystyle = JSON.parse(JSON.stringify(nextProps.style));
       mystyle.backgroundColor = '#eeee';
     } else {
-      var mystyle = JSON.parse(JSON.stringify(nextProps.style));
+      mystyle = JSON.parse(JSON.stringify(nextProps.style));
       mystyle.backgroundColor = 'white';
     }
 
@@ -89,15 +89,13 @@ class GridColumn extends React.Component {
   };
 
   render() {
-    const { data, index, rowIndex, columnIndex, style, classes } = this.props;
+    const { data, rowIndex, columnIndex, classes } = this.props;
 
     const open = Boolean(this.state.anchorEl);
 
     var key = data.columns[columnIndex].key;
     let cellData = data.rows[rowIndex][key];
     var h = data.columns[columnIndex];
-
-    var currentRow = data.currentRow;
 
     return (
       <TableCell

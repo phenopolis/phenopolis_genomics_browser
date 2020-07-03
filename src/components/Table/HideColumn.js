@@ -129,7 +129,6 @@ const styles = (theme) => ({
   },
   smallAvatar: {
     fontSize: 12,
-    margin: theme.spacing(0),
     width: theme.spacing(3),
     height: theme.spacing(3),
     margin: theme.spacing(1),

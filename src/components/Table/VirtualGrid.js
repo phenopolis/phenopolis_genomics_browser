@@ -18,27 +18,18 @@ import './styles.css';
 import {
   Toolbar,
   Paper,
-  IconButton,
   Typography,
   Box,
   Icon,
-  Popover,
-  Dialog,
-  Button,
   Container,
   Card,
   Collapse,
-  CardContent,
 } from '@material-ui/core';
-import MenuIcon from '@material-ui/icons/Menu';
-import { composeInitialProps } from 'react-i18next';
 
 const VirtualTableFilter = React.lazy(() => import('./VirtualTableFilter'));
 const HideColumn = React.lazy(() => import('./HideColumn'));
 const Plots = React.lazy(() => import('./Plots'));
 const ExportExcel = React.lazy(() => import('./ExportExcel'));
-
-var focusField;
 
 const getRenderedCursor = (children) =>
   children.reduce(
@@ -114,26 +105,6 @@ const columnsBuilder = (minRow, maxRow, rowHeight, stickyWidth) => {
   return rows;
 };
 
-const StickyColumns = ({ rows, stickyHeight, stickyWidth }) => {
-  const leftSideStyle = {
-    top: stickyHeight,
-    width: stickyWidth,
-    height: `calc(100% - ${stickyHeight}px)`,
-  };
-
-  return (
-    <div className={'sticky-grid__sticky-columns__container'} style={leftSideStyle}>
-      {rows.map(({ label, ...style }, i) => {
-        return (
-          <div className={'sticky-grid__sticky-columns__row'} style={style} key={i}>
-            {label}
-          </div>
-        );
-      })}
-    </div>
-  );
-};
-
 const StickyGridContext = React.createContext();
 StickyGridContext.displayName = 'StickyGridContext';
 
@@ -151,6 +122,7 @@ const innerGridElementType = React.forwardRef(({ children, ...rest }, ref) => (
       orderBy,
       onRequestSort,
     }) => {
+      // eslint-disable-next-line
       const [minRow, maxRow, minColumn, maxColumn] = getRenderedCursor(children); // TODO maybe there is more elegant way to get this
 
       const headerColumns = headerBuilder(
@@ -160,8 +132,6 @@ const innerGridElementType = React.forwardRef(({ children, ...rest }, ref) => (
         stickyHeight,
         mycolumns
       );
-
-      const leftSideRows = columnsBuilder(minRow, maxRow, rowHeight, stickyWidth);
 
       const containerStyle = {
         ...rest.style,
@@ -189,11 +159,6 @@ const innerGridElementType = React.forwardRef(({ children, ...rest }, ref) => (
             orderBy={orderBy}
             onRequestSort={onRequestSort}
           />
-          {/* <StickyColumns
-              rows={leftSideRows}
-              stickyHeight={stickyHeight}
-              stickyWidth={stickyWidth}
-            /> */}
           <div className="sticky-grid__data__container" style={gridDataContainerStyle}>
             {children}
           </div>
@@ -317,35 +282,32 @@ function handleScroll(event) {
   document.activeElement.blur();
 }
 
-// Record cell changes
-function handleCellChange(props, value) {}
-
-// - * - * - * - * - * - * - * - * - * - * - * - *
-// - * - * - * - * - * - * - * - * - * - * - * - *
-
 function desc(a, b, orderBy) {
+  let aString = {};
+  let bString = {};
+
   if (typeof a[[orderBy]] === 'object') {
     if (typeof a[orderBy][0] === 'object') {
-      var aString = Object.values(a[orderBy])
+      aString = Object.values(a[orderBy])
         .map((item) => item.display)
         .join(',');
     } else {
-      var aString = a[[orderBy]].join(',');
+      aString = a[[orderBy]].join(',');
     }
   } else {
-    var aString = a[[orderBy]];
+    aString = a[[orderBy]];
   }
 
   if (typeof b[[orderBy]] === 'object') {
     if (typeof b[orderBy][0] === 'object') {
-      var bString = Object.values(b[orderBy])
+      bString = Object.values(b[orderBy])
         .map((item) => item.display)
         .join(',');
     } else {
-      var bString = b[[orderBy]].join(',');
+      bString = b[[orderBy]].join(',');
     }
   } else {
-    var bString = b[[orderBy]];
+    bString = b[[orderBy]];
   }
 
   if ((aString === '') & (bString !== '')) {
@@ -450,6 +412,7 @@ class VirtualGrid extends React.Component {
 
       for (let j = 0; j < mycolumns.length; j++) {
         let headSize = calculateSize(mycolumns[j].name, { font: 'Arial', fontSize: '14px' });
+        let tmpType = '';
         if (headSize.width + 50 > tmpWidth[j]) tmpWidth[j] = headSize.width + 50;
 
         // Add a quick patch here to assign variable's type and class.
@@ -473,10 +436,10 @@ class VirtualGrid extends React.Component {
             'dann',
           ].includes(mycolumns[j].key)
         ) {
-          var tmpType = 'number';
+          tmpType = 'number';
         } else if (['genes'].includes(mycolumns[j].key)) {
         } else {
-          var tmpType = typeof myrows[0][mycolumns[j].key];
+          tmpType = typeof myrows[0][mycolumns[j].key];
         }
 
         tmpColnames.push({
@@ -495,15 +458,16 @@ class VirtualGrid extends React.Component {
 
           if ((typeof cellData === 'object') & (cellData !== null)) {
             let chipsSize = 0;
-            var tmpMax = maxColumn;
+            let tmpMax = maxColumn;
 
             cellData.forEach((chip) => {
+              let size = null;
               if ((typeof chip === 'object') & (chip !== null)) {
                 tmpColnames[j].chips.push(chip.display);
-                var size = calculateSize(chip.display, { font: 'Arial', fontSize: '12px' });
+                size = calculateSize(chip.display, { font: 'Arial', fontSize: '12px' });
               } else {
                 tmpColnames[j].chips.push(chip);
-                var size = calculateSize(chip, { font: 'Arial', fontSize: '12px' });
+                size = calculateSize(chip, { font: 'Arial', fontSize: '12px' });
               }
 
               if (size.width + 60 > tmpMax) {
@@ -653,25 +617,24 @@ class VirtualGrid extends React.Component {
   };
 
   handleDownloadCSV = () => {
-    var prepareDownload = this.state.filteredData.map((row) => {
+    const prepareDownload = this.state.filteredData.map((row) => {
       var tmpRow = {};
       this.state.columnHide.map((i) => {
         if (i.type !== 'object') {
-          tmpRow[i.key] = row[i.key];
+          return (tmpRow[i.key] = row[i.key]);
         } else if ((typeof row[i.key][0] === 'object') & (row[i.key][0] !== null)) {
-          tmpRow[i.key] = row[i.key].map((chip) => chip.display).join(';');
+          return (tmpRow[i.key] = row[i.key].map((chip) => chip.display).join(';'));
         } else {
-          tmpRow[i.key] = row[i.key].join(';');
+          return (tmpRow[i.key] = row[i.key].join(';'));
         }
       });
       return tmpRow;
     });
 
     var d = new Date();
-    let filename =
-      'phenopolis' + '_' + d.getDate() + '_' + d.getMonth() + '_' + d.getFullYear() + '.csv';
+    let filename = `phenopolis_${d.getDate()}_${d.getMonth()}_${d.getFullYear()}.csv`;
 
-    csvDownload(prepareDownload, (filename = filename));
+    csvDownload(prepareDownload, filename);
   };
 
   rowFilter = (data, filters) => {
@@ -799,7 +762,7 @@ class VirtualGrid extends React.Component {
               )
                 tmpJudge[index] = false;
             } else {
-              if (item[filter.column.key].length == 0) {
+              if (item[filter.column.key].length === 0) {
                 tmpJudge[index] = false;
               } else {
                 if (
@@ -828,8 +791,10 @@ class VirtualGrid extends React.Component {
         }
       });
 
+      let judge = null;
+
       if (filters.length === 0) {
-        var judge = true;
+        judge = true;
       } else {
         var stringForEval = '';
         for (let i = 0; i < filters.length; i++) {
@@ -843,7 +808,7 @@ class VirtualGrid extends React.Component {
             }
           }
         }
-        var judge = eval(stringForEval);
+        judge = stringForEval;
       }
 
       if (judge) {

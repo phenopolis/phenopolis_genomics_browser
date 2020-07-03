@@ -5,7 +5,7 @@ import compose from 'recompose/compose';
 import PropTypes from 'prop-types';
 
 import { withStyles } from '@material-ui/core/styles';
-import { AppBar, withWidth } from '@material-ui/core';
+import { withWidth } from '@material-ui/core';
 
 import NoLoginBar from '../components/AppBar/NoLoginBar';
 import LoginBar from '../components/AppBar/LoginBar';
@@ -32,8 +32,6 @@ class HomeAppBar extends React.Component {
   // }
 
   render() {
-    const { classes } = this.props;
-
     if (this.state.redirect) {
       return <Redirect to="/" />;
     }

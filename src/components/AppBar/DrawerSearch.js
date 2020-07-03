@@ -4,7 +4,7 @@ import { Redirect } from 'react-router';
 import axios from 'axios';
 import { Link } from 'react-router-dom';
 
-import { fade, withStyles } from '@material-ui/core/styles';
+import { withStyles } from '@material-ui/core/styles';
 import {
   Grid,
   Fab,
@@ -26,7 +26,7 @@ import { setSnack } from '../../redux/actions/snacks';
 
 import clsx from 'clsx';
 
-import { withTranslation, Trans } from 'react-i18next';
+import { withTranslation } from 'react-i18next';
 import i18next from 'i18next';
 
 class DrawerSearch extends React.Component {
@@ -115,7 +115,7 @@ class DrawerSearch extends React.Component {
 
   render() {
     const { classes } = this.props;
-    const { t, i18n } = this.props;
+    const { t } = this.props;
 
     if (this.state.redirect) {
       return <Redirect to={this.state.guesslink} />;

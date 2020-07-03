@@ -161,11 +161,11 @@ class EditPerson extends React.Component {
     });
 
     this.state.featureArray.forEach((x) => {
-      formData = formData + '&' + 'feature%5B%5D=' + x.split(' ').join('+');
+      formData = `${formData}&feature%5B%5D=${x.split(' ').join('+')}`;
     });
 
     this.state.geneArray.forEach((x) => {
-      formData = formData + '&' + 'genes%5B%5D=' + x.split(' ').join('+');
+      formData = `${formData}&genes%5B%5D=${x.split(' ').join('+')}`;
     });
 
     axios

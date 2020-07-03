@@ -6,12 +6,10 @@ import { CssBaseline, Paper, Container } from '@material-ui/core';
 import { Redirect } from 'react-router';
 
 import VirtualGrid from '../components/Table/VirtualGrid';
-// import Variants from '../components/Gene/Variants';
 import Loading from '../components/General/Loading';
 
 import compose from 'recompose/compose';
-import { withTranslation, Trans } from 'react-i18next';
-import i18next from 'i18next';
+import { withTranslation } from 'react-i18next';
 
 class MyPatient extends React.Component {
   constructor(props) {

@@ -13,9 +13,6 @@ import {
   TextField,
   IconButton,
   Icon,
-  List,
-  ListItem,
-  Container,
   Menu,
   MenuItem,
   ListItemIcon,
@@ -27,7 +24,6 @@ import {
 } from '@material-ui/core';
 import Autocomplete from '@material-ui/lab/Autocomplete';
 import clsx from 'clsx';
-import { Cpu } from 'react-feather';
 
 class VirtualTableFilter extends React.Component {
   constructor(props) {
@@ -413,7 +409,7 @@ class VirtualTableFilter extends React.Component {
                               className={classes.valueInput}
                             />
                           </FormControl>
-                        ) : item.operation == '∅' ? null : (item.column.type === 'object') &
+                        ) : item.operation === '∅' ? null : (item.column.type === 'object') &
                           (item.operation !== '=') ? (
                           <FormControl fullWidth variant="outlined">
                             <Autocomplete
@@ -508,11 +504,11 @@ class VirtualTableFilter extends React.Component {
             alignItems="center"
             className="m-4"
             style={{ paddingTop: '1em', color: 'darkgrey', 'white-space': 'pre-wrap' }}>
-            {"1. Firstly, please click 'Add New Filter' button to create a new filter.\n" +
-              '2. After that, you must firstly select one variable (table column). Based on two types of varaible (vector or list), two different filter mode would be presented in following opration and value section.\n' +
-              '3. By click operation button, you may select one maths symbol to created a filtering operation for corresponding varaible.\n' +
-              '4. Input (or select) value to finish one filter, the result should be present promptly by filtering table below.\n' +
-              '5. If you have more than one filter, AND/OR button would show up, you may consider how to join your various filters.'}
+            {`1. Firstly, please click Add New Filter button to create a new filter.
+              "2. After that, you must firstly select one variable (table column). Based on two types of varaible (vector or list), two different filter mode would be presented in following opration and value section.
+              "3. By click operation button, you may select one maths symbol to created a filtering operation for corresponding varaible.
+              "4. Input (or select) value to finish one filter, the result should be present promptly by filtering table below.
+              "5. If you have more than one filter, AND/OR button would show up, you may consider how to join your various filters.`}
           </Grid>
         </CardContent>
       </Card>
@@ -598,10 +594,6 @@ const styles = (theme) => ({
     width: theme.spacing(3),
     height: theme.spacing(3),
     marginRight: theme.spacing(1),
-  },
-  smallFilter: {
-    fontSize: 12,
-    margin: theme.spacing(0),
   },
 });
 

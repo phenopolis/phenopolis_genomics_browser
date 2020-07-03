@@ -1,4 +1,4 @@
-import React, { useCallback } from 'react';
+import React from 'react';
 import PropTypes from 'prop-types';
 import { withStyles } from '@material-ui/core/styles';
 import compose from 'recompose/compose';
@@ -7,7 +7,7 @@ import { prepareBoxplotData } from 'echarts/extension/dataTool';
 import ecStat from 'echarts-stat';
 import ReactEcharts from 'echarts-for-react';
 
-import { Card, CardContent, Grid, TextField, Avatar, Icon } from '@material-ui/core';
+import { Card, CardContent, Grid, Avatar, Icon } from '@material-ui/core';
 import clsx from 'clsx';
 // import Autocomplete from '@material-ui/lab/Autocomplete';
 import { Select } from 'react-functional-select';
@@ -96,13 +96,14 @@ class Plots extends React.Component {
   };
 
   CreateBarplot = (Axis) => {
+    let tmpValue = '';
     if (Axis.type === 'string') {
-      var tmpValue = this.props.dataRows.map((x) => x[Axis.key]);
+      tmpValue = this.props.dataRows.map((x) => x[Axis.key]);
     } else {
       if (typeof this.props.dataRows[0][Axis.key] === 'object') {
-        var tmpValue = this.props.dataRows.map((x) => x[Axis.key].map((y) => y.display)).flat();
+        tmpValue = this.props.dataRows.map((x) => x[Axis.key].map((y) => y.display)).flat();
       } else {
-        var tmpValue = this.props.dataRows.map((x) => x[Axis.key].map((y) => y)).flat();
+        tmpValue = this.props.dataRows.map((x) => x[Axis.key].map((y) => y)).flat();
       }
     }
 
@@ -173,21 +174,17 @@ class Plots extends React.Component {
       });
     }
 
-    Array.prototype.groupBy = function (k, m) {
-      return this.reduce(
-        (acc, item) => ((acc[item[k]] = [...(acc[item[k]] || []), item[m]]), acc),
-        {}
-      );
-    };
-
-    let groupedByxAxis = flattenData.groupBy('keyX', 'keyY');
+    let groupedByxAxis = flattenData.reduce((acc, item) => {
+      acc[item['keyX']] = [...(acc[item['keyX']] || []), item['keyY']];
+      return acc;
+    }, {});
 
     let labels = Object.keys(groupedByxAxis);
-
+    let tmpData = null;
     if (rotate) {
-      var tmpData = prepareBoxplotData(Object.values(groupedByxAxis), { layout: 'vertical' });
+      tmpData = prepareBoxplotData(Object.values(groupedByxAxis), { layout: 'vertical' });
     } else {
-      var tmpData = prepareBoxplotData(Object.values(groupedByxAxis));
+      tmpData = prepareBoxplotData(Object.values(groupedByxAxis));
     }
 
     const newBoxplotOption = JSON.parse(JSON.stringify(BoxplotOption));

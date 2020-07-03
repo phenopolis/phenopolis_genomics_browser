@@ -14,7 +14,6 @@ import Loading from '../components/General/Loading';
 import TabPanel from '../components/Tab/Tabpanel';
 
 import MetaData from '../components/Gene/MetaData';
-// import Variants from '../components/Gene/Variants';
 import VirtualGrid from '../components/Table/VirtualGrid';
 
 import EditIcon from '@material-ui/icons/Edit';
@@ -22,7 +21,7 @@ import Dialog from '@material-ui/core/Dialog';
 
 import EditPerson from '../components/Individual/EditPerson';
 
-import { withTranslation, Trans } from 'react-i18next';
+import { withTranslation } from 'react-i18next';
 import i18next from 'i18next';
 
 class Individual extends React.Component {

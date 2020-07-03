@@ -2,7 +2,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import { withStyles } from '@material-ui/core/styles';
 
-import { TableCell, ButtonGroup, Button, Chip, TableSortLabel, Tooltip } from '@material-ui/core';
+import { TableSortLabel, Tooltip } from '@material-ui/core';
 
 const StyledTooltip = withStyles({
   tooltip: {
@@ -21,13 +21,9 @@ class StickyHeader extends React.Component {
   };
 
   render() {
-    const { stickyHeight, stickyWidth, headerColumns, classes } = this.props;
+    const { stickyWidth, headerColumns, classes } = this.props;
     // let value = "Cell " + rowIndex + ", " + columnIndex;
 
-    const baseStyle = {
-      height: stickyHeight,
-      width: stickyWidth,
-    };
     const scrollableStyle = {
       left: stickyWidth,
     };

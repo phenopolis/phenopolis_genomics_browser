@@ -154,7 +154,7 @@ class ActionBar extends React.Component {
                       title={lan.label}
                       placement="right">
                       <ListItemIcon>
-                        <img className={classes.imageIcon} src={lan.svg} />
+                        <img className={classes.imageIcon} src={lan.svg} alt={lan.label} />
                       </ListItemIcon>
                     </LightTooltip>
                     <ListItemText primary={lan.label} classes={{ primary: classes.listItemText }} />

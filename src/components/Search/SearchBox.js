@@ -104,7 +104,7 @@ class SearchBox extends React.Component {
 
   render() {
     const { classes } = this.props;
-    const { t, i18n } = this.props;
+    const { t } = this.props;
 
     if (this.state.redirect) {
       return <Redirect to={this.state.guesslink} />;

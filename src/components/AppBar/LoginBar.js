@@ -22,8 +22,6 @@ import {
   ListItemIcon,
   ListItemText,
   Drawer,
-  Avatar,
-  Paper,
   AppBar,
   Divider,
 } from '@material-ui/core';
@@ -33,17 +31,12 @@ import ExitToAppIcon from '@material-ui/icons/ExitToApp';
 import LockIcon from '@material-ui/icons/Lock';
 import DescriptionIcon from '@material-ui/icons/Description';
 import MenuIcon from '@material-ui/icons/Menu';
-import PeopleIcon from '@material-ui/icons/People';
 import TranslateIcon from '@material-ui/icons/Translate';
 import AccountCircleIcon from '@material-ui/icons/AccountCircle';
-import SupervisedUserCircleIcon from '@material-ui/icons/SupervisedUserCircle';
 import ShoppingCartIcon from '@material-ui/icons/ShoppingCart';
-import DehazeIcon from '@material-ui/icons/Dehaze';
 import ChevronRightIcon from '@material-ui/icons/ChevronRight';
 import ChevronLeftIcon from '@material-ui/icons/ChevronLeft';
 
-// import Sidebar from './Sidebar';
-// import NavSearch from './NavSearch';
 import Footer from '../General/Footer';
 import DrawerSearch from './DrawerSearch';
 
@@ -61,9 +54,7 @@ import DE from '../../assets/svg/de.svg';
 import GR from '../../assets/svg/gr.svg';
 import ES from '../../assets/svg/es.svg';
 
-const Sidebar = React.lazy(() => import('./Sidebar'));
 const ActionBar = React.lazy(() => import('./ActionBar'));
-// const DrawerSearch = React.lazy(() => import('./DrawerSearch'));
 
 const cookies = new Cookies();
 const drawerWidth = 240;
@@ -181,7 +172,7 @@ class LoginBar extends React.Component {
 
   render() {
     const { classes } = this.props;
-    const { t, i18n } = this.props;
+    const { t } = this.props;
 
     const changeLanguage = (lng) => {
       i18next.changeLanguage(lng);
@@ -389,31 +380,31 @@ class LoginBar extends React.Component {
                     onClose={() => this.OpenLan()}>
                     <MenuItem onClick={() => changeLanguage('en')}>
                       <ListItemIcon>
-                        <img className={classes.imageIcon} src={GB} />
+                        <img className={classes.imageIcon} src={GB} alt="English" />
                       </ListItemIcon>
                       <ListItemText classes={{ primary: classes.listItemText }} primary="English" />
                     </MenuItem>
                     <MenuItem onClick={() => changeLanguage('cn')}>
                       <ListItemIcon>
-                        <img className={classes.imageIcon} src={CN} />
+                        <img className={classes.imageIcon} src={CN} alt="中文" />
                       </ListItemIcon>
                       <ListItemText classes={{ primary: classes.listItemText }} primary="中文" />
                     </MenuItem>
                     <MenuItem onClick={() => changeLanguage('ja')}>
                       <ListItemIcon>
-                        <img className={classes.imageIcon} src={JP} />
+                        <img className={classes.imageIcon} src={JP} alt="日本語" />
                       </ListItemIcon>
                       <ListItemText classes={{ primary: classes.listItemText }} primary="日本語" />
                     </MenuItem>
                     <MenuItem onClick={() => changeLanguage('de')}>
                       <ListItemIcon>
-                        <img className={classes.imageIcon} src={DE} />
+                        <img className={classes.imageIcon} src={DE} alt="Deutsch" />
                       </ListItemIcon>
                       <ListItemText classes={{ primary: classes.listItemText }} primary="Deutsch" />
                     </MenuItem>
                     <MenuItem onClick={() => changeLanguage('gr')}>
                       <ListItemIcon>
-                        <img className={classes.imageIcon} src={GR} />
+                        <img className={classes.imageIcon} src={GR} alt="Ελληνικά" />
                       </ListItemIcon>
                       <ListItemText
                         classes={{ primary: classes.listItemText }}
@@ -422,7 +413,7 @@ class LoginBar extends React.Component {
                     </MenuItem>
                     <MenuItem onClick={() => changeLanguage('es')}>
                       <ListItemIcon>
-                        <img className={classes.imageIcon} src={ES} />
+                        <img className={classes.imageIcon} src={ES} alt="Español" />
                       </ListItemIcon>
                       <ListItemText classes={{ primary: classes.listItemText }} primary="Español" />
                     </MenuItem>

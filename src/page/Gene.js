@@ -2,7 +2,7 @@ import React from 'react';
 import axios from 'axios';
 import PropTypes from 'prop-types';
 import { withStyles } from '@material-ui/core/styles';
-import { CssBaseline, Paper, Container } from '@material-ui/core';
+import { CssBaseline, Container } from '@material-ui/core';
 import { Redirect } from 'react-router';
 
 import Loading from '../components/General/Loading';
@@ -12,8 +12,7 @@ import compose from 'recompose/compose';
 import { connect } from 'react-redux';
 import { setSnack } from '../redux/actions/snacks';
 
-import { withTranslation, Trans } from 'react-i18next';
-import i18next from 'i18next';
+import { withTranslation } from 'react-i18next';
 
 const MetaData = React.lazy(() => import('../components/Gene/MetaData'));
 const VirtualGrid = React.lazy(() => import('../components/Table/VirtualGrid'));

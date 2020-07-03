@@ -6,22 +6,17 @@ import { withStyles } from '@material-ui/core/styles';
 import {
   withWidth,
   Grid,
-  Box,
   Container,
   Typography,
   Card,
-  Paper,
   CardContent,
   CardHeader,
   CardActions,
   Button,
-  Avatar,
-  Icon,
 } from '@material-ui/core';
 
 import StarIcon from '@material-ui/icons/Star';
 import { withTranslation, Trans } from 'react-i18next';
-import i18next from 'i18next';
 
 class Pricing extends React.Component {
   constructor(props) {

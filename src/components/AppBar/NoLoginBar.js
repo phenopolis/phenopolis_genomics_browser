@@ -18,7 +18,6 @@ import {
   MenuItem,
   ListItemIcon,
   ListItemText,
-  Avatar,
   AppBar,
   CssBaseline,
 } from '@material-ui/core';
@@ -27,7 +26,6 @@ import MenuIcon from '@material-ui/icons/Menu';
 import DescriptionIcon from '@material-ui/icons/Description';
 import AccountCircleIcon from '@material-ui/icons/AccountCircle';
 import TranslateIcon from '@material-ui/icons/Translate';
-import SupervisedUserCircleIcon from '@material-ui/icons/SupervisedUserCircle';
 import ShoppingCartIcon from '@material-ui/icons/ShoppingCart';
 
 import Footer from '../General/Footer';
@@ -204,37 +202,37 @@ class NoLoginBar extends React.Component {
               onClose={() => this.OpenLan()}>
               <MenuItem onClick={() => changeLanguage('en')}>
                 <ListItemIcon>
-                  <img className={classes.imageIcon} src={GB} />
+                  <img className={classes.imageIcon} src={GB} alt="English" />
                 </ListItemIcon>
                 <ListItemText classes={{ primary: classes.listItemText }} primary="English" />
               </MenuItem>
               <MenuItem onClick={() => changeLanguage('cn')}>
                 <ListItemIcon>
-                  <img className={classes.imageIcon} src={CN} />
+                  <img className={classes.imageIcon} src={CN} alt="中文" />
                 </ListItemIcon>
                 <ListItemText classes={{ primary: classes.listItemText }} primary="中文" />
               </MenuItem>
               <MenuItem onClick={() => changeLanguage('ja')}>
                 <ListItemIcon>
-                  <img className={classes.imageIcon} src={JP} />
+                  <img className={classes.imageIcon} src={JP} alt="日本語" />
                 </ListItemIcon>
                 <ListItemText classes={{ primary: classes.listItemText }} primary="日本語" />
               </MenuItem>
               <MenuItem onClick={() => changeLanguage('de')}>
                 <ListItemIcon>
-                  <img className={classes.imageIcon} src={DE} />
+                  <img className={classes.imageIcon} src={DE} alt="Deutsch" />
                 </ListItemIcon>
                 <ListItemText classes={{ primary: classes.listItemText }} primary="Deutsch" />
               </MenuItem>
               <MenuItem onClick={() => changeLanguage('gr')}>
                 <ListItemIcon>
-                  <img className={classes.imageIcon} src={GR} />
+                  <img className={classes.imageIcon} src={GR} alt="Ελληνικά" />
                 </ListItemIcon>
                 <ListItemText classes={{ primary: classes.listItemText }} primary="Ελληνικά" />
               </MenuItem>
               <MenuItem onClick={() => changeLanguage('es')}>
                 <ListItemIcon>
-                  <img className={classes.imageIcon} src={ES} />
+                  <img className={classes.imageIcon} src={ES} alt="Español" />
                 </ListItemIcon>
                 <ListItemText classes={{ primary: classes.listItemText }} primary="Español" />
               </MenuItem>

@@ -4,15 +4,7 @@ import { withStyles } from '@material-ui/core/styles';
 import compose from 'recompose/compose';
 import { Link } from 'react-router-dom';
 
-import {
-  withWidth,
-  List,
-  ListItem,
-  ListItemIcon,
-  ListItemText,
-  Collapse,
-  Avatar,
-} from '@material-ui/core';
+import { withWidth, List, ListItem, ListItemIcon, ListItemText, Collapse } from '@material-ui/core';
 
 import SearchIcon from '@material-ui/icons/Search';
 import ExitToAppIcon from '@material-ui/icons/ExitToApp';
@@ -23,7 +15,6 @@ import ExpandLess from '@material-ui/icons/ExpandLess';
 import ExpandMore from '@material-ui/icons/ExpandMore';
 
 import TranslateIcon from '@material-ui/icons/Translate';
-import SupervisedUserCircleIcon from '@material-ui/icons/SupervisedUserCircle';
 import ShoppingCartIcon from '@material-ui/icons/ShoppingCart';
 
 import { withTranslation } from 'react-i18next';
@@ -160,42 +151,42 @@ class SideBar extends React.Component {
             <List component="div" disablePadding>
               <ListItem button onClick={() => changeLanguage('en')} className={classes.nested}>
                 <ListItemIcon>
-                  <img className={classes.imageIcon} src={GB} />
+                  <img className={classes.imageIcon} src={GB} alt="" />
                 </ListItemIcon>
                 <ListItemText primary="English" classes={{ primary: classes.listItemText }} />
               </ListItem>
 
               <ListItem button onClick={() => changeLanguage('cn')} className={classes.nested}>
                 <ListItemIcon>
-                  <img className={classes.imageIcon} src={CN} />
+                  <img className={classes.imageIcon} src={CN} alt="" />
                 </ListItemIcon>
                 <ListItemText primary="中文" classes={{ primary: classes.listItemText }} />
               </ListItem>
 
               <ListItem button onClick={() => changeLanguage('ja')} className={classes.nested}>
                 <ListItemIcon>
-                  <img className={classes.imageIcon} src={JP} />
+                  <img className={classes.imageIcon} src={JP} alt="" />
                 </ListItemIcon>
                 <ListItemText primary="日本語" classes={{ primary: classes.listItemText }} />
               </ListItem>
 
               <ListItem button onClick={() => changeLanguage('de')} className={classes.nested}>
                 <ListItemIcon>
-                  <img className={classes.imageIcon} src={DE} />
+                  <img className={classes.imageIcon} src={DE} alt="" />
                 </ListItemIcon>
                 <ListItemText primary="Deutsch" classes={{ primary: classes.listItemText }} />
               </ListItem>
 
               <ListItem button onClick={() => changeLanguage('gr')} className={classes.nested}>
                 <ListItemIcon>
-                  <img className={classes.imageIcon} src={GR} />
+                  <img className={classes.imageIcon} src={GR} alt="" />
                 </ListItemIcon>
                 <ListItemText primary="Ελληνικά" classes={{ primary: classes.listItemText }} />
               </ListItem>
 
               <ListItem button onClick={() => changeLanguage('es')} className={classes.nested}>
                 <ListItemIcon>
-                  <img className={classes.imageIcon} src={ES} />
+                  <img className={classes.imageIcon} src={ES} alt="" />
                 </ListItemIcon>
                 <ListItemText primary="Español" classes={{ primary: classes.listItemText }} />
               </ListItem>

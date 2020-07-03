@@ -87,7 +87,7 @@ class LoginBox extends React.Component {
 
   render() {
     const { classes } = this.props;
-    const { t, i18n } = this.props;
+    const { t } = this.props;
 
     if (this.state.redirect) {
       return (
@@ -149,10 +149,10 @@ class LoginBox extends React.Component {
               <span style={{ color: 'grey' }}>
                 <Trans i18nKey="AppBar.LoginBox.Hint">
                   Click{' '}
-                  <a className={classes.demolink} onClick={this.DemoLogin}>
+                  <span className={classes.demolink} onClick={this.DemoLogin}>
                     {' '}
                     Demo Login
-                  </a>{' '}
+                  </span>{' '}
                   to have a try!
                 </Trans>
               </span>

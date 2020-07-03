@@ -12,7 +12,6 @@ import { CssBaseline, Typography, Container, Paper, Box } from '@material-ui/cor
 import LoginBox from '../components/AppBar/LoginBox';
 
 import { withTranslation, Trans } from 'react-i18next';
-import i18next from 'i18next';
 
 class Login extends React.Component {
   getReduxName() {

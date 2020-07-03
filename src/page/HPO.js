@@ -20,7 +20,6 @@ import Loading from '../components/General/Loading';
 import TabPanel from '../components/Tab/Tabpanel';
 
 import MetaData from '../components/Gene/MetaData';
-import Variants from '../components/Gene/Variants';
 import VirtualGrid from '../components/Table/VirtualGrid';
 
 import compose from 'recompose/compose';
@@ -28,7 +27,6 @@ import { connect } from 'react-redux';
 import { setSnack } from '../redux/actions/snacks';
 
 import { withTranslation, Trans } from 'react-i18next';
-import i18next from 'i18next';
 
 class HPO extends React.Component {
   constructor(props) {
