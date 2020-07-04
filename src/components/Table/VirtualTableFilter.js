@@ -16,14 +16,18 @@ import {
   Menu,
   MenuItem,
   ListItemIcon,
-  Chip,
   Checkbox,
   FormControlLabel,
   FormControl,
   Avatar,
 } from '@material-ui/core';
-import Autocomplete from '@material-ui/lab/Autocomplete';
+import Select from 'react-select';
+import makeAnimated from 'react-select/animated';
 import clsx from 'clsx';
+
+import ReactSelect from './ReactSelect';
+
+const animatedComponents = makeAnimated();
 
 class VirtualTableFilter extends React.Component {
   constructor(props) {
@@ -97,14 +101,14 @@ class VirtualTableFilter extends React.Component {
     });
   };
 
-  handleSelectColumn = (event, newValue, index) => {
+  handleSelectColumn = (selectOption, index) => {
     const newFilter = [...this.state.myfilter];
-    newFilter[index].column = newValue;
+    newFilter[index].column = selectOption;
 
-    if (newValue === null) {
+    if (selectOption === null) {
       newFilter[index].value = [];
     } else {
-      if (newValue.type === 'object') {
+      if (selectOption.type === 'object') {
         newFilter[index].value = [];
       } else {
         newFilter[index].value = '';
@@ -198,85 +202,39 @@ class VirtualTableFilter extends React.Component {
     return (
       <Card elevation={0} className={classes.root}>
         <CardContent>
-          <div className="table-responsive">
-            <table className="table text-left mt-1 text-nowrap table-alternate  mb-0">
-              <tbody>
-                {this.state.myfilter.map((item, index) => {
-                  return (
-                    <tr>
-                      <td>
-                        <div className="d-flex">
-                          <FormControlLabel
-                            value={item.inuse}
-                            control={
-                              <Checkbox checked={item.inuse} className="align-self-center mr-3" />
-                            }
-                            label={index + 1}
-                            labelPlacement="start"
-                            style={{ fontSize: 20 }}
-                            onChange={() => this.handleCheckboxChange(index)}
-                          />
-                        </div>
-                      </td>
-
-                      <td>
-                        <div>
-                          <Autocomplete
-                            value={item.column}
-                            onChange={(event, newValue) =>
-                              this.handleSelectColumn(event, newValue, index)
-                            }
-                            id="combo-box-demo"
-                            size="small"
-                            options={this.props.variableList.filter((x) => x.show)}
-                            getOptionLabel={(option) => option.type + '  -  ' + option.name}
-                            renderOption={(option) => (
-                              <React.Fragment>
-                                {option.type === 'string' ? (
-                                  <Avatar
-                                    className={classes.smallAvatar}
-                                    style={{ color: 'white', backgroundColor: '#26a69a' }}>
-                                    T
-                                  </Avatar>
-                                ) : option.type === 'number' ? (
-                                  <Avatar
-                                    className={classes.smallAvatar}
-                                    style={{ color: 'white', backgroundColor: '#ef5350' }}>
-                                    9
-                                  </Avatar>
-                                ) : option.type === 'object' ? (
-                                  <Avatar
-                                    className={classes.smallAvatar}
-                                    style={{ color: 'white', backgroundColor: '#42a5f5' }}>
-                                    <Icon
-                                      className={clsx(classes.smallFilter, 'fas fa-ellipsis-h')}
-                                    />
-                                  </Avatar>
-                                ) : (
-                                  <Avatar
-                                    className={classes.smallAvatar}
-                                    style={{ color: 'white', backgroundColor: 'black' }}>
-                                    ?
-                                  </Avatar>
-                                )}
-                                <span>{option.name}</span>
-                              </React.Fragment>
-                            )}
-                            renderInput={(params) => (
-                              <TextField {...params} label="Select Column" variant="outlined" />
-                            )}
-                            // style={{ width: 300 }}
-                            className={classes.valueInput}
-                          />
-                        </div>
-                      </td>
-
-                      <td className="text-center">
+          <Grid container className={classes.root} spacing={2}>
+            <Grid item xs={12}>
+              {this.state.myfilter.map((item, index) => {
+                return (
+                  <Grid container direction="row" justify="center" alignItems="center">
+                    <Grid item xs={1}>
+                      <FormControlLabel
+                        value={item.inuse}
+                        control={
+                          <Checkbox checked={item.inuse} className="align-self-center mr-3" />
+                        }
+                        label={index + 1}
+                        labelPlacement="start"
+                        style={{ fontSize: 20 }}
+                        onChange={() => this.handleCheckboxChange(index)}
+                      />
+                    </Grid>
+                    <Grid item xs={3}>
+                      <ReactSelect
+                        currentValue={item.column}
+                        placeholder="Select Column"
+                        optionList={this.props.variableList.filter((x) => x.show)}
+                        onSelectChange={(selectOption) =>
+                          this.handleSelectColumn(selectOption, index)
+                        }
+                      />
+                    </Grid>
+                    <Grid item xs={1}>
+                      <div className="d-flex align-items-center justify-content-center">
                         <IconButton
                           disabled={item.column === null}
                           edge="start"
                           size="small"
-                          // className={classes.menuButton}
                           color="primary"
                           component="span"
                           onClick={(event) => this.handleOperationOpen(event, index, item.column)}>
@@ -289,172 +247,146 @@ class VirtualTableFilter extends React.Component {
                             <b>{item.operation}</b>
                           </Avatar>
                         </IconButton>
+                      </div>
 
-                        <Menu
-                          id="simple-menu"
-                          anchorEl={this.state.anchorEl}
-                          keepMounted
-                          open={Boolean(this.state.anchorEl)}
-                          onClose={this.handleOperationClose}>
-                          {this.state.operationOptions.other.map(
-                            (operationItem, operationIndex) => {
-                              return (
-                                <MenuItem
-                                  key={operationIndex}
-                                  onClick={() => this.handleOperationChange(operationItem.icon)}>
-                                  <ListItemIcon>
-                                    <Typography variant="h5" noWrap>
-                                      {operationItem.icon}
-                                    </Typography>
-                                  </ListItemIcon>
-                                  <Typography variant="body2" noWrap>
-                                    {operationItem.des}
-                                  </Typography>
-                                </MenuItem>
-                              );
-                            }
-                          )}
-                        </Menu>
+                      <Menu
+                        id="simple-menu"
+                        anchorEl={this.state.anchorEl}
+                        keepMounted
+                        open={Boolean(this.state.anchorEl)}
+                        onClose={this.handleOperationClose}>
+                        {this.state.operationOptions.other.map((operationItem, operationIndex) => {
+                          return (
+                            <MenuItem
+                              key={operationIndex}
+                              onClick={() => this.handleOperationChange(operationItem.icon)}>
+                              <ListItemIcon>
+                                <Typography variant="h5" noWrap>
+                                  {operationItem.icon}
+                                </Typography>
+                              </ListItemIcon>
+                              <Typography variant="body2" noWrap>
+                                {operationItem.des}
+                              </Typography>
+                            </MenuItem>
+                          );
+                        })}
+                      </Menu>
 
-                        <Menu
-                          id="simple-menu"
-                          anchorEl={this.state.anchorElObject}
-                          keepMounted
-                          open={Boolean(this.state.anchorElObject)}
-                          onClose={this.handleOperationClose}>
-                          {this.state.operationOptions.object.map(
-                            (operationItem, operationIndex) => {
-                              return (
-                                <MenuItem
-                                  key={operationIndex}
-                                  onClick={() => this.handleOperationChange(operationItem.icon)}>
-                                  <ListItemIcon>
-                                    <Typography variant="h5" noWrap>
-                                      {operationItem.icon}
-                                    </Typography>
-                                  </ListItemIcon>
-                                  <Typography variant="body2" noWrap>
-                                    {operationItem.des}
-                                  </Typography>
-                                </MenuItem>
-                              );
-                            }
-                          )}
-                        </Menu>
+                      <Menu
+                        id="simple-menu"
+                        anchorEl={this.state.anchorElObject}
+                        keepMounted
+                        open={Boolean(this.state.anchorElObject)}
+                        onClose={this.handleOperationClose}>
+                        {this.state.operationOptions.object.map((operationItem, operationIndex) => {
+                          return (
+                            <MenuItem
+                              key={operationIndex}
+                              onClick={() => this.handleOperationChange(operationItem.icon)}>
+                              <ListItemIcon>
+                                <Typography variant="h5" noWrap>
+                                  {operationItem.icon}
+                                </Typography>
+                              </ListItemIcon>
+                              <Typography variant="body2" noWrap>
+                                {operationItem.des}
+                              </Typography>
+                            </MenuItem>
+                          );
+                        })}
+                      </Menu>
 
-                        <Menu
-                          id="simple-menu"
-                          anchorEl={this.state.anchorElString}
-                          keepMounted
-                          open={Boolean(this.state.anchorElString)}
-                          onClose={this.handleOperationClose}>
-                          {this.state.operationOptions.string.map(
-                            (operationItem, operationIndex) => {
-                              return (
-                                <MenuItem
-                                  key={operationIndex}
-                                  onClick={() => this.handleOperationChange(operationItem.icon)}>
-                                  <ListItemIcon>
-                                    <Typography variant="h5" noWrap>
-                                      {operationItem.icon}
-                                    </Typography>
-                                  </ListItemIcon>
-                                  <Typography variant="body2" noWrap>
-                                    {operationItem.des}
-                                  </Typography>
-                                </MenuItem>
-                              );
-                            }
-                          )}
-                        </Menu>
+                      <Menu
+                        id="simple-menu"
+                        anchorEl={this.state.anchorElString}
+                        keepMounted
+                        open={Boolean(this.state.anchorElString)}
+                        onClose={this.handleOperationClose}>
+                        {this.state.operationOptions.string.map((operationItem, operationIndex) => {
+                          return (
+                            <MenuItem
+                              key={operationIndex}
+                              onClick={() => this.handleOperationChange(operationItem.icon)}>
+                              <ListItemIcon>
+                                <Typography variant="h5" noWrap>
+                                  {operationItem.icon}
+                                </Typography>
+                              </ListItemIcon>
+                              <Typography variant="body2" noWrap>
+                                {operationItem.des}
+                              </Typography>
+                            </MenuItem>
+                          );
+                        })}
+                      </Menu>
 
-                        <Menu
-                          id="simple-menu"
-                          anchorEl={this.state.anchorElNumber}
-                          keepMounted
-                          open={Boolean(this.state.anchorElNumber)}
-                          onClose={this.handleOperationClose}>
-                          {this.state.operationOptions.number.map(
-                            (operationItem, operationIndex) => {
-                              return (
-                                <MenuItem
-                                  key={operationIndex}
-                                  onClick={() => this.handleOperationChange(operationItem.icon)}>
-                                  <ListItemIcon>
-                                    <Typography variant="h5" noWrap>
-                                      {operationItem.icon}
-                                    </Typography>
-                                  </ListItemIcon>
-                                  <Typography variant="body2" noWrap>
-                                    {operationItem.des}
-                                  </Typography>
-                                </MenuItem>
-                              );
-                            }
-                          )}
-                        </Menu>
-                      </td>
-
-                      <td className="text-center">
-                        {item.column === null ? (
-                          <FormControl fullWidth variant="outlined">
-                            <TextField
-                              disabled={item.column === null}
-                              label="Value"
-                              variant="outlined"
-                              id="standard-size-small"
-                              size="small"
-                              value={item.value}
-                              onChange={(event) => this.handleValueChange(event, index)}
-                              className={classes.valueInput}
-                            />
-                          </FormControl>
-                        ) : item.operation === '∅' ? null : (item.column.type === 'object') &
-                          (item.operation !== '=') ? (
-                          <FormControl fullWidth variant="outlined">
-                            <Autocomplete
-                              multiple
-                              value={item.value}
-                              onChange={(event, newValue) =>
-                                this.handleSelectObjectChip(event, newValue, index)
-                              }
-                              id="combo-box-demo"
-                              size="small"
-                              options={item.column.chips}
-                              getOptionLabel={(option) => option}
-                              className={classes.valueInput}
-                              renderInput={(params) => (
-                                <TextField {...params} label="Select Items" variant="outlined" />
-                              )}
-                              renderTags={(tagValue, getTagProps) =>
-                                tagValue.map((option, index) => (
-                                  <Chip
-                                    size="small"
-                                    variant="outlined"
-                                    label={option}
-                                    className={classes.chip}
-                                  />
-                                ))
-                              }
-                            />
-                          </FormControl>
-                        ) : (
-                          <FormControl fullWidth variant="outlined">
-                            <TextField
-                              disabled={item.column === null}
-                              label="Value"
-                              variant="outlined"
-                              id="standard-size-small"
-                              size="small"
-                              value={item.value}
-                              onChange={(event) => this.handleValueChange(event, index)}
-                              className={classes.valueInput}
-                            />
-                          </FormControl>
-                        )}
-                      </td>
-
-                      <td className="text-center">
+                      <Menu
+                        id="simple-menu"
+                        anchorEl={this.state.anchorElNumber}
+                        keepMounted
+                        open={Boolean(this.state.anchorElNumber)}
+                        onClose={this.handleOperationClose}>
+                        {this.state.operationOptions.number.map((operationItem, operationIndex) => {
+                          return (
+                            <MenuItem
+                              key={operationIndex}
+                              onClick={() => this.handleOperationChange(operationItem.icon)}>
+                              <ListItemIcon>
+                                <Typography variant="h5" noWrap>
+                                  {operationItem.icon}
+                                </Typography>
+                              </ListItemIcon>
+                              <Typography variant="body2" noWrap>
+                                {operationItem.des}
+                              </Typography>
+                            </MenuItem>
+                          );
+                        })}
+                      </Menu>
+                    </Grid>
+                    <Grid item xs={4}>
+                      {item.column === null ? (
+                        <FormControl fullWidth variant="outlined">
+                          <TextField
+                            disabled={item.column === null}
+                            label="Value"
+                            variant="outlined"
+                            id="standard-size-small"
+                            size="small"
+                            value={item.value}
+                            onChange={(event) => this.handleValueChange(event, index)}
+                            className={classes.valueInput}
+                          />
+                        </FormControl>
+                      ) : item.operation === '∅' ? null : (item.column.type === 'object') &
+                        (item.operation !== '=') ? (
+                        <Select
+                          closeMenuOnSelect={false}
+                          components={animatedComponents}
+                          isMulti
+                          getOptionValue={(option) => option}
+                          getOptionLabel={(option) => option}
+                          options={item.column.chips}
+                          menuPortalTarget={document.querySelector('body')}
+                        />
+                      ) : (
+                        <FormControl fullWidth variant="outlined">
+                          <TextField
+                            disabled={item.column === null}
+                            label="Value"
+                            variant="outlined"
+                            id="standard-size-small"
+                            size="small"
+                            value={item.value}
+                            onChange={(event) => this.handleValueChange(event, index)}
+                            className={classes.valueInput}
+                          />
+                        </FormControl>
+                      )}
+                    </Grid>
+                    <Grid item xs={1}>
+                      <div className="d-flex align-items-center justify-content-center">
                         {index !== this.state.myfilter.length - 1 ? (
                           <Button
                             size="small"
@@ -465,28 +397,28 @@ class VirtualTableFilter extends React.Component {
                             {item.andor}
                           </Button>
                         ) : null}
-                      </td>
-                      <td className="text-right">
-                        <div className="d-flex align-items-center justify-content-end">
-                          <IconButton
-                            edge="start"
-                            size="small"
-                            color="inherit"
-                            onClick={() => this.handleDeleteFilter(index)}>
-                            <Icon className={clsx(classes.smallFilter, 'far fa-trash-alt')} />
-                          </IconButton>
-                          <FontAwesomeIcon
-                            icon={['fas', 'arrow-down']}
-                            className="font-size-sm opacity-5"
-                          />
-                        </div>
-                      </td>
-                    </tr>
-                  );
-                })}
-              </tbody>
-            </table>
-          </div>
+                      </div>
+                    </Grid>
+                    <Grid item xs={1}>
+                      <div className="d-flex align-items-center justify-content-center">
+                        <IconButton
+                          edge="start"
+                          size="small"
+                          color="inherit"
+                          onClick={() => this.handleDeleteFilter(index)}>
+                          <Icon className={clsx(classes.smallFilter, 'far fa-trash-alt')} />
+                        </IconButton>
+                        <FontAwesomeIcon
+                          icon={['fas', 'arrow-down']}
+                          className="font-size-sm opacity-5"
+                        />
+                      </div>
+                    </Grid>
+                  </Grid>
+                );
+              })}
+            </Grid>
+          </Grid>
 
           <Grid container direction="row" justify="center" alignItems="center">
             <Button color="primary" className="mt-1" onClick={this.handleAddNewFilter}>
@@ -563,9 +495,6 @@ const styles = (theme) => ({
   smallFilter: {
     fontSize: 15,
     margin: theme.spacing(0),
-  },
-  andorButton: {
-    marginRight: theme.spacing(3),
   },
   filterList: {
     border: '1px solid white',

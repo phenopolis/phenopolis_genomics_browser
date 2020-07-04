@@ -122,8 +122,7 @@ const innerGridElementType = React.forwardRef(({ children, ...rest }, ref) => (
       orderBy,
       onRequestSort,
     }) => {
-      // eslint-disable-next-line
-      const [minRow, maxRow, minColumn, maxColumn] = getRenderedCursor(children); // TODO maybe there is more elegant way to get this
+      const [minColumn, maxColumn] = getRenderedCursor(children); // TODO maybe there is more elegant way to get this
 
       const headerColumns = headerBuilder(
         minColumn,
@@ -159,6 +158,11 @@ const innerGridElementType = React.forwardRef(({ children, ...rest }, ref) => (
             orderBy={orderBy}
             onRequestSort={onRequestSort}
           />
+          {/* <StickyColumns
+              rows={leftSideRows}
+              stickyHeight={stickyHeight}
+              stickyWidth={stickyWidth}
+            /> */}
           <div className="sticky-grid__data__container" style={gridDataContainerStyle}>
             {children}
           </div>
@@ -283,9 +287,7 @@ function handleScroll(event) {
 }
 
 function desc(a, b, orderBy) {
-  let aString = {};
-  let bString = {};
-
+  let aString = '';
   if (typeof a[[orderBy]] === 'object') {
     if (typeof a[orderBy][0] === 'object') {
       aString = Object.values(a[orderBy])
@@ -298,6 +300,7 @@ function desc(a, b, orderBy) {
     aString = a[[orderBy]];
   }
 
+  let bString = '';
   if (typeof b[[orderBy]] === 'object') {
     if (typeof b[orderBy][0] === 'object') {
       bString = Object.values(b[orderBy])
@@ -412,11 +415,11 @@ class VirtualGrid extends React.Component {
 
       for (let j = 0; j < mycolumns.length; j++) {
         let headSize = calculateSize(mycolumns[j].name, { font: 'Arial', fontSize: '14px' });
-        let tmpType = '';
         if (headSize.width + 50 > tmpWidth[j]) tmpWidth[j] = headSize.width + 50;
 
         // Add a quick patch here to assign variable's type and class.
 
+        let tmpType = '';
         if (
           [
             'AC',
@@ -461,7 +464,7 @@ class VirtualGrid extends React.Component {
             let tmpMax = maxColumn;
 
             cellData.forEach((chip) => {
-              let size = null;
+              let size = 0;
               if ((typeof chip === 'object') & (chip !== null)) {
                 tmpColnames[j].chips.push(chip.display);
                 size = calculateSize(chip.display, { font: 'Arial', fontSize: '12px' });
@@ -469,7 +472,6 @@ class VirtualGrid extends React.Component {
                 tmpColnames[j].chips.push(chip);
                 size = calculateSize(chip, { font: 'Arial', fontSize: '12px' });
               }
-
               if (size.width + 60 > tmpMax) {
                 tmpMax = size.width + 60;
               }
@@ -617,22 +619,23 @@ class VirtualGrid extends React.Component {
   };
 
   handleDownloadCSV = () => {
-    const prepareDownload = this.state.filteredData.map((row) => {
+    var prepareDownload = this.state.filteredData.map((row) => {
       var tmpRow = {};
-      this.state.columnHide.map((i) => {
+      this.state.columnHide.forEach((i) => {
         if (i.type !== 'object') {
-          return (tmpRow[i.key] = row[i.key]);
+          tmpRow[i.key] = row[i.key];
         } else if ((typeof row[i.key][0] === 'object') & (row[i.key][0] !== null)) {
-          return (tmpRow[i.key] = row[i.key].map((chip) => chip.display).join(';'));
+          tmpRow[i.key] = row[i.key].map((chip) => chip.display).join(';');
         } else {
-          return (tmpRow[i.key] = row[i.key].join(';'));
+          tmpRow[i.key] = row[i.key].join(';');
         }
       });
       return tmpRow;
     });
 
     var d = new Date();
-    let filename = `phenopolis_${d.getDate()}_${d.getMonth()}_${d.getFullYear()}.csv`;
+    let filename =
+      'phenopolis' + '_' + d.getDate() + '_' + d.getMonth() + '_' + d.getFullYear() + '.csv';
 
     csvDownload(prepareDownload, filename);
   };
@@ -641,7 +644,6 @@ class VirtualGrid extends React.Component {
     var tmpNewRowHeight = [];
 
     var filtered = data.filter((item, rowIndex) => {
-      // var judge = true;
       var tmpJudge = new Array(filters.length).fill(true);
 
       Array.prototype.forEach.call(filters, (filter, index) => {
@@ -649,28 +651,24 @@ class VirtualGrid extends React.Component {
           case '>':
             if (Number(item[filter.column.key]) > Number(filter.value)) {
             } else {
-              // judge = false;
               tmpJudge[index] = false;
             }
             break;
           case '≥':
             if (Number(item[filter.column.key]) >= Number(filter.value)) {
             } else {
-              // judge = false;
               tmpJudge[index] = false;
             }
             break;
           case '<':
             if (Number(item[filter.column.key]) < Number(filter.value)) {
             } else {
-              // judge = false;
               tmpJudge[index] = false;
             }
             break;
           case '≤':
             if (Number(item[filter.column.key]) <= Number(filter.value)) {
             } else {
-              // judge = false;
               tmpJudge[index] = false;
             }
             break;
@@ -678,7 +676,6 @@ class VirtualGrid extends React.Component {
             if (typeof item[filter.column.key] !== 'object') {
               if (RegExp(filter.value).test(item[filter.column.key])) {
               } else {
-                // judge = false;
                 tmpJudge[index] = false;
               }
             } else {
@@ -691,13 +688,11 @@ class VirtualGrid extends React.Component {
                 });
                 if (displays.length > 0) {
                 } else {
-                  // judge = false;
                   tmpJudge[index] = false;
                 }
               } else {
                 if (RegExp(filter.value).test(item[filter.column.key].join(','))) {
                 } else {
-                  // judge = false;
                   tmpJudge[index] = false;
                 }
               }
@@ -706,7 +701,6 @@ class VirtualGrid extends React.Component {
           case '==':
             if (JSON.stringify(item[filter.column.key]) === JSON.stringify(filter.value)) {
             } else {
-              // judge = false;
               tmpJudge[index] = false;
             }
             break;
@@ -792,7 +786,6 @@ class VirtualGrid extends React.Component {
       });
 
       let judge = null;
-
       if (filters.length === 0) {
         judge = true;
       } else {
@@ -808,7 +801,7 @@ class VirtualGrid extends React.Component {
             }
           }
         }
-        judge = stringForEval;
+        judge = eval(stringForEval);
       }
 
       if (judge) {
@@ -816,7 +809,6 @@ class VirtualGrid extends React.Component {
       }
       return judge;
     });
-    // return filtered;
 
     this.setState(
       {

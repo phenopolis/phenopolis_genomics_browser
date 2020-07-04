@@ -7,16 +7,14 @@ import { prepareBoxplotData } from 'echarts/extension/dataTool';
 import ecStat from 'echarts-stat';
 import ReactEcharts from 'echarts-for-react';
 
-import { Card, CardContent, Grid, Avatar, Icon } from '@material-ui/core';
-import clsx from 'clsx';
-// import Autocomplete from '@material-ui/lab/Autocomplete';
-import { Select } from 'react-functional-select';
+import { Card, CardContent, Grid } from '@material-ui/core';
 
 import BoxplotOption from '../../assets/echartJS/BoxplotOption';
 import ScatterOption from '../../assets/echartJS/ScatterOption';
 import StackBarOption from '../../assets/echartJS/StackBarOption';
 import HistogramOption from '../../assets/echartJS/HistogramOption';
 import BarplotOption from '../../assets/echartJS/BarplotOption';
+import ReactSelect from './ReactSelect';
 
 class Plots extends React.Component {
   constructor(props) {
@@ -35,18 +33,6 @@ class Plots extends React.Component {
     this.getSeriesData(this.state.xAxis, this.state.yAxis);
   }
 
-  // handleSelectXAxis = (event, newValue, index) => {
-  //   this.setState({ xAxis: newValue }, () => {
-  //     this.getSeriesData(this.state.xAxis, this.state.yAxis);
-  //   });
-  // };
-
-  // handleSelectYAxis = (event, newValue, index) => {
-  //   this.setState({ yAxis: newValue }, () => {
-  //     this.getSeriesData(this.state.xAxis, this.state.yAxis);
-  //   });
-  // };
-
   onScatterClick = (param) => {
     this.props.highlighRow(param.dataIndex);
   };
@@ -55,13 +41,14 @@ class Plots extends React.Component {
     window.alert('Bar Click: ' + param.dataIndex);
   };
 
-  RectSelectXAxis = (selectedOption) => {
+  ReactSelectXAxis = (selectedOption) => {
     this.setState({ xAxis: selectedOption }, () => {
       this.getSeriesData(this.state.xAxis, this.state.yAxis);
     });
   };
 
-  RectSelectYAxis = (selectedOption) => {
+  ReactSelectYAxis = (selectedOption) => {
+    console.log(selectedOption);
     this.setState({ yAxis: selectedOption }, () => {
       this.getSeriesData(this.state.xAxis, this.state.yAxis);
     });
@@ -293,187 +280,28 @@ class Plots extends React.Component {
       <Card elevation={0} className={classes.root}>
         <CardContent>
           <Grid container justify="center" spacing={5} style={{ marginBottom: '2em' }}>
-            <Grid item xs={2}>
-              <Select
-                options={this.props.variableList.filter(
+            <Grid item xs={3}>
+              <ReactSelect
+                currentValue={this.state.yAxis}
+                placeholder="Select Y Axis"
+                optionList={this.props.variableList.filter(
                   (x) =>
                     ((x.type === 'number') | (x.type === 'string') | (x.type === 'object')) & x.show
                 )}
-                isClearable={true}
-                placeholder={'Select Y Axis'}
-                onOptionChange={this.RectSelectYAxis}
-                getOptionValue={(option) => option}
-                getOptionLabel={(option) => option.type + '  -  ' + option.name}
-                renderOptionLabel={(option) => (
-                  <React.Fragment>
-                    <div className={classes.selectOption}>
-                      {option.type === 'string' ? (
-                        <Avatar
-                          className={classes.smallAvatar}
-                          style={{ color: 'white', backgroundColor: '#26a69a' }}>
-                          T
-                        </Avatar>
-                      ) : option.type === 'number' ? (
-                        <Avatar
-                          className={classes.smallAvatar}
-                          style={{ color: 'white', backgroundColor: '#ef5350' }}>
-                          9
-                        </Avatar>
-                      ) : option.type === 'object' ? (
-                        <Avatar
-                          className={classes.smallAvatar}
-                          style={{ color: 'white', backgroundColor: '#42a5f5' }}>
-                          <Icon className={clsx(classes.smallFilter, 'fas fa-ellipsis-h')} />
-                        </Avatar>
-                      ) : (
-                        <Avatar
-                          className={classes.smallAvatar}
-                          style={{ color: 'white', backgroundColor: 'black' }}>
-                          ?
-                        </Avatar>
-                      )}
-                      <span>{option.name}</span>
-                    </div>
-                  </React.Fragment>
-                )}
+                onSelectChange={this.ReactSelectYAxis}
               />
             </Grid>
-            {/* <Grid item xs={2}>
-              <Autocomplete
-                // value={this.state.yAxis}
-                onChange={(event, newValue) => this.handleSelectYAxis(event, newValue)}
-                id="combo-box-demo"
-                size="small"
-                options={this.props.variableList.filter(
+
+            <Grid item xs={3}>
+              <ReactSelect
+                currentValue={this.state.xAxis}
+                placeholder="Select X Axis"
+                optionList={this.props.variableList.filter(
                   (x) =>
                     ((x.type === 'number') | (x.type === 'string') | (x.type === 'object')) & x.show
                 )}
-                getOptionLabel={(option) => option.type + '  -  ' + option.name}
-                renderOption={(option) => (
-                  <React.Fragment>
-                    {option.type === 'string' ? (
-                      <Avatar
-                        className={classes.smallAvatar}
-                        style={{ color: 'white', backgroundColor: '#26a69a' }}>
-                        T
-                      </Avatar>
-                    ) : option.type === 'number' ? (
-                      <Avatar
-                        className={classes.smallAvatar}
-                        style={{ color: 'white', backgroundColor: '#ef5350' }}>
-                        9
-                      </Avatar>
-                    ) : option.type === 'object' ? (
-                      <Avatar
-                        className={classes.smallAvatar}
-                        style={{ color: 'white', backgroundColor: '#42a5f5' }}>
-                        <Icon className={clsx(classes.smallFilter, 'fas fa-ellipsis-h')} />
-                      </Avatar>
-                    ) : (
-                            <Avatar
-                              className={classes.smallAvatar}
-                              style={{ color: 'white', backgroundColor: 'black' }}>
-                              ?
-                            </Avatar>
-                          )}
-                    <span>{option.name}</span>
-                  </React.Fragment>
-                )}
-                renderInput={(params) => (
-                  <TextField {...params} label="Select Y Axis" variant="outlined" />
-                )}
-                style={{ width: '100%' }}
+                onSelectChange={this.ReactSelectXAxis}
               />
-            </Grid> */}
-            <Grid item xs={2}>
-              <Select
-                options={this.props.variableList.filter(
-                  (x) =>
-                    ((x.type === 'number') | (x.type === 'string') | (x.type === 'object')) & x.show
-                )}
-                isClearable={true}
-                placeholder={'Select X Axis'}
-                onOptionChange={this.RectSelectXAxis}
-                getOptionValue={(option) => option}
-                getOptionLabel={(option) => option.type + '  -  ' + option.name}
-                renderOptionLabel={(option) => (
-                  <React.Fragment>
-                    <div className={classes.selectOption}>
-                      {option.type === 'string' ? (
-                        <Avatar
-                          className={classes.smallAvatar}
-                          style={{ color: 'white', backgroundColor: '#26a69a' }}>
-                          T
-                        </Avatar>
-                      ) : option.type === 'number' ? (
-                        <Avatar
-                          className={classes.smallAvatar}
-                          style={{ color: 'white', backgroundColor: '#ef5350' }}>
-                          9
-                        </Avatar>
-                      ) : option.type === 'object' ? (
-                        <Avatar
-                          className={classes.smallAvatar}
-                          style={{ color: 'white', backgroundColor: '#42a5f5' }}>
-                          <Icon className={clsx(classes.smallFilter, 'fas fa-ellipsis-h')} />
-                        </Avatar>
-                      ) : (
-                        <Avatar
-                          className={classes.smallAvatar}
-                          style={{ color: 'white', backgroundColor: 'black' }}>
-                          ?
-                        </Avatar>
-                      )}
-                      <span>{option.name}</span>
-                    </div>
-                  </React.Fragment>
-                )}
-              />
-              {/* <Autocomplete
-                value={this.state.xAxis}
-                onChange={(event, newValue) => this.handleSelectXAxis(event, newValue)}
-                id="combo-box-demo"
-                size="small"
-                options={this.props.variableList.filter(
-                  (x) =>
-                    ((x.type === 'number') | (x.type === 'string') | (x.type === 'object')) & x.show
-                )}
-                renderOption={(option) => (
-                  <React.Fragment>
-                    {option.type === 'string' ? (
-                      <Avatar
-                        className={classes.smallAvatar}
-                        style={{ color: 'white', backgroundColor: '#26a69a' }}>
-                        T
-                      </Avatar>
-                    ) : option.type === 'number' ? (
-                      <Avatar
-                        className={classes.smallAvatar}
-                        style={{ color: 'white', backgroundColor: '#ef5350' }}>
-                        9
-                      </Avatar>
-                    ) : option.type === 'object' ? (
-                      <Avatar
-                        className={classes.smallAvatar}
-                        style={{ color: 'white', backgroundColor: '#42a5f5' }}>
-                        <Icon className={clsx(classes.smallFilter, 'fas fa-ellipsis-h')} />
-                      </Avatar>
-                    ) : (
-                            <Avatar
-                              className={classes.smallAvatar}
-                              style={{ color: 'white', backgroundColor: 'black' }}>
-                              ?
-                            </Avatar>
-                          )}
-                    <span>{option.name}</span>
-                  </React.Fragment>
-                )}
-                getOptionLabel={(option) => option.type + '  -  ' + option.name}
-                renderInput={(params) => (
-                  <TextField {...params} label="Select X Axis" variant="outlined" />
-                )}
-                style={{ width: '100%' }}
-              /> */}
             </Grid>
           </Grid>
 
@@ -526,28 +354,6 @@ const styles = (theme) => ({
   rotateSelect: {
     position: 'relative',
     top: '40%',
-    // '-webkit-transform': 'rotate(270deg)',
-    // '-moz-transform': 'rotate(270deg)',
-    // '-o-transform': 'rotate(270deg)',
-    // '-ms-transform': 'rotate(270deg)',
-    // 'transform': 'rotate(270deg)',
-  },
-  selectOption: {
-    height: `100%`,
-    display: `flex`,
-    alignItems: `center`,
-    flexDirection: `row`,
-  },
-  smallAvatar: {
-    fontSize: 12,
-    margin: theme.spacing(0),
-    width: theme.spacing(3),
-    height: theme.spacing(3),
-    marginRight: theme.spacing(1),
-  },
-  smallFilter: {
-    fontSize: 12,
-    margin: theme.spacing(0),
   },
 });
 
