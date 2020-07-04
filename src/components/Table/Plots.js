@@ -16,8 +16,6 @@ import HistogramOption from '../../assets/echartJS/HistogramOption';
 import BarplotOption from '../../assets/echartJS/BarplotOption';
 import ReactSelect from './ReactSelect';
 
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-
 class Plots extends React.Component {
   constructor(props) {
     super(props);
@@ -28,7 +26,7 @@ class Plots extends React.Component {
       option: [],
       plotReady: false,
       EventsDict: null,
-      warningMessage: false,
+      warningMessage: '',
     };
   }
 
