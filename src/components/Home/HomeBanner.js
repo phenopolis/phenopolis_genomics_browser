@@ -1,9 +1,8 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 
-import { Parallax } from 'react-parallax';
 import { withStyles } from '@material-ui/core/styles';
-import { Grid, Box, Typography, Button } from '@material-ui/core';
+import { Grid, Box, Typography, Button, Container } from '@material-ui/core';
 
 import { Link } from 'react-router-dom';
 
@@ -16,6 +15,8 @@ import { getUsername } from '../../redux/selectors';
 
 import { withTranslation } from 'react-i18next';
 import i18next from 'i18next';
+
+import Homebanner from '../../assets/image/Homebanner.jpg';
 
 import axios from 'axios';
 const qs = require('querystring');
@@ -69,22 +70,30 @@ class HomeBanner extends React.Component {
     const { t } = this.props;
 
     return (
-      <div>
-        <Parallax bgImage={require('../../assets/image/Homebanner.jpg')} strength={500}>
-          <div style={{ height: 500 }}>
+      <div className="hero-wrapper bg-composed-wrapper bg-white" style={{ height: '70vh' }}>
+        <div
+          className="bg-composed-wrapper--image bg-composed-filter-rm opacity-9"
+          style={{ backgroundImage: 'url(' + Homebanner + ')', height: '70vh' }}
+        />
+        <div className="bg-composed-wrapper--content mt-4 pt-5 pb-2 py-lg-5">
+          <Container fixed className="pb-5">
             <Grid container justify="center">
               <Box display="flex" alignItems="center" css={{ height: 500 }}>
                 <div className={classes.bannertext}>
-                  <Typography variant="h2" align="center" gutterBottom>
-                    <b>{this.props.BannerText}</b>
+                  <Typography component="div">
+                    <Box fontWeight="900" fontSize="h1.fontSize" m={1}>
+                      {this.props.BannerText}
+                    </Box>
+                    <Box fontSize="h5.fontSize" fontWeight="fontWeightLight" m={1}>
+                      {t('HomePage.HomeBanner.subtitle')}
+                    </Box>
                   </Typography>
-                  <Typography variant="h6" align="center" gutterBottom>
-                    {t('HomePage.HomeBanner.subtitle')}
-                  </Typography>
+
                   {this.props.reduxName === '' ? (
                     <Button
                       variant="outlined"
                       color="inherit"
+                      size="large"
                       className={classes.button}
                       onClick={this.DemoLogin}>
                       {t('HomePage.HomeBanner.button_no_login')}
@@ -94,6 +103,7 @@ class HomeBanner extends React.Component {
                       <Button
                         variant="outlined"
                         color="inherit"
+                        size="large"
                         className={classes.button}
                         // component={Link}
                         // to='/search'
@@ -105,8 +115,8 @@ class HomeBanner extends React.Component {
                 </div>
               </Box>
             </Grid>
-          </div>
-        </Parallax>
+          </Container>
+        </div>
       </div>
     );
   }

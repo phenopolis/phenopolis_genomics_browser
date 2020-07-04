@@ -45,7 +45,7 @@ const DialogTitle = withStyles(styles)((props) => {
   return (
     <MuiDialogTitle disableTypography className={classes.root}>
       <Typography>
-        <Box fontWeight="fontWeightBold" fontSize="h5.fontSize">
+        <Box fontWeight="900" fontSize="h5.fontSize">
           {children}
         </Box>
       </Typography>

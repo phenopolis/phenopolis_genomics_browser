@@ -12,18 +12,22 @@ import {
   ListItemText,
   Collapse,
   Tooltip,
+  Divider,
 } from '@material-ui/core';
 
-import SearchIcon from '@material-ui/icons/Search';
-import ExitToAppIcon from '@material-ui/icons/ExitToApp';
-import LockIcon from '@material-ui/icons/Lock';
-import DescriptionIcon from '@material-ui/icons/Description';
-import PeopleIcon from '@material-ui/icons/People';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import {
+  faSearch,
+  faUsersMedical,
+  faScroll,
+  faLanguage,
+  faUserCircle,
+  faSignOut,
+  faKey,
+} from '@fortawesome/pro-duotone-svg-icons';
+
 import ExpandLess from '@material-ui/icons/ExpandLess';
 import ExpandMore from '@material-ui/icons/ExpandMore';
-
-import TranslateIcon from '@material-ui/icons/Translate';
-import AccountCircleIcon from '@material-ui/icons/AccountCircle';
 
 import { withTranslation } from 'react-i18next';
 
@@ -33,6 +37,8 @@ import JP from '../../assets/svg/jp.svg';
 import DE from '../../assets/svg/de.svg';
 import GR from '../../assets/svg/gr.svg';
 import ES from '../../assets/svg/es.svg';
+
+import { blue } from '@material-ui/core/colors';
 
 const LightTooltip = withStyles((theme) => ({
   tooltip: {
@@ -86,7 +92,7 @@ class ActionBar extends React.Component {
               title={t('AppBar.SideBar.Label_Search')}
               placement="right">
               <ListItemIcon>
-                <SearchIcon />
+                <FontAwesomeIcon icon={faSearch} style={{ color: blue[300], fontSize: '20' }} />
               </ListItemIcon>
             </LightTooltip>
             <ListItemText
@@ -101,7 +107,10 @@ class ActionBar extends React.Component {
               title={t('AppBar.SideBar.Label_Patients')}
               placement="right">
               <ListItemIcon>
-                <PeopleIcon />
+                <FontAwesomeIcon
+                  icon={faUsersMedical}
+                  style={{ color: blue[300], fontSize: '20' }}
+                />
               </ListItemIcon>
             </LightTooltip>
             <ListItemText
@@ -116,7 +125,7 @@ class ActionBar extends React.Component {
               title={t('AppBar.SideBar.Label_Publication')}
               placement="right">
               <ListItemIcon>
-                <DescriptionIcon />
+                <FontAwesomeIcon icon={faScroll} style={{ color: blue[300], fontSize: '20' }} />
               </ListItemIcon>
             </LightTooltip>
             <ListItemText
@@ -131,7 +140,7 @@ class ActionBar extends React.Component {
               title={t('AppBar.SideBar.Label_Language')}
               placement="right">
               <ListItemIcon>
-                <TranslateIcon />
+                <FontAwesomeIcon icon={faLanguage} style={{ color: blue[300], fontSize: '20' }} />
               </ListItemIcon>
             </LightTooltip>
             <ListItemText
@@ -164,13 +173,15 @@ class ActionBar extends React.Component {
             </List>
           </Collapse>
 
+          <Divider />
+
           <ListItem button onClick={() => this.setState({ accountOpen: !this.state.accountOpen })}>
             <LightTooltip
               disableHoverListener={this.props.expended}
               title={this.props.username}
               placement="right">
               <ListItemIcon>
-                <AccountCircleIcon />
+                <FontAwesomeIcon icon={faUserCircle} style={{ color: blue[300], fontSize: '20' }} />
               </ListItemIcon>
             </LightTooltip>
             <ListItemText
@@ -188,7 +199,7 @@ class ActionBar extends React.Component {
                   title={t('AppBar.SideBar.Label_Change_Password')}
                   placement="right">
                   <ListItemIcon>
-                    <LockIcon />
+                    <FontAwesomeIcon icon={faKey} style={{ color: blue[300], fontSize: '17' }} />
                   </ListItemIcon>
                 </LightTooltip>
                 <ListItemText
@@ -203,7 +214,10 @@ class ActionBar extends React.Component {
                   title={t('AppBar.SideBar.Label_Logout')}
                   placement="right">
                   <ListItemIcon>
-                    <ExitToAppIcon />
+                    <FontAwesomeIcon
+                      icon={faSignOut}
+                      style={{ color: blue[300], fontSize: '17' }}
+                    />
                   </ListItemIcon>
                 </LightTooltip>
                 <ListItemText
@@ -227,10 +241,10 @@ ActionBar.propTypes = {
 const styles = (theme) => ({
   list: {
     width: 239,
-    // border: '1px solid red'
   },
   listItemText: {
     fontSize: '1em',
+    fontWeight: '500',
   },
   nested: {
     paddingLeft: theme.spacing(4),

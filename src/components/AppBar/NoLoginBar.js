@@ -281,6 +281,7 @@ const styles = (theme) => ({
   },
   Homelabel: {
     textDecoration: 'none',
+    fontWeight: '900',
   },
   // root: {
   //   width: 100,

@@ -213,40 +213,16 @@ class LoginBar extends React.Component {
               })}>
               <MenuIcon />
             </IconButton>
-            {/* <Typography variant="h6" noWrap>
+            <Typography
+              className={classes.Homelabel}
+              variant="h6"
+              color="inherit"
+              // noWrap
+              component={Link}
+              to="/">
               Phenopolis
-          </Typography> */}
-            <Grid container direction="row" justify="center" alignItems="center">
-              {/* <Hidden mdUp>
-                <Grid item xs={2}>
-                  <IconButton size="small" onClick={() => this.OpenSideBar()}>
-                    <MenuIcon className={classes.menuicon} />
-                  </IconButton>
-                </Grid>
-              </Hidden> */}
-
-              {/* <Hidden smDown>
-						<Grid item md={1} />
-					</Hidden> */}
-
-              <Grid item xs={10} md={1} className={classes.grid}>
-                <Typography
-                  className={classes.Homelabel}
-                  variant="h6"
-                  color="inherit"
-                  noWrap
-                  component={Link}
-                  to="/">
-                  Phenopolis
-                </Typography>
-              </Grid>
-
-              <Hidden smDown>
-                <Grid item md={5} lg={7}>
-                  {/* <NavSearch /> */}
-                </Grid>
-              </Hidden>
-
+            </Typography>
+            <Grid container direction="row" justify="flex-end" alignItems="center">
               <Hidden smDown>
                 <div>
                   <BottomNavigationAction
@@ -255,8 +231,6 @@ class LoginBar extends React.Component {
                     showLabel
                     icon={<SearchIcon />}
                     onClick={this.handletoggleDrawer}
-                    // component={Link}
-                    // to='/search'
                   />
 
                   <Drawer
@@ -266,39 +240,6 @@ class LoginBar extends React.Component {
                     <DrawerSearch onRequestClose={this.handletoggleDrawer} />
                   </Drawer>
 
-                  {/* <BottomNavigationAction
-								className={classes.navigationbutton}
-								label={t('AppBar.LoginBar.Label_Search')}
-								showLabel
-								icon={<SearchIcon />}
-								component={Link}
-								to='/search'
-							/> */}
-                  {/* <BottomNavigationAction
-                    className={classes.navigationbutton}
-                    label={t('AppBar.LoginBar.Label_Patients')}
-                    showLabel
-                    icon={<PeopleIcon />}
-                    component={Link}
-                    to="/my_patients"
-                  /> */}
-
-                  {/* <BottomNavigationAction
-                    className={classes.navigationbutton}
-                    label={t('AppBar.LoginBar.Label_Publication')}
-                    showLabel
-                    icon={<DescriptionIcon />}
-                    component={Link}
-                    to="/publications"
-                  /> */}
-
-                  {/* <BottomNavigationAction
-								className={classes.navigationbutton}
-								label={t('AppBar.LoginBar.Label_Explore')}
-								showLabel
-								icon={<Avatar src={require('../../assets/image/phenopolis_logo_white.png')} className={classes.avatar} />}
-								onClick={(event) => this.handleExploreClick(event)}
-							/> */}
                   <BottomNavigationAction
                     className={classes.navigationbutton}
                     label={t('AppBar.LoginBar.Label_Language')}
@@ -553,6 +494,7 @@ const styles = (theme) => ({
   },
   Homelabel: {
     textDecoration: 'none',
+    fontWeight: '900',
   },
   // root: {
   //   width: 100,

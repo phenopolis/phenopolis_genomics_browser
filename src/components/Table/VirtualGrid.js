@@ -832,14 +832,8 @@ class VirtualGrid extends React.Component {
     return (
       <div className={classes.root}>
         <Typography component="div">
-          <Box fontWeight="fontWeightBold" fontSize="h4.fontSize" mb={0}>
+          <Box fontWeight="900" fontSize="h4.fontSize" mb={0}>
             {this.props.title}
-            {/* <span style={{ fontSize: '0.5em' }}>
-              <b style={{ color: '#2196f3' }}> <CountUp end={this.state.filteredData.length} /> </b>
-            rows and
-            <b style={{ color: '#2196f3' }}> <CountUp end={this.state.filteredColumn.length} /></b>
-            columns
-            </span> */}
           </Box>
           <Box fontWeight="fontWeightLight" mb={2}>
             {this.props.subtitle}

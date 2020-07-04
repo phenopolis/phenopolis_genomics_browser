@@ -57,7 +57,7 @@ class Login extends React.Component {
             <Container maxWidth="md">
               <Paper className={classes.paper2}>
                 <Typography component="div">
-                  <Box fontWeight="fontWeightBold" fontSize="h4.fontSize" m={1}>
+                  <Box fontWeight="900" fontSize="h4.fontSize" m={1}>
                     {t('Login.login')}
                   </Box>
                   <Box fontWeight="fontWeightLight" m={1}>

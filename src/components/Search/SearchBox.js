@@ -115,7 +115,7 @@ class SearchBox extends React.Component {
         <Container maxWidth="xl">
           <Paper className={classes.paper}>
             <Typography component="div">
-              <Box fontWeight="fontWeightBold" fontSize="h3.fontSize" m={1}>
+              <Box fontWeight="900" fontSize="h3.fontSize" m={1}>
                 {t('Search.title')}
               </Box>
               <Box fontWeight="fontWeightLight" m={1}>

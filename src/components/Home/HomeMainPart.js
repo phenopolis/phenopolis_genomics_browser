@@ -87,7 +87,7 @@ const HomeMainPart = () => {
                 className={classes.fontawesomeicon}
               />
               <Typography component="div">
-                <Box fontWeight="fontWeightBold" fontSize="h5.fontSize" m={1}>
+                <Box fontWeight="900" fontSize="h5.fontSize" m={1}>
                   {t('HomePage.HomeMainPart.tab1.title')}
                 </Box>
                 <Box fontWeight="fontWeightLight" m={1}>
@@ -105,7 +105,7 @@ const HomeMainPart = () => {
                 className={classes.fontawesomeicon}
               />
               <Typography component="div">
-                <Box fontWeight="fontWeightBold" fontSize="h5.fontSize" m={1}>
+                <Box fontWeight="900" fontSize="h5.fontSize" m={1}>
                   {t('HomePage.HomeMainPart.tab2.title')}
                 </Box>
                 <Box fontWeight="fontWeightLight" m={1}>
@@ -123,7 +123,7 @@ const HomeMainPart = () => {
                 className={classes.fontawesomeicon}
               />
               <Typography component="div">
-                <Box fontWeight="fontWeightBold" fontSize="h5.fontSize" m={1}>
+                <Box fontWeight="900" fontSize="h5.fontSize" m={1}>
                   {t('HomePage.HomeMainPart.tab3.title')}
                 </Box>
                 <Box fontWeight="fontWeightLight" m={1}>
@@ -141,7 +141,7 @@ const HomeMainPart = () => {
             <Paper elevation={0} className={classes.paper2}>
               <FontAwesomeIcon icon={faUsers} color="#2E84CF" className={classes.fontawesomeicon} />
               <Typography component="div">
-                <Box fontWeight="fontWeightBold" fontSize="h4.fontSize" m={1}>
+                <Box fontWeight="900" fontSize="h4.fontSize" m={1}>
                   {t('HomePage.HomeMainPart.statistic.title')}
                 </Box>
                 <Box fontWeight="fontWeightLight" fontSize="h6.fontSize" m={1}>
@@ -170,7 +170,7 @@ const HomeMainPart = () => {
                 className={classes.fontawesomeicon}
               />
               <Typography component="div">
-                <Box fontWeight="fontWeightBold" fontSize="h4.fontSize" m={1}>
+                <Box fontWeight="900" fontSize="h4.fontSize" m={1}>
                   {t('HomePage.HomeMainPart.contact.title')}
                 </Box>
                 <Box fontWeight="fontWeightLight" fontSize="h6.fontSize" m={1}>

@@ -7,7 +7,7 @@ import { prepareBoxplotData } from 'echarts/extension/dataTool';
 import ecStat from 'echarts-stat';
 import ReactEcharts from 'echarts-for-react';
 
-import { Card, CardContent, Grid } from '@material-ui/core';
+import { Card, CardContent, Grid, Button } from '@material-ui/core';
 
 import BoxplotOption from '../../assets/echartJS/BoxplotOption';
 import ScatterOption from '../../assets/echartJS/ScatterOption';
@@ -15,6 +15,8 @@ import StackBarOption from '../../assets/echartJS/StackBarOption';
 import HistogramOption from '../../assets/echartJS/HistogramOption';
 import BarplotOption from '../../assets/echartJS/BarplotOption';
 import ReactSelect from './ReactSelect';
+
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 
 class Plots extends React.Component {
   constructor(props) {
@@ -26,6 +28,7 @@ class Plots extends React.Component {
       option: [],
       plotReady: false,
       EventsDict: null,
+      warningMessage: false,
     };
   }
 
@@ -167,6 +170,7 @@ class Plots extends React.Component {
     }, {});
 
     let labels = Object.keys(groupedByxAxis);
+
     let tmpData = null;
     if (rotate) {
       tmpData = prepareBoxplotData(Object.values(groupedByxAxis), { layout: 'vertical' });
@@ -191,7 +195,21 @@ class Plots extends React.Component {
       'Dots represents outlier for each box.\n\n' +
       'If you use row filter and column filter, the plot will change promptly';
 
-    this.setState({ option: newBoxplotOption, EventsDict: {}, msg: tmpMsg, plotReady: true });
+    let plotReady = true;
+    let warningMessage = '';
+    if (labels.length >= 20) {
+      plotReady = false;
+      warningMessage =
+        'More than 20 boxes would be plotted. Too many boxes in one plot may be less informative to observe, and even slow your browser. However, you can still hover over boxplots to get detailed information.';
+    }
+
+    this.setState({
+      option: newBoxplotOption,
+      EventsDict: {},
+      msg: tmpMsg,
+      plotReady: plotReady,
+      warningMessage: warningMessage,
+    });
   };
 
   CreateStackBarPlot = (xAxis, yAxis) => {
@@ -270,7 +288,37 @@ class Plots extends React.Component {
 
     let tmpMsg = 'This is stacked bar plot.';
 
-    this.setState({ option: newStackBarOption, EventsDict: {}, msg: tmpMsg, plotReady: true });
+    let plotReady = true;
+    let warningMessage = '';
+    if ((xOptions.length >= 20) | (yOptions.length >= 20)) {
+      plotReady = false;
+      warningMessage =
+        'More than 20 bars/stacks would be plotted. Too many elements in one plot may be less informative to observe, and even slow your browser. However, you can still hover over stackbars to get detailed information.';
+    }
+
+    this.setState({
+      option: newStackBarOption,
+      EventsDict: {},
+      msg: tmpMsg,
+      plotReady: plotReady,
+      warningMessage: warningMessage,
+    });
+  };
+
+  confirmPlot = () => {
+    this.setState({ warningMessage: '', plotReady: true });
+  };
+
+  cancelPlot = () => {
+    this.setState({
+      xAxis: null,
+      yAxis: null,
+      msg: 'Neither of two axises are selected',
+      option: [],
+      plotReady: false,
+      EventsDict: null,
+      warningMessage: '',
+    });
   };
 
   render() {
@@ -308,6 +356,31 @@ class Plots extends React.Component {
           <Grid container justify="center" spacing={0}>
             <Grid item xs={2}></Grid>
             <Grid item xs={6}>
+              {this.state.warningMessage !== '' ? (
+                <div className="text-center p-2">
+                  <div className="font-weight-bold font-size-lg mt-1">
+                    Do you want to continue to plot?
+                  </div>
+                  <p className="mb-0 mt-2 text-grey font-size-md">{this.state.warningMessage}</p>
+                  <div className="pt-4">
+                    <Button
+                      onClick={this.cancelPlot}
+                      variant="outlined"
+                      color="primary"
+                      className="mx-1">
+                      <span className="btn-wrapper--label">Cancel</span>
+                    </Button>
+                    <Button
+                      onClick={this.confirmPlot}
+                      variant="outlined"
+                      color="primary"
+                      className="mx-1">
+                      <span className="btn-wrapper--label">Yes, do it</span>
+                    </Button>
+                  </div>
+                </div>
+              ) : null}
+
               {this.state.plotReady ? (
                 <ReactEcharts
                   option={this.state.option}
@@ -316,14 +389,14 @@ class Plots extends React.Component {
                   onEvents={this.state.EventsDict}
                   style={{ height: '40em' }}
                 />
-              ) : (
+              ) : this.state.warningMessage === '' ? (
                 <div style={{ paddingTop: '2em', color: 'darkgrey', textAlign: 'center' }}>
                   Please Select variables for X axis and Y axis to draw Scatter Plot.
                   <div style={{ marginTop: '1em', 'white-space': 'pre-wrap' }}>
                     {this.state.msg}
                   </div>
                 </div>
-              )}
+              ) : null}
             </Grid>
             <Grid item xs={2} style={{ paddingTop: '5em', color: 'darkgrey' }}>
               {this.state.plotReady ? (

@@ -176,7 +176,7 @@ class HPO extends React.Component {
                   {/* Phenogenon tab is more complex. */}
                   <TabPanel value={this.state.value} index={2} dir={this.props.theme.direction}>
                     <Typography component="div">
-                      <Box fontWeight="fontWeightBold" fontSize="h4.fontSize" mb={0}>
+                      <Box fontWeight="900" fontSize="h4.fontSize" mb={0}>
                         {t('HPO.Phenogenon')}
                       </Box>
                       <Box fontWeight="fontWeightLight" mb={2}>

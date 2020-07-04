@@ -70,7 +70,7 @@ class MetaData extends React.Component {
           <Paper className={classes.paper}>
             <div className={classes.root}>
               <Typography component="div">
-                <Box fontWeight="fontWeightBold" fontSize="h4.fontSize" mb={2}>
+                <Box fontWeight="900" fontSize="h4.fontSize" mb={2}>
                   {this.props.name}
                 </Box>
               </Typography>

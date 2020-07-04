@@ -16,13 +16,13 @@ const PublicationList = () => {
         {publications.map((section, sid) => {
           return (
             <Typography component="div" key={sid}>
-              <Box fontWeight="fontWeightBold" fontSize="h4.fontSize" m={1}>
+              <Box fontWeight="900" fontSize="h4.fontSize" m={1}>
                 {t('Publication.' + section.title)}
               </Box>
               {section.data.map((subsection, ssid) => {
                 return (
                   <div key={ssid}>
-                    <Box fontWeight="fontWeightBold" fontSize="h5.fontSize" m={1}>
+                    <Box fontWeight="900" fontSize="h5.fontSize" m={1}>
                       {t('Publication.' + subsection.subtitle)}
                     </Box>
                     {subsection.publications.map((paper, index) => {

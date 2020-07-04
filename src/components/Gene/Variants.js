@@ -280,7 +280,7 @@ class Variant extends React.Component {
       <React.Fragment>
         <CssBaseline />
         <Typography component="div">
-          <Box fontWeight="fontWeightBold" fontSize="h4.fontSize" mb={0}>
+          <Box fontWeight="900" fontSize="h4.fontSize" mb={0}>
             {this.props.title}
           </Box>
           <Box fontWeight="fontWeightLight" mb={2}>

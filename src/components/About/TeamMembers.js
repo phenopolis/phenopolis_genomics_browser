@@ -162,7 +162,7 @@ class TeamMember extends React.Component {
             <Grid item xs={12} md={8} className={classes.gridpaper2}>
               <Paper elevation={0} className={classes.paper2}>
                 <Typography component="div">
-                  <Box fontWeight="fontWeightBold" fontSize="h4.fontSize" m={1}>
+                  <Box fontWeight="900" fontSize="h4.fontSize" m={1}>
                     {t('About.Mission_Title')}
                   </Box>
                   <Box
@@ -188,7 +188,7 @@ class TeamMember extends React.Component {
 
         <Container className={classes.cardGrid} maxWidth="lg">
           <Typography component="div" style={{ textAlign: 'center', paddingBottom: '1em' }}>
-            <Box fontWeight="fontWeightBold" fontSize="h4.fontSize" m={1} gutterBottom>
+            <Box fontWeight="900" fontSize="h4.fontSize" m={1} gutterBottom>
               {t('About.Core_Team')}
             </Box>
           </Typography>
@@ -237,7 +237,7 @@ class TeamMember extends React.Component {
             <Grid item xs={12} md={8} className={classes.gridpaper2}>
               <Paper elevation={0} className={classes.paper2}>
                 <Typography component="div">
-                  <Box fontWeight="fontWeightBold" fontSize="h4.fontSize" m={1}>
+                  <Box fontWeight="900" fontSize="h4.fontSize" m={1}>
                     {t('About.Contributor')}
                   </Box>
                 </Typography>
