@@ -68,3 +68,12 @@ target/
 # .elasticbeanstalk/*
 # !.elasticbeanstalk/*.cfg.yml
 # !.elasticbeanstalk/*.global.yml
+
+# pybiomart
+.pybiomart.sqlite
+
+# pycharm
+.idea
+
+# environment config
+.env
