@@ -61,7 +61,8 @@ def _search_phenotypes(cursor, query):
 
 
 def _search_genes(cursor, query):
-    cursor.execute("select * from genes where gene_name_upper like '{query}' limit 20".format(query=query))
+    cursor.execute("select * from genes where gene_name_upper like '{query}' or other_names like '{query}' limit 20".
+                   format(query=query))
     headers = [h[0] for h in cursor.description]
     gene_hits = [dict(zip(headers, r)) for r in cursor.fetchall()]
     # while the search is performed on the upper cased gene name, it returns the original gene name
