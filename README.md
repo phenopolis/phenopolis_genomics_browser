@@ -9,115 +9,36 @@ The actual data fields in the JSON gets populated by the endpoints as explained 
 Endpoints are called by [phenopolis_frontend](https://github.com/phenopolis/phenopolis_frontend]) which also takes care of the rendering.
 
 
-##  How to start the API server
+###  How to start the API server
 
-**NOTE**: skip these steps if using the Docker approach.
+Setup using docker-compose:
 
-Create the `demo` user with password `demo123` in postgres:
+create file `private.env` with:
 ```bash
-# impersonate the postgres user
-$ sudo -i -u postgres
-# create the demo user in the database
-postgres $ createuser --interactive --password
-Enter name of role to add: demo
-Shall the new role be a superuser? (y/n) y
-Password: *****
-```
-
-Create the postgres`phenopolis_db_demo` db owned by the `demo`:
-```bash
-# create the demo user in the system
-$ sudo adduser demo
-# impersonate the demo user
-$ sudo -i -u demo
-# create the database
-demo $ createdb phenopolis_db_demo
-```
-
-Make sure that the authentication for postgres users is set to md5 in file `/etc/postgresql/10/main/pg_hba.conf`.
-
-This line:
-```
-local   all             all                                     peer
-```
-is changed to:
-```
-local   all             all                                     md5
-```
-
-Then load data into postgres db:
-
-```bash
-psql -U demo -W phenopolis_db_demo < db/phenopolis_db_demo.sql
-```
-
-Install the Python requirements:
-```bash
-pip install -r requirements.txt
-```
-
-Then source the `demo_env.sh` file to set the env variables:
-
-```bash
-source demo_env.sh
-```
-
-Then you can start the server:
-
-```bash
-python application.py
-```
-
-## Docker approach for development
-
-Be sure to be at `phenopolis_api` folder
-Create file `private.env` with private information:
-```bash
-# For Docker, env values must be explicit here, which is not safe. DB_USER=$DB_USER won't work
-# DB_HOST=host.docker.internal is specific for macOS
-DB_HOST=localhost
-DB_PASSWORD=....
-
 VCF_S3_SECRET=....
 VCF_S3_KEY=....
-
-POSTGRES_PASSWORD=....
 ```
-and you may need to edit `public.env` if using `phenopolis_db_demo`. The default is to use the full DB dump.
 
-Now, build the image:
-```bash
-docker-compose build
-```
-Start services:
+### Build and launch the services
 ```bash
 docker-compose up -d
 ```
-Then load data into postgres db, you may be using either `phenopolis_db_demo.sql` or `phenopolis_database.sql.gz`. Tweak the next lines accordingly:
+
+### Set up the DB and load data into it
 ```bash
-# NOTE: though phenopolis_db_demo.sql may contain the schema, phenopolis_database.sql.gz does not
-docker-compose exec db sh -c 'createuser rdsadmin -U $DB_USER'
-docker-compose exec db sh -c 'psql -U $DB_USER -d $DB_DATABASE -c "GRANT ALL PRIVILEGES ON DATABASE phenopolis_db TO phenopolis_api;"'
-
-docker-compose exec db sh -c 'gunzip < /app/db/phenopolis_database.sql.gz | psql -U $DB_USER -d $DB_DATABASE'
-or
-docker-compose exec db sh -c 'psql -U $DB_USER -d $DB_DATABASE < /app/db/phenopolis_db_demo.sql'
-
-# to check if it's all fine
-docker-compose exec db sh -c 'psql -U $DB_USER -d $DB_DATABASE -c "\dt"'
+docker-compose exec db sh -c 'createuser rdsadmin -U phenopolis_api'
+docker-compose exec db sh -c 'psql -U phenopolis_api -d phenopolis_db -c "GRANT ALL PRIVILEGES ON DATABASE phenopolis_db TO phenopolis_api;"'
+docker-compose exec db sh -c 'cd /app ; psql -U $POSTGRES_USER -d $POSTGRES_DB < db/seed/demo_database.sql'
 ```
-
-Or, in a copy & paste script like approach, if you have manually beforehand copied file `phenopolis_database.sql.gz` in `.../phenopolis_api/db/` folder:
-
+If you have and wish to use the full dump:
 ```bash
-docker-compose build
-docker-compose up -d
-docker-compose exec db sh -c 'createuser rdsadmin -U $DB_USER'
-docker-compose exec db sh -c 'psql -U $DB_USER -d $DB_DATABASE -c "GRANT ALL PRIVILEGES ON DATABASE phenopolis_db TO phenopolis_api;"'
-docker-compose exec db sh -c 'gunzip < /app/db/phenopolis_database.sql.gz | psql -U $DB_USER -d $DB_DATABASE'
-docker-compose exec db sh -c 'psql -U $DB_USER -d $DB_DATABASE -c "\dt"'
+docker-compose exec db sh -c 'gunzip < /app/db/phenopolis_database.sql.gz | psql -U $POSTGRES_USER -d $POSTGRES_DB'
 ```
 Now you can edit the source files and `gunicorn` will restart the service automatically.
+
+NOTES:
+- If `demo_database.sql` loaded, be aware that `http://localhost:8888/variant/22-38212762-A-G` will fail
+- Also, the docker image created may fail for the same case above when using the `full dump`, but in this case it's a bug in pysam
 
 ### Overview
 
