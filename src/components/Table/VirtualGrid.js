@@ -122,7 +122,7 @@ const innerGridElementType = React.forwardRef(({ children, ...rest }, ref) => (
       orderBy,
       onRequestSort,
     }) => {
-      const [minColumn, maxColumn] = getRenderedCursor(children); // TODO maybe there is more elegant way to get this
+      const [minRow, maxRow, minColumn, maxColumn] = getRenderedCursor(children);
 
       const headerColumns = headerBuilder(
         minColumn,
