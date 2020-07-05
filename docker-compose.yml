@@ -3,7 +3,6 @@ services:
    app:
       build:
          context: .
-         dockerfile: base_dev.dockerfile
       image: phenopolis_api:base_dev
       command: sh -c "gunicorn -b 0.0.0.0:8000 --reload --workers=1 --threads=15 application:application"
       ports:
@@ -25,7 +24,8 @@ services:
       env_file:
       - public.env
       - private.env
-      ports:
-      - 5432:5432
-      expose:
-      - 5432
+# uncomment below for debugging only
+#       ports:
+#       - 5432:5432
+#       expose:
+#       - 5432
