@@ -130,7 +130,9 @@ class BiomartGeneAnnotationsReader(object):
         phenopolis_df['gene_name_upper'] = phenopolis_df['gene_name'].transform(lambda x: str(x).upper())
         phenopolis_df['other_names'] = phenopolis_df['other_names'].transform(
             lambda x: BiomartGeneAnnotationsReader._transform_synonyms_to_phenopolis(x))
-        return phenopolis_df
+        # order of columns matter to load into the db
+        return phenopolis_df[['stop', 'gene_id', 'chrom', 'strand', 'full_gene_name', 'gene_name_upper', 'other_names',
+                              'canonical_transcript', 'start', 'xstop', 'xstart', 'gene_name']]
 
 
 if __name__ == '__main__':
