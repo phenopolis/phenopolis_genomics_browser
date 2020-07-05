@@ -8,8 +8,8 @@ ENV PYTHONDONTWRITEBYTECODE 1
 ENV PYTHONUNBUFFERED 1
 
 # install psycopg2 and pysam dependencies
-RUN apk update \
-    && apk add postgresql-dev gcc g++ python3-dev musl-dev git libffi-dev zlib-dev bzip2-dev xz-dev curl-dev make libcurl libpq
+RUN apk update
+RUN apk add postgresql-dev gcc g++ python3-dev musl-dev git libffi-dev zlib-dev bzip2-dev xz-dev curl-dev make libcurl libpq
 
 # install dependencies
 RUN pip install --upgrade pip
@@ -27,10 +27,3 @@ RUN pip install -U gunicorn
 # Clear image
 RUN pip cache purge
 RUN apk del postgresql-dev gcc python3-dev musl-dev git libffi-dev zlib-dev bzip2-dev xz-dev curl-dev make
-
-# copy project
-COPY ./application.py ./
-COPY ./views views/
-COPY ./db/__init__.py db/__init__.py
-
-CMD [ "gunicorn", "-b", "0.0.0.0:8000", "--workers=1", "--threads=15", "application:application" ]
