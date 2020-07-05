@@ -1,6 +1,5 @@
 #!/bin/python
 from pybiomart import Server
-import numpy as np
 import pandas as pd
 
 
@@ -75,6 +74,11 @@ class BiomartGeneAnnotationsReader(object):
             synonyms.append(gene_symbol)
         return synonyms
 
+    @staticmethod
+    def _transform_synonyms_to_phenopolis(synonyms_list):
+        synonyms_list = [y.upper() for y in synonyms_list]
+        return str(synonyms_list).replace("'", '"')
+
     def load_data(self):
         canonical_transcripts = self._get_canonical_transcripts()
         gene_synonyms_grch37 = self._get_gene_synonyms(dataset=self.dataset_grch37)
@@ -124,7 +128,8 @@ class BiomartGeneAnnotationsReader(object):
         }
         phenopolis_df = data[list(columns_renaming.keys())].rename(columns=columns_renaming)
         phenopolis_df['gene_name_upper'] = phenopolis_df['gene_name'].transform(lambda x: str(x).upper())
-        phenopolis_df['other_names'] = phenopolis_df['other_names'].transform(lambda x: [y.upper() for y in x])
+        phenopolis_df['other_names'] = phenopolis_df['other_names'].transform(
+            lambda x: BiomartGeneAnnotationsReader._transform_synonyms_to_phenopolis(x))
         return phenopolis_df
 
 
