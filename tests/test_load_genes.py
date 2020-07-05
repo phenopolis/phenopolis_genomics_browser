@@ -18,6 +18,7 @@ class TestBiomartGeneAnnotationsReader(TestCase):
         self.assertIsNotNone(data)
         self.assertEqual(data.shape, (495, 17))
         self.assertEqual(data['Gene stable ID'].unique().shape, (495,))    # no repeated genes
+        self.assertTrue(len(list(filter(lambda x: "" in x,  list(data['Gene Synonym'])))) == 0)     # no empty synonyms
 
         phenopolis_data = BiomartGeneAnnotationsReader.transform_data_to_phenopolis_schema(data)
         self.assertIsNotNone(phenopolis_data)
