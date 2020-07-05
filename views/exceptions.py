@@ -1,0 +1,5 @@
+
+
+class PhenopolisException(Exception):
+
+    pass
