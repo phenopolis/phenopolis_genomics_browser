@@ -20,15 +20,17 @@ RUN pip install -r requirements.txt
 RUN pip install -U cython
 
 # Both cython and pysam had to be removed from requirements in order for pysam to work installation
-RUN pip install -U pysam==0.15.3
+RUN pip install -U pysam==0.15.4
+
+RUN pip install -U gunicorn
+
+# Clear image
+RUN pip cache purge
+RUN apk del postgresql-dev gcc python3-dev musl-dev git libffi-dev zlib-dev bzip2-dev xz-dev curl-dev make
 
 # copy project
 COPY ./application.py ./
 COPY ./views views/
 COPY ./db/__init__.py db/__init__.py
 
-# Clear image
-RUN pip cache purge
-RUN apk del postgresql-dev gcc python3-dev musl-dev git libffi-dev zlib-dev bzip2-dev xz-dev curl-dev make
-
-CMD [ "python", "./application.py" ]
+CMD [ "gunicorn", "-b", "0.0.0.0:8000", "--workers=1", "--threads=15", "application:application" ]

@@ -1,0 +1,2 @@
+user,password,argon_password
+demo;pbkdf2:sha1:1000$td8DSTdY$767ce7cc3b25a2b55763f90d46b1cdc9efd1be08;$argon2i$v=19$m=512,t=2,p=2$b21tTUkphbC21poTwlhL6Q$es0lVWiF5ZR+U0GVMHiplQ
