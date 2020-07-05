@@ -66,7 +66,7 @@ class Gene extends React.Component {
         geneInfo: [],
         loaded: false,
       });
-      this.getGeneInformation(this.props.match.params.geneId);
+      this.getGeneInformation(nextProps.match.params.geneId);
     }
   }
 
