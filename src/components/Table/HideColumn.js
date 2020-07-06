@@ -7,7 +7,7 @@ import { Card, CardContent, Chip, Avatar, Grid, Tooltip } from '@material-ui/cor
 
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faCheckCircle } from '@fortawesome/pro-duotone-svg-icons';
-import { faEllipsisH } from '@fortawesome/pro-light-svg-icons';
+import { faEllipsisH } from '@fortawesome/pro-regular-svg-icons';
 
 class HideColumn extends React.Component {
   constructor(props) {

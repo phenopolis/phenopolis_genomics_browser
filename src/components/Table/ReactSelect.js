@@ -4,7 +4,7 @@ import Select, { components } from 'react-select';
 
 import { Avatar } from '@material-ui/core';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faEllipsisH } from '@fortawesome/pro-light-svg-icons';
+import { faEllipsisH } from '@fortawesome/pro-regular-svg-icons';
 
 const ValueComponent = (props) => {
   const classes = OptionStyles();
