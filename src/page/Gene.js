@@ -14,7 +14,7 @@ import { setSnack } from '../redux/actions/snacks';
 
 import { withTranslation } from 'react-i18next';
 
-const MetaData = React.lazy(() => import('../components/Gene/MetaData'));
+const MetaData = React.lazy(() => import('../components/MetaData'));
 const VirtualGrid = React.lazy(() => import('../components/Table/VirtualGrid'));
 
 class Gene extends React.Component {

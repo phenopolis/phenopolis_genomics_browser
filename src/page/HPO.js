@@ -19,7 +19,7 @@ import SwipeableViews from 'react-swipeable-views';
 import Loading from '../components/General/Loading';
 import TabPanel from '../components/Tab/Tabpanel';
 
-import MetaData from '../components/Gene/MetaData';
+import MetaData from '../components/MetaData';
 import VirtualGrid from '../components/Table/VirtualGrid';
 
 import compose from 'recompose/compose';

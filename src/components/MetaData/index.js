@@ -67,14 +67,14 @@ class MetaData extends React.Component {
       <React.Fragment>
         <CssBaseline />
         <Container maxWidth="xl">
+          <Typography component="div">
+            <Box fontWeight="900" fontSize="h4.fontSize" mb={2}>
+              {this.props.name}
+            </Box>
+          </Typography>
+
           <Paper className={classes.paper}>
             <div className={classes.root}>
-              <Typography component="div">
-                <Box fontWeight="900" fontSize="h4.fontSize" mb={2}>
-                  {this.props.name}
-                </Box>
-              </Typography>
-
               {metadata.colNames.map((item, index) => {
                 return (
                   <Grid container spacing={3} key={index} className={classes.blockgrid}>
