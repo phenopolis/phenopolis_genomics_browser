@@ -122,6 +122,7 @@ const innerGridElementType = React.forwardRef(({ children, ...rest }, ref) => (
       orderBy,
       onRequestSort,
     }) => {
+      // eslint-disable-next-line
       const [minRow, maxRow, minColumn, maxColumn] = getRenderedCursor(children);
 
       const headerColumns = headerBuilder(
