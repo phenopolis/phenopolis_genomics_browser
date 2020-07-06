@@ -38,8 +38,6 @@ import DE from '../../assets/svg/de.svg';
 import GR from '../../assets/svg/gr.svg';
 import ES from '../../assets/svg/es.svg';
 
-import { blue } from '@material-ui/core/colors';
-
 const LightTooltip = withStyles((theme) => ({
   tooltip: {
     backgroundColor: theme.palette.common.white,
@@ -92,7 +90,7 @@ class ActionBar extends React.Component {
               title={t('AppBar.SideBar.Label_Search')}
               placement="right">
               <ListItemIcon>
-                <FontAwesomeIcon icon={faSearch} style={{ color: blue[300], fontSize: '20' }} />
+                <FontAwesomeIcon icon={faSearch} style={{ color: '#2196f3', fontSize: '20' }} />
               </ListItemIcon>
             </LightTooltip>
             <ListItemText
@@ -109,7 +107,7 @@ class ActionBar extends React.Component {
               <ListItemIcon>
                 <FontAwesomeIcon
                   icon={faUsersMedical}
-                  style={{ color: blue[300], fontSize: '20' }}
+                  style={{ color: '#2196f3', fontSize: '20' }}
                 />
               </ListItemIcon>
             </LightTooltip>
@@ -125,7 +123,7 @@ class ActionBar extends React.Component {
               title={t('AppBar.SideBar.Label_Publication')}
               placement="right">
               <ListItemIcon>
-                <FontAwesomeIcon icon={faScroll} style={{ color: blue[300], fontSize: '20' }} />
+                <FontAwesomeIcon icon={faScroll} style={{ color: '#2196f3', fontSize: '20' }} />
               </ListItemIcon>
             </LightTooltip>
             <ListItemText
@@ -140,7 +138,7 @@ class ActionBar extends React.Component {
               title={t('AppBar.SideBar.Label_Language')}
               placement="right">
               <ListItemIcon>
-                <FontAwesomeIcon icon={faLanguage} style={{ color: blue[300], fontSize: '20' }} />
+                <FontAwesomeIcon icon={faLanguage} style={{ color: '#2196f3', fontSize: '20' }} />
               </ListItemIcon>
             </LightTooltip>
             <ListItemText
@@ -181,7 +179,7 @@ class ActionBar extends React.Component {
               title={this.props.username}
               placement="right">
               <ListItemIcon>
-                <FontAwesomeIcon icon={faUserCircle} style={{ color: blue[300], fontSize: '20' }} />
+                <FontAwesomeIcon icon={faUserCircle} style={{ color: '#2196f3', fontSize: '20' }} />
               </ListItemIcon>
             </LightTooltip>
             <ListItemText
@@ -199,7 +197,7 @@ class ActionBar extends React.Component {
                   title={t('AppBar.SideBar.Label_Change_Password')}
                   placement="right">
                   <ListItemIcon>
-                    <FontAwesomeIcon icon={faKey} style={{ color: blue[300], fontSize: '17' }} />
+                    <FontAwesomeIcon icon={faKey} style={{ color: '#2196f3', fontSize: '17' }} />
                   </ListItemIcon>
                 </LightTooltip>
                 <ListItemText
@@ -216,7 +214,7 @@ class ActionBar extends React.Component {
                   <ListItemIcon>
                     <FontAwesomeIcon
                       icon={faSignOut}
-                      style={{ color: blue[300], fontSize: '17' }}
+                      style={{ color: '#2196f3', fontSize: '17' }}
                     />
                   </ListItemIcon>
                 </LightTooltip>
