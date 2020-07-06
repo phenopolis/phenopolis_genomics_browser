@@ -109,79 +109,83 @@ class Variant extends React.Component {
             />
 
             <Container maxWidth="xl">
-              <Paper className={classes.paper}>
-                <AppBar position="static" color="white" elevation="0" m={0} p={0}>
-                  <Tabs
-                    value={this.state.value}
-                    onChange={this.handleChange}
-                    indicatorColor="primary"
-                    textColor="primary"
-                    variant="fullWidth"
-                    aria-label="full width tabs example"
-                    classes={{ indicator: classes.bigIndicator }}>
-                    {[
-                      t('Variant.FREQUENCY'),
-                      t('Variant.CONSEQUENCES'),
-                      t('Variant.QUALITY'),
-                      t('Variant.INDIVIDUALS'),
-                      t('Variant.GENOTYPES'),
-                    ].map((item, index) => {
-                      return <Tab label={item} {...this.a11yProps(index)} />;
-                    })}
-                  </Tabs>
-                </AppBar>
-                <SwipeableViews
-                  axis={this.props.theme.direction === 'rtl' ? 'x-reverse' : 'x'}
-                  index={this.state.value}
-                  onChangeIndex={this.handleChangeIndex}>
-                  <TabPanel value={this.state.value} index={0} dir={this.props.theme.direction}>
-                    <VirtualGrid
-                      tableData={this.state.variantInfo.frequency}
-                      title={t('Variant.Frequency')}
-                      subtitle={t('Variant.Frequency_subtitle')}
-                      configureLink="variant/frequency"
-                    />
-                    {/* <Variants variants={this.state.variantInfo.frequency} title={t("Variant.Frequency")} subtitle={t("Variant.Frequency_subtitle")} configureLink="variant/frequency" /> */}
-                  </TabPanel>
-                  <TabPanel value={this.state.value} index={1} dir={this.props.theme.direction}>
-                    <VirtualGrid
-                      tableData={this.state.variantInfo.consequence}
-                      title={t('Variant.Consequences')}
-                      subtitle={t('Variant.Consequences_subtitle')}
-                      configureLink="variant/consequence"
-                    />
-                    {/* <Variants variants={this.state.variantInfo.consequence} title={t("Variant.Consequences")} subtitle={t("Variant.Consequences_subtitle")} configureLink="variant/consequence" /> */}
-                  </TabPanel>
-                  <TabPanel value={this.state.value} index={2} dir={this.props.theme.direction}>
-                    <VirtualGrid
-                      tableData={this.state.variantInfo.quality}
-                      title={t('Variant.Quality')}
-                      subtitle={t('Variant.Quality_subtitle')}
-                      configureLink="variant/quality"
-                    />
-                    {/* <Variants variants={this.state.variantInfo.quality} title={t("Variant.Quality")} subtitle={t("Variant.Quality_subtitle")} configureLink="variant/quality" /> */}
-                  </TabPanel>
-                  <TabPanel value={this.state.value} index={3} dir={this.props.theme.direction}>
-                    <VirtualGrid
-                      tableData={this.state.variantInfo.individuals}
-                      title={t('Variant.Individuals')}
-                      subtitle={t('Variant.Individuals_subtitle')}
-                      configureLink="variant/individuals"
-                    />
-                    {/* <Variants variants={this.state.variantInfo.individuals} title={t("Variant.Individuals")} subtitle={t("Variant.Individuals_subtitle")} configureLink="variant/individuals" /> */}
-                  </TabPanel>
-                  <TabPanel value={this.state.value} index={4} dir={this.props.theme.direction}>
-                    <VirtualGrid
-                      tableData={this.state.variantInfo.genotypes}
-                      title={t('Variant.Genotypes')}
-                      subtitle={t('Variant.Genotypes_subtitle')}
-                      configureLink="variant/genotypes"
-                    />
-                    {/* <Variants variants={this.state.variantInfo.genotypes} title={t("Variant.Genotypes")} subtitle={t("Variant.Genotypes_subtitle")} configureLink="variant/genotypes" /> */}
-                  </TabPanel>
-                </SwipeableViews>
-              </Paper>
+              <AppBar
+                className={classes.tab_appbar}
+                position="static"
+                color="transparent"
+                elevation="0"
+                m={0}
+                p={0}>
+                <Tabs
+                  value={this.state.value}
+                  onChange={this.handleChange}
+                  indicatorColor="primary"
+                  textColor="primary"
+                  variant="fullWidth"
+                  aria-label="full width tabs example"
+                  classes={{ indicator: classes.bigIndicator }}>
+                  {[
+                    t('Variant.FREQUENCY'),
+                    t('Variant.CONSEQUENCES'),
+                    t('Variant.QUALITY'),
+                    t('Variant.INDIVIDUALS'),
+                    t('Variant.GENOTYPES'),
+                  ].map((item, index) => {
+                    return <Tab label={item} {...this.a11yProps(index)} />;
+                  })}
+                </Tabs>
+              </AppBar>
             </Container>
+            <SwipeableViews
+              axis={this.props.theme.direction === 'rtl' ? 'x-reverse' : 'x'}
+              index={this.state.value}
+              onChangeIndex={this.handleChangeIndex}>
+              <TabPanel value={this.state.value} index={0} dir={this.props.theme.direction}>
+                <VirtualGrid
+                  tableData={this.state.variantInfo.frequency}
+                  title={t('Variant.Frequency')}
+                  subtitle={t('Variant.Frequency_subtitle')}
+                  configureLink="variant/frequency"
+                />
+                {/* <Variants variants={this.state.variantInfo.frequency} title={t("Variant.Frequency")} subtitle={t("Variant.Frequency_subtitle")} configureLink="variant/frequency" /> */}
+              </TabPanel>
+              <TabPanel value={this.state.value} index={1} dir={this.props.theme.direction}>
+                <VirtualGrid
+                  tableData={this.state.variantInfo.consequence}
+                  title={t('Variant.Consequences')}
+                  subtitle={t('Variant.Consequences_subtitle')}
+                  configureLink="variant/consequence"
+                />
+                {/* <Variants variants={this.state.variantInfo.consequence} title={t("Variant.Consequences")} subtitle={t("Variant.Consequences_subtitle")} configureLink="variant/consequence" /> */}
+              </TabPanel>
+              <TabPanel value={this.state.value} index={2} dir={this.props.theme.direction}>
+                <VirtualGrid
+                  tableData={this.state.variantInfo.quality}
+                  title={t('Variant.Quality')}
+                  subtitle={t('Variant.Quality_subtitle')}
+                  configureLink="variant/quality"
+                />
+                {/* <Variants variants={this.state.variantInfo.quality} title={t("Variant.Quality")} subtitle={t("Variant.Quality_subtitle")} configureLink="variant/quality" /> */}
+              </TabPanel>
+              <TabPanel value={this.state.value} index={3} dir={this.props.theme.direction}>
+                <VirtualGrid
+                  tableData={this.state.variantInfo.individuals}
+                  title={t('Variant.Individuals')}
+                  subtitle={t('Variant.Individuals_subtitle')}
+                  configureLink="variant/individuals"
+                />
+                {/* <Variants variants={this.state.variantInfo.individuals} title={t("Variant.Individuals")} subtitle={t("Variant.Individuals_subtitle")} configureLink="variant/individuals" /> */}
+              </TabPanel>
+              <TabPanel value={this.state.value} index={4} dir={this.props.theme.direction}>
+                <VirtualGrid
+                  tableData={this.state.variantInfo.genotypes}
+                  title={t('Variant.Genotypes')}
+                  subtitle={t('Variant.Genotypes_subtitle')}
+                  configureLink="variant/genotypes"
+                />
+                {/* <Variants variants={this.state.variantInfo.genotypes} title={t("Variant.Genotypes")} subtitle={t("Variant.Genotypes_subtitle")} configureLink="variant/genotypes" /> */}
+              </TabPanel>
+            </SwipeableViews>
           </div>
         </React.Fragment>
       );
@@ -210,6 +214,10 @@ const styles = (theme) => ({
   paper: {
     padding: theme.spacing(1),
     marginTop: theme.spacing(5),
+  },
+  tab_appbar: {
+    marginTop: '3rem',
+    borderBottom: '1px solid #2E84CF',
   },
 });
 

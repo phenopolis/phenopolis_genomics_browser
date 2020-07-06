@@ -120,14 +120,16 @@ class Individual extends React.Component {
         <React.Fragment>
           <CssBaseline />
           <div className={classes.root}>
-            <Fab
-              className={classes.fab}
-              size="middle"
-              color="primary"
-              aria-label="add"
-              onClick={() => this.OpenDialog()}>
-              <EditIcon />
-            </Fab>
+            <Container maxWidth="xl">
+              <Fab
+                className={classes.fab}
+                size="middle"
+                color="primary"
+                aria-label="add"
+                onClick={() => this.OpenDialog()}>
+                <EditIcon />
+              </Fab>
+            </Container>
 
             <MetaData
               metadata={this.state.individualInfo.metadata}
@@ -135,59 +137,60 @@ class Individual extends React.Component {
             />
 
             <Container maxWidth="xl">
-              <Paper className={classes.paper}>
-                <AppBar position="static" color="white" elevation="0" m={0} p={0}>
-                  <Tabs
-                    value={this.state.value}
-                    onChange={this.handleChange}
-                    indicatorColor="primary"
-                    textColor="primary"
-                    variant="fullWidth"
-                    aria-label="full width tabs example"
-                    classes={{ indicator: classes.bigIndicator }}>
-                    {[
-                      t('Individual.RARE_HOMS'),
-                      t('Individual.RARE_COMP_HETS'),
-                      t('Individual.RARE_VARIANTS'),
-                    ].map((item, index) => {
-                      return <Tab label={item} {...this.a11yProps(index)} />;
-                    })}
-                  </Tabs>
-                </AppBar>
-                <SwipeableViews
-                  axis={this.props.theme.direction === 'rtl' ? 'x-reverse' : 'x'}
-                  index={this.state.value}
-                  onChangeIndex={this.handleChangeIndex}>
-                  <TabPanel value={this.state.value} index={0} dir={this.props.theme.direction}>
-                    <VirtualGrid
-                      tableData={this.state.individualInfo.rare_homs}
-                      title={t('Individual.Rare_HOMs')}
-                      subtitle={t('Individual.Rare_HOMs_subtitle')}
-                      configureLink="individual/rare_homs"
-                    />
-                    {/* <Variants variants={this.state.individualInfo.rare_homs} title={t("Individual.Rare_HOMs")} subtitle={t("Individual.Rare_HOMs_subtitle")} configureLink="individual/rare_homs" /> */}
-                  </TabPanel>
-                  <TabPanel value={this.state.value} index={1} dir={this.props.theme.direction}>
-                    <VirtualGrid
-                      tableData={this.state.individualInfo.rare_comp_hets}
-                      title={t('Individual.Rare_Comp_Hets')}
-                      subtitle={t('Individual.Rare_Comp_Hets_subtitle')}
-                      configureLink="individual/rare_comp_hets"
-                    />
-                    {/* <Variants variants={this.state.individualInfo.rare_comp_hets} title={t("Individual.Rare_Comp_Hets")} subtitle={t("Individual.Rare_Comp_Hets_subtitle")} configureLink="individual/rare_comp_hets" /> */}
-                  </TabPanel>
-                  <TabPanel value={this.state.value} index={2} dir={this.props.theme.direction}>
-                    <VirtualGrid
-                      tableData={this.state.individualInfo.rare_variants}
-                      title={t('Individual.Rare_Variants')}
-                      subtitle={t('Individual.Rare_Variants_subtitle')}
-                      configureLink="individual/rare_variants"
-                    />
-                    {/* <Variants variants={this.state.individualInfo.rare_variants} title={t("Individual.Rare_Variants")} subtitle={t("Individual.Rare_Variants_subtitle")} configureLink="individual/rare_variants" /> */}
-                  </TabPanel>
-                </SwipeableViews>
-              </Paper>
+              <AppBar
+                className={classes.tab_appbar}
+                position="static"
+                color="transparent"
+                elevation="0"
+                m={0}
+                p={0}>
+                <Tabs
+                  value={this.state.value}
+                  onChange={this.handleChange}
+                  indicatorColor="primary"
+                  textColor="primary"
+                  variant="fullWidth"
+                  aria-label="full width tabs example"
+                  classes={{ indicator: classes.bigIndicator }}>
+                  {[
+                    t('Individual.RARE_HOMS'),
+                    t('Individual.RARE_COMP_HETS'),
+                    t('Individual.RARE_VARIANTS'),
+                  ].map((item, index) => {
+                    return <Tab label={item} {...this.a11yProps(index)} />;
+                  })}
+                </Tabs>
+              </AppBar>
             </Container>
+            <SwipeableViews
+              axis={this.props.theme.direction === 'rtl' ? 'x-reverse' : 'x'}
+              index={this.state.value}
+              onChangeIndex={this.handleChangeIndex}>
+              <TabPanel value={this.state.value} index={0} dir={this.props.theme.direction}>
+                <VirtualGrid
+                  tableData={this.state.individualInfo.rare_homs}
+                  title={t('Individual.Rare_HOMs')}
+                  subtitle={t('Individual.Rare_HOMs_subtitle')}
+                  configureLink="individual/rare_homs"
+                />
+              </TabPanel>
+              <TabPanel value={this.state.value} index={1} dir={this.props.theme.direction}>
+                <VirtualGrid
+                  tableData={this.state.individualInfo.rare_comp_hets}
+                  title={t('Individual.Rare_Comp_Hets')}
+                  subtitle={t('Individual.Rare_Comp_Hets_subtitle')}
+                  configureLink="individual/rare_comp_hets"
+                />
+              </TabPanel>
+              <TabPanel value={this.state.value} index={2} dir={this.props.theme.direction}>
+                <VirtualGrid
+                  tableData={this.state.individualInfo.rare_variants}
+                  title={t('Individual.Rare_Variants')}
+                  subtitle={t('Individual.Rare_Variants_subtitle')}
+                  configureLink="individual/rare_variants"
+                />
+              </TabPanel>
+            </SwipeableViews>
           </div>
           <Dialog
             fullWidth={true}
@@ -236,6 +239,10 @@ const styles = (theme) => ({
     position: 'absolute',
     right: theme.spacing(15),
     top: theme.spacing(18),
+  },
+  tab_appbar: {
+    marginTop: '3rem',
+    borderBottom: '1px solid #2E84CF',
   },
 });
 

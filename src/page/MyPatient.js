@@ -2,7 +2,7 @@ import React from 'react';
 import axios from 'axios';
 import PropTypes from 'prop-types';
 import { withStyles } from '@material-ui/core/styles';
-import { CssBaseline, Paper, Container } from '@material-ui/core';
+import { CssBaseline, Container } from '@material-ui/core';
 import { Redirect } from 'react-router';
 
 import VirtualGrid from '../components/Table/VirtualGrid';
@@ -62,21 +62,18 @@ class MyPatient extends React.Component {
           <CssBaseline />
           <div className={classes.root}>
             <Container maxWidth="xl">
-              <Paper className={classes.paper}>
-                <VirtualGrid
-                  tableData={this.state.AllPatientInfo.individuals}
-                  title={
-                    t('MyPatient.My_Patients') +
-                    ' (' +
-                    t('MyPatient.Total') +
-                    ' ' +
-                    this.state.AllPatientInfo.preview[0][1] +
-                    ')'
-                  }
-                  subtitle=" "
-                />
-                {/* <Variants variants={this.state.AllPatientInfo.individuals} title={t('MyPatient.My_Patients') + ' (' + t('MyPatient.Total') + ' ' + this.state.AllPatientInfo.preview[0][1] + ')'} subtitle=' ' /> */}
-              </Paper>
+              <VirtualGrid
+                tableData={this.state.AllPatientInfo.individuals}
+                title={
+                  t('MyPatient.My_Patients') +
+                  ' (' +
+                  t('MyPatient.Total') +
+                  ' ' +
+                  this.state.AllPatientInfo.preview[0][1] +
+                  ')'
+                }
+                subtitle=" "
+              />
             </Container>
           </div>
         </React.Fragment>
