@@ -24,8 +24,3 @@ services:
       env_file:
       - public.env
       - private.env
-# uncomment below for debugging only
-#       ports:
-#       - 5432:5432
-#       expose:
-#       - 5432

@@ -1,7 +1,7 @@
 FROM debian:buster-slim
 
 # set work directory
-WORKDIR /usr/src/app
+WORKDIR /app
 
 # set environment variables, to avoid pyc files and flushing buffer
 ENV PYTHONDONTWRITEBYTECODE 1
@@ -15,7 +15,7 @@ RUN apt-get install -y python3-pysam=0.15.2+ds-2 python3-pip=18.1-5
 #/usr/bin/pip3 -> /usr/local/bin/pip
 RUN pip3 install --upgrade pip
 
-COPY ./requirements.txt /usr/src/app/requirements.txt
+COPY ./requirements.txt /app/requirements.txt
 RUN pip install -r requirements.txt
 
 RUN pip install gunicorn==20.0.4
