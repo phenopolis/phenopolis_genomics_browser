@@ -635,8 +635,7 @@ class VirtualGrid extends React.Component {
     });
 
     var d = new Date();
-    let filename =
-      'phenopolis' + '_' + d.getDate() + '_' + d.getMonth() + '_' + d.getFullYear() + '.csv';
+    let filename = `phenopolis_${d.getDate()}_${d.getMonth()}_${d.getFullYear()}.csv`;
 
     csvDownload(prepareDownload, filename);
   };
@@ -802,6 +801,8 @@ class VirtualGrid extends React.Component {
             }
           }
         }
+        // TODO - remove eval
+        // eslint-disable-next-line
         judge = eval(stringForEval);
       }
 
