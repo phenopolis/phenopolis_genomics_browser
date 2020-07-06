@@ -7,7 +7,7 @@ import { setSnack } from '../redux/actions/snacks';
 
 import PropTypes from 'prop-types';
 import { withStyles } from '@material-ui/core/styles';
-import { CssBaseline, AppBar, Tabs, Tab, Container, Paper, Fab } from '@material-ui/core';
+import { CssBaseline, AppBar, Tabs, Tab, Container, Fab } from '@material-ui/core';
 import SwipeableViews from 'react-swipeable-views';
 
 import Loading from '../components/General/Loading';

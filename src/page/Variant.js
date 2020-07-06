@@ -4,7 +4,7 @@ import { Redirect } from 'react-router';
 
 import PropTypes from 'prop-types';
 import { withStyles } from '@material-ui/core/styles';
-import { CssBaseline, AppBar, Tabs, Tab, Container, Paper } from '@material-ui/core';
+import { CssBaseline, AppBar, Tabs, Tab, Container } from '@material-ui/core';
 import SwipeableViews from 'react-swipeable-views';
 
 import Loading from '../components/General/Loading';
@@ -12,7 +12,6 @@ import TabPanel from '../components/Tab/Tabpanel';
 
 import MetaData from '../components/MetaData';
 import VirtualGrid from '../components/Table/VirtualGrid';
-// import Variants from '../components/Gene/Variants';
 
 import compose from 'recompose/compose';
 import { connect } from 'react-redux';
