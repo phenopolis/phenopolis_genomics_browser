@@ -48,8 +48,6 @@ class HideColumn extends React.Component {
                   key={index}
                   variant="outlined"
                   color="default"
-                  // color={item.show ? 'black' : 'default'}
-                  // deleteIcon={<FontAwesomeIcon icon={faTrashAlt} />}
                   onClick={() => this.handleClick(index)}
                   label={item.name}
                   avatar={
@@ -68,7 +66,7 @@ class HideColumn extends React.Component {
                   className={classes.chip}
                   style={
                     item.show
-                      ? { color: 'white', fontWeight: '900', backgroundColor: '#9e9e9e' }
+                      ? { color: 'black', fontWeight: '400', backgroundColor: '#d8d8d8' }
                       : { color: 'darkgrey' }
                   }
                 />
