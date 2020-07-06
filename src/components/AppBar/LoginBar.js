@@ -69,7 +69,7 @@ class LoginBar extends React.Component {
       redirect: false,
       relink: '',
       openSideBar: false,
-      openActionSideBar: true,
+      openActionSideBar: false,
       openLan: false,
       openExplore: false,
       anchorExplore: null,
