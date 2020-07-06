@@ -30,7 +30,7 @@ docker-compose exec db sh -c 'createuser rdsadmin -U phenopolis_api'
 docker-compose exec db sh -c 'psql -U phenopolis_api -d phenopolis_db -c "GRANT ALL PRIVILEGES ON DATABASE phenopolis_db TO phenopolis_api;"'
 docker-compose exec db sh -c 'cd /app ; psql -U $POSTGRES_USER -d $POSTGRES_DB < db/seed/demo_database.sql'
 ```
-If you have and wish to use the full dump:
+If you have and wish to use the `full dump`:
 ```bash
 docker-compose exec db sh -c 'gunzip < /app/db/phenopolis_database.sql.gz | psql -U $POSTGRES_USER -d $POSTGRES_DB'
 ```
@@ -38,7 +38,7 @@ Now you can edit the source files and `gunicorn` will restart the service automa
 
 NOTES:
 - If `demo_database.sql` loaded, be aware that `http://localhost:8888/variant/22-38212762-A-G` will fail
-- Also, the docker image created may fail for the same case above when using the `full dump`, but in this case it's a bug in pysam
+- Also, the docker image created may fail for the same case above when using the `full dump`, but in this case it's a bug in `pysam`
 
 ### Overview
 
