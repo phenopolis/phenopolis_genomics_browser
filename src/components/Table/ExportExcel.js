@@ -25,7 +25,7 @@ class ExportExcel extends React.Component {
               className="mt-1"
               onClick={this.props.onRequestDownload}>
               <span className="btn-wrapper--icon">
-                <Icon className={clsx(classes.smallFilter, 'fas fa-file-download')} />
+                <Icon className={clsx(classes.smallFilter, 'fad fa-file-download')} />
               </span>
               <span className="btn-wrapper--label">Download Table</span>
             </Button>

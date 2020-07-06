@@ -6,7 +6,7 @@ import {
   faProjectDiagram,
   faUsers,
   faEnvelopeOpen,
-} from '@fortawesome/free-solid-svg-icons';
+} from '@fortawesome/pro-duotone-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import Skeleton from '@material-ui/lab/Skeleton';
 import { makeStyles } from '@material-ui/styles';

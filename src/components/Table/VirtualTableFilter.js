@@ -409,7 +409,7 @@ class VirtualTableFilter extends React.Component {
                           <Icon className={clsx(classes.smallFilter, 'far fa-trash-alt')} />
                         </IconButton>
                         <FontAwesomeIcon
-                          icon={['fas', 'arrow-down']}
+                          icon={['fad', 'arrow-down']}
                           className="font-size-sm opacity-5"
                         />
                       </div>
@@ -423,7 +423,7 @@ class VirtualTableFilter extends React.Component {
           <Grid container direction="row" justify="center" alignItems="center">
             <Button color="primary" className="mt-1" onClick={this.handleAddNewFilter}>
               <span className="btn-wrapper--icon">
-                <Icon className={clsx(classes.smallFilter, 'fas fa-plus')} />
+                <Icon className={clsx(classes.smallFilter, 'fad fa-plus')} />
               </span>
               <span className="btn-wrapper--label">Add New Filter</span>
             </Button>

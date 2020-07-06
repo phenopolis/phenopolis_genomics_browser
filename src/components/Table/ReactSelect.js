@@ -31,7 +31,7 @@ const ValueComponent = (props) => {
         <Avatar
           className={classes.smallAvatar}
           style={{ color: 'white', backgroundColor: '#42a5f5' }}>
-          <Icon className={clsx(classes.smallFilter, 'fas fa-ellipsis-h')} />
+          <Icon className={clsx(classes.smallFilter, 'fad fa-ellipsis-h')} />
         </Avatar>
       ) : (
         <Avatar
@@ -68,7 +68,7 @@ const Option = (props) => {
           <Avatar
             className={classes.smallAvatar}
             style={{ color: 'white', backgroundColor: '#42a5f5' }}>
-            <Icon className={clsx(classes.smallFilter, 'fas fa-ellipsis-h')} />
+            <Icon className={clsx(classes.smallFilter, 'fad fa-ellipsis-h')} />
           </Avatar>
         ) : (
           <Avatar

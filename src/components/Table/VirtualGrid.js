@@ -385,11 +385,11 @@ class VirtualGrid extends React.Component {
       tableReady: false,
 
       toolButtons: [
-        { label: 'Filter Rows', icon: 'fas fa-filter' },
-        { label: 'Hide Columns', icon: 'fas fa-eye-slash' },
-        { label: 'Plots', icon: 'fas fa-chart-bar' },
-        // { label: 'Genome', icon: 'fas fa-dna' },
-        { label: 'Export Excel', icon: 'fas fa-file-download' },
+        { label: 'Filter Rows', icon: 'fad fa-filter' },
+        { label: 'Hide Columns', icon: 'fad fa-eye-slash' },
+        { label: 'Plots', icon: 'fad fa-chart-bar' },
+        // { label: 'Genome', icon: 'fad fa-dna' },
+        { label: 'Export Excel', icon: 'fad fa-file-download' },
       ],
 
       columnHide: [],

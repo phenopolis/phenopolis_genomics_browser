@@ -31,7 +31,7 @@ class HideColumn extends React.Component {
           <Chip
             color="secondary"
             variant={this.props.columnHide.every((x) => x.show === true) ? 'default' : 'outlined'}
-            icon={<Icon className={clsx('fas fa-check-circle')} />}
+            icon={<Icon className={clsx('fad fa-check-circle')} />}
             label={'Select All'}
             className={classes.chip}
             onClick={() => this.handleSelectAll()}
@@ -46,7 +46,7 @@ class HideColumn extends React.Component {
                   variant="outlined"
                   color="default"
                   // color={item.show ? 'black' : 'default'}
-                  // deleteIcon={<Icon className={clsx(classes.smallFilter, 'far fa-trash-alt')} />}
+                  // deleteIcon={<Icon className={clsx(classes.smallFilter, 'fad fa-trash-alt')} />}
                   onClick={() => this.handleClick(index)}
                   label={item.name}
                   avatar={
@@ -56,7 +56,7 @@ class HideColumn extends React.Component {
                       <Avatar style={{ backgroundColor: '#ef5350', color: 'white' }}>9</Avatar>
                     ) : item.type === 'object' ? (
                       <Avatar style={{ backgroundColor: '#42a5f5', color: 'white' }}>
-                        <Icon className={clsx(classes.smallFilter, 'fas fa-ellipsis-h')} />
+                        <Icon className={clsx(classes.smallFilter, 'fad fa-ellipsis-h')} />
                       </Avatar>
                     ) : (
                       <Avatar style={{ backgroundColor: 'black', color: 'white' }}>?</Avatar>
@@ -94,7 +94,7 @@ class HideColumn extends React.Component {
             <Avatar
               className={classes.smallAvatar}
               style={{ backgroundColor: '#42a5f5', color: 'white' }}>
-              <Icon className={clsx(classes.smallFilter, 'fas fa-ellipsis-h')} />
+              <Icon className={clsx(classes.smallFilter, 'fad fa-ellipsis-h')} />
             </Avatar>
             means this column contains a list;
             <Avatar
