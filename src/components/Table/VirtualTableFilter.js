@@ -12,7 +12,6 @@ import {
   Grid,
   TextField,
   IconButton,
-  Icon,
   Menu,
   MenuItem,
   ListItemIcon,
@@ -23,7 +22,8 @@ import {
 } from '@material-ui/core';
 import Select from 'react-select';
 import makeAnimated from 'react-select/animated';
-import clsx from 'clsx';
+
+import { faPlus, faTrashAlt } from '@fortawesome/pro-duotone-svg-icons';
 
 import ReactSelect from './ReactSelect';
 
@@ -406,7 +406,7 @@ class VirtualTableFilter extends React.Component {
                           size="small"
                           color="inherit"
                           onClick={() => this.handleDeleteFilter(index)}>
-                          <Icon className={clsx(classes.smallFilter, 'far fa-trash-alt')} />
+                          <FontAwesomeIcon icon={faTrashAlt} />
                         </IconButton>
                         <FontAwesomeIcon
                           icon={['fad', 'arrow-down']}
@@ -423,7 +423,7 @@ class VirtualTableFilter extends React.Component {
           <Grid container direction="row" justify="center" alignItems="center">
             <Button color="primary" className="mt-1" onClick={this.handleAddNewFilter}>
               <span className="btn-wrapper--icon">
-                <Icon className={clsx(classes.smallFilter, 'fad fa-plus')} />
+                <FontAwesomeIcon icon={faPlus} />
               </span>
               <span className="btn-wrapper--label">Add New Filter</span>
             </Button>

@@ -2,8 +2,9 @@ import React, { useEffect } from 'react';
 import { makeStyles } from '@material-ui/core/styles';
 import Select, { components } from 'react-select';
 
-import { Avatar, Icon } from '@material-ui/core';
-import clsx from 'clsx';
+import { Avatar } from '@material-ui/core';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faEllipsisH } from '@fortawesome/pro-light-svg-icons';
 
 const ValueComponent = (props) => {
   const classes = OptionStyles();
@@ -31,7 +32,7 @@ const ValueComponent = (props) => {
         <Avatar
           className={classes.smallAvatar}
           style={{ color: 'white', backgroundColor: '#42a5f5' }}>
-          <Icon className={clsx(classes.smallFilter, 'fad fa-ellipsis-h')} />
+          <FontAwesomeIcon icon={faEllipsisH} />
         </Avatar>
       ) : (
         <Avatar
@@ -68,7 +69,7 @@ const Option = (props) => {
           <Avatar
             className={classes.smallAvatar}
             style={{ color: 'white', backgroundColor: '#42a5f5' }}>
-            <Icon className={clsx(classes.smallFilter, 'fad fa-ellipsis-h')} />
+            <FontAwesomeIcon icon={faEllipsisH} />
           </Avatar>
         ) : (
           <Avatar

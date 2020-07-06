@@ -3,8 +3,9 @@ import PropTypes from 'prop-types';
 import { withStyles } from '@material-ui/core/styles';
 import compose from 'recompose/compose';
 
-import { Card, CardContent, Button, Grid, Icon } from '@material-ui/core';
-import clsx from 'clsx';
+import { Card, CardContent, Button, Grid } from '@material-ui/core';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faFileDownload } from '@fortawesome/pro-duotone-svg-icons';
 
 class ExportExcel extends React.Component {
   constructor(props) {
@@ -25,7 +26,7 @@ class ExportExcel extends React.Component {
               className="mt-1"
               onClick={this.props.onRequestDownload}>
               <span className="btn-wrapper--icon">
-                <Icon className={clsx(classes.smallFilter, 'fad fa-file-download')} />
+                <FontAwesomeIcon icon={faFileDownload} className={classes.smallFilter} />
               </span>
               <span className="btn-wrapper--label">Download Table</span>
             </Button>

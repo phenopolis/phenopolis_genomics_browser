@@ -3,8 +3,11 @@ import PropTypes from 'prop-types';
 import { withStyles } from '@material-ui/core/styles';
 import compose from 'recompose/compose';
 
-import { Card, CardContent, Chip, Icon, Avatar, Grid, Tooltip } from '@material-ui/core';
-import clsx from 'clsx';
+import { Card, CardContent, Chip, Avatar, Grid, Tooltip } from '@material-ui/core';
+
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faCheckCircle } from '@fortawesome/pro-duotone-svg-icons';
+import { faEllipsisH } from '@fortawesome/pro-light-svg-icons';
 
 class HideColumn extends React.Component {
   constructor(props) {
@@ -31,7 +34,7 @@ class HideColumn extends React.Component {
           <Chip
             color="secondary"
             variant={this.props.columnHide.every((x) => x.show === true) ? 'default' : 'outlined'}
-            icon={<Icon className={clsx('fad fa-check-circle')} />}
+            icon={<FontAwesomeIcon icon={faCheckCircle} />}
             label={'Select All'}
             className={classes.chip}
             onClick={() => this.handleSelectAll()}
@@ -46,7 +49,7 @@ class HideColumn extends React.Component {
                   variant="outlined"
                   color="default"
                   // color={item.show ? 'black' : 'default'}
-                  // deleteIcon={<Icon className={clsx(classes.smallFilter, 'fad fa-trash-alt')} />}
+                  // deleteIcon={<FontAwesomeIcon icon={faTrashAlt} />}
                   onClick={() => this.handleClick(index)}
                   label={item.name}
                   avatar={
@@ -56,7 +59,7 @@ class HideColumn extends React.Component {
                       <Avatar style={{ backgroundColor: '#ef5350', color: 'white' }}>9</Avatar>
                     ) : item.type === 'object' ? (
                       <Avatar style={{ backgroundColor: '#42a5f5', color: 'white' }}>
-                        <Icon className={clsx(classes.smallFilter, 'fad fa-ellipsis-h')} />
+                        <FontAwesomeIcon icon={faEllipsisH} />
                       </Avatar>
                     ) : (
                       <Avatar style={{ backgroundColor: 'black', color: 'white' }}>?</Avatar>
@@ -94,7 +97,7 @@ class HideColumn extends React.Component {
             <Avatar
               className={classes.smallAvatar}
               style={{ backgroundColor: '#42a5f5', color: 'white' }}>
-              <Icon className={clsx(classes.smallFilter, 'fad fa-ellipsis-h')} />
+              <FontAwesomeIcon icon={faEllipsisH} />
             </Avatar>
             means this column contains a list;
             <Avatar

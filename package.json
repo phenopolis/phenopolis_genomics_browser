@@ -5,6 +5,7 @@
   "dependencies": {
     "@fortawesome/fontawesome-pro": "^5.13.1",
     "@fortawesome/fontawesome-svg-core": "^1.2.28",
+    "@fortawesome/free-brands-svg-icons": "^5.13.1",
     "@fortawesome/pro-duotone-svg-icons": "^5.13.1",
     "@fortawesome/pro-light-svg-icons": "^5.13.1",
     "@fortawesome/pro-regular-svg-icons": "^5.13.1",

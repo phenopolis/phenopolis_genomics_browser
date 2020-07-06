@@ -1,10 +1,10 @@
 import React from 'react';
 import { makeStyles } from '@material-ui/core/styles';
-import clsx from 'clsx';
-import { loadCSS } from 'fg-loadcss';
-import { Grid, Box, Container, CssBaseline, Typography, Icon } from '@material-ui/core';
+import { Grid, Box, Container, CssBaseline, Typography } from '@material-ui/core';
 import { Link } from 'react-router-dom';
 import { useLocation } from 'react-router';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faTwitterSquare, faGithubSquare } from '@fortawesome/free-brands-svg-icons';
 
 import { useTranslation, Trans } from 'react-i18next';
 import i18next from 'i18next';
@@ -25,13 +25,6 @@ export default function StickyFooter() {
   React.useEffect(() => {
     // window.alert(location.pathname)
   }, [location.pathname]);
-
-  React.useEffect(() => {
-    loadCSS(
-      'https://use.fontawesome.com/releases/v5.1.0/css/all.css',
-      document.querySelector('#font-awesome-css')
-    );
-  }, []);
 
   const { t } = useTranslation();
 
@@ -102,12 +95,28 @@ export default function StickyFooter() {
               <Copyright />
             </Grid>
             <Grid item xs={12} md={2}>
-              <a className={classes.a} href="https://twitter.com/phenopolis">
-                <Icon className={clsx(classes.iconHover, 'fab fa-twitter-square')} />
-              </a>
-              <a className={classes.a} href="https://github.com/phenopolis/phenopolis">
-                <Icon className={clsx(classes.iconHover, 'fab fa-github-square')} />
-              </a>
+              <Link
+                className={classes.a}
+                to="https://twitter.com/phenopolis"
+                rel="noopener noreferrer"
+                target="_blank"
+                onClick={(event) => {
+                  event.preventDefault();
+                  window.open('https://twitter.com/phenopolis');
+                }}>
+                <FontAwesomeIcon icon={faTwitterSquare} className={classes.iconHover} size="2x" />
+              </Link>
+              <Link
+                className={classes.a}
+                to="https://github.com/phenopolis/"
+                rel="noopener noreferrer"
+                target="_blank"
+                onClick={(event) => {
+                  event.preventDefault();
+                  window.open('https://github.com/phenopolis/');
+                }}>
+                <FontAwesomeIcon icon={faGithubSquare} className={classes.iconHover} size="2x" />
+              </Link>
             </Grid>
           </Grid>
         </Container>
@@ -120,7 +129,6 @@ const useStyles = makeStyles((theme) => ({
   root: {
     display: 'flex',
     flexDirection: 'column',
-    // minHeight: '13em',
     backgroundColor: '#0279d3',
     color: 'white',
   },
@@ -147,8 +155,6 @@ const useStyles = makeStyles((theme) => ({
   },
   iconHover: {
     margin: theme.spacing(1),
-    '&:hover': {
-      cursor: 'pointer',
-    },
+    cursor: 'pointer',
   },
 }));

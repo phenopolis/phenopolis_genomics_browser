@@ -15,16 +15,14 @@ import GridColumn from './GridColumn';
 import StickyHeader from './StickyHeader';
 
 import './styles.css';
+import { Toolbar, Paper, Typography, Box, Container, Card, Collapse } from '@material-ui/core';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import {
-  Toolbar,
-  Paper,
-  Typography,
-  Box,
-  Icon,
-  Container,
-  Card,
-  Collapse,
-} from '@material-ui/core';
+  faFilter,
+  faEyeSlash,
+  faChartBar,
+  faFileDownload,
+} from '@fortawesome/pro-duotone-svg-icons';
 
 const VirtualTableFilter = React.lazy(() => import('./VirtualTableFilter'));
 const HideColumn = React.lazy(() => import('./HideColumn'));
@@ -385,11 +383,11 @@ class VirtualGrid extends React.Component {
       tableReady: false,
 
       toolButtons: [
-        { label: 'Filter Rows', icon: 'fad fa-filter' },
-        { label: 'Hide Columns', icon: 'fad fa-eye-slash' },
-        { label: 'Plots', icon: 'fad fa-chart-bar' },
-        // { label: 'Genome', icon: 'fad fa-dna' },
-        { label: 'Export Excel', icon: 'fad fa-file-download' },
+        { label: 'Filter Rows', icon: faFilter },
+        { label: 'Hide Columns', icon: faEyeSlash },
+        { label: 'Plots', icon: faChartBar },
+        // { label: 'Genome', icon: faDna },
+        { label: 'Export Excel', icon: faFileDownload },
       ],
 
       columnHide: [],
@@ -855,7 +853,7 @@ class VirtualGrid extends React.Component {
                     style={
                       buttonIndex === this.state.filterPopoverOpen ? { color: '#2E84CF' } : null
                     }>
-                    <Icon className={clsx(classes.iconHover, 'd-30 opacity-5 mr-3', button.icon)} />
+                    <FontAwesomeIcon icon={button.icon} className="d-30 opacity-5 mr-3" />
                     <div>
                       <span className="d-block opacity-7"> {button.label} </span>
                     </div>
