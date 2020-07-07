@@ -88,11 +88,25 @@ class Plots extends React.Component {
     if (Axis.type === 'string') {
       tmpValue = this.props.dataRows.map((x) => x[Axis.key]);
     } else {
-      if (typeof this.props.dataRows[0][Axis.key] === 'object') {
-        tmpValue = this.props.dataRows.map((x) => x[Axis.key].map((y) => y.display)).flat();
-      } else {
-        tmpValue = this.props.dataRows.map((x) => x[Axis.key].map((y) => y)).flat();
-      }
+      // if (typeof this.props.dataRows[0][Axis.key] === 'object') {
+      //   tmpValue = this.props.dataRows.map((x) => x[Axis.key].map((y) => y.display)).flat();
+      // } else {
+      //   tmpValue = this.props.dataRows.map((x) => x[Axis.key].map((y) => y)).flat();
+      // }
+      tmpValue = this.props.dataRows.map((x) => {
+        if (typeof x[Axis.key] === 'string') {
+          return x[Axis.key]
+        } else {
+          return x[Axis.key].map((y) => {
+            if (typeof y === 'object') {
+              return y.display
+            } else {
+              return y
+            }
+          })
+        }
+        //  x[Axis.key].map((y) => y)
+      }).flat();
     }
 
     var _ = require('underscore');
@@ -151,10 +165,35 @@ class Plots extends React.Component {
   CreateBoxplot = (xAxis, yAxis, rotate) => {
     var flattenData = [];
     if (xAxis.type === 'object') {
+      // this.props.dataRows.forEach((item) => {
+      //   item[xAxis.key].forEach((chip) => {
+      //     flattenData.push({ keyX: chip.display, keyY: item[yAxis.key] });
+      //   });
+      // });
+
+      // tmpValue = this.props.dataRows.map((x) => {
+      //   if (typeof x[Axis.key] === 'string') {
+      //     return x[Axis.key]
+      //   } else {
+      //     return x[Axis.key].map((y) => {
+      //       if (typeof y === 'object') {
+      //         return y.display
+      //       } else {
+      //         return y
+      //       }
+      //     })
+      //   }
+      //   //  x[Axis.key].map((y) => y)
+      // }).flat();
+
       this.props.dataRows.forEach((item) => {
-        item[xAxis.key].forEach((chip) => {
-          flattenData.push({ keyX: chip.display, keyY: item[yAxis.key] });
-        });
+        if (typeof item[xAxis.key] === 'string') {
+          flattenData.push({ keyX: item[xAxis.key], keyY: item[yAxis.key] });
+        } else {
+          item[xAxis.key].forEach((chip) => {
+            flattenData.push({ keyX: chip.display, keyY: item[yAxis.key] });
+          });
+        }
       });
     } else {
       this.props.dataRows.forEach((item) => {
@@ -212,31 +251,28 @@ class Plots extends React.Component {
 
   CreateStackBarPlot = (xAxis, yAxis) => {
     var flattenData = [];
-    if ((xAxis.type === 'object') & (yAxis.type === 'object')) {
-      this.props.dataRows.forEach((item) => {
-        item[xAxis.key].forEach((chipX) => {
-          item[yAxis.key].forEach((chipY) => {
-            flattenData.push({ keyX: chipX.display, keyY: chipY.display });
+
+    this.props.dataRows.forEach((item) => {
+      if (typeof item[xAxis.key] === 'string') {
+        if (typeof item[yAxis.key] === 'string') {
+          flattenData.push({ keyX: item[xAxis.key], keyY: item[yAxis.key] })
+        } else {
+          item[yAxis.key].forEach((chip) => {
+            flattenData.push({ keyX: item[xAxis.key], keyY: chip.display });
           });
-        });
-      });
-    } else if ((xAxis.type === 'object') & (yAxis.type === 'string')) {
-      this.props.dataRows.forEach((item) => {
-        item[xAxis.key].forEach((chip) => {
-          flattenData.push({ keyX: chip.display, keyY: item[yAxis.key] });
-        });
-      });
-    } else if ((xAxis.type === 'string') & (yAxis.type === 'object')) {
-      this.props.dataRows.forEach((item) => {
-        item[yAxis.key].forEach((chip) => {
-          flattenData.push({ keyX: item[xAxis.key], keyY: chip.display });
-        });
-      });
-    } else {
-      flattenData = this.props.dataRows.map((item) => {
-        return { keyX: item[xAxis.key], keyY: item[yAxis.key] };
-      });
-    }
+        }
+      } else {
+        item[xAxis.key].forEach((chipX) => {
+          if (typeof item[yAxis.key] === 'string') {
+            flattenData.push({ keyX: chipX.display, keyY: item[yAxis.key] });
+          } else {
+            item[yAxis.key].forEach((chipY) => {
+              flattenData.push({ keyX: chipX.display, keyY: chipY.display });
+            })
+          }
+        })
+      }
+    })
 
     const tmpMap = flattenData.reduce((tally, item) => {
       tally[item['keyX'] + '-' + item['keyY']] =

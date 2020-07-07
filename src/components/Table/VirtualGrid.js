@@ -440,6 +440,7 @@ class VirtualGrid extends React.Component {
         ) {
           tmpType = 'number';
         } else if (['genes'].includes(mycolumns[j].key)) {
+          tmpType = 'object';
         } else {
           tmpType = typeof myrows[0][mycolumns[j].key];
         }
@@ -870,7 +871,7 @@ class VirtualGrid extends React.Component {
                   variableList={this.state.columnHide}
                   tableFilter={this.state.tableFilter}
                   UpdateFilter={this.handleUpdateFilter}
-                  // onClickClose={this.handleFilterPopoverClose}
+                // onClickClose={this.handleFilterPopoverClose}
                 />
               </Card>
             </Collapse>
@@ -954,14 +955,14 @@ class VirtualGrid extends React.Component {
                 )}
               </AutoSizer>
             ) : (
-              <Container>
-                <Box display="flex" justifyContent="center" alignItems="center" minHeight="50vh">
-                  <Typography variant="h4" gutterBottom style={{ color: 'grey' }}>
-                    Sorry, not even one record exist or passed your filter criteria...
+                <Container>
+                  <Box display="flex" justifyContent="center" alignItems="center" minHeight="50vh">
+                    <Typography variant="h4" gutterBottom style={{ color: 'grey' }}>
+                      Sorry, not even one record exist or passed your filter criteria...
                   </Typography>
-                </Box>
-              </Container>
-            )}
+                  </Box>
+                </Container>
+              )}
           </div>
         </Paper>
         <Toolbar className={classes.toolbar}>
