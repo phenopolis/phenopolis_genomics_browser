@@ -93,20 +93,22 @@ class Plots extends React.Component {
       // } else {
       //   tmpValue = this.props.dataRows.map((x) => x[Axis.key].map((y) => y)).flat();
       // }
-      tmpValue = this.props.dataRows.map((x) => {
-        if (typeof x[Axis.key] === 'string') {
-          return x[Axis.key]
-        } else {
-          return x[Axis.key].map((y) => {
-            if (typeof y === 'object') {
-              return y.display
-            } else {
-              return y
-            }
-          })
-        }
-        //  x[Axis.key].map((y) => y)
-      }).flat();
+      tmpValue = this.props.dataRows
+        .map((x) => {
+          if (typeof x[Axis.key] === 'string') {
+            return x[Axis.key];
+          } else {
+            return x[Axis.key].map((y) => {
+              if (typeof y === 'object') {
+                return y.display;
+              } else {
+                return y;
+              }
+            });
+          }
+          //  x[Axis.key].map((y) => y)
+        })
+        .flat();
     }
 
     var _ = require('underscore');
@@ -255,7 +257,7 @@ class Plots extends React.Component {
     this.props.dataRows.forEach((item) => {
       if (typeof item[xAxis.key] === 'string') {
         if (typeof item[yAxis.key] === 'string') {
-          flattenData.push({ keyX: item[xAxis.key], keyY: item[yAxis.key] })
+          flattenData.push({ keyX: item[xAxis.key], keyY: item[yAxis.key] });
         } else {
           item[yAxis.key].forEach((chip) => {
             flattenData.push({ keyX: item[xAxis.key], keyY: chip.display });
@@ -268,11 +270,11 @@ class Plots extends React.Component {
           } else {
             item[yAxis.key].forEach((chipY) => {
               flattenData.push({ keyX: chipX.display, keyY: chipY.display });
-            })
+            });
           }
-        })
+        });
       }
-    })
+    });
 
     const tmpMap = flattenData.reduce((tally, item) => {
       tally[item['keyX'] + '-' + item['keyY']] =
