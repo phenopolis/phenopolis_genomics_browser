@@ -1,36 +1,19 @@
-FROM python:3.8.3-alpine
+FROM debian:buster-slim
 
 # set work directory
-WORKDIR /usr/src/app
+WORKDIR /app
 
 # set environment variables, to avoid pyc files and flushing buffer
 ENV PYTHONDONTWRITEBYTECODE 1
 ENV PYTHONUNBUFFERED 1
 
-# install psycopg2 and pysam dependencies
-RUN apk update \
-    && apk add postgresql-dev gcc g++ python3-dev musl-dev git libffi-dev zlib-dev bzip2-dev xz-dev curl-dev make libcurl libpq
+COPY ./requirements.txt /app/requirements.txt
 
-# install dependencies
-RUN pip install --upgrade pip
-COPY ./requirements.txt /usr/src/app/requirements.txt
-RUN pip install -r requirements.txt
-
-# pysam needs cython, however it only works via pip apparantly
-RUN pip install -U cython
-
-# Both cython and pysam had to be removed from requirements in order for pysam to work installation
-RUN pip install -U pysam==0.15.4
-
-RUN pip install -U gunicorn
-
-# Clear image
-RUN pip cache purge
-RUN apk del postgresql-dev gcc python3-dev musl-dev git libffi-dev zlib-dev bzip2-dev xz-dev curl-dev make
-
-# copy project
-COPY ./application.py ./
-COPY ./views views/
-COPY ./db/__init__.py db/__init__.py
-
-CMD [ "gunicorn", "-b", "0.0.0.0:8000", "--workers=1", "--threads=15", "application:application" ]
+RUN apt-get update \
+    && apt-get install --no-install-recommends -y python3-pip=18.1-5 python3-pysam=0.15.2+ds-2 \
+    && pip3 --no-cache-dir install --upgrade pip \
+    && pip --no-cache-dir install setuptools==49.1.0 gunicorn==20.0.4 \
+    && pip --no-cache-dir install -r requirements.txt \
+    && pip uninstall pip -y && apt-get purge python3-pip -y \
+    && apt-get autoremove -y && apt-get autoclean -y && apt-get clean -y \
+    && rm -rf /var/lib/apt/lists/*
