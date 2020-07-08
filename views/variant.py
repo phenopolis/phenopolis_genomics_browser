@@ -57,7 +57,7 @@ def variant(variant_id, subset='all', language='en'):
         variant_dict['filter'] = list(v.filter.keys())
         variant_dict['format'] = {(v.format[k].name, v.format[k].id,) for k in v.format.keys()}
         variant_dict['info'] = dict(v.info)
-        variant_dict['genotypes'] = [{'sample': [{'display': phenoid_mapping[s]}], 'GT': v.samples[s].get('GT', ''), 'AD': v.samples[s].get('AD', ''), 'DP':v.samples[s].get('DP', '')} for s in v.samples]
+        variant_dict['genotypes'] = [{'sample': [{'display': phenoid_mapping.get(s)}], 'GT': v.samples[s].get('GT', ''), 'AD': v.samples[s].get('AD', ''), 'DP':v.samples[s].get('DP', '')} for s in v.samples]
     c.execute("select config from user_config u where u.user_name='%s' and u.language='%s' and u.page='%s' limit 1" % (session['user'], language, 'variant'))
     x = c.fetchone()[0]
     # CHROM, POS, REF, ALT, = variant_id.split('-')
