@@ -36,13 +36,18 @@ Compress(application)
 cache = Cache(application, config={'CACHE_TYPE': 'simple'})
 
 # Check Configuration section for more details
-host = os.getenv('DB_HOST', '0.0.0.0')
-database = os.getenv('DB_DATABASE', 'phenopolis_db')
-user = os.getenv('DB_USER', 'phenopolis_api')
-apassword = os.getenv('DB_PASSWORD', 'phenopolis_api')
-port = os.getenv('DB_PORT', '5432')
+application.config['DB_HOST'] = os.getenv('POSTGRES_HOST', '0.0.0.0')
+application.config['DB_DATABASE'] = os.getenv('POSTGRES_DB', 'phenopolis_db')
+application.config['DB_USER'] = os.getenv('POSTGRES_USER', 'phenopolis_api')
+application.config['DB_PASSWORD'] = os.getenv('POSTGRES_PASSWORD', 'phenopolis_api')
+application.config['DB_PORT'] = os.getenv('POSTGRES_PORT', '5432')
 
-application.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql+psycopg2://%s:%s@%s/%s' % (user, apassword, host, database,)
+db_uri = 'postgresql+psycopg2://%s:%s@%s/%s' % (application.config['DB_USER'],
+                                                application.config['DB_PASSWORD'],
+                                                application.config['DB_HOST'],
+                                                application.config['DB_DATABASE'])
+
+application.config['SQLALCHEMY_DATABASE_URI'] = db_uri
 SESSION_COOKIE_NAME = 'phenopolis_api'
 SESSION_TYPE = 'sqlalchemy'
 SESSION_SQLALCHEMY = create_engine(application.config['SQLALCHEMY_DATABASE_URI'], echo=True)
@@ -69,10 +74,10 @@ def get_db():
     Get DB
     '''
     if 'db' not in g:
-        g.db = psycopg2.connect(host=os.environ['DB_HOST'],
-                                database=os.environ['DB_DATABASE'],
-                                user=os.environ['DB_USER'],
-                                password=os.environ['DB_PASSWORD'])
+        g.db = psycopg2.connect(host = application.config['DB_HOST'],
+                                database = application.config['DB_DATABASE'],
+                                user = application.config['DB_USER'],
+                                password = application.config['DB_PASSWORD'])
     return g.db
 
 
