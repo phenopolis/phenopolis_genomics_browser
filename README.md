@@ -79,12 +79,10 @@ cp _redirects_dev _redirects
 netlify dev
 ```
 
-If you are communicating with local Flask API server running on port 5000, create a file named `_redirects` in the root folder with the following content
+If you are communicating with local Flask API server running on port 5000, run the following:
 
 ```bash
-# create file _redirects with following lines:
-/api/*	http://localhost:5000/:splat	200!
-/*	/index.html	200
+cp _redirects_localhost _redirects
 ```
 
 > Note: If there are any issues remove the node_modules folder and re-install
