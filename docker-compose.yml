@@ -3,24 +3,27 @@ services:
    app:
       build:
          context: .
-      image: phenopolis_api:base_dev
-      command: sh -c "gunicorn -b 0.0.0.0:8000 --reload --workers=1 --threads=15 application:application"
+      image: phenopolis_api
+      command: sh -c "gunicorn -b 0.0.0.0:5000 --reload --workers=1 --threads=15 application:application"
       ports:
-      - 8000:8000
+      - 5000:5000
       working_dir: /app
       volumes:
       - ./:/app
       env_file:
       - public.env
       - private.env
-      expose:
-      - 8000
       depends_on:
       - db
    db:
       image: postgres:12-alpine
       volumes:
       - ./:/app
+      - ./db/import_schema.sql:/docker-entrypoint-initdb.d/1_import_schema.sql
+      - ./db/import_demo_data.sql:/docker-entrypoint-initdb.d/2_import_demo_data.sql
       env_file:
       - public.env
       - private.env
+      working_dir: /app
+      # ports:
+      # - 5432:5432
