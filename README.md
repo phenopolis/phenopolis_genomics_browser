@@ -21,7 +21,7 @@ This will set up the database and load the demo database.
 docker-compose up
 ```
 
-### Rebuild if you change dependencies
+#### Rebuild if you change dependencies
 
 Rebuild, if you change `Dockerfile` or `requirements.txt`
 
@@ -29,13 +29,13 @@ Rebuild, if you change `Dockerfile` or `requirements.txt`
 docker-compose up --build
 ```
 
-### Importing other data into the database
+## Importing other data into the database
 
-Edit [db/import_data.sql](db/import_data.sql) to import the correct CSV files into the database.
+Edit [db/import_demo_data.sql](db/import_demo_data.sql) to import the correct CSV files into the database.
 
 If you do not wish to load any data, simply comment out all the lines within this file.
 
-#### Connecting to the Postgres Database
+### Connecting to the Postgres Database
 
 It is possible to connect to the postgres shell as follows:
 
