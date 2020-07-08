@@ -1,5 +1,6 @@
 from views import *
-
+from views.auth import requires_auth
+from views.postgres import postgres_cursor
 
 @application.route('/change_password', methods=['POST'])
 @requires_auth
