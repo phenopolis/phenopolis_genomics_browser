@@ -4,8 +4,10 @@ variant view
 import os
 import boto3
 import requests
-from views import application, requires_auth, postgres_cursor, pysam, json, process_for_display, get_db_session, session, and_, Variant
-
+from views import application, pysam, json, session, and_, Variant
+from views.auth import requires_auth
+from views.postgres import postgres_cursor, get_db_session
+from views.general import process_for_display
 
 @application.route('/<language>/variant/<variant_id>')
 @application.route('/<language>/variant/<variant_id>/<subset>')
@@ -64,8 +66,10 @@ def variant(variant_id, subset='all', language='en'):
     data = get_db_session().query(Variant).filter(and_(Variant.CHROM == chrom, Variant.POS == pos, Variant.REF == ref, Variant.ALT == alt))
     var = [p.as_dict() for p in data]
     process_for_display(var)
-    var = var[0]
-    # print(json.dumps(var))
+    if len(var) == 0:
+        var = {}
+    else:
+        var = var[0]
     x[0]['metadata']['data'] = [var]
     x[0]['individuals']['data'] = [var]
     x[0]['frequency']['data'] = [var]

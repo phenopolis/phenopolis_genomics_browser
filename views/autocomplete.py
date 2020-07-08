@@ -2,7 +2,8 @@ from logzero import logger
 
 from views import *
 from views.exceptions import PhenopolisException
-
+from views.auth import requires_auth
+from views.postgres import postgres_cursor
 
 @application.route('/<language>/autocomplete/<query_type>/<query>')
 @application.route('/<language>/autocomplete/<query>')
