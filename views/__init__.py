@@ -206,6 +206,8 @@ def process_for_display(data):
             x2['HOM'] = [{'display': 'my:' + x3, 'end_href': x3} if x3 in my_patients else {'display': x3, 'end_href': x3} for x3 in json.loads(x2['HOM'])]
         if 'hpo_ancestors' in x2:
             x2['hpo_ancestors'] = [{'display': x3} for x3 in x2['hpo_ancestors'].split(';') if x3]
+        if 'genes' in x2 and x2['genes']=='':
+            x2['genes']=[]
 
 
 def check_auth(username, password):
