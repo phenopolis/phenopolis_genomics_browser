@@ -16,6 +16,11 @@ import {
 } from '@material-ui/core';
 import { Link } from 'react-router-dom';
 
+import blue from '@material-ui/core/colors/blue';
+
+import { Collapse } from 'react-collapse';
+import { SizeMe } from 'react-sizeme';
+
 class MetaData extends React.Component {
   constructor(props) {
     super(props);
@@ -25,8 +30,13 @@ class MetaData extends React.Component {
       previewName: null,
       previewInfo: null,
       previewLoaded: false,
+      expandNumber: 3,
     };
   }
+
+  handleExpendAll = () => {
+    this.setState({ expandNumber: 100 });
+  };
 
   getPreviewInformation = (link) => {
     var self = this;
@@ -74,74 +84,102 @@ class MetaData extends React.Component {
           </Typography>
 
           <Paper className={classes.paper}>
-            <div className={classes.root}>
-              {metadata.colNames.map((item, index) => {
-                return (
-                  <Grid container spacing={3} key={index} className={classes.blockgrid}>
-                    <Grid item xs={4} md={2} className={classes.namegrid}>
-                      {item.name}
-                    </Grid>
+            <SizeMe>
+              {({ size }) => (
+                <div className={classes.root}>
+                  <Collapse isOpened={true}>
+                    {metadata.colNames.slice(0, this.state.expandNumber).map((item, index) => {
+                      return (
+                        <Grid container spacing={3} key={index} className={classes.blockgrid}>
+                          <Grid item xs={4} md={2} className={classes.namegrid}>
+                            {item.name}
+                          </Grid>
 
-                    <Grid item xs={8} md={10}>
-                      {typeof metadata.data[0][item.key] !== 'object' ? (
-                        <span>
-                          {' '}
-                          {(item.key === 'start') | (item.key === 'stop')
-                            ? Number(metadata.data[0][item.key]).toLocaleString()
-                            : metadata.data[0][item.key]}{' '}
+                          <Grid item xs={8} md={10}>
+                            {typeof metadata.data[0][item.key] !== 'object' ? (
+                              <span>
+                                {' '}
+                                {(item.key === 'start') | (item.key === 'stop')
+                                  ? Number(metadata.data[0][item.key]).toLocaleString()
+                                  : metadata.data[0][item.key]}{' '}
+                              </span>
+                            ) : (
+                              metadata.data[0][item.key].map((chip, m) => {
+                                return chip.href ? (
+                                  <Chip
+                                    key={m}
+                                    variant="outlined"
+                                    size="small"
+                                    label={chip.display}
+                                    className={classes.chip}
+                                    component="a"
+                                    href={chip.href}
+                                    clickable
+                                  />
+                                ) : (
+                                  <Chip
+                                    key={m}
+                                    variant="outlined"
+                                    size="small"
+                                    label={chip.display}
+                                    className={classes.chip}
+                                    component={Link}
+                                    to={
+                                      chip.end_href
+                                        ? (item.base_href + '/' + chip.end_href).replace(
+                                            /\/\//g,
+                                            '/'
+                                          )
+                                        : item.base_href
+                                        ? (item.base_href + '/' + chip.display).replace(
+                                            /\/\//g,
+                                            '/'
+                                          )
+                                        : (item.href + '/' + chip.display).replace(/\/\//g, '/')
+                                    }
+                                    clickable
+                                    aria-owns={open ? 'mouse-over-popover' : undefined}
+                                    aria-haspopup="true"
+                                    onMouseEnter={(event) =>
+                                      this.handlePopoverOpen(
+                                        chip.display,
+                                        chip.end_href
+                                          ? (item.base_href + '/' + chip.end_href).replace(
+                                              /\/\//g,
+                                              '/'
+                                            )
+                                          : item.base_href
+                                          ? (item.base_href + '/' + chip.display).replace(
+                                              /\/\//g,
+                                              '/'
+                                            )
+                                          : (item.href + '/' + chip.display).replace(/\/\//g, '/'),
+                                        event
+                                      )
+                                    }
+                                    onMouseLeave={this.handlePopoverClose}
+                                  />
+                                );
+                              })
+                            )}
+                          </Grid>
+                        </Grid>
+                      );
+                    })}
+                    {this.state.expandNumber === 3 ? (
+                      <div className={classes.blockFade}>
+                        <span
+                          onClick={this.handleExpendAll}
+                          className={classes.expandButton}
+                          style={{ width: size.width }}>
+                          Expand More
                         </span>
-                      ) : (
-                        metadata.data[0][item.key].map((chip, m) => {
-                          return chip.href ? (
-                            <Chip
-                              key={m}
-                              variant="outlined"
-                              size="small"
-                              label={chip.display}
-                              className={classes.chip}
-                              component="a"
-                              href={chip.href}
-                              clickable
-                            />
-                          ) : (
-                            <Chip
-                              key={m}
-                              variant="outlined"
-                              size="small"
-                              label={chip.display}
-                              className={classes.chip}
-                              component={Link}
-                              to={
-                                chip.end_href
-                                  ? (item.base_href + '/' + chip.end_href).replace(/\/\//g, '/')
-                                  : item.base_href
-                                  ? (item.base_href + '/' + chip.display).replace(/\/\//g, '/')
-                                  : (item.href + '/' + chip.display).replace(/\/\//g, '/')
-                              }
-                              clickable
-                              aria-owns={open ? 'mouse-over-popover' : undefined}
-                              aria-haspopup="true"
-                              onMouseEnter={(event) =>
-                                this.handlePopoverOpen(
-                                  chip.display,
-                                  chip.end_href
-                                    ? (item.base_href + '/' + chip.end_href).replace(/\/\//g, '/')
-                                    : item.base_href
-                                    ? (item.base_href + '/' + chip.display).replace(/\/\//g, '/')
-                                    : (item.href + '/' + chip.display).replace(/\/\//g, '/'),
-                                  event
-                                )
-                              }
-                              onMouseLeave={this.handlePopoverClose}
-                            />
-                          );
-                        })
-                      )}
-                    </Grid>
-                  </Grid>
-                );
-              })}
-            </div>
+                      </div>
+                    ) : null}
+                  </Collapse>
+                </div>
+              )}
+            </SizeMe>
           </Paper>
         </Container>
         <Popover
@@ -214,15 +252,39 @@ MetaData.propTypes = {
 const styles = (theme) => ({
   paper: {
     padding: theme.spacing(3),
+    backgroundImage:
+      'linear-gradient(to bottom, rgba(255, 255, 255, 0), rgba(255, 255, 255, 0.9) 100%)',
   },
   root: {
     flexGrow: 1,
+    backgroundImage:
+      'linear-gradient(to bottom, rgba(255, 255, 255, 0), rgba(255, 255, 255, 0.9) 100%)',
   },
   blockgrid: {
     '&:hover': {
       textShadow: '-0.06ex 0 #2E84CF, 0.06ex 0 #2E84CF',
       backgroundColor: '#f5f5f5',
     },
+  },
+  blockFade: {
+    position: 'absolute',
+    bottom: '0px',
+    display: 'block',
+    height: '100px',
+    textAlign: 'center',
+    paddingTop: '80px',
+    marginLeft: 'auto',
+    marginRight: 'auto',
+    left: '0',
+    right: '0',
+    textAlign: 'center',
+    backgroundImage:
+      'linear-gradient(to bottom, rgba(255, 255, 255, 0), rgba(255, 255, 255, 0.9) 100%)',
+  },
+  expandButton: {
+    color: blue[500],
+    fontWeight: '500',
+    cursor: 'pointer',
   },
   namegrid: {
     borderRight: '1px solid gray',

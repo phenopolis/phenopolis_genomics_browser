@@ -166,7 +166,11 @@ class Individual extends React.Component {
               axis={this.props.theme.direction === 'rtl' ? 'x-reverse' : 'x'}
               index={this.state.value}
               onChangeIndex={this.handleChangeIndex}>
-              <TabPanel value={this.state.value} index={0} dir={this.props.theme.direction}>
+              <TabPanel
+                value={this.state.value}
+                index={0}
+                dir={this.props.theme.direction}
+                className={classes.tabPannel}>
                 <VirtualGrid
                   tableData={this.state.individualInfo.rare_homs}
                   title={t('Individual.Rare_HOMs')}
@@ -174,7 +178,11 @@ class Individual extends React.Component {
                   configureLink="individual/rare_homs"
                 />
               </TabPanel>
-              <TabPanel value={this.state.value} index={1} dir={this.props.theme.direction}>
+              <TabPanel
+                value={this.state.value}
+                index={1}
+                dir={this.props.theme.direction}
+                className={classes.tabPannel}>
                 <VirtualGrid
                   tableData={this.state.individualInfo.rare_comp_hets}
                   title={t('Individual.Rare_Comp_Hets')}
@@ -182,7 +190,11 @@ class Individual extends React.Component {
                   configureLink="individual/rare_comp_hets"
                 />
               </TabPanel>
-              <TabPanel value={this.state.value} index={2} dir={this.props.theme.direction}>
+              <TabPanel
+                value={this.state.value}
+                index={2}
+                dir={this.props.theme.direction}
+                className={classes.tabPannel}>
                 <VirtualGrid
                   tableData={this.state.individualInfo.rare_variants}
                   title={t('Individual.Rare_Variants')}
@@ -243,6 +255,9 @@ const styles = (theme) => ({
   tab_appbar: {
     marginTop: '3rem',
     borderBottom: '1px solid #2E84CF',
+  },
+  tabPannel: {
+    fontSize: '0.875rem',
   },
 });
 

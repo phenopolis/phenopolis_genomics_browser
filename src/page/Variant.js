@@ -139,7 +139,11 @@ class Variant extends React.Component {
               axis={this.props.theme.direction === 'rtl' ? 'x-reverse' : 'x'}
               index={this.state.value}
               onChangeIndex={this.handleChangeIndex}>
-              <TabPanel value={this.state.value} index={0} dir={this.props.theme.direction}>
+              <TabPanel
+                value={this.state.value}
+                index={0}
+                dir={this.props.theme.direction}
+                className={classes.tabPannel}>
                 <VirtualGrid
                   tableData={this.state.variantInfo.frequency}
                   title={t('Variant.Frequency')}
@@ -148,7 +152,11 @@ class Variant extends React.Component {
                 />
                 {/* <Variants variants={this.state.variantInfo.frequency} title={t("Variant.Frequency")} subtitle={t("Variant.Frequency_subtitle")} configureLink="variant/frequency" /> */}
               </TabPanel>
-              <TabPanel value={this.state.value} index={1} dir={this.props.theme.direction}>
+              <TabPanel
+                value={this.state.value}
+                index={1}
+                dir={this.props.theme.direction}
+                className={classes.tabPannel}>
                 <VirtualGrid
                   tableData={this.state.variantInfo.consequence}
                   title={t('Variant.Consequences')}
@@ -157,7 +165,11 @@ class Variant extends React.Component {
                 />
                 {/* <Variants variants={this.state.variantInfo.consequence} title={t("Variant.Consequences")} subtitle={t("Variant.Consequences_subtitle")} configureLink="variant/consequence" /> */}
               </TabPanel>
-              <TabPanel value={this.state.value} index={2} dir={this.props.theme.direction}>
+              <TabPanel
+                value={this.state.value}
+                index={2}
+                dir={this.props.theme.direction}
+                className={classes.tabPannel}>
                 <VirtualGrid
                   tableData={this.state.variantInfo.quality}
                   title={t('Variant.Quality')}
@@ -166,7 +178,11 @@ class Variant extends React.Component {
                 />
                 {/* <Variants variants={this.state.variantInfo.quality} title={t("Variant.Quality")} subtitle={t("Variant.Quality_subtitle")} configureLink="variant/quality" /> */}
               </TabPanel>
-              <TabPanel value={this.state.value} index={3} dir={this.props.theme.direction}>
+              <TabPanel
+                value={this.state.value}
+                index={3}
+                dir={this.props.theme.direction}
+                className={classes.tabPannel}>
                 <VirtualGrid
                   tableData={this.state.variantInfo.individuals}
                   title={t('Variant.Individuals')}
@@ -175,7 +191,11 @@ class Variant extends React.Component {
                 />
                 {/* <Variants variants={this.state.variantInfo.individuals} title={t("Variant.Individuals")} subtitle={t("Variant.Individuals_subtitle")} configureLink="variant/individuals" /> */}
               </TabPanel>
-              <TabPanel value={this.state.value} index={4} dir={this.props.theme.direction}>
+              <TabPanel
+                value={this.state.value}
+                index={4}
+                dir={this.props.theme.direction}
+                className={classes.tabPannel}>
                 <VirtualGrid
                   tableData={this.state.variantInfo.genotypes}
                   title={t('Variant.Genotypes')}
@@ -217,6 +237,9 @@ const styles = (theme) => ({
   tab_appbar: {
     marginTop: '3rem',
     borderBottom: '1px solid #2E84CF',
+  },
+  tabPannel: {
+    fontSize: '0.875rem',
   },
 });
 

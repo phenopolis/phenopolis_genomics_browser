@@ -576,8 +576,12 @@ class VirtualGrid extends React.Component {
     const newHide = [...this.state.columnHide];
 
     if (index === -1) {
-      for (let i = 0; i < newHide.length - 1; i++) {
+      for (let i = 0; i < newHide.length; i++) {
         newHide[i].show = true;
+      }
+    } else if (index === -2) {
+      for (let i = 0; i < newHide.length; i++) {
+        newHide[i].show = false;
       }
     } else {
       newHide[index].show = !newHide[index].show;
@@ -832,17 +836,29 @@ class VirtualGrid extends React.Component {
 
     return (
       <div className={classes.root}>
-        <Typography component="div">
-          <Box fontWeight="900" fontSize="h4.fontSize" mb={0}>
-            {this.props.title}
-          </Box>
-          <Box fontWeight="fontWeightLight" mb={2}>
-            {this.props.subtitle}
-          </Box>
-        </Typography>
+        <Toolbar className={classes.toolbar}>
+          <Typography component="div">
+            <Box fontWeight="900" fontSize="h4.fontSize" mb={0}>
+              {this.props.title}
+            </Box>
+            <Box fontWeight="fontWeightLight" mb={2}>
+              {this.props.subtitle}
+            </Box>
+          </Typography>
+          <div style={{ position: 'absolute', right: '1em' }}>
+            <b style={{ fontSize: '1.3em', color: '#2196f3' }}>
+              <CountUp end={this.state.filteredData.length} />
+            </b>
+            &nbsp;rows and&nbsp;
+            <b style={{ fontSize: '1.3em', color: '#2196f3' }}>
+              <CountUp end={this.state.filteredColumn.length} />
+            </b>
+            &nbsp;columns selected
+          </div>
+        </Toolbar>
 
         <Fragment>
-          <Paper>
+          <Paper style={{ marginBottom: '3em' }}>
             <Card
               elevation={0}
               className="card-box mb-0 d-flex flex-row flex-wrap justify-content-center">
@@ -871,7 +887,6 @@ class VirtualGrid extends React.Component {
                   variableList={this.state.columnHide}
                   tableFilter={this.state.tableFilter}
                   UpdateFilter={this.handleUpdateFilter}
-                  // onClickClose={this.handleFilterPopoverClose}
                 />
               </Card>
             </Collapse>
@@ -904,26 +919,11 @@ class VirtualGrid extends React.Component {
                 elevation={0}
                 className="card-box mb-5 mt-5 d-flex flex-row flex-wrap justify-content-center">
                 <ExportExcel onRequestDownload={this.handleDownloadCSV} />
-                {/* "1. Please click above button to download current table.\n" +
-                      "2. This is the table after your filtering.\n" +
-                      "3. If one cell in below table contains multiple chips, they will be joined by \';\'." */}
               </Card>
             </Collapse>
           </Paper>
         </Fragment>
 
-        <Toolbar className={classes.toolbar}>
-          <div style={{ position: 'absolute', right: '1em' }}>
-            <b style={{ fontSize: '1.3em', color: '#2196f3' }}>
-              <CountUp end={this.state.filteredData.length} />
-            </b>
-            &nbsp;rows and&nbsp;
-            <b style={{ fontSize: '1.3em', color: '#2196f3' }}>
-              <CountUp end={this.state.filteredColumn.length} />
-            </b>
-            &nbsp;columns selected
-          </div>
-        </Toolbar>
         <Paper elevation={5} className={classes.paper}>
           <div className={classes.tableframe}>
             {this.state.tableReady ? (
@@ -1001,14 +1001,12 @@ const styles = (theme) => ({
     backgroundColor: '#eeeee',
     opacity: 1,
     flexGrow: 1,
-    // border: '1px solid red'
   },
   paper: {
     overflowX: 'auto',
   },
   menuButton: {
     marginRight: theme.spacing(2),
-    // fontSize: 15,
     '&:hover': {
       cursor: 'pointer',
       color: '#2E84CF',
@@ -1024,9 +1022,7 @@ const styles = (theme) => ({
       color: '#2E84CF',
     },
   },
-  collapsePaper: {
-    // margin: theme.spacing(1),
-  },
+  collapsePaper: {},
 });
 
 export default withStyles(styles)(VirtualGrid);

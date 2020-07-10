@@ -4,6 +4,25 @@ import { withStyles } from '@material-ui/core/styles';
 
 import { TableSortLabel, Tooltip } from '@material-ui/core';
 
+const StyledTableSortLabel = withStyles({
+  root: {
+    color: 'white',
+    fontWeight: '500',
+    '&:hover': {
+      color: 'white',
+      fontWeight: '900',
+    },
+    '&$active': {
+      color: 'white',
+      fontWeight: '900',
+    },
+  },
+  active: {},
+  icon: {
+    color: 'inherit !important',
+  },
+})(TableSortLabel);
+
 const StyledTooltip = withStyles({
   tooltip: {
     fontSize: '0.9em',
@@ -38,19 +57,17 @@ class StickyHeader extends React.Component {
             return (
               <StyledTooltip key={i} title={des} placement="top">
                 <div className={classes.stickyGridHeaderScrollableColumn} style={style}>
-                  <TableSortLabel
-                    // className={classes.sortlabel}
+                  <StyledTableSortLabel
                     active={this.props.orderBy === key}
                     direction={this.props.order}
                     onClick={this.createSortHandler(key)}>
                     {label}
-
                     {this.props.orderBy === key ? (
                       <span className={classes.visuallyHidden}>
                         {this.props.order === 'desc' ? 'sorted descending' : 'sorted ascending'}
                       </span>
                     ) : null}
-                  </TableSortLabel>
+                  </StyledTableSortLabel>
                   {/* {label} */}
                 </div>
               </StyledTooltip>
@@ -88,6 +105,18 @@ const styles = (theme) => ({
     padding: '20px 0',
     // borderBottom: '1px solid lightgray',
     // borderRight: '1px solid lightgray'
+  },
+  sortlabel: {
+    color: 'red',
+    fontWeight: '500',
+    '&:hover': {
+      color: 'white',
+      fontWeight: '900',
+    },
+  },
+  activeSortLabel: {
+    color: 'white',
+    fontWeight: '900',
   },
   visuallyHidden: {
     border: 0,

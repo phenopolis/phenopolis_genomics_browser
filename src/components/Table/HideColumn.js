@@ -6,8 +6,7 @@ import compose from 'recompose/compose';
 import { Card, CardContent, Chip, Avatar, Grid, Tooltip } from '@material-ui/core';
 
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faCheckCircle } from '@fortawesome/pro-duotone-svg-icons';
-import { faEllipsisH } from '@fortawesome/pro-regular-svg-icons';
+import { faEllipsisH, faCheck, faTimes } from '@fortawesome/pro-regular-svg-icons';
 
 class HideColumn extends React.Component {
   constructor(props) {
@@ -25,20 +24,43 @@ class HideColumn extends React.Component {
     this.props.onHideColumn(-1);
   };
 
+  handleUnSelectAll = () => {
+    this.props.onHideColumn(-2);
+  };
+
   render() {
     const { classes, columnHide } = this.props;
 
     return (
       <Card elevation={0} className={classes.root}>
         <CardContent style={{ marginBottom: 0, paddingBottom: 0 }}>
-          <Chip
-            color="secondary"
-            variant={this.props.columnHide.every((x) => x.show === true) ? 'default' : 'outlined'}
-            icon={<FontAwesomeIcon icon={faCheckCircle} />}
-            label={'Select All'}
-            className={classes.chip}
-            onClick={() => this.handleSelectAll()}
-          />
+          {this.props.columnHide.every((x) => x.show === true) ? (
+            <Chip
+              color="default"
+              variant="outlined"
+              avatar={
+                <Avatar style={{ backgroundColor: 'black', color: 'white' }}>
+                  <FontAwesomeIcon icon={faTimes} />
+                </Avatar>
+              }
+              label={'Unselect All'}
+              className={classes.AllSelectChip}
+              onClick={() => this.handleUnSelectAll()}
+            />
+          ) : (
+            <Chip
+              color="secondary"
+              variant="outlined"
+              avatar={
+                <Avatar>
+                  <FontAwesomeIcon icon={faCheck} />
+                </Avatar>
+              }
+              label={'Select All'}
+              className={classes.AllSelectChip}
+              onClick={() => this.handleSelectAll()}
+            />
+          )}
         </CardContent>
         <CardContent>
           {columnHide.map((item, index) => {
@@ -121,12 +143,14 @@ const styles = (theme) => ({
     maxHeight: 600,
     overflowY: 'auto',
   },
+  AllSelectChip: {
+    color: 'black',
+    fontWeight: '800',
+    fontSize: '1',
+    margin: theme.spacing(1),
+  },
   chip: {
     margin: theme.spacing(0.8),
-    // textShadow: 'none',
-    // '&:hover': {
-    //   textShadow: '-0.06ex 0 white, 0.06ex 0 white'
-    // }
   },
   smallAvatar: {
     fontSize: 12,

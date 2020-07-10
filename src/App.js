@@ -6,7 +6,6 @@ import { blue, red } from '@material-ui/core/colors';
 import './assets/carolina/base.scss';
 
 import HomeAppBar from './page/HomeAppBar';
-// import Footer from './page/Footer';
 import Login from './page/Login';
 import Home from './page/Home';
 import Product from './page/Product';

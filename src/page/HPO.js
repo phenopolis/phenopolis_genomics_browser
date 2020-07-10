@@ -152,7 +152,11 @@ class HPO extends React.Component {
               axis={this.props.theme.direction === 'rtl' ? 'x-reverse' : 'x'}
               index={this.state.value}
               onChangeIndex={this.handleChangeIndex}>
-              <TabPanel value={this.state.value} index={0} dir={this.props.theme.direction}>
+              <TabPanel
+                value={this.state.value}
+                index={0}
+                dir={this.props.theme.direction}
+                className={classes.tabPannel}>
                 <VirtualGrid
                   tableData={this.state.hpoInfo.individuals}
                   title={t('HPO.Individuals')}
@@ -161,7 +165,11 @@ class HPO extends React.Component {
                 />
                 {/* <Variants variants={this.state.hpoInfo.individuals} title={t("HPO.Individuals")} subtitle={t("HPO.Individuals_subtitle")} configureLink="hpo/individuals" /> */}
               </TabPanel>
-              <TabPanel value={this.state.value} index={1} dir={this.props.theme.direction}>
+              <TabPanel
+                value={this.state.value}
+                index={1}
+                dir={this.props.theme.direction}
+                className={classes.tabPannel}>
                 <VirtualGrid
                   tableData={this.state.hpoInfo.literature_genes}
                   title={t('HPO.Literature_Genes')}
@@ -171,7 +179,11 @@ class HPO extends React.Component {
               </TabPanel>
 
               {/* Phenogenon tab is more complex. */}
-              <TabPanel value={this.state.value} index={2} dir={this.props.theme.direction}>
+              <TabPanel
+                value={this.state.value}
+                index={2}
+                dir={this.props.theme.direction}
+                className={classes.tabPannel}>
                 <Typography component="div">
                   <Box fontWeight="900" fontSize="h4.fontSize" mb={0}>
                     {t('HPO.Phenogenon')}
@@ -199,6 +211,7 @@ class HPO extends React.Component {
                   index={this.state.phenogenonvalue}
                   onChangeIndex={this.handleChangePhenogenonIndex}>
                   <TabPanel
+                    className={classes.tabPannel}
                     value={this.state.phenogenonvalue}
                     index={0}
                     dir={this.props.theme.direction}>
@@ -217,6 +230,7 @@ class HPO extends React.Component {
                     />
                   </TabPanel>
                   <TabPanel
+                    className={classes.tabPannel}
                     value={this.state.phenogenonvalue}
                     index={1}
                     dir={this.props.theme.direction}>
@@ -237,7 +251,11 @@ class HPO extends React.Component {
                 </SwipeableViews>
               </TabPanel>
 
-              <TabPanel value={this.state.value} index={3} dir={this.props.theme.direction}>
+              <TabPanel
+                value={this.state.value}
+                index={3}
+                dir={this.props.theme.direction}
+                className={classes.tabPannel}>
                 <VirtualGrid
                   tableData={this.state.hpoInfo.skat}
                   title={t('HPO.SKAT')}
@@ -278,6 +296,9 @@ const styles = (theme) => ({
   tab_appbar: {
     marginTop: '3rem',
     borderBottom: '1px solid #2E84CF',
+  },
+  tabPannel: {
+    fontSize: '0.875rem',
   },
 });
 
