@@ -58,7 +58,7 @@ def logout():
     '''
     Logout
     '''
-    print('DELETE SESSION')
+    application.logger.info('Delete session')
     session.pop('user', None)
     return jsonify(success='logged out'), 200
 

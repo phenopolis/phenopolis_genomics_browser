@@ -11,7 +11,6 @@ def get_hpo_ids_per_gene(variants,ind):
        gene_hpo_ids=[dict(zip( [h[0] for h in c.description] ,r)) for r in c.fetchall()]
        #y['hpo_,terms']=[{'display': c.execute("select hpo_name from hpo where hpo_id=? limit 1",(gh['hpo_id'],)).fetchone()[0], 'end_href':gh['hpo_id']} for gh in gene_hpo_ids if gh['hpo_id'] in ind['ancestor_observed_features'].split(';')]
        y['hpo_,terms']=[]
-       #print y['hpo_terms']
    return variants
 
 @application.route('/<language>/individual/<individual_id>')
@@ -31,7 +30,7 @@ def individual(individual_id, subset='all', language='en'):
            and ui.internal_id='%s'
            """%(session['user'],individual_id,))
    individual=[dict(zip( [h[0] for h in c.description],r)) for r in c.fetchall()]
-   print(individual)
+   application.logger.debug(individual)
    if individual:
        individual=individual[0]
    else:
@@ -121,19 +120,19 @@ def individual(individual_id, subset='all', language='en'):
 @requires_auth
 def update_patient_data(individual_id,language='en'):
    if session['user']=='demo': return jsonify(error='Demo user not authorised'), 405
-   print(request.form)
+   application.logger.debug(request.form)
    consanguinity=request.form.getlist('consanguinity_edit[]')[0]
    gender=request.form.getlist('gender_edit[]')[0]
    genes=request.form.getlist('genes[]')
    features=request.form.getlist('feature[]')
    if not len(features): features=['All']
    gender={'male':'M','female':'F','unknown':'U'}.get(gender,'unknown')
-   print('INDIVIDUAL',individual_id)
-   print('GENDER',gender)
-   print('CONSANGUINITY',consanguinity)
-   print('GENES',genes)
-   print('FEATURES',features)
-   print(individual_id)
+   # TODO: do we want to print these to the logs? this data should be secured
+   application.logger.info("Individual: {}".format(individual_id))
+   application.logger.info("Gender: {}".format(gender))
+   application.logger.info("Consanguinity: {}".format(consanguinity))
+   application.logger.info("Genes: {}".format(genes))
+   application.logger.info("Features: {}".format(features))
    c=postgres_cursor()
    hpo=[]
    for x in features:
@@ -148,7 +147,7 @@ def update_patient_data(individual_id,language='en'):
        and ui.internal_id='%s' """ % (session['user'],individual_id,))
    individual=[dict(zip( [h[0] for h in c.description],r)) for r in c.fetchall()]
    c.close()
-   print(individual)
+   application.logger.debug("Individual: {}".format(individual))
    if individual:
        individual=individual[0]
    else:
@@ -166,7 +165,7 @@ def update_patient_data(individual_id,language='en'):
    ind['unobserved_features']=''
    ind['ancestor_observed_features']=';'.join(sorted(list(set(list(itertools.chain.from_iterable([h['hpo_ancestor_ids'].split(';') for h in hpo]))))))
    ind['genes']=','.join([x for x in genes])
-   print('UPDATE:', ind)
+   application.logger.info("UPDATE: {}".format(ind))
    c=postgres_cursor()
    try:
        c.execute("""update individuals set
@@ -193,7 +192,7 @@ def update_patient_data(individual_id,language='en'):
        get_db().commit()
        c.close()
    except (Exception, psycopg2.DatabaseError) as error:
-       print(error)
+       application.logger.exception(error)
        get_db().rollback()
    finally:
        c.close()
