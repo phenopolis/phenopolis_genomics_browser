@@ -1,12 +1,14 @@
 from views import *
 from views.postgres import get_db_session
 
+
 @application.route('/check_health')
 def check_health():
     '''
     Check health
     '''
     return jsonify(health='ok'), 200
+
 
 @application.after_request
 def after_request(response):
@@ -24,39 +26,46 @@ def after_request(response):
     response.headers["Access-Control-Allow-Origin"] = "*"
     return response
 
+
 @application.errorhandler(Exception)
 def exceptions(e):
     '''
     Exceptions
     :param e:
     '''
-    tb = traceback.format_exc()
-    timestamp = strftime('[%Y-%b-%d %H:%M]')
-    logging.error('%s %s %s %s %s 5xx INTERNAL SERVER ERROR\n%s', timestamp, request.remote_addr, request.method, request.scheme, request.full_path, tb)
+    application.logger.error("{} {} {} {} 5xx INTERNAL SERVER ERROR".format(
+        request.remote_addr, request.method, request.scheme, request.full_path))
+    application.logger.exception(e)
     code = 500
+    response = Response()
     if isinstance(e, HTTPException):
         code = e.code
-    msg_title = code + ': ' + request.method + ' ' + application.config['SERVED_URL'] + request.full_path
-    msg = Message(msg_title, sender="no-reply@phenopolis.org", recipients=["no-reply@phenopolis.org"])
-    msg.body = tb
+        # start with the correct headers and status code from the error
+        response = e.get_response()
     if code != 404:
-        mail.send(msg)
+        _send_error_mail(code)
+    return _build_response_from_exception(response)
 
-    # start with the correct headers and status code from the error
-    response = e.get_response()
+
+def _build_response_from_exception(response):
     # replace the body with JSON
     response.data = json.dumps({
-        "code": e.code,
-        "name": e.name,
-        "description": e.description,
         "remote_addr": application.config['SERVED_URL'],
         "full_path": request.full_path,
         "method": request.method,
         "scheme": request.scheme,
-        "timestamp": timestamp
+        "timestamp": strftime('[%Y-%b-%d %H:%M]')
     })
     response.content_type = "application/json"
     return response
+
+
+def _send_error_mail(code):
+    msg = Message("{code}: {method} {url}{path}".format(
+        code=code, method=request.method, url=application.config['SERVED_URL'], path=request.full_path),
+        sender="no-reply@phenopolis.org", recipients=["no-reply@phenopolis.org"])
+    msg.body = traceback.format_exc()
+    mail.send(msg)
 
 
 # this should not be done live but offline

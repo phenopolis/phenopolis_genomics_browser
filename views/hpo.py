@@ -24,7 +24,7 @@ def hpo(hpo_id='HP:0000001',subset='all',language='en'):
        #c.execute("select * from hpo where hpo_id='%s' limit 1"%hpo_id)
        data=get_db_session().query(HPO).filter(HPO.hpo_id==hpo_id)
    res=[p.as_dict() for p in data][0]
-   print(res)
+   application.logger.debug(res)
    hpo_id=res['hpo_id']
    hpo_name=res['hpo_name']
    parent_phenotypes=[{'display':i, 'end_href':j} for i,j, in zip(res['hpo_ancestor_names'].split(';'), res['hpo_ancestor_ids'].split(';')) ]
@@ -44,7 +44,7 @@ def hpo(hpo_id='HP:0000001',subset='all',language='en'):
        #Chr,Start,End,HPO,Symbol,ENSEMBL,FisherPvalue,SKATO,variants,CompoundHetPvalue,HWEp,min_depth,nb_alleles_cases,case_maf,nb_ctrl_homs,nb_case_homs,MaxMissRate,nb_alleles_ctrls,nb_snps,nb_cases,minCadd,MeanCallRateCtrls,MeanCallRateCases,OddsRatio,MinSNPs,nb_ctrl_hets,total_maf,MaxCtrlMAF,ctrl_maf,nb_ctrls,nb_case_hets,maxExac
        c.execute("select Symbol,FisherPvalue,SKATO,OddsRatio,variants from skat where HPO='%s'"%hpo_id)
        x[0]['skat']['data']=[{'gene_id':[{'display':gene_id,'end_href':gene_id}],'fisher_p_value':fisher_p_value,'skato':skato,'odds_ratio':odds_ratio,'variants':[]} for gene_id,fisher_p_value,skato,odds_ratio,variants, in c.fetchall()[:100]]
-   print(len(individuals))
+   application.logger.debug(len(individuals))
    x[0]["preview"]=[["Number of Individuals",len(individuals)]]
    if subset=='preview': return json.dumps([{subset:y['preview']} for y in x])
    for ind in individuals:

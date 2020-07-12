@@ -27,15 +27,6 @@ from db import *
 # Load default config and override config from an environment variable
 application = Flask(__name__)
 
-logging.getLogger().addHandler(logging.StreamHandler())
-logging.getLogger().setLevel(logging.INFO)
-
-db_host = os.getenv('DB_HOST', '0.0.0.0')
-db_name = os.getenv('DB_DATABASE', 'phenopolis_db')
-db_user = os.getenv('DB_USER', 'phenopolis_api')
-db_password = os.getenv('DB_PASSWORD', 'phenopolis_api')
-db_port = os.getenv('DB_PORT', 5432)
-
 mail_use_tls = os.getenv('MAIL_USE_TLS', 'true')
 mail_use_ssl = os.getenv('MAIL_USE_SSL', 'false')
 mail_suppress_send = os.getenv('MAIL_SUPPRESS_SEND', 'true')

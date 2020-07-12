@@ -73,7 +73,7 @@ def _search_genes(cursor, query):
 @application.route('/best_guess/<query>')
 @requires_auth
 def best_guess(query=''):
-    print(query)
+    application.logger.debug(query)
     if query.startswith('gene:'):
         return jsonify(redirect='/gene/{}'.format(query.replace('gene:', '')))
     elif query.startswith('patient:') or query.startswith('PH'):
