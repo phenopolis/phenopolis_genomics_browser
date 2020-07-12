@@ -16,8 +16,8 @@ def after_request(response):
     After request
     :param response:
     '''
-    timestamp = strftime('[%Y-%b-%d %H:%M]')
-    logging.error('%s %s %s %s %s %s', timestamp, request.remote_addr, request.method, request.scheme, request.full_path, response.status)
+    application.logger.info("{} {} {} {} {}".format(
+        request.remote_addr, request.method, request.scheme, request.full_path, response.status))
 
     response.headers['Cache-Control'] = 'no-cache'
     response.headers['Cache-Control'] = 'no-cache, no-store, must-revalidate'
