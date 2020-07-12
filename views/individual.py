@@ -1,6 +1,6 @@
 from views import *
 from views.auth import requires_auth
-from views.postgres import postgres_cursor
+from views.postgres import postgres_cursor, get_db
 from views.general import process_for_display
 
 def get_hpo_ids_per_gene(variants,ind):
