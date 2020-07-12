@@ -42,7 +42,8 @@ def exceptions(e):
         code = e.code
         # start with the correct headers and status code from the error
         response = e.get_response()
-    _send_error_mail(code)
+    if code != 404:
+        _send_error_mail(code)
     return _build_response_from_exception(response)
 
 
@@ -64,8 +65,7 @@ def _send_error_mail(code):
         code=code, method=request.method, url=application.config['SERVED_URL'], path=request.full_path),
         sender="no-reply@phenopolis.org", recipients=["no-reply@phenopolis.org"])
     msg.body = traceback.format_exc()
-    if code != 404:
-        mail.send(msg)
+    mail.send(msg)
 
 
 # this should not be done live but offline

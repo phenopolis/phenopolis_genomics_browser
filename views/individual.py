@@ -127,12 +127,6 @@ def update_patient_data(individual_id,language='en'):
    features=request.form.getlist('feature[]')
    if not len(features): features=['All']
    gender={'male':'M','female':'F','unknown':'U'}.get(gender,'unknown')
-   # TODO: do we want to print these to the logs? this data should be secured
-   application.logger.info("Individual: {}".format(individual_id))
-   application.logger.info("Gender: {}".format(gender))
-   application.logger.info("Consanguinity: {}".format(consanguinity))
-   application.logger.info("Genes: {}".format(genes))
-   application.logger.info("Features: {}".format(features))
    c=postgres_cursor()
    hpo=[]
    for x in features:
@@ -147,7 +141,6 @@ def update_patient_data(individual_id,language='en'):
        and ui.internal_id='%s' """ % (session['user'],individual_id,))
    individual=[dict(zip( [h[0] for h in c.description],r)) for r in c.fetchall()]
    c.close()
-   application.logger.debug("Individual: {}".format(individual))
    if individual:
        individual=individual[0]
    else:
