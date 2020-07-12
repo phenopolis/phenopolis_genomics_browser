@@ -1,3 +1,7 @@
+'''
+Flask app
+'''
+
 from views import application
 
 '''
