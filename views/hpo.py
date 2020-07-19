@@ -35,7 +35,7 @@ def hpo(hpo_id='HP:0000001',subset='all',language='en'):
        i.internal_id=ui.internal_id
        and ui.user='%s'
        and i.ancestor_observed_features like '%s'"""%(session['user'],'%'+hpo_id+'%',))
-   individuals=[dict(zip([h[0] for h in c.description],r)) for r in c.fetchall()]
+   individuals = cursor2dict(c)
    if hpo_id != 'HP:0000001':
        c.execute("select * from phenogenon where hpo_id='%s'"%hpo_id)
        x[0]['phenogenon_recessive']['data']=[{'gene_id':[{'display':gene_id,'end_href':gene_id}],'hpo_id':hpo_id,'hgf_score':hgf,'moi_score':moi_score} for gene_id,hpo_id,hgf,moi_score, in c.fetchall()]
