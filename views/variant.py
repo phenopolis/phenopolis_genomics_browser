@@ -4,7 +4,7 @@ variant view
 import os
 import boto3
 import requests
-from views import application, pysam, json, session, and_, Variant
+from views import application, pysam, json, session, and_, Variant, cursor2dict
 from views.auth import requires_auth
 from views.postgres import postgres_cursor, get_db_session
 from views.general import process_for_display
@@ -23,7 +23,7 @@ def variant(variant_id, subset='all', language='en'):
 
     c = postgres_cursor()
     c.execute("select external_id, internal_id from individuals")
-    pheno_ids = [dict(zip([h[0] for h in c.description], r)) for r in c.fetchall()]
+    pheno_ids = cursor2dict(c)
     phenoid_mapping = {ind['external_id']: ind['internal_id'] for ind in pheno_ids}
     # print(phenoid_mapping)
     chrom, pos, ref, alt, = variant_id.split('-')
