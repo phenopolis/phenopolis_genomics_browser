@@ -8,7 +8,7 @@ def get_hpo_ids_per_gene(variants,ind):
    for y in variants:
        query=""" select * from gene_hpo where gene_symbol='%s' """ % (y['gene_symbol'])
        c.execute(query)
-       gene_hpo_ids=[dict(zip( [h[0] for h in c.description] ,r)) for r in c.fetchall()]
+       gene_hpo_ids = cursor2dict(c)
        #y['hpo_,terms']=[{'display': c.execute("select hpo_name from hpo where hpo_id=? limit 1",(gh['hpo_id'],)).fetchone()[0], 'end_href':gh['hpo_id']} for gh in gene_hpo_ids if gh['hpo_id'] in ind['ancestor_observed_features'].split(';')]
        y['hpo_,terms']=[]
    return variants
@@ -29,7 +29,7 @@ def individual(individual_id, subset='all', language='en'):
            and ui.user='%s'
            and ui.internal_id='%s'
            """%(session['user'],individual_id,))
-   individual=[dict(zip( [h[0] for h in c.description],r)) for r in c.fetchall()]
+   individual = cursor2dict(c)
    application.logger.debug(individual)
    if individual:
        individual=individual[0]
@@ -78,7 +78,7 @@ def individual(individual_id, subset='all', language='en'):
        and hv."ALT"=v."ALT"
        and hv.individual='%s' """ % (ind['external_id'],)
    c.execute(query)
-   hom_variants=[dict(zip( [h[0] for h in c.description] ,r)) for r in c.fetchall()]
+   hom_variants = cursor2dict(c)
    hom_variants=get_hpo_ids_per_gene(hom_variants,ind)
    x[0]['rare_homs']['data']=hom_variants
    # rare variants
@@ -91,7 +91,7 @@ def individual(individual_id, subset='all', language='en'):
       and hv."ALT"=v."ALT"
       and hv.individual='%s' """ % (ind['external_id'],)
    c.execute(query)
-   rare_variants=[dict(zip( [h[0] for h in c.description],r)) for r in c.fetchall()]
+   rare_variants = cursor2dict(c)
    rare_variants=get_hpo_ids_per_gene(rare_variants,ind)
    x[0]['rare_variants']['data']=rare_variants
    # rare_comp_hets
@@ -139,7 +139,7 @@ def update_patient_data(individual_id,language='en'):
        where i.internal_id=ui.internal_id
        and ui.user='%s'
        and ui.internal_id='%s' """ % (session['user'],individual_id,))
-   individual=[dict(zip( [h[0] for h in c.description],r)) for r in c.fetchall()]
+   individual= cursor2dict(c)
    c.close()
    if individual:
        individual=individual[0]

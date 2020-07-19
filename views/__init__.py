@@ -90,6 +90,11 @@ def _init_sqlalchemy():
     application.permanent_session_lifetime = datetime.timedelta(hours=1)
 
 
+def cursor2dict(cursor):
+    headers = [h[0] for h in cursor.description]
+    return [dict(zip(headers, r)) for r in cursor.fetchall()]
+
+
 _configure_logs()   # NOTE: this needs to happen before starting the application
 # Load default config and override config from an environment variable
 application = Flask(__name__)
