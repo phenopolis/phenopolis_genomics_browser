@@ -49,27 +49,37 @@ def _search_patients(cursor, query):
                from individuals i,
                users_individuals ui
                where
-               ui.internal_id=i.internal_id
-               and
-               ui.user='{user}'
-               and
-               i.internal_id like '%{query}%' limit {limit}
-               """.format(user=session['user'], query=re.escape(query.upper()), limit=SEARCH_RESULTS_LIMIT))
+                ui.internal_id=i.internal_id and
+                ui.user=%(user)s and
+                i.internal_id like %(query)s 
+                limit %(limit)s
+               """, {'user': session['user'],
+                     'query': "%{}%".format(re.escape(query.upper())),
+                     'limit': SEARCH_RESULTS_LIMIT})
     patient_hits = cursor2dict(cursor)
     return [x['internal_id'] for x in patient_hits]
 
 
 def _search_phenotypes(cursor, query):
-    cursor.execute("select * from hpo where UPPER(hpo_name) like '%{query}%' limit {limit}".format(
-        query=re.escape(query.upper()), limit=SEARCH_RESULTS_LIMIT))
+    cursor.execute("""
+        select * from hpo where 
+            UPPER(hpo_name) like %(query)s 
+            limit %(limit)s
+            """, {'query': "%{}%".format(re.escape(query.upper())),
+                  'limit': SEARCH_RESULTS_LIMIT})
     hpo_hits = cursor2dict(cursor)
     return [x['hpo_name'] for x in hpo_hits]
 
 
 def _search_genes(cursor, query):
-    cursor.execute(
-        "select * from genes where gene_name_upper like '%{query}%' or other_names like '{query}' limit {limit}".
-        format(query=re.escape(query.upper()), limit=SEARCH_RESULTS_LIMIT))
+    cursor.execute("""
+        select * from genes where
+            gene_name_upper like %(suffix_query)s or 
+            other_names like %(query)s 
+            limit %(limit)s
+            """, {'suffix_query': "%{}%".format(re.escape(query.upper())),
+                  'query': re.escape(query.upper()),
+                  'limit': SEARCH_RESULTS_LIMIT})
     gene_hits = cursor2dict(cursor)
     # while the search is performed on the upper cased gene name, it returns the original gene name
     return [x['gene_name'] for x in gene_hits]
@@ -78,20 +88,38 @@ def _search_genes(cursor, query):
 def _search_variants(cursor, query):
     chrom, pos, ref, alt = _parse_variant_from_query(query)
     if chrom is not None and ref is not None and alt is not None:
-        cursor.execute(
-            "select \"CHROM\", \"POS\", \"REF\", \"ALT\" from variants where \"CHROM\"='{chrom}' and \"POS\"={pos} and "
-            "\"REF\"='{ref}' and \"ALT\"='{alt}' limit {limit}".
-                format(limit=SEARCH_RESULTS_LIMIT, chrom=chrom, pos=pos, ref=ref, alt=alt))
+        cursor.execute("""
+            select \"CHROM\", \"POS\", \"REF\", \"ALT\" from variants where 
+                \"CHROM\"=%(chrom)s and 
+                \"POS\"=%(pos)s and 
+                \"REF\"=%(ref)s and 
+                \"ALT\"=%(alt)s
+                limit %(limit)s
+            """, {'limit': SEARCH_RESULTS_LIMIT,
+                  'chrom': chrom,
+                  'pos': pos,
+                  'ref': ref,
+                  'alt': alt})
     elif chrom is not None and ref is not None and alt is None:
-        cursor.execute(
-            "select \"CHROM\", \"POS\", \"REF\", \"ALT\" from variants where \"CHROM\"='{chrom}' and \"POS\"={pos} and "
-            "\"REF\"='{ref}' limit {limit}".
-                format(limit=SEARCH_RESULTS_LIMIT, chrom=chrom, pos=pos, ref=ref))
+        cursor.execute("""
+            select \"CHROM\", \"POS\", \"REF\", \"ALT\" from variants where 
+                \"CHROM\"=%(chrom)s and 
+                \"POS\"=%(pos)s and
+                \"REF\"=%(ref)s 
+                limit %(limit)s
+            """, {'limit': SEARCH_RESULTS_LIMIT,
+                  'chrom': chrom,
+                  'pos': pos,
+                  'ref': ref})
     elif chrom is not None and ref is None:
-        cursor.execute(
-            "select \"CHROM\", \"POS\", \"REF\", \"ALT\" from variants where \"CHROM\"='{chrom}' and \"POS\"={pos} "
-            "limit {limit}".
-                format(limit=SEARCH_RESULTS_LIMIT, chrom=chrom, pos=pos))
+        cursor.execute("""
+            select \"CHROM\", \"POS\", \"REF\", \"ALT\" from variants where 
+                \"CHROM\"=%(chrom)s and 
+                \"POS\"=%(pos)s 
+                limit %(limit)s
+            """, {'limit': SEARCH_RESULTS_LIMIT,
+                  'chrom': chrom,
+                  'pos': pos})
     else:
         # no variant pattern, we perform no search
         return []
@@ -109,10 +137,11 @@ def _parse_variant_from_query(query):
     It expects fields in the variant to be separated by -, : or >. This last one only for separation between reference
     and alternte.
     """
-    match = re.compile('^(\w+)[-:](\d+)[-:]([ACGT]+)[-:>]([ACGT]+)$').match(query)
+    # TODO: remove the * from the accepted queries if we normalize indels to VCF-like format
+    match = re.compile('^(\w+)[-:](\d+)[-:]([ACGT\*]+)[-:>]([ACGT\*]+)$').match(query)
     if match:
         return match.group(1), match.group(2), match.group(3), match.group(4)
-    match = re.compile('^(\w+)[-:](\d+)[-:]([ACGT]+)$').match(query)
+    match = re.compile('^(\w+)[-:](\d+)[-:]([ACGT\*]+)$').match(query)
     if match:
         return match.group(1), match.group(2), match.group(3), None
     match = re.compile('^(\w+)[-:](\d+)$').match(query)
