@@ -1,5 +1,9 @@
+'''
+Special class
+'''
 
 
 class PhenopolisException(Exception):
-
-    pass
+    '''
+    Ignore excpetions
+    '''
