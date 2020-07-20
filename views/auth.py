@@ -1,5 +1,10 @@
-from views import *
+'''
+Authentication modules
+'''
+
+from views import argon2, wraps, session, request, jsonify, application
 from views.postgres import get_db_session
+from db import User
 
 
 def check_auth(username, password):
