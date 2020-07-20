@@ -7,6 +7,20 @@ function getStatistics() {
   });
 }
 
+function getSearchAutocomplete(param) {
+  return axios.get(api.SEARCH_AUTOCOMPLETE + param, {
+    withCredentials: true,
+  });
+}
+
+function getSearchBest(param) {
+  return axios.get(api.SEARCH_BEST_GUESS + param, {
+    withCredentials: true,
+  });
+}
+
 export default {
   getStatistics,
+  getSearchAutocomplete,
+  getSearchBest,
 };

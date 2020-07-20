@@ -40,7 +40,7 @@ function App() {
   return (
     <CookiesProvider>
       <Suspense fallback={<Loading message={'Loading Phenopolis...'} />}>
-        <Router>
+        <Router forceRefresh={true}>
           <AuthCheck />
           <CustomizedSnackbars />
 
