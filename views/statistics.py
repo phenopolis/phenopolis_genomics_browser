@@ -1,5 +1,9 @@
-from views import *
+'''
+Statistics view
+'''
+from views import application, jsonify
 # from views.postgres import get_db_session
+
 
 @application.route('/statistics')
 def phenopolis_statistics():
@@ -33,4 +37,3 @@ def phenopolis_statistics():
                    nonpass_variants="{:,}".format(nonpass_variants),
                    # image=image.decode('utf8'))
                    version_number=0)
-
