@@ -1,15 +1,21 @@
-from views import *
+'''
+Postgres module
+'''
+from views import application, psycopg2, g
+from db import create_engine, sessionmaker
+
 
 def get_db():
     '''
     Get DB
     '''
     if 'db' not in g:
-        g.db = psycopg2.connect(host = application.config['DB_HOST'],
-                                database = application.config['DB_DATABASE'],
-                                user = application.config['DB_USER'],
-                                password = application.config['DB_PASSWORD'])
+        g.db = psycopg2.connect(host=application.config['DB_HOST'],
+                                database=application.config['DB_DATABASE'],
+                                user=application.config['DB_USER'],
+                                password=application.config['DB_PASSWORD'])
     return g.db
+
 
 def get_db_session():
     """

@@ -1,9 +1,12 @@
-from views import *
+'''
+Gene view
+'''
+from views import application, jsonify, session, json
 from views.auth import requires_auth
 from views.postgres import get_db_session, postgres_cursor
 from views.general import process_for_display
 
-from db import *
+from db import Gene
 
 
 @application.route('/<language>/gene/<gene_id>')
@@ -12,6 +15,11 @@ from db import *
 @application.route('/gene/<gene_id>/<subset>')
 @requires_auth
 def gene(gene_id, subset='all', language='en'):
+    '''
+    :param gene_id:
+    :param subset:
+    :param language:
+    '''
 
     config = query_user_config(language)
     data = query_gene(gene_id)
@@ -49,21 +57,26 @@ def gene(gene_id, subset='all', language='en'):
     cadd_gt_20 = 0
     for v in config[0]['variants']['data']:
         v['variant_id'] = [{'display': '%s-%s-%s-%s' % (v['CHROM'], v['POS'], v['REF'], v['ALT'],)}]
-        if v['cadd_phred'] and v['cadd_phred'] != 'NA' and float(v['cadd_phred']) >= 20: cadd_gt_20 += 1
+        if v['cadd_phred'] and v['cadd_phred'] != 'NA' and float(v['cadd_phred']) >= 20:
+            cadd_gt_20 += 1
     config[0]['preview'] = [['pLI', config[0]['metadata']['data'][0].get('pLI', '')],
                             ['Number of variants', len(config[0]['variants']['data'])], ['CADD > 20', cadd_gt_20]]
-    for d in config[0]['metadata']['data']: d['number_of_variants'] = len(config[0]['variants']['data'])
+    for d in config[0]['metadata']['data']:
+        d['number_of_variants'] = len(config[0]['variants']['data'])
     process_for_display(config[0]['variants']['data'])
     # print x[0]['preview']
     # print x[0]['variants']['data'][0]
-    if session['user'] == 'demo' and gene_name not in ['TTLL5', 'DRAM2']: config[0]['variants']['data'] = []
+    if session['user'] == 'demo' and gene_name not in ['TTLL5', 'DRAM2']:
+        config[0]['variants']['data'] = []
     if subset == 'all':
         return json.dumps(config)
-    else:
-        return json.dumps([{subset: y[subset]} for y in config])
+    return json.dumps([{subset: y[subset]} for y in config])
 
 
 def query_gene(gene_id):
+    '''
+    :param gene_id:
+    '''
     gene_id = gene_id.upper()
     if gene_id.startswith('ENSG'):
         # queries first by gene id if it looks like a gene id
@@ -78,10 +91,13 @@ def query_gene(gene_id):
 
 
 def query_user_config(language):
+    '''
+    :param language:
+    '''
     cursor = postgres_cursor()
     cursor.execute(
         "select config from user_config u where u.user_name='%s' and u.language='%s' and u.page='%s' limit 1" % (
             session['user'], language, 'gene'))
     config = cursor.fetchone()[0]
-    cursor.close
+    cursor.close()
     return config
