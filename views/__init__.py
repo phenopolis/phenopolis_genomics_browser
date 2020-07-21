@@ -1,7 +1,6 @@
 '''
 Package to init views
 '''
-import ujson as json
 import os
 import re
 import itertools
@@ -11,9 +10,10 @@ from functools import wraps
 from collections import defaultdict, Counter, OrderedDict
 import logging
 from logging.handlers import SMTPHandler, RotatingFileHandler
+from logging.config import dictConfig
 from time import strftime
-import psycopg2
 from flask import Flask, session, current_app, g, Response, request, redirect, jsonify
+from flask.logging import default_handler
 from flask_sessionstore import Session, SqlAlchemySessionInterface
 from flask_compress import Compress
 from flask_caching import Cache
@@ -21,11 +21,9 @@ from flask_mail import Mail, Message
 from passlib.hash import argon2
 from werkzeug.exceptions import HTTPException
 from flask_sqlalchemy import SQLAlchemy
-import logging
-from logging.config import dictConfig
-from flask.logging import default_handler
+import psycopg2
+import ujson as json
 import pysam
-from db import *
 
 
 def _configure_logs():
@@ -95,7 +93,7 @@ def cursor2dict(cursor):
     return [dict(zip(headers, r)) for r in cursor.fetchall()]
 
 
-_configure_logs()   # NOTE: this needs to happen before starting the application
+_configure_logs()  # NOTE: this needs to happen before starting the application
 # Load default config and override config from an environment variable
 application = Flask(__name__)
 _load_config()
@@ -106,7 +104,6 @@ cache = Cache(application, config={'CACHE_TYPE': 'simple'})
 mail = Mail(application)
 
 # These imports must be placed at the end of this file
-# pylint: disable=wrong-import-position
 import views.general  # @IgnorePep8
 import views.postgres  # @IgnorePep8
 import views.auth  # @IgnorePep8

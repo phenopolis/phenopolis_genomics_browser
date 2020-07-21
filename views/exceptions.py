@@ -1,5 +1,9 @@
+'''
+Class to just rename Exception
+'''
 
 
 class PhenopolisException(Exception):
-
-    pass
+    '''
+    Ignore excpetions
+    '''

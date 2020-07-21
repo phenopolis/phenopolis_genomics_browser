@@ -1,21 +1,19 @@
-from views import *
+'''
+General modules
+'''
+import traceback
+from views import application, jsonify, request, HTTPException, Response, json, strftime, Message, mail, session
 from views.postgres import get_db_session
+from db import User_Individual
 
 
 @application.route('/check_health')
 def check_health():
-    '''
-    Check health
-    '''
     return jsonify(health='ok'), 200
 
 
 @application.after_request
 def after_request(response):
-    '''
-    After request
-    :param response:
-    '''
     application.logger.info("{} {} {} {} {}".format(
         request.remote_addr, request.method, request.scheme, request.full_path, response.status))
 
@@ -29,10 +27,6 @@ def after_request(response):
 
 @application.errorhandler(Exception)
 def exceptions(e):
-    '''
-    Exceptions
-    :param e:
-    '''
     application.logger.error("{} {} {} {} 5xx INTERNAL SERVER ERROR".format(
         request.remote_addr, request.method, request.scheme, request.full_path))
     application.logger.exception(e)
@@ -72,10 +66,6 @@ def _send_error_mail(code):
 # need to figure out how to encode json data type in postgres import
 # rather do the conversion on the fly
 def process_for_display(data):
-    '''
-    Process for display
-    :param data:
-    '''
     my_patients = list(get_db_session().query(User_Individual).filter(User_Individual.user == session['user']).with_entities(User_Individual.internal_id))
     for x2 in data:
         if 'CHROM' in x2 and 'POS' in x2 and 'REF' in x2 and 'ALT' in x2:
@@ -89,5 +79,5 @@ def process_for_display(data):
             x2['HOM'] = [{'display': 'my:' + x3, 'end_href': x3} if x3 in my_patients else {'display': x3, 'end_href': x3} for x3 in json.loads(x2['HOM'])]
         if 'hpo_ancestors' in x2:
             x2['hpo_ancestors'] = [{'display': x3} for x3 in x2['hpo_ancestors'].split(';') if x3]
-        if 'genes' in x2 and x2['genes']=='':
-            x2['genes']=[]
+        if 'genes' in x2 and x2['genes'] == '':
+            x2['genes'] = []
