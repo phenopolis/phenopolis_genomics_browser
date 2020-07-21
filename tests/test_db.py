@@ -1,7 +1,6 @@
 '''
 Test DB access
 '''
-# @pylint: disable=missing-function-docstring
 
 from views import application
 from views.postgres import postgres_cursor, get_db_session, close_db

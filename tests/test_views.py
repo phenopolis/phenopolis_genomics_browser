@@ -5,7 +5,6 @@ TODO:
     - How to test for session timeout??
     - Do we need to test login, how?
 '''
-# @pylint: disable=missing-function-docstring
 
 import os
 import pytest

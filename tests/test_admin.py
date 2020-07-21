@@ -1,8 +1,6 @@
 '''
 Tests that requires Admin access
-To be tested at last
 '''
-# @pylint: disable=missing-function-docstring
 import os
 from dotenv import load_dotenv
 from views import application
