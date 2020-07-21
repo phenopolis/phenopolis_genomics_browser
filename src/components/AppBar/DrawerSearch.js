@@ -16,7 +16,7 @@ import CloseTwoToneIcon from '@material-ui/icons/CloseTwoTone';
 import { useTranslation } from 'react-i18next';
 import { useDispatch, useSelector } from 'react-redux';
 import clsx from 'clsx';
-import { getSearchAutocomplete, getSearchBest } from '../../redux/actions/search';
+import { getSearchAutocomplete, getSearchBest, clearSearchBest } from '../../redux/actions/search';
 import { setSnack } from '../../redux/actions/snacks';
 import { useHistory } from 'react-router-dom';
 
@@ -34,12 +34,18 @@ const DrawerSearch = (props) => {
 
   useEffect(() => {
     if (best) {
-      history.push(best);
+      redirectTo();
     }
     if (error) {
       dispatch(setSnack(error, 'error'));
     }
   }, [data, loading, best, error, dispatch, history]);
+
+  const redirectTo = () => {
+    history.push(best);
+    props.onRequestClose();
+    dispatch(clearSearchBest())
+  }
 
   const examples = [
     { name: 'TTLL5', type: '(Gene)', to: '/gene/ENSG00000119685' },

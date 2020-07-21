@@ -5,6 +5,7 @@ import {
   GET_SEARCH_BEST,
   GET_SEARCH_BEST_SUCCESS,
   GET_SEARCH_BEST_FAIL,
+  CLEAR_SEARCH_BEST
 } from '../types/search';
 
 const initialState = {
@@ -33,7 +34,6 @@ const Search = (state = initialState, action) => {
       return {
         ...state,
         loading: false,
-
         error: 'Something Went Wrong',
       };
     }
@@ -54,8 +54,14 @@ const Search = (state = initialState, action) => {
       return {
         ...state,
         loading: false,
-
         error: 'Something Went Wrong',
+      };
+    }
+    case CLEAR_SEARCH_BEST: {
+      return {
+        ...state,
+        loading: false,
+        best: {}
       };
     }
     default:
