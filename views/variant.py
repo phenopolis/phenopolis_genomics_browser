@@ -4,7 +4,8 @@ variant view
 import os
 import boto3
 import requests
-from views import application, pysam, json, session, cursor2dict
+import pysam
+from views import application, json, session, cursor2dict
 from views.auth import requires_auth
 from views.postgres import postgres_cursor, get_db_session
 from views.general import process_for_display
@@ -17,12 +18,6 @@ from db import and_, Variant
 @application.route('/variant/<variant_id>/<subset>')
 @requires_auth
 def variant(variant_id, subset='all', language='en'):
-    '''
-    :param variant_id:
-    :param subset:
-    :param language:
-    '''
-
     c = postgres_cursor()
     c.execute("select external_id, internal_id from individuals")
     pheno_ids = cursor2dict(c)

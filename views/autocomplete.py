@@ -1,9 +1,10 @@
 '''
 Autocomplete view
 '''
+import re
+import itertools
 from logzero import logger
-
-from views import application, re, itertools, Response, session, jsonify, json, cursor2dict
+from views import application, Response, session, json, jsonify, cursor2dict
 from views.exceptions import PhenopolisException
 from views.auth import requires_auth
 from views.postgres import postgres_cursor
@@ -17,11 +18,6 @@ SEARCH_RESULTS_LIMIT = 20
 @application.route('/autocomplete/<query>')
 @requires_auth
 def autocomplete(query, query_type=''):
-    '''
-    :param query:
-    :param query_type:
-    '''
-
     logger.debug("Autocomplete query '%s' and query type '%s'", query, query_type)
 
     cursor = postgres_cursor()
@@ -139,9 +135,6 @@ def _parse_variant_from_query(query):
 @application.route('/best_guess/<query>')
 @requires_auth
 def best_guess(query=''):
-    '''
-    :param query:
-    '''
     application.logger.debug(query)
     if query.startswith('gene:'):
         return jsonify(redirect='/gene/{}'.format(query.replace('gene:', '')))

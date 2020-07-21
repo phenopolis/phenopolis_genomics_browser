@@ -1,5 +1,5 @@
 '''
-hpo view
+HPO view - Human Phenotype Ontology
 '''
 
 from views import application, session, json, cursor2dict
@@ -16,12 +16,6 @@ from db import HPO
 @application.route('/hpo/<hpo_id>/<subset>')
 @requires_auth
 def hpo(hpo_id='HP:0000001', subset='all', language='en'):
-    '''
-    Human Phenotype Ontology (HPO)
-    :param hpo_id:
-    :param subset: all | preview | etc.
-    :param language:
-    '''
     c = postgres_cursor()
     c.execute("select config from user_config u where u.user_name='%s' and u.language='%s' and u.page='%s' limit 1" % (session['user'], language, 'hpo'))
     x = c.fetchone()[0]

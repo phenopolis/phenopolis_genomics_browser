@@ -1,7 +1,8 @@
 '''
 Save configurations for a user
 '''
-from views import application, session, request, psycopg2, json, jsonify
+import psycopg2
+from views import application, session, request, json, jsonify
 from views.auth import requires_auth
 from views.postgres import postgres_cursor, get_db
 
@@ -10,11 +11,6 @@ from views.postgres import postgres_cursor, get_db
 @application.route('/save_configuration/<pageType>/<pagePart>', methods=['POST'])
 @requires_auth
 def save_configuration(pageType, pagePart, language='en'):
-    '''
-    :param pageType:
-    :param pagePart:
-    :param language:
-    '''
     c = postgres_cursor()
     c.execute("select config from user_config u where u.user_name='%s' and u.language='%s' and u.page='%s' limit 1" % (session['user'], language, pageType))
     application.logger.debug(pageType)

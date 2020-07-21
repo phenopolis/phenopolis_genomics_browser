@@ -24,7 +24,6 @@ from flask_sqlalchemy import SQLAlchemy
 import psycopg2
 import ujson as json
 import pysam
-# from db import
 
 
 def _configure_logs():
@@ -105,7 +104,6 @@ cache = Cache(application, config={'CACHE_TYPE': 'simple'})
 mail = Mail(application)
 
 # These imports must be placed at the end of this file
-# pylint: disable=wrong-import-position
 import views.general  # @IgnorePep8
 import views.postgres  # @IgnorePep8
 import views.auth  # @IgnorePep8

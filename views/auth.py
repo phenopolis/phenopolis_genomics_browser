@@ -19,10 +19,6 @@ def check_auth(username, password):
 
 
 def requires_auth(f):
-    '''
-    Requires autho
-    :param f:
-    '''
 
     @wraps(f)
     def decorated(*args, **kwargs):
@@ -44,9 +40,6 @@ def requires_auth(f):
 @application.route('/<language>/login', methods=['POST'])
 @application.route('/login', methods=['POST'])
 def login():
-    '''
-    Login
-    '''
     username = request.form['name']
     password = request.form['password']
     if not check_auth(username, password):
@@ -61,9 +54,6 @@ def login():
 @application.route('/logout', methods=['POST'])
 @requires_auth
 def logout():
-    '''
-    Logout
-    '''
     application.logger.info('Delete session')
     session.pop('user', None)
     return jsonify(success='logged out'), 200
@@ -72,7 +62,4 @@ def logout():
 @application.route('/is_logged_in')
 @requires_auth
 def is_logged_in():
-    '''
-    To log
-    '''
     return jsonify(username=session.get('user', '')), 200

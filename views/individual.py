@@ -1,17 +1,15 @@
 '''
 Individual view
 '''
-from views import application, session, json, Counter, request, jsonify, itertools, psycopg2, cursor2dict
+import itertools
+import psycopg2
+from views import application, session, json, Counter, request, jsonify, cursor2dict
 from views.auth import requires_auth
 from views.postgres import postgres_cursor, get_db
 from views.general import process_for_display
 
 
 def get_hpo_ids_per_gene(variants, _ind):
-    '''
-    :param variants:
-    :param _ind: UNUSED
-    '''
     c = postgres_cursor()
     for y in variants:
         query = """ select * from gene_hpo where gene_symbol='%s' """ % (y['gene_symbol'])
@@ -28,11 +26,6 @@ def get_hpo_ids_per_gene(variants, _ind):
 @application.route('/individual/<individual_id>/<subset>')
 @requires_auth
 def individual(individual_id, subset='all', language='en'):
-    '''
-    :param individual_id:
-    :param subset:
-    :param language:
-    '''
     c = postgres_cursor()
     c.execute("select config from user_config u where u.user_name='%s' and u.language='%s' and u.page='%s' limit 1" % (session['user'], language, 'individual'))
     x = c.fetchone()[0]
@@ -136,10 +129,6 @@ def individual(individual_id, subset='all', language='en'):
 @application.route('/update_patient_data/<individual_id>', methods=['POST'])
 @requires_auth
 def update_patient_data(individual_id, language='en'):
-    '''
-    :param individual_id:
-    :param language:
-    '''
     if session['user'] == 'demo':
         return jsonify(error='Demo user not authorised'), 405
     application.logger.debug(request.form)
@@ -147,7 +136,7 @@ def update_patient_data(individual_id, language='en'):
     gender = request.form.getlist('gender_edit[]')[0]
     genes = request.form.getlist('genes[]')
     features = request.form.getlist('feature[]')
-    if not len(features):
+    if len(features) == 0:
         features = ['All']
     gender = {'male': 'M', 'female': 'F', 'unknown': 'U'}.get(gender, 'unknown')
     c = postgres_cursor()
@@ -180,7 +169,7 @@ def update_patient_data(individual_id, language='en'):
     ind['simplified_observed_features_names'] = ind['observed_features_names']
     ind['unobserved_features'] = ''
     ind['ancestor_observed_features'] = ';'.join(sorted(list(set(list(itertools.chain.from_iterable([h['hpo_ancestor_ids'].split(';') for h in hpo]))))))
-    ind['genes'] = ','.join([x for x in genes])
+    ind['genes'] = ','.join(genes)
     application.logger.info("UPDATE: {}".format(ind))
     c = postgres_cursor()
     try:

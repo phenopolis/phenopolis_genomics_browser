@@ -1,14 +1,12 @@
 '''
 Postgres module
 '''
-from views import application, psycopg2, g
+import psycopg2
+from views import application, g
 from db import create_engine, sessionmaker
 
 
 def get_db():
-    '''
-    Get DB
-    '''
     if 'db' not in g:
         g.db = psycopg2.connect(host=application.config['DB_HOST'],
                                 database=application.config['DB_DATABASE'],
@@ -32,17 +30,11 @@ def get_db_session():
 
 
 def close_db():
-    '''
-    Close DB
-    '''
     adb = g.pop('db', None)
     if adb is not None:
         adb.close()
 
 
 def postgres_cursor():
-    '''
-    Postgres cursor
-    '''
     cursor = get_db().cursor()
     return cursor

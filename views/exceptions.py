@@ -1,5 +1,5 @@
 '''
-Special class
+Class to just rename Exception
 '''
 
 

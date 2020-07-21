@@ -7,9 +7,6 @@ from views import application, jsonify
 
 @application.route('/statistics')
 def phenopolis_statistics():
-    '''
-    Stats
-    '''
     # total_patients=get_db_session().query(Individual).count()
     total_patients = 8000
     # male_patients=get_db_session().query(Individual).filter(Individual.sex=='M').count()

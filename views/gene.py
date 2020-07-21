@@ -15,12 +15,6 @@ from db import Gene
 @application.route('/gene/<gene_id>/<subset>')
 @requires_auth
 def gene(gene_id, subset='all', language='en'):
-    '''
-    :param gene_id:
-    :param subset:
-    :param language:
-    '''
-
     config = query_user_config(language)
     data = query_gene(gene_id)
     if not data:
@@ -74,9 +68,6 @@ def gene(gene_id, subset='all', language='en'):
 
 
 def query_gene(gene_id):
-    '''
-    :param gene_id:
-    '''
     gene_id = gene_id.upper()
     if gene_id.startswith('ENSG'):
         # queries first by gene id if it looks like a gene id
@@ -91,9 +82,6 @@ def query_gene(gene_id):
 
 
 def query_user_config(language):
-    '''
-    :param language:
-    '''
     cursor = postgres_cursor()
     cursor.execute(
         "select config from user_config u where u.user_name='%s' and u.language='%s' and u.page='%s' limit 1" % (
