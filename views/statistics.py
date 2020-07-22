@@ -1,11 +1,12 @@
-'''
+"""
 Statistics view
-'''
+"""
 from views import application, jsonify
+
 # from views.postgres import get_db_session
 
 
-@application.route('/statistics')
+@application.route("/statistics")
 def phenopolis_statistics():
     # total_patients=get_db_session().query(Individual).count()
     total_patients = 8000
@@ -22,15 +23,17 @@ def phenopolis_statistics():
     pass_variants = 700000
     # nonpass_variants=get_db_session().query(Variant).filter(Variant.FILTER!='PASS').count()
     nonpass_variants = 100000
-#     pass_exac_variants = 0
-#     pass_nonexac_variants = 0
-    return jsonify(exomes="{:,}".format(total_patients),
-                   males="{:,}".format(male_patients),
-                   females="{:,}".format(female_patients),
-                   unknowns="{:,}".format(unknown_patients),
-                   total_variants="{:,}".format(total_variants),
-                   exac_variants="{:,}".format(exac_variants),
-                   pass_variants="{:,}".format(pass_variants),
-                   nonpass_variants="{:,}".format(nonpass_variants),
-                   # image=image.decode('utf8'))
-                   version_number=0)
+    #     pass_exac_variants = 0
+    #     pass_nonexac_variants = 0
+    return jsonify(
+        exomes="{:,}".format(total_patients),
+        males="{:,}".format(male_patients),
+        females="{:,}".format(female_patients),
+        unknowns="{:,}".format(unknown_patients),
+        total_variants="{:,}".format(total_variants),
+        exac_variants="{:,}".format(exac_variants),
+        pass_variants="{:,}".format(pass_variants),
+        nonpass_variants="{:,}".format(nonpass_variants),
+        # image=image.decode('utf8'))
+        version_number=0,
+    )
