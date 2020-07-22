@@ -9,7 +9,8 @@ from views import application, json, session, cursor2dict
 from views.auth import requires_auth
 from views.postgres import postgres_cursor, get_db_session
 from views.general import process_for_display
-from db import and_, Variant
+from db import Variant
+from sqlalchemy import and_
 
 
 @application.route("/<language>/variant/<variant_id>")

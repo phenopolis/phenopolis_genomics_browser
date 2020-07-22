@@ -3,7 +3,8 @@ Postgres module
 """
 import psycopg2
 from views import application, g
-from db import create_engine, sessionmaker
+from sqlalchemy.engine import create_engine
+from sqlalchemy.orm.session import sessionmaker
 
 
 def get_db():
