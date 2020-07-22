@@ -15,9 +15,7 @@ def change_password():
     new_password_1 = request.form["new_password_1"]
     if username == "demo":
         return (
-            jsonify(
-                error="You do not have permission to change the password for username 'demo'."
-            ),
+            jsonify(error="You do not have permission to change the password for username 'demo'."),
             403,
         )
     if not check_auth(username, password):
@@ -29,15 +27,6 @@ def change_password():
     application.logger.info("Login success, changing password")
     argon_password = argon2.hash(new_password_1)
     c = postgres_cursor()
-    c.execute(
-        """ update users set argon_password='%s' where user='%s' """
-        % (argon_password, session["user"],)
-    )
-    msg = (
-        "Password for username '"
-        + username
-        + "' changed. You are logged in as '"
-        + username
-        + "'."
-    )
+    c.execute(""" update users set argon_password='%s' where user='%s' """ % (argon_password, session["user"],))
+    msg = "Password for username '" + username + "' changed. You are logged in as '" + username + "'."
     return jsonify(success=msg), 200

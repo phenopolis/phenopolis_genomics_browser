@@ -24,9 +24,11 @@ def variant(variant_id, subset="all", language="en"):
     phenoid_mapping = {ind["external_id"]: ind["internal_id"] for ind in pheno_ids}
     # print(phenoid_mapping)
     chrom, pos, ref, alt, = variant_id.split("-")
-    url = (
-        "https://myvariant.info/v1/variant/chr%s:g.%s%s>%s?fields=clinvar.rcv.clinical_significance&dotfield=true"
-        % (chrom, pos, ref, alt,)
+    url = "https://myvariant.info/v1/variant/chr%s:g.%s%s>%s?fields=clinvar.rcv.clinical_significance&dotfield=true" % (
+        chrom,
+        pos,
+        ref,
+        alt,
     )
     x = requests.get(url).json()
     if x:
@@ -40,14 +42,10 @@ def variant(variant_id, subset="all", language="en"):
         config=boto3.session.Config(signature_version="s3v4"),
     )
     vcf_index = s3.generate_presigned_url(
-        "get_object",
-        Params={"Bucket": "phenopolis-vcf", "Key": "August2019/merged2.vcf.gz.tbi"},
-        ExpiresIn=5000,
+        "get_object", Params={"Bucket": "phenopolis-vcf", "Key": "August2019/merged2.vcf.gz.tbi"}, ExpiresIn=5000,
     )
     vcf_file = s3.generate_presigned_url(
-        "get_object",
-        Params={"Bucket": "phenopolis-vcf", "Key": "August2019/merged2.vcf.gz"},
-        ExpiresIn=5000,
+        "get_object", Params={"Bucket": "phenopolis-vcf", "Key": "August2019/merged2.vcf.gz"}, ExpiresIn=5000,
     )
     variant_file = pysam.VariantFile(vcf_file, index_filename=vcf_index)
     # samples = variant_file.header.samples
@@ -87,14 +85,7 @@ def variant(variant_id, subset="all", language="en"):
     data = (
         get_db_session()
         .query(Variant)
-        .filter(
-            and_(
-                Variant.CHROM == chrom,
-                Variant.POS == pos,
-                Variant.REF == ref,
-                Variant.ALT == alt,
-            )
-        )
+        .filter(and_(Variant.CHROM == chrom, Variant.POS == pos, Variant.REF == ref, Variant.ALT == alt,))
     )
     var = [p.as_dict() for p in data]
     process_for_display(var)

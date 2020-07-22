@@ -27,11 +27,7 @@ def check_health():
 def after_request(response):
     application.logger.info(
         "{} {} {} {} {}".format(
-            request.remote_addr,
-            request.method,
-            request.scheme,
-            request.full_path,
-            response.status,
+            request.remote_addr, request.method, request.scheme, request.full_path, response.status,
         )
     )
 
@@ -47,7 +43,7 @@ def after_request(response):
 def exceptions(e):
     application.logger.error(
         "{} {} {} {} 5xx INTERNAL SERVER ERROR".format(
-            request.remote_addr, request.method, request.scheme, request.full_path
+            request.remote_addr, request.method, request.scheme, request.full_path,
         )
     )
     application.logger.exception(e)
@@ -80,10 +76,7 @@ def _build_response_from_exception(response):
 def _send_error_mail(code):
     msg = Message(
         "{code}: {method} {url}{path}".format(
-            code=code,
-            method=request.method,
-            url=application.config["SERVED_URL"],
-            path=request.full_path,
+            code=code, method=request.method, url=application.config["SERVED_URL"], path=request.full_path,
         ),
         sender="no-reply@phenopolis.org",
         recipients=["no-reply@phenopolis.org"],
@@ -107,26 +100,18 @@ def process_for_display(data):
             variant_id = "%s-%s-%s-%s" % (x2["CHROM"], x2["POS"], x2["REF"], x2["ALT"],)
             x2["variant_id"] = [{"end_href": variant_id, "display": variant_id[:60]}]
         if "gene_symbol" in x2:
-            x2["gene_symbol"] = [
-                {"display": x3} for x3 in x2["gene_symbol"].split(",") if x3
-            ]
+            x2["gene_symbol"] = [{"display": x3} for x3 in x2["gene_symbol"].split(",") if x3]
         if "HET" in x2:
             x2["HET"] = [
-                {"display": "my:" + x3, "end_href": x3}
-                if x3 in my_patients
-                else {"display": x3, "end_href": x3}
+                {"display": "my:" + x3, "end_href": x3} if x3 in my_patients else {"display": x3, "end_href": x3}
                 for x3 in json.loads(x2["HET"])
             ]
         if "HOM" in x2:
             x2["HOM"] = [
-                {"display": "my:" + x3, "end_href": x3}
-                if x3 in my_patients
-                else {"display": x3, "end_href": x3}
+                {"display": "my:" + x3, "end_href": x3} if x3 in my_patients else {"display": x3, "end_href": x3}
                 for x3 in json.loads(x2["HOM"])
             ]
         if "hpo_ancestors" in x2:
-            x2["hpo_ancestors"] = [
-                {"display": x3} for x3 in x2["hpo_ancestors"].split(";") if x3
-            ]
+            x2["hpo_ancestors"] = [{"display": x3} for x3 in x2["hpo_ancestors"].split(";") if x3]
         if "genes" in x2 and x2["genes"] == "":
             x2["genes"] = []

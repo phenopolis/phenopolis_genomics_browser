@@ -28,42 +28,21 @@ def gene(gene_id, subset="all", language="en"):
     for d in config[0]["metadata"]["data"]:
         # d['pLI']=1
         d["external_services"] = [
-            {
-                "display": "GnomAD Browser",
-                "href": "http://gnomad.broadinstitute.org/gene/" + gene_id,
-            },
-            {
-                "display": "GeneCards",
-                "href": "http://www.genecards.org/cgi-bin/carddisp.pl?gene="
-                + gene_name,
-            },
+            {"display": "GnomAD Browser", "href": "http://gnomad.broadinstitute.org/gene/" + gene_id},
+            {"display": "GeneCards", "href": "http://www.genecards.org/cgi-bin/carddisp.pl?gene=" + gene_name},
         ]
         d["genome_browser"] = [
-            {
-                "display": "Ensembl Browser",
-                "href": "http://grch37.ensembl.org/Homo_sapiens/Gene/Summary?g="
-                + gene_id,
-            },
+            {"display": "Ensembl Browser", "href": "http://grch37.ensembl.org/Homo_sapiens/Gene/Summary?g=" + gene_id},
             {
                 "display": "UCSC Browser",
-                "href": "http://genome.ucsc.edu/cgi-bin/hgTracks?db=hg19&position=chr%s:%s-%s"
-                % (chrom, start, stop,),
+                "href": "http://genome.ucsc.edu/cgi-bin/hgTracks?db=hg19&position=chr%s:%s-%s" % (chrom, start, stop,),
             },
         ]
         d["other"] = [
             {"display": "Wikipedia", "href": "http://en.wikipedia.org/" + gene_name},
-            {
-                "display": "Pubmed Search",
-                "href": "http://www.ncbi.nlm.nih.gov/pubmed?term=" + gene_name,
-            },
-            {
-                "display": "Wikigenes",
-                "href": "http://www.wikigenes.org/?search=" + gene_name,
-            },
-            {
-                "display": "GTEx (expression)",
-                "href": "http://www.gtexportal.org/home/gene/" + gene_name,
-            },
+            {"display": "Pubmed Search", "href": "http://www.ncbi.nlm.nih.gov/pubmed?term=" + gene_name},
+            {"display": "Wikigenes", "href": "http://www.wikigenes.org/?search=" + gene_name},
+            {"display": "GTEx (expression)", "href": "http://www.gtexportal.org/home/gene/" + gene_name},
         ]
         #         d["related_hpo"] = [
         #             {
@@ -83,9 +62,7 @@ def gene(gene_id, subset="all", language="en"):
     config[0]["variants"]["data"] = [p.as_dict() for p in data]
     cadd_gt_20 = 0
     for v in config[0]["variants"]["data"]:
-        v["variant_id"] = [
-            {"display": "%s-%s-%s-%s" % (v["CHROM"], v["POS"], v["REF"], v["ALT"],)}
-        ]
+        v["variant_id"] = [{"display": "%s-%s-%s-%s" % (v["CHROM"], v["POS"], v["REF"], v["ALT"],)}]
         if v["cadd_phred"] and v["cadd_phred"] != "NA" and float(v["cadd_phred"]) >= 20:
             cadd_gt_20 += 1
     config[0]["preview"] = [
@@ -112,17 +89,10 @@ def query_gene(gene_id):
         data = get_db_session().query(Gene).filter(Gene.gene_id == gene_id).all()
     else:
         # queries then by gene name on the field that stores gene names in upper case
-        data = (
-            get_db_session().query(Gene).filter(Gene.gene_name_upper == gene_id).all()
-        )
+        data = get_db_session().query(Gene).filter(Gene.gene_name_upper == gene_id).all()
         if not data:
             # otherwise looks for synonyms ensuring complete match by appending quotes
-            data = (
-                get_db_session()
-                .query(Gene)
-                .filter(Gene.other_names.like('%"' + gene_id + '"%'))
-                .all()
-            )
+            data = get_db_session().query(Gene).filter(Gene.other_names.like('%"' + gene_id + '"%')).all()
     return [p.as_dict() for p in data]
 
 

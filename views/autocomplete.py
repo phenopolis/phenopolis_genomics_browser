@@ -37,9 +37,7 @@ def autocomplete(query, query_type=""):
             + ["variant:" + x for x in _search_variants(cursor, query)]
         )
     else:
-        message = "Autocomplete request with unsupported query type '{}'".format(
-            query_type
-        )
+        message = "Autocomplete request with unsupported query type '{}'".format(query_type)
         logger.error(message)
         raise PhenopolisException(message)
     cursor.close()
@@ -58,11 +56,7 @@ def _search_patients(cursor, query):
     cursor.execute(
         r""" select i.external_id, i.internal_id from individuals i, users_individuals ui where
         ui.internal_id=i.internal_id and ui.user=%(user)s and i.internal_id LIKE %(query)s limit %(limit)s""",
-        {
-            "user": session["user"],
-            "query": "%{}%".format(query.upper()),
-            "limit": SEARCH_RESULTS_LIMIT,
-        },
+        {"user": session["user"], "query": "%{}%".format(query.upper()), "limit": SEARCH_RESULTS_LIMIT},
     )
     patient_hits = cursor2dict(cursor)
     return [x["internal_id"] for x in patient_hits]
@@ -113,24 +107,13 @@ def _search_variants(cursor, query):
         cursor.execute(
             r"""select "CHROM", "POS", "REF", "ALT" from variants where
             "CHROM"=%(chrom)s and "POS"::text like %(pos)s and "REF"=%(ref)s and "ALT"=%(alt)s limit %(limit)s""",
-            {
-                "limit": SEARCH_RESULTS_LIMIT,
-                "chrom": chrom,
-                "pos": pos + "%",
-                "ref": ref,
-                "alt": alt,
-            },
+            {"limit": SEARCH_RESULTS_LIMIT, "chrom": chrom, "pos": pos + "%", "ref": ref, "alt": alt},
         )
     elif chrom is not None and ref is not None and alt is None:
         cursor.execute(
             r"""select "CHROM", "POS", "REF", "ALT" from variants where
                        "CHROM"=%(chrom)s and "POS"::text like %(pos)s and "REF"=%(ref)s limit %(limit)s""",
-            {
-                "limit": SEARCH_RESULTS_LIMIT,
-                "chrom": chrom,
-                "pos": pos + "%",
-                "ref": ref,
-            },
+            {"limit": SEARCH_RESULTS_LIMIT, "chrom": chrom, "pos": pos + "%", "ref": ref},
         )
     elif chrom is not None and ref is None:
         cursor.execute(

@@ -21,9 +21,7 @@ def get_hpo_ids_per_gene(variants, _ind):
 
     c = postgres_cursor()
     for y in variants:
-        query = """ select * from gene_hpo where gene_symbol='%s' """ % (
-            y["gene_symbol"]
-        )
+        query = """ select * from gene_hpo where gene_symbol='%s' """ % (y["gene_symbol"])
         c.execute(query)
         _gene_hpo_ids = cursor2dict(c)
         #         y["hpo_,terms"] = [
@@ -106,10 +104,7 @@ def individual(individual_id, subset="all", language="en"):
             ["External_id", ind["external_id"]],
             ["Sex", ind["sex"]],
             ["Genes", [g for g in ind.get("genes", "").split(",")]],
-            [
-                "Features",
-                [f for f in ind["simplified_observed_features_names"].split(",")],
-            ],
+            ["Features", [f for f in ind["simplified_observed_features_names"].split(",")]],
             ["Number of hom variants", hom_count],
             ["Number of compound hets", comp_het_count],
             ["Number of het variants", het_count],
@@ -146,9 +141,7 @@ def individual(individual_id, subset="all", language="en"):
     x[0]["rare_variants"]["data"] = rare_variants
     # rare_comp_hets
     gene_counter = Counter([v["gene_symbol"] for v in x[0]["rare_variants"]["data"]])
-    rare_comp_hets_variants = [
-        v for v in x[0]["rare_variants"]["data"] if gene_counter[v["gene_symbol"]] > 1
-    ]
+    rare_comp_hets_variants = [v for v in x[0]["rare_variants"]["data"] if gene_counter[v["gene_symbol"]] > 1]
     rare_comp_hets_variants = get_hpo_ids_per_gene(rare_comp_hets_variants, ind)
     x[0]["rare_comp_hets"]["data"] = rare_comp_hets_variants
     # NOTE: there's no such case in 'user_config' table
@@ -160,16 +153,13 @@ def individual(individual_id, subset="all", language="en"):
     x[0]["metadata"]["data"][0]["simplified_observed_features"] = [
         {"display": i, "end_href": j}
         for i, j, in zip(
-            ind["simplified_observed_features_names"].split(";"),
-            ind["simplified_observed_features"].split(","),
+            ind["simplified_observed_features_names"].split(";"), ind["simplified_observed_features"].split(","),
         )
     ]
     process_for_display(x[0]["rare_homs"]["data"])
     process_for_display(x[0]["rare_variants"]["data"])
     if ind["genes"]:
-        x[0]["metadata"]["data"][0]["genes"] = [
-            {"display": i} for i in ind.get("genes", "").split(",")
-        ]
+        x[0]["metadata"]["data"][0]["genes"] = [{"display": i} for i in ind.get("genes", "").split(",")]
     else:
         x[0]["metadata"]["data"][0]["genes"] = []
     if subset == "all":
@@ -195,14 +185,7 @@ def update_patient_data(individual_id, language="en"):
     hpo = []
     for x in features:
         c.execute("select * from hpo where hpo_name='%s' limit 1" % x)
-        hpo += [
-            dict(
-                zip(
-                    ["hpo_id", "hpo_name", "hpo_ancestor_ids", "hpo_ancestor_names"],
-                    c.fetchone(),
-                )
-            )
-        ]
+        hpo += [dict(zip(["hpo_id", "hpo_name", "hpo_ancestor_ids", "hpo_ancestor_names"], c.fetchone(),))]
     c.execute(
         "select config from user_config u where u.user_name='%s' and u.language='%s' and u.page='%s' limit 1"
         % (session["user"], language, "individual")
@@ -234,17 +217,7 @@ def update_patient_data(individual_id, language="en"):
     ind["simplified_observed_features_names"] = ind["observed_features_names"]
     ind["unobserved_features"] = ""
     ind["ancestor_observed_features"] = ";".join(
-        sorted(
-            list(
-                set(
-                    list(
-                        itertools.chain.from_iterable(
-                            [h["hpo_ancestor_ids"].split(";") for h in hpo]
-                        )
-                    )
-                )
-            )
-        )
+        sorted(list(set(list(itertools.chain.from_iterable([h["hpo_ancestor_ids"].split(";") for h in hpo])))))
     )
     ind["genes"] = ",".join(genes)
     application.logger.info("UPDATE: {}".format(ind))

@@ -81,30 +81,22 @@ class Variant(Base):
 
 class HET_Variant(Base):
     __tablename__ = "het_variants"
-    variant_id = Column(
-        Integer, ForeignKey("variants.variant_id"), primary_key=True
-    )  # needs composite key
+    variant_id = Column(Integer, ForeignKey("variants.variant_id"), primary_key=True)  # needs composite key
     chrom = Column("chrom", String(2))
     pos = Column("position", String(255))
     ref = Column("ref", String(255))
     alt = Column("alt", String(255))
-    individual = Column(
-        "individual", String(255), ForeignKey("individuals.internal_id")
-    )
+    individual = Column("individual", String(255), ForeignKey("individuals.internal_id"))
 
 
 class HOM_Variant(Base):
     __tablename__ = "hom_variants"
-    variant_id = Column(
-        Integer, ForeignKey("variants.variant_id"), primary_key=True
-    )  # needs composite key
+    variant_id = Column(Integer, ForeignKey("variants.variant_id"), primary_key=True)  # needs composite key
     chrom = Column("chrom", String(2))
     pos = Column("position", String(255))
     ref = Column("ref", String(255))
     alt = Column("alt", String(255))
-    individual = Column(
-        "individual", String(255), ForeignKey("individuals.internal_id")
-    )
+    individual = Column("individual", String(255), ForeignKey("individuals.internal_id"))
 
 
 class HPO(Base):
@@ -141,13 +133,9 @@ class Individual(Base):
     pi = Column("pi", String(255))
     observed_features_names = Column("observed_features_names", String(255))
     simplified_observed_features = Column("simplified_observed_features", String(255))
-    simplified_observed_features_names = Column(
-        "simplified_observed_features_names", String(255)
-    )
+    simplified_observed_features_names = Column("simplified_observed_features_names", String(255))
     ancestor_observed_features = Column("ancestor_observed_features", String(255))
-    ancestor_observed_features_names = Column(
-        "ancestor_observed_features_names", String(255)
-    )
+    ancestor_observed_features_names = Column("ancestor_observed_features_names", String(255))
     het_variants = relationship("HET_Variant", backref="individuals", lazy=True)
     hom_variants = relationship("HOM_Variant", backref="individuals", lazy=True)
     user = relationship("User_Individual", backref="individuals", lazy=True)
@@ -156,12 +144,7 @@ class Individual(Base):
 class User_Individual(Base):
     __tablename__ = "users_individuals"
     user = Column("user", String(255), ForeignKey("users.user"))
-    internal_id = Column(
-        "internal_id",
-        String(255),
-        ForeignKey("individuals.internal_id"),
-        primary_key=True,
-    )
+    internal_id = Column("internal_id", String(255), ForeignKey("individuals.internal_id"), primary_key=True,)
 
 
 # meta.create_all()

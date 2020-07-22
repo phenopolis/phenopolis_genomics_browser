@@ -36,9 +36,7 @@ def hpo(hpo_id="HP:0000001", subset="all", language="en"):
     hpo_name = res["hpo_name"]
     parent_phenotypes = [
         {"display": i, "end_href": j}
-        for i, j, in zip(
-            res["hpo_ancestor_names"].split(";"), res["hpo_ancestor_ids"].split(";")
-        )
+        for i, j, in zip(res["hpo_ancestor_names"].split(";"), res["hpo_ancestor_ids"].split(";"))
     ]
     c.execute(
         """ select *
@@ -73,10 +71,7 @@ def hpo(hpo_id="HP:0000001", subset="all", language="en"):
             for gene_id, hpo_id, hgf, moi_score, in c.fetchall()
         ]
         # Chr,Start,End,HPO,Symbol,ENSEMBL,FisherPvalue,SKATO,variants,CompoundHetPvalue,HWEp,min_depth,nb_alleles_cases,case_maf,nb_ctrl_homs,nb_case_homs,MaxMissRate,nb_alleles_ctrls,nb_snps,nb_cases,minCadd,MeanCallRateCtrls,MeanCallRateCases,OddsRatio,MinSNPs,nb_ctrl_hets,total_maf,MaxCtrlMAF,ctrl_maf,nb_ctrls,nb_case_hets,maxExac
-        c.execute(
-            "select Symbol,FisherPvalue,SKATO,OddsRatio,variants from skat where HPO='%s'"
-            % hpo_id
-        )
+        c.execute("select Symbol,FisherPvalue,SKATO,OddsRatio,variants from skat where HPO='%s'" % hpo_id)
         x[0]["skat"]["data"] = [
             {
                 "gene_id": [{"display": gene_id, "end_href": gene_id}],
@@ -85,9 +80,7 @@ def hpo(hpo_id="HP:0000001", subset="all", language="en"):
                 "odds_ratio": odds_ratio,
                 "variants": [],
             }
-            for gene_id, fisher_p_value, skato, odds_ratio, _variants in c.fetchall()[
-                :100
-            ]
+            for gene_id, fisher_p_value, skato, odds_ratio, _variants in c.fetchall()[:100]
         ]
     application.logger.debug(len(individuals))
     x[0]["preview"] = [["Number of Individuals", len(individuals)]]
@@ -98,20 +91,14 @@ def hpo(hpo_id="HP:0000001", subset="all", language="en"):
         ind["simplified_observed_features_names"] = [
             {"display": i, "end_href": j}
             for i, j, in zip(
-                ind["simplified_observed_features_names"].split(";"),
-                ind["simplified_observed_features"].split(","),
+                ind["simplified_observed_features_names"].split(";"), ind["simplified_observed_features"].split(","),
             )
         ]
         if ind["genes"]:
             ind["genes"] = [{"display": i} for i in ind.get("genes", "").split(",")]
     x[0]["individuals"]["data"] = individuals
     x[0]["metadata"]["data"] = [
-        {
-            "name": hpo_name,
-            "id": hpo_id,
-            "count": len(individuals),
-            "parent_phenotypes": parent_phenotypes,
-        }
+        {"name": hpo_name, "id": hpo_id, "count": len(individuals), "parent_phenotypes": parent_phenotypes}
     ]
     process_for_display(x[0]["metadata"]["data"])
     if subset == "all":

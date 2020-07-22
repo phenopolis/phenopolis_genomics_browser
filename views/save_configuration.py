@@ -7,9 +7,7 @@ from views.auth import requires_auth
 from views.postgres import postgres_cursor, get_db
 
 
-@application.route(
-    "/<language>/save_configuration/<pageType>/<pagePart>", methods=["POST"]
-)
+@application.route("/<language>/save_configuration/<pageType>/<pagePart>", methods=["POST"])
 @application.route("/save_configuration/<pageType>/<pagePart>", methods=["POST"])
 @requires_auth
 def save_configuration(pageType, pagePart, language="en"):

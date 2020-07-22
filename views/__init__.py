@@ -31,9 +31,7 @@ def _configure_logs():
         {
             "version": 1,
             "formatters": {
-                "default": {
-                    "format": "%(asctime)s-%(levelname)s-%(name)s::%(module)s|%(lineno)s:: %(message)s"
-                }
+                "default": {"format": "%(asctime)s-%(levelname)s-%(name)s::%(module)s|%(lineno)s:: %(message)s"}
             },
             "handlers": {
                 "wsgi": {
@@ -62,15 +60,11 @@ def _load_config():
     application.config["SERVED_URL"] = os.getenv("SERVED_URL", "127.0.0.1")
     application.config["MAIL_SERVER"] = os.getenv("MAIL_SERVER", "smtp.gmail.com")
     application.config["MAIL_PORT"] = os.getenv("MAIL_PORT", "587")
-    application.config["MAIL_USERNAME"] = os.getenv(
-        "MAIL_USERNAME", "no-reply@phenopolis.org"
-    )
+    application.config["MAIL_USERNAME"] = os.getenv("MAIL_USERNAME", "no-reply@phenopolis.org")
     application.config["MAIL_PASSWORD"] = os.getenv("MAIL_PASSWORD", "get_password")
     application.config["MAIL_USE_TLS"] = os.getenv("MAIL_USE_TLS", "true") == "true"
     application.config["MAIL_USE_SSL"] = os.getenv("MAIL_USE_SSL", "false") == "true"
-    application.config["MAIL_SUPPRESS_SEND"] = (
-        os.getenv("MAIL_SUPPRESS_SEND", "true") == "true"
-    )
+    application.config["MAIL_SUPPRESS_SEND"] = os.getenv("MAIL_SUPPRESS_SEND", "true") == "true"
     application.config["DB_HOST"] = os.getenv("POSTGRES_HOST", "0.0.0.0")
     application.config["DB_DATABASE"] = os.getenv("POSTGRES_DB", "phenopolis_db")
     application.config["DB_USER"] = os.getenv("POSTGRES_USER", "phenopolis_api")
@@ -89,9 +83,7 @@ def _load_config():
 def _init_sqlalchemy():
     database = SQLAlchemy(application)
     database.init_app(application)
-    application.session_interface = SqlAlchemySessionInterface(
-        application, database, "test_sessions", "test_sess_"
-    )
+    application.session_interface = SqlAlchemySessionInterface(application, database, "test_sessions", "test_sess_")
     application.permanent_session_lifetime = datetime.timedelta(hours=1)
 
 
@@ -111,6 +103,7 @@ cache = Cache(application, config={"CACHE_TYPE": "simple"})
 mail = Mail(application)
 
 # These imports must be placed at the end of this file
+# flake8: noqa E402
 import views.general
 import views.postgres
 import views.auth
