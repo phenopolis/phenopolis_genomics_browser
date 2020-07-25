@@ -23,7 +23,7 @@ def get_hpo_ids_per_gene(variants, _ind):
     for y in variants:
         query = """ select * from gene_hpo where gene_symbol='%s' """ % (y["gene_symbol"])
         c.execute(query)
-        _gene_hpo_ids = cursor2dict(c)
+        # _gene_hpo_ids = cursor2dict(c)
         #         y["hpo_,terms"] = [
         #             {
         #                 "display": c.execute(
