@@ -3,13 +3,15 @@ import PropTypes from 'prop-types';
 import axios from 'axios';
 
 import { withStyles } from '@material-ui/core/styles';
-import { Paper, Typography, Grid, Collapse, Chip } from '@material-ui/core';
+import { Paper, Typography, Grid, Collapse } from '@material-ui/core';
 
 import compose from 'recompose/compose';
 import { connect } from 'react-redux';
 import { setSnack } from '../../redux/actions/snacks';
 
 import ChipInput from 'material-ui-chip-input';
+
+import TypeChip from '../Chip/TypeChip';
 
 class SearchAutoComplete extends React.Component {
   constructor(props) {
@@ -33,7 +35,7 @@ class SearchAutoComplete extends React.Component {
     });
   }
 
-  handleFeatureAddChip = (event, item) => {
+  handleFeatureAddChip = (item) => {
     this.props.ModifyFeature(item, 'Add', this.state.type);
   };
 
@@ -103,14 +105,14 @@ class SearchAutoComplete extends React.Component {
                 this.state.autoCompleteContent.length > 0 ? (
                   this.state.autoCompleteContent.map((item, index) => {
                     return (
-                      <Chip
+                      <TypeChip
                         key={index}
-                        size="large"
+                        size="small"
                         label={item}
-                        className={classes.chip}
-                        clickable
-                        variant="outlined"
-                        onClick={(event) => this.handleFeatureAddChip(event, item)}
+                        type={this.state.type}
+                        action="emit"
+                        onClick={this.handleFeatureAddChip}
+                        to={item}
                       />
                     );
                   })

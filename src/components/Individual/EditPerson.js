@@ -14,6 +14,7 @@ import {
   IconButton,
   Collapse,
   Paper,
+  Container,
 } from '@material-ui/core';
 import MuiDialogTitle from '@material-ui/core/DialogTitle';
 import MuiDialogContent from '@material-ui/core/DialogContent';
@@ -195,106 +196,108 @@ class EditPerson extends React.Component {
         </DialogTitle>
 
         <DialogContent dividers>
-          <Typography component="div">
-            <Box fontWeight="fontWeightLight" fontSize="subtitle1.fontSize">
-              Gender
-            </Box>
-          </Typography>
-          <RadioGroup
-            aria-label="position"
-            name="position"
-            value={this.state.genderValue}
-            onChange={this.handleGenderChange}
-            row>
-            <Grid container className={classes.root} spacing={2}>
-              <Grid item xs={3}>
-                <FormControlLabel
-                  value="male"
-                  control={<Radio color="primary" />}
-                  label="Male"
-                  labelPlacement="Male"
-                />
+          <Container>
+            <Typography component="div">
+              <Box fontWeight="fontWeightLight" fontSize="subtitle1.fontSize">
+                Gender
+              </Box>
+            </Typography>
+            <RadioGroup
+              aria-label="position"
+              name="position"
+              value={this.state.genderValue}
+              onChange={this.handleGenderChange}
+              row>
+              <Grid container className={classes.root} spacing={2}>
+                <Grid item xs={3}>
+                  <FormControlLabel
+                    value="male"
+                    control={<Radio color="primary" />}
+                    label="Male"
+                    labelPlacement="Male"
+                  />
+                </Grid>
+                <Grid item xs={3}>
+                  <FormControlLabel
+                    value="female"
+                    control={<Radio color="primary" />}
+                    label="Female"
+                    labelPlacement="Female"
+                  />
+                </Grid>
+                <Grid item xs={3}>
+                  <FormControlLabel
+                    value="unknown"
+                    control={<Radio color="primary" />}
+                    label="Unknow"
+                    labelPlacement="Unknown"
+                  />
+                </Grid>
               </Grid>
-              <Grid item xs={3}>
-                <FormControlLabel
-                  value="female"
-                  control={<Radio color="primary" />}
-                  label="Female"
-                  labelPlacement="Female"
-                />
-              </Grid>
-              <Grid item xs={3}>
-                <FormControlLabel
-                  value="unknown"
-                  control={<Radio color="primary" />}
-                  label="Unknow"
-                  labelPlacement="Unknown"
-                />
-              </Grid>
-            </Grid>
-          </RadioGroup>
+            </RadioGroup>
 
-          <Typography component="div" style={{ 'padding-top': '1em' }}>
-            <Box fontWeight="fontWeightLight" fontSize="subtitle1.fontSize">
-              Features
-            </Box>
-          </Typography>
+            <Typography component="div" style={{ 'padding-top': '1em' }}>
+              <Box fontWeight="fontWeightLight" fontSize="subtitle1.fontSize">
+                Features
+              </Box>
+            </Typography>
 
-          <SearchAutoComplete
-            featureArray={this.state.featureArray}
-            type={'phenotype'}
-            ModifyFeature={this.ModifyFeatureChip}
-          />
+            <SearchAutoComplete
+              featureArray={this.state.featureArray}
+              type={'phenotype'}
+              ModifyFeature={this.ModifyFeatureChip}
+            />
 
-          <Typography component="div" style={{ 'padding-top': '1em' }}>
-            <Box fontWeight="fontWeightLight" fontSize="subtitle1.fontSize">
-              Candidate Genes
-            </Box>
-          </Typography>
-          <SearchAutoComplete
-            featureArray={this.state.geneArray}
-            type={'gene'}
-            ModifyFeature={this.ModifyFeatureChip}
-          />
+            <Typography component="div" style={{ 'padding-top': '1em' }}>
+              <Box fontWeight="fontWeightLight" fontSize="subtitle1.fontSize">
+                Candidate Genes
+              </Box>
+            </Typography>
+            <SearchAutoComplete
+              featureArray={this.state.geneArray}
+              type={'gene'}
+              ModifyFeature={this.ModifyFeatureChip}
+            />
 
-          <Typography component="div" style={{ 'padding-top': '1em' }}>
-            <Box fontWeight="fontWeightLight" fontSize="subtitle1.fontSize">
-              Consanguinity
-            </Box>
-          </Typography>
-          <RadioGroup
-            aria-label="position"
-            name="position"
-            value={this.state.consanguinityValue}
-            onChange={this.handleConsanguinityChange}
-            row>
-            <Grid container className={classes.root} spacing={2}>
-              <Grid item xs={3}>
-                <FormControlLabel
-                  value="yes"
-                  control={<Radio color="primary" />}
-                  label="Yes"
-                  labelPlacement="Yes"
-                />
+            <Typography component="div" style={{ 'padding-top': '1em' }}>
+              <Box fontWeight="fontWeightLight" fontSize="subtitle1.fontSize">
+                Consanguinity
+              </Box>
+            </Typography>
+            <RadioGroup
+              aria-label="position"
+              name="position"
+              value={this.state.consanguinityValue}
+              onChange={this.handleConsanguinityChange}
+              row>
+              <Grid container className={classes.root} spacing={2}>
+                <Grid item xs={3}>
+                  <FormControlLabel
+                    value="yes"
+                    control={<Radio color="primary" />}
+                    label="Yes"
+                    labelPlacement="Yes"
+                  />
+                </Grid>
+                <Grid item xs={3}>
+                  <FormControlLabel
+                    value="no"
+                    control={<Radio color="primary" />}
+                    label="No"
+                    labelPlacement="No"
+                  />
+                </Grid>
+                <Grid item xs={3}>
+                  <FormControlLabel
+                    value="unknown"
+                    control={<Radio color="primary" />}
+                    label="Unknown"
+                    labelPlacement="Unknown"
+                  />
+                </Grid>
               </Grid>
-              <Grid item xs={3}>
-                <FormControlLabel
-                  value="no"
-                  control={<Radio color="primary" />}
-                  label="No"
-                  labelPlacement="No"
-                />
-              </Grid>
-              <Grid item xs={3}>
-                <FormControlLabel
-                  value="unknown"
-                  control={<Radio color="primary" />}
-                  label="Unknown"
-                  labelPlacement="Unknown"
-                />
-              </Grid>
-            </Grid>
-          </RadioGroup>
+            </RadioGroup>
+          </Container>
         </DialogContent>
 
         <DialogActions>

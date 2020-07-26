@@ -4,7 +4,8 @@ import {
   GET_SEARCH_AUTOCOMPLETE_FAIL,
   GET_SEARCH_BEST,
   GET_SEARCH_BEST_SUCCESS,
-  GET_SEARCH_BEST_FAIL, CLEAR_SEARCH_BEST,
+  GET_SEARCH_BEST_FAIL,
+  CLEAR_SEARCH_BEST,
 } from '../types/search';
 import Service from '../service';
 
@@ -36,6 +37,6 @@ export const getSearchBest = (text) => {
 
 export const clearSearchBest = () => {
   return (dispatch) => {
-    dispatch({ type: CLEAR_SEARCH_BEST});
+    dispatch({ type: CLEAR_SEARCH_BEST });
   };
 };

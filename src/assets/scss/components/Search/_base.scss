@@ -1,0 +1,13 @@
+
+.search-example {
+  color: #2E84CF;
+}
+
+.search-link {
+  text-decoration: none;
+  color: #2E84CF;
+  padding: 0em 0.5em 0em 0.5em;
+&:hover {
+  text-shadow: -0.06ex 0 #2E84CF, 0.06ex 0 #2E84CF,
+}
+}

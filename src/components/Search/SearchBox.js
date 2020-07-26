@@ -1,6 +1,5 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import { Link } from 'react-router-dom';
 import { Redirect } from 'react-router';
 import axios from 'axios';
 
@@ -14,9 +13,10 @@ import {
   Grid,
   CircularProgress,
   Collapse,
-  Chip,
 } from '@material-ui/core';
 import SearchIcon from '@material-ui/icons/Search';
+
+import TypeChip from '../Chip/TypeChip';
 
 import compose from 'recompose/compose';
 import { connect } from 'react-redux';
@@ -30,17 +30,17 @@ class SearchBox extends React.Component {
     super(props);
     this.state = {
       examples: [
-        { name: 'TTLL5', type: '(Gene)', to: '/gene/ENSG00000119685' },
-        { name: 'Abnormality of the eye', type: '(HPO Phenotype)', to: '/hpo/HP:0000478' },
+        { name: 'TTLL5', type: 'gene', to: '/gene/ENSG00000119685' },
+        { name: 'Abnormality of the eye', type: 'phenotype', to: '/hpo/HP:0000478' },
         {
           name: 'PH00008258',
-          type: '(Patient)',
+          type: 'patient',
           to: '/individual/PH00008258',
         },
         {
-          name: '22-38212762-A-G',
-          type: '(Variant)',
-          to: '/variant/22-38212762-A-G',
+          name: '14-76156575-A-G',
+          type: 'variant',
+          to: '/variant/14-76156575-A-G',
         },
       ],
       searchContent: '',
@@ -115,10 +115,10 @@ class SearchBox extends React.Component {
         <Container maxWidth="xl">
           <Paper className={classes.paper}>
             <Typography component="div">
-              <Box fontWeight="900" fontSize="h3.fontSize" m={1}>
+              <Box fontWeight="900" fontSize="h2.fontSize" m={1}>
                 {t('Search.title')}
               </Box>
-              <Box fontWeight="fontWeightLight" m={1}>
+              <Box fontWeight="fontWeightRegular" fontSize="h6.fontSize" m={1}>
                 {t('Search.subtitle')}
               </Box>
             </Typography>
@@ -165,14 +165,13 @@ class SearchBox extends React.Component {
                       this.state.autoCompleteContent.length > 0 ? (
                         this.state.autoCompleteContent.map((item, index) => {
                           return (
-                            <Chip
+                            <TypeChip
                               key={index}
                               size="large"
-                              label={item}
-                              className={classes.chip}
-                              clickable
-                              variant="outlined"
-                              onClick={(event) => this.handleSearch(event, item)}
+                              label={item.split(':')[1]}
+                              type={item.split(':')[0]}
+                              action="guess"
+                              to={item}
                             />
                           );
                         })
@@ -195,9 +194,14 @@ class SearchBox extends React.Component {
                   {this.state.examples.map((item, index) => {
                     return (
                       <span key={index}>
-                        <Link className={classes.link} to={item.to}>
-                          {item.name + item.type}
-                        </Link>
+                        <TypeChip
+                          size="large"
+                          label={item.name}
+                          type={item.type}
+                          action="forward"
+                          popover={true}
+                          to={item.to}
+                        />
                         &bull;
                       </span>
                     );
@@ -220,12 +224,13 @@ const styles = (theme) => ({
   root: {
     backgroundColor: '#eeeeee',
     padding: '4em',
+    minHeight: '82vh',
   },
   paper: {
     padding: theme.spacing(8),
   },
   paperCollapse: {
-    padding: theme.spacing(2),
+    padding: theme.spacing(10),
   },
   margin: {
     margin: '3em',

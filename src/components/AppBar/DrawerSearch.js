@@ -1,22 +1,24 @@
 import React, { Fragment, useEffect, useState } from 'react';
-import { Link } from 'react-router-dom';
 import {
   Grid,
   Fab,
   Container,
   InputAdornment,
-  Chip,
   Typography,
   TextField,
   Divider,
   Box,
 } from '@material-ui/core';
+
+import TypeChip from '../Chip/TypeChip';
+
 import SearchIcon from '@material-ui/icons/Search';
 import CloseTwoToneIcon from '@material-ui/icons/CloseTwoTone';
+
 import { useTranslation } from 'react-i18next';
 import { useDispatch, useSelector } from 'react-redux';
 import clsx from 'clsx';
-import { getSearchAutocomplete, getSearchBest, clearSearchBest } from '../../redux/actions/search';
+import { getSearchAutocomplete, clearSearchBest } from '../../redux/actions/search';
 import { setSnack } from '../../redux/actions/snacks';
 import { useHistory } from 'react-router-dom';
 
@@ -44,33 +46,23 @@ const DrawerSearch = (props) => {
   const redirectTo = () => {
     history.push(best);
     props.onRequestClose();
-    dispatch(clearSearchBest())
-  }
+    dispatch(clearSearchBest());
+  };
 
   const examples = [
-    { name: 'TTLL5', type: '(Gene)', to: '/gene/ENSG00000119685' },
-    { name: 'Abnormality of the eye', type: '(HPO Phenotype)', to: '/hpo/HP:0000478' },
+    { name: 'TTLL5', type: 'gene', to: '/gene/ENSG00000119685' },
+    { name: 'Abnormality of the eye', type: 'phenotype', to: '/hpo/HP:0000478' },
     {
       name: 'PH00008258',
-      type: '(Patient)',
+      type: 'patient',
       to: '/individual/PH00008258',
     },
     {
-      name: '22-38212762-A-G',
-      type: '(Variant)',
-      to: '/variant/22-38212762-A-G',
+      name: '14-76156575-A-G',
+      type: 'variant',
+      to: '/variant/14-76156575-A-G',
     },
   ];
-
-  const handleSearch = (event, guess) => {
-    event.preventDefault();
-
-    let guessText = guess;
-    if (guessText === 'default') {
-      guessText = searchContent;
-    }
-    dispatch(getSearchBest(guessText));
-  };
 
   const handleSearchChange = (event) => {
     setSearchContent(event.target.value);
@@ -114,6 +106,7 @@ const DrawerSearch = (props) => {
           <TextField
             className="app-search-input"
             fullWidth
+            autoFocus
             value={searchContent}
             onChange={(event) => handleSearchChange(event)}
             inputProps={{ 'aria-label': 'search' }}
@@ -130,16 +123,21 @@ const DrawerSearch = (props) => {
           />
         </Container>
       </div>
-      <Container maxWidth="lg" className="py-2">
+      <Container maxWidth="lg" className="py-2" style={{ borderBottom: '1px solid lightgrey' }}>
         <Typography component="div">
           <Box className="search-example" fontWeight="fontWeightLight" m={2}>
             {t('Search.Example')}:
             {examples.map((item, index) => {
               return (
                 <span key={index} onClick={handleClose}>
-                  <Link className="search-link" to={item.to}>
-                    {item.name + item.type}
-                  </Link>
+                  <TypeChip
+                    size="large"
+                    label={item.name}
+                    type={item.type}
+                    action="forward"
+                    popover={true}
+                    to={item.to}
+                  />
                   &bull;
                 </span>
               );
@@ -173,19 +171,19 @@ const DrawerSearch = (props) => {
                 </div>
               ) : data !== null ? (
                 data.length > 0 ? (
-                  data.map((item, index) => {
-                    return (
-                      <Chip
-                        key={index}
-                        size="large"
-                        label={item}
-                        className="search-chip"
-                        clickable
-                        variant="outlined"
-                        onClick={(event) => handleSearch(event, item)}
-                      />
-                    );
-                  })
+                  <div>
+                    {data.map((item, index) => {
+                      return (
+                        <TypeChip
+                          size="large"
+                          label={item.split(':')[1]}
+                          type={item.split(':')[0]}
+                          action="guess"
+                          to={item}
+                        />
+                      );
+                    })}
+                  </div>
                 ) : (
                   <div className="text-warning font-weight-bold font-size-xl">
                     {t('AppBar.NavSearch.NoOption')}

@@ -19,8 +19,15 @@ function getSearchBest(param) {
   });
 }
 
+function getPreviewInformation(param) {
+  return axios.get(api.BASE_URL + param + api.FETCH_PREVIEW, {
+    withCredentials: true,
+  });
+}
+
 export default {
   getStatistics,
   getSearchAutocomplete,
   getSearchBest,
+  getPreviewInformation,
 };

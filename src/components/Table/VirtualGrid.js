@@ -467,15 +467,15 @@ class VirtualGrid extends React.Component {
               let size = 0;
               if ((typeof chip === 'object') & (chip !== null)) {
                 tmpColnames[j].chips.push(chip.display);
-                size = calculateSize(chip.display, { font: 'Arial', fontSize: '12px' });
+                size = calculateSize(chip.display, { font: 'Arial', fontSize: '15px' });
               } else {
                 tmpColnames[j].chips.push(chip);
-                size = calculateSize(chip, { font: 'Arial', fontSize: '12px' });
+                size = calculateSize(chip, { font: 'Arial', fontSize: '15px' });
               }
-              if (size.width + 60 > tmpMax) {
-                tmpMax = size.width + 60;
+              if (size.width + 70 > tmpMax) {
+                tmpMax = size.width + 70;
               }
-              chipsSize = chipsSize + size.width + 60;
+              chipsSize = chipsSize + size.width + 70;
             });
 
             let cellHeight = minHeight + Math.round(chipsSize / tmpMax) * HeightIncrease;

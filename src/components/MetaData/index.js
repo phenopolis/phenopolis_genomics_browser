@@ -1,5 +1,4 @@
 import React from 'react';
-import axios from 'axios';
 import PropTypes from 'prop-types';
 
 import { withStyles } from '@material-ui/core/styles';
@@ -8,13 +7,15 @@ import {
   Paper,
   Container,
   Grid,
-  Chip,
   Typography,
   Box,
-  Popover,
-  CircularProgress,
+  IconButton,
 } from '@material-ui/core';
-import { Link } from 'react-router-dom';
+
+import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
+import ExpandLessIcon from '@material-ui/icons/ExpandLess';
+
+import TypeChip from '../Chip/TypeChip';
 
 import blue from '@material-ui/core/colors/blue';
 
@@ -25,53 +26,17 @@ class MetaData extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      openPreview: false,
-      anchorEl: null,
-      previewName: null,
-      previewInfo: null,
-      previewLoaded: false,
       expandNumber: 3,
     };
   }
 
-  handleExpendAll = () => {
-    this.setState({ expandNumber: 100 });
-  };
-
-  getPreviewInformation = (link) => {
-    var self = this;
-    axios
-      .get('/api/' + link + '/preview', {
-        withCredentials: true,
-      })
-      .then((res) => {
-        let respond = res.data;
-        self.setState({
-          previewInfo: respond[0],
-          previewLoaded: true,
-        });
-      })
-      .catch((err) => {});
-  };
-
-  handlePopoverOpen = (name, link, event) => {
-    this.setState({ anchorEl: event.currentTarget, previewName: name });
-    this.getPreviewInformation(link);
-  };
-
-  handlePopoverClose = () => {
-    this.setState({
-      anchorEl: null,
-      previewInfo: [],
-      previewName: null,
-      previewLoaded: false,
-    });
+  handleExpendAll = (n) => {
+    this.setState({ expandNumber: n });
   };
 
   render() {
     const { classes } = this.props;
     const metadata = this.props.metadata;
-    const open = Boolean(this.state.anchorEl);
 
     return (
       <React.Fragment>
@@ -83,7 +48,16 @@ class MetaData extends React.Component {
             </Box>
           </Typography>
 
-          <Paper className={classes.paper}>
+          <Paper className={classes.paper} style={{ position: 'relative' }}>
+            <div style={{ position: 'absolute', bottom: '10px', right: '10px', zIndex: '100' }}>
+              <IconButton aria-label="expand">
+                {this.state.expandNumber === 3 ? (
+                  <ExpandMoreIcon onClick={() => this.handleExpendAll(100)} />
+                ) : (
+                  <ExpandLessIcon onClick={() => this.handleExpendAll(3)} />
+                )}
+              </IconButton>
+            </div>
             <SizeMe>
               {({ size }) => (
                 <div className={classes.root}>
@@ -98,32 +72,32 @@ class MetaData extends React.Component {
                           <Grid item xs={8} md={10}>
                             {typeof metadata.data[0][item.key] !== 'object' ? (
                               <span>
-                                {' '}
                                 {(item.key === 'start') | (item.key === 'stop')
                                   ? Number(metadata.data[0][item.key]).toLocaleString()
-                                  : metadata.data[0][item.key]}{' '}
+                                  : metadata.data[0][item.key]}
                               </span>
                             ) : (
                               metadata.data[0][item.key].map((chip, m) => {
                                 return chip.href ? (
-                                  <Chip
-                                    key={m}
-                                    variant="outlined"
-                                    size="small"
+                                  <TypeChip
                                     label={chip.display}
-                                    className={classes.chip}
-                                    component="a"
-                                    href={chip.href}
-                                    clickable
+                                    type="other"
+                                    size="small"
+                                    action="forward"
+                                    popover={false}
+                                    to={chip.href}
                                   />
                                 ) : (
-                                  <Chip
-                                    key={m}
-                                    variant="outlined"
-                                    size="small"
+                                  <TypeChip
                                     label={chip.display}
-                                    className={classes.chip}
-                                    component={Link}
+                                    type={
+                                      item.base_href
+                                        ? item.base_href.replace(/[^a-zA-Z0-9_-]/g, '')
+                                        : item.href.replace(/[^a-zA-Z0-9_-]/g, '')
+                                    }
+                                    size="small"
+                                    action="forward"
+                                    popover={true}
                                     to={
                                       chip.end_href
                                         ? (item.base_href + '/' + chip.end_href).replace(
@@ -137,27 +111,6 @@ class MetaData extends React.Component {
                                           )
                                         : (item.href + '/' + chip.display).replace(/\/\//g, '/')
                                     }
-                                    clickable
-                                    aria-owns={open ? 'mouse-over-popover' : undefined}
-                                    aria-haspopup="true"
-                                    onMouseEnter={(event) =>
-                                      this.handlePopoverOpen(
-                                        chip.display,
-                                        chip.end_href
-                                          ? (item.base_href + '/' + chip.end_href).replace(
-                                              /\/\//g,
-                                              '/'
-                                            )
-                                          : item.base_href
-                                          ? (item.base_href + '/' + chip.display).replace(
-                                              /\/\//g,
-                                              '/'
-                                            )
-                                          : (item.href + '/' + chip.display).replace(/\/\//g, '/'),
-                                        event
-                                      )
-                                    }
-                                    onMouseLeave={this.handlePopoverClose}
                                   />
                                 );
                               })
@@ -169,7 +122,7 @@ class MetaData extends React.Component {
                     {this.state.expandNumber === 3 ? (
                       <div className={classes.blockFade}>
                         <span
-                          onClick={this.handleExpendAll}
+                          onClick={() => this.handleExpendAll(100)}
                           className={classes.expandButton}
                           style={{ width: size.width }}>
                           Expand More
@@ -182,64 +135,6 @@ class MetaData extends React.Component {
             </SizeMe>
           </Paper>
         </Container>
-        <Popover
-          id="mouse-over-popover"
-          className={classes.popover}
-          classes={{
-            paper: classes.paperPopover,
-          }}
-          open={open}
-          anchorEl={this.state.anchorEl}
-          anchorOrigin={{
-            vertical: 'center',
-            horizontal: 'right',
-          }}
-          transformOrigin={{
-            vertical: 'center',
-            horizontal: 'left',
-          }}
-          onClose={this.handlePopoverClose}
-          disableRestoreFocus
-          elevation={0}>
-          <Container className="arrow_box">
-            <Typography variant="subtitle1" style={{ 'font-weight': 'bold', color: 'yellow' }}>
-              {this.state.previewName}
-
-              {this.state.previewLoaded !== true && (
-                <small style={{ color: 'white' }}>
-                  {' '}
-                  &nbsp;(Loading ...
-                  <CircularProgress size={18} color="white" />
-                  &nbsp; &nbsp;)
-                </small>
-              )}
-            </Typography>
-          </Container>
-
-          {this.state.previewLoaded === true && (
-            <Container
-              style={{
-                background: '#242424',
-                'min-width': '25em',
-                'border-radius': '0.3em',
-                'padding-bottom': '1em',
-              }}>
-              {this.state.previewInfo.preview.map((item, index) => {
-                return (
-                  <Grid container spacing={1} key={index} className={classes.blockgrid}>
-                    <Grid item xs={4} className={classes.namegrid}>
-                      {item[0]}
-                    </Grid>
-
-                    <Grid item xs={8} className={classes.datagrid}>
-                      {item[1]}
-                    </Grid>
-                  </Grid>
-                );
-              })}
-            </Container>
-          )}
-        </Popover>
       </React.Fragment>
     );
   }
@@ -277,7 +172,6 @@ const styles = (theme) => ({
     marginRight: 'auto',
     left: '0',
     right: '0',
-    textAlign: 'center',
     backgroundImage:
       'linear-gradient(to bottom, rgba(255, 255, 255, 0), rgba(255, 255, 255, 0.9) 100%)',
   },
@@ -285,9 +179,6 @@ const styles = (theme) => ({
     color: blue[500],
     fontWeight: '500',
     cursor: 'pointer',
-  },
-  namegrid: {
-    borderRight: '1px solid gray',
   },
   chip: {
     margin: theme.spacing(0.5),
@@ -297,17 +188,11 @@ const styles = (theme) => ({
       textShadow: '-0.06ex 0 #2E84CF, 0.06ex 0 #2E84CF',
     },
   },
-  popover: {
-    pointerEvents: 'none',
-    marginLeft: '0.2em',
-  },
-  paperPopover: {
-    padding: theme.spacing(1),
-    color: 'white',
-    backgroundColor: 'transparent',
+  namegrid: {
+    borderRight: '1px solid #e0e0e0',
   },
   datagrid: {
-    borderBottom: '1px solid gray',
+    borderBottom: '1px solid #e0e0e0',
   },
 });
 

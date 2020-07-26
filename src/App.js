@@ -4,6 +4,7 @@ import { ThemeProvider } from '@material-ui/styles';
 import { blue, red } from '@material-ui/core/colors';
 
 import './assets/carolina/base.scss';
+import './assets/scss/base.scss';
 
 import HomeAppBar from './page/HomeAppBar';
 import Login from './page/Login';
@@ -12,6 +13,7 @@ import Product from './page/Product';
 import Publication from './page/Publication';
 import Search from './page/Search';
 import AuthCheck from './page/AuthCheck';
+
 import CustomizedSnackbars from './page/CustomizedSnackbars';
 
 import Gene from './page/Gene';

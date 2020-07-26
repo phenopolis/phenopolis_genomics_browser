@@ -5,7 +5,7 @@ import {
   GET_SEARCH_BEST,
   GET_SEARCH_BEST_SUCCESS,
   GET_SEARCH_BEST_FAIL,
-  CLEAR_SEARCH_BEST
+  CLEAR_SEARCH_BEST,
 } from '../types/search';
 
 const initialState = {
@@ -61,7 +61,7 @@ const Search = (state = initialState, action) => {
       return {
         ...state,
         loading: false,
-        best: {}
+        best: {},
       };
     }
     default:

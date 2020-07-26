@@ -1,0 +1,68 @@
+.search-chip-large {
+  margin: 8px !important;
+  padding: 10px 0px 10px 0px !important;
+  text-shadow: none;
+  font-size: 17px !important;
+  font-weight: 500;
+  // color: '#2E84CF',
+&:hover {
+  text-shadow: -0.05ex 0 grey, 0.05ex 0 grey,
+}
+}
+
+.search-chip-xl {
+  margin: 8px !important;
+  padding: 10px 0px 10px 0px !important;
+  text-shadow: none;
+  font-size: 1em !important;
+  font-weight: 900;
+  // color: '#2E84CF',
+&:hover {
+  text-shadow: -0.05ex 0 grey, 0.05ex 0 grey,
+}
+}
+
+.search-chip-small {
+  margin: 5px !important;
+  padding: 10px 0px 10px 0px !important;
+  text-shadow: none;
+  font-size: 13px !important;
+  font-weight: 500;
+  &:hover {
+    text-shadow: -0.05ex 0 grey, 0.05ex 0 grey
+  }
+}
+
+.chip-container {
+  background-color: white;
+  min-width: 25em;
+  border-bottom-left-radius: 0.1em;
+  border-bottom-right-radius: 0.1em;
+  padding-bottom: 1em;
+  padding-top: 1em;
+}
+
+.chip-title-unloaded {
+  border-bottom-left-radius: 0.1em;
+  border-bottom-right-radius: 0.1em;
+  border-top-left-radius: 0.1em;
+  border-top-right-radius: 0.1em;
+  padding: 0.5em
+}
+
+.chip-title-loaded {
+  border-bottom-left-radius: 0em;
+  border-bottom-right-radius: 0em;
+  border-top-left-radius: 0.1em;
+  border-top-right-radius: 0.1em;
+  padding: 0.5em
+}
+
+.chip-popover-namegrid {
+  border-right: 1px solid #e0e0e0;
+  border-bottom: 1px solid #e0e0e0;
+}
+
+.chip-popover-datagrid {
+  border-bottom: 1px solid #e0e0e0,
+}

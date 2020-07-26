@@ -1,29 +1,17 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import { withStyles } from '@material-ui/core/styles';
-import { Link } from 'react-router-dom';
-import axios from 'axios';
 import '../../assets/css/arrowbox.css';
 
-import {
-  TableCell,
-  Chip,
-  Typography,
-  Popover,
-  Container,
-  CircularProgress,
-  Grid,
-} from '@material-ui/core';
+import { TableCell, Typography } from '@material-ui/core';
+
+import TypeChip from '../Chip/TypeChip';
 
 class GridColumn extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
       mystyle: {},
-      anchorEl: null,
-      previewName: null,
-      previewInfo: null,
-      previewLoaded: false,
     };
   }
   componentWillMount() {
@@ -58,40 +46,8 @@ class GridColumn extends React.Component {
     this.props.data.toggleItemActive(this.props.rowIndex, this.props.columnIndex);
   };
 
-  getPreviewInformation = (link) => {
-    var self = this;
-    axios
-      .get('/api/' + link + '/preview', {
-        withCredentials: true,
-      })
-      .then((res) => {
-        let respond = res.data;
-        self.setState({
-          previewInfo: respond[0],
-          previewLoaded: true,
-        });
-      })
-      .catch((err) => {});
-  };
-
-  handlePopoverOpen = (name, link, event) => {
-    this.setState({ anchorEl: event.currentTarget, previewName: name });
-    this.getPreviewInformation(link);
-  };
-
-  handlePopoverClose = () => {
-    this.setState({
-      anchorEl: null,
-      previewInfo: [],
-      previewName: null,
-      previewLoaded: false,
-    });
-  };
-
   render() {
     const { data, rowIndex, columnIndex, classes } = this.props;
-
-    const open = Boolean(this.state.anchorEl);
 
     var key = data.columns[columnIndex].key;
     let cellData = data.rows[rowIndex][key];
@@ -99,7 +55,6 @@ class GridColumn extends React.Component {
 
     return (
       <TableCell
-        // className={"sticky-grid__data__column"}
         className={classes.tableCell}
         id={rowIndex + 1 + ',' + (columnIndex + 1)}
         style={this.state.mystyle}
@@ -113,31 +68,17 @@ class GridColumn extends React.Component {
             cellData.map((chip, j) => {
               if (chip !== null) {
                 return (
-                  <Chip
-                    key={j}
-                    size="small"
-                    variant="outlined"
+                  <TypeChip
                     label={chip.display}
-                    className={classes.chip}
-                    component={Link}
+                    type={h.base_href.replace(/[^a-zA-Z0-9_-]/g, '')}
+                    size="small"
+                    action="forward"
+                    popover={true}
                     to={
                       chip.end_href
                         ? (h.base_href + '/' + chip.end_href).replace(/\/\//g, '/')
                         : (h.base_href + '/' + chip.display).replace(/\/\//g, '/')
                     }
-                    clickable
-                    aria-owns={open ? 'mouse-over-popover' : undefined}
-                    aria-haspopup="true"
-                    onMouseEnter={(event) =>
-                      this.handlePopoverOpen(
-                        chip.display,
-                        chip.end_href
-                          ? (h.base_href + '/' + chip.end_href).replace(/\/\//g, '/')
-                          : (h.base_href + '/' + chip.display).replace(/\/\//g, '/'),
-                        event
-                      )
-                    }
-                    onMouseLeave={this.handlePopoverClose}
                   />
                 );
               } else {
@@ -148,76 +89,6 @@ class GridColumn extends React.Component {
             <div>{cellData.join(',')}</div>
           )}
         </div>
-
-        <Popover
-          id="mouse-over-popover"
-          className={classes.popover}
-          classes={{
-            paper: classes.paperPopover,
-          }}
-          open={open}
-          anchorEl={this.state.anchorEl}
-          anchorOrigin={{
-            vertical: 'center',
-            horizontal: 'right',
-          }}
-          transformOrigin={{
-            vertical: 'center',
-            horizontal: 'left',
-          }}
-          onClose={this.handlePopoverClose}
-          disableRestoreFocus
-          elevation={0}>
-          <Container
-            className="arrow_box"
-            style={
-              this.state.previewLoaded !== true
-                ? { 'border-bottom-left-radius': '0.3em', 'border-bottom-right-radius': '0.3em' }
-                : { 'border-bottom-left-radius': '0em', 'border-bottom-right-radius': '0em' }
-            }>
-            <Typography variant="subtitle1" style={{ 'font-weight': 'bold', color: 'yellow' }}>
-              {this.state.previewName}
-
-              {this.state.previewLoaded !== true ? (
-                <small style={{ color: 'white' }}>
-                  {' '}
-                  &nbsp;(Loading ...
-                  <CircularProgress size={18} color="white" />
-                  &nbsp; &nbsp;)
-                </small>
-              ) : null}
-            </Typography>
-          </Container>
-
-          {this.state.previewLoaded === true && (
-            <Container
-              style={{
-                background: '#242424',
-                'min-width': '25em',
-                'border-bottom-left-radius': '0.3em',
-                'border-bottom-right-radius': '0.3em',
-                'padding-bottom': '1em',
-              }}>
-              {this.state.previewInfo === null ? (
-                <span> Can not Fetch preview information </span>
-              ) : (
-                this.state.previewInfo.preview.map((item, index) => {
-                  return (
-                    <Grid container spacing={1} key={index} className={classes.blockgrid}>
-                      <Grid item xs={4} className={classes.namegrid}>
-                        {item[0]}
-                      </Grid>
-
-                      <Grid item xs={8} className={classes.datagrid}>
-                        {item[1]}
-                      </Grid>
-                    </Grid>
-                  );
-                })
-              )}
-            </Container>
-          )}
-        </Popover>
       </TableCell>
     );
   }
@@ -238,8 +109,8 @@ const styles = (theme) => ({
     alignItems: 'center',
     justifyContent: 'center',
     // paddingLeft: '10px',
-    borderRight: '1px solid lightgray',
-    borderBottom: '1px solid lightgray',
+    borderRight: '1px solid #e0e0e0',
+    borderBottom: '1px solid #e0e0e0',
     fontSize: '14px',
   },
   chip: {
@@ -263,11 +134,11 @@ const styles = (theme) => ({
     backgroundColor: 'transparent',
   },
   namegrid: {
-    borderRight: '1px solid gray',
-    borderBottom: '1px solid gray',
+    borderRight: '1px solid #e0e0e0',
+    borderBottom: '1px solid #e0e0e0',
   },
   datagrid: {
-    borderBottom: '1px solid gray',
+    borderBottom: '1px solid #e0e0e0',
   },
 });
 
