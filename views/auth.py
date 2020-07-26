@@ -1,3 +1,8 @@
+from functools import wraps
+
+from flask import session, request, jsonify
+from passlib.handlers.argon2 import argon2
+from db import User
 from views import *
 from views.postgres import get_db_session
 
@@ -18,7 +23,6 @@ def requires_auth(f):
     Requires autho
     :param f:
     '''
-
     @wraps(f)
     def decorated(*args, **kwargs):
         if session.get('user'):

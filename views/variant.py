@@ -1,13 +1,22 @@
 '''
 variant view
 '''
-import os
+from operator import and_
+
 import boto3
+import pysam
 import requests
-from views import application, pysam, json, session, and_, Variant, cursor2dict
+
+from db import Variant
+from views import *
+from db.helpers import cursor2dict
 from views.auth import requires_auth
 from views.postgres import postgres_cursor, get_db_session
 from views.general import process_for_display
+import db.helpers
+
+import ujson as json
+
 
 @application.route('/<language>/variant/<variant_id>')
 @application.route('/<language>/variant/<variant_id>/<subset>')
@@ -28,9 +37,9 @@ def variant(variant_id, subset='all', language='en'):
     # print(phenoid_mapping)
     chrom, pos, ref, alt, = variant_id.split('-')
     url = 'https://myvariant.info/v1/variant/chr%s:g.%s%s>%s?fields=clinvar.rcv.clinical_significance&dotfield=true' % (chrom, pos, ref, alt,)
-    x = requests.get(url).json()
-    if x:
-        clinical_significance = str(x.get("clinvar.rcv.clinical_significance", ''))
+    config = requests.get(url).json()
+    if config:
+        clinical_significance = str(config.get("clinvar.rcv.clinical_significance", ''))
     else:
         clinical_significance = ''
     pos = int(pos)
@@ -60,8 +69,8 @@ def variant(variant_id, subset='all', language='en'):
         variant_dict['format'] = {(v.format[k].name, v.format[k].id,) for k in v.format.keys()}
         variant_dict['info'] = dict(v.info)
         variant_dict['genotypes'] = [{'sample': [{'display': phenoid_mapping.get(s)}], 'GT': v.samples[s].get('GT', ''), 'AD': v.samples[s].get('AD', ''), 'DP':v.samples[s].get('DP', '')} for s in v.samples]
-    c.execute("select config from user_config u where u.user_name='%s' and u.language='%s' and u.page='%s' limit 1" % (session['user'], language, 'variant'))
-    x = c.fetchone()[0]
+
+    config = db.helpers.query_user_config(language=language, entity='variant')
     # CHROM, POS, REF, ALT, = variant_id.split('-')
     data = get_db_session().query(Variant).filter(and_(Variant.CHROM == chrom, Variant.POS == pos, Variant.REF == ref, Variant.ALT == alt))
     var = [p.as_dict() for p in data]
@@ -70,12 +79,12 @@ def variant(variant_id, subset='all', language='en'):
         var = {}
     else:
         var = var[0]
-    x[0]['metadata']['data'] = [var]
-    x[0]['individuals']['data'] = [var]
-    x[0]['frequency']['data'] = [var]
-    x[0]['consequence']['data'] = [var]
-    x[0]['genotypes']['data'] = variant_dict['genotypes']
-    x[0]['preview'] = [['Clinvar', clinical_significance]]
+    config[0]['metadata']['data'] = [var]
+    config[0]['individuals']['data'] = [var]
+    config[0]['frequency']['data'] = [var]
+    config[0]['consequence']['data'] = [var]
+    config[0]['genotypes']['data'] = variant_dict['genotypes']
+    config[0]['preview'] = [['Clinvar', clinical_significance]]
     if subset == 'all':
-        return json.dumps(x)
-    return json.dumps([{subset: y[subset]} for y in x])
+        return json.dumps(config)
+    return json.dumps([{subset: y[subset]} for y in config])

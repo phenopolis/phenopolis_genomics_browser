@@ -1,3 +1,5 @@
+from flask import jsonify
+
 from views import *
 # from views.postgres import get_db_session
 
