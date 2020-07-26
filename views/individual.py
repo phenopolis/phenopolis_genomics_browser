@@ -39,8 +39,7 @@ def _get_hpo_ids_per_gene(variants, ind):
     # TODO: it does not return anything new
     c = postgres_cursor()
     for y in variants:
-        query = """ select * from gene_hpo where gene_symbol='%s' """ % (y['gene_symbol'])
-        c.execute(query)
+        c.execute(""" select * from gene_hpo where gene_symbol=%(gene_symbol)s """, {'gene_symbol': y['gene_symbol']})
         gene_hpo_ids = db.helpers.cursor2dict(c)
         # y['hpo_,terms']=[{'display': c.execute("select hpo_name from hpo where hpo_id=? limit 1",(gh['hpo_id'],)).fetchone()[0], 'end_href':gh['hpo_id']} for gh in gene_hpo_ids if gh['hpo_id'] in ind['ancestor_observed_features'].split(';')]
         y['hpo_,terms'] = []
@@ -92,36 +91,35 @@ def _individual_preview(config, individual):
 
 
 def _count_compound_heterozygous_variants(c, individual):
-    query = """ select count (1) from (select count(1) from het_variants hv, variants v where hv."CHROM"=v."CHROM" and hv."POS"=v."POS" and hv."REF"=v."REF" and hv."ALT"=v."ALT" and hv.individual='%s' group by v.gene_symbol having count(v.gene_symbol)>1) as t """ % (
-        individual['external_id'],)
-    c.execute(query)
+    c.execute(""" select count (1) from (select count(1) from het_variants hv, variants v 
+    where hv."CHROM"=v."CHROM" and hv."POS"=v."POS" and hv."REF"=v."REF" and hv."ALT"=v."ALT" and 
+    hv.individual=%(external_id)s group by v.gene_symbol having count(v.gene_symbol)>1) as t """, {
+        'external_id': individual['external_id']})
     comp_het_count = c.fetchone()[0]
     return comp_het_count
 
 
 def _count_heterozygous_variants(c, individual):
-    query = """ select count(1)
+    c.execute(""" select count(1)
        from het_variants hv, variants v
        where
        hv."CHROM"=v."CHROM"
        and hv."POS"=v."POS"
        and hv."REF"=v."REF"
        and hv."ALT"=v."ALT"
-       and hv.individual='%s' """ % (individual['external_id'],)
-    c.execute(query)
+       and hv.individual=%(external_id)s """, {'external_id': individual['external_id']})
     het_count = c.fetchone()[0]
     return het_count
 
 
 def _count_homozygous_variants(c, individual):
-    query = """ select count(1)
+    c.execute(""" select count(1)
        from hom_variants hv, variants v
        where hv."CHROM"=v."CHROM"
        and hv."POS"=v."POS"
        and hv."REF"=v."REF"
        and hv."ALT"=v."ALT"
-       and hv.individual='%s' """ % (individual['external_id'],)
-    c.execute(query)
+       and hv.individual=%(external_id)s """, {'external_id': individual['external_id']})
     hom_count = c.fetchone()[0]
     return hom_count
 
@@ -141,15 +139,14 @@ def _map_individual2output(config, individual):
 
 
 def _get_heterozygous_variants(c, individual):
-    query = """ select v.*
+    c.execute(""" select v.*
       from het_variants hv, variants v
       where
       hv."CHROM"=v."CHROM"
       and hv."POS"=v."POS"
       and hv."REF"=v."REF"
       and hv."ALT"=v."ALT"
-      and hv.individual='%s' """ % (individual['external_id'],)
-    c.execute(query)
+      and hv.individual=%(external_id)s """, {'external_id': individual['external_id']})
     rare_variants = db.helpers.cursor2dict(c)
     # TODO: confirm if this needs to be enabled once the function has been corrected
     # rare_variants = get_hpo_ids_per_gene(rare_variants, individual)
@@ -157,14 +154,13 @@ def _get_heterozygous_variants(c, individual):
 
 
 def _get_homozygous_variants(c, individual):
-    query = """ select v.*
+    c.execute(""" select v.*
        from hom_variants hv, variants v
        where hv."CHROM"=v."CHROM"
        and hv."POS"=v."POS"
        and hv."REF"=v."REF"
        and hv."ALT"=v."ALT"
-       and hv.individual='%s' """ % (individual['external_id'],)
-    c.execute(query)
+       and hv.individual=%(external_id)s """, {'external_id': individual['external_id']})
     hom_variants = db.helpers.cursor2dict(c)
     # TODO: confirm if this needs to be enabled once the function has been corrected
     # hom_variants = get_hpo_ids_per_gene(hom_variants, individual)
@@ -177,9 +173,9 @@ def _fetch_authorized_individual(individual_id):
            from users_individuals as ui, individuals as i
            where
            i.internal_id=ui.internal_id
-           and ui.user='%s'
-           and ui.internal_id='%s'
-           """ % (session['user'], individual_id,))
+           and ui.user=%(user)s
+           and ui.internal_id=%(individual)s
+           """, {'user': session['user'], 'individual':individual_id,})
     individual = db.helpers.cursor2one_dict(c)
     c.close()
     return individual
@@ -230,26 +226,26 @@ def _update_individual(consanguinity, gender, genes, hpos, individual):
     c = postgres_cursor()
     try:
         c.execute("""update individuals set
-           sex='%s',
-           consanguinity='%s',
-           observed_features='%s',
-           observed_features_names='%s',
-           simplified_observed_features='%s',
-           simplified_observed_features_names='%s',
-           ancestor_observed_features='%s',
-           unobserved_features='%s',
-           genes='%s'
-           where external_id='%s'""" %
-                  (individual['sex'],
-                   individual['consanguinity'],
-                   individual['observed_features'],
-                   individual['observed_features'],
-                   individual['simplified_observed_features'],
-                   individual['simplified_observed_features_names'],
-                   individual['ancestor_observed_features'],
-                   individual['unobserved_features'],
-                   individual['genes'],
-                   individual['external_id'],))
+           sex=%(sex)s,
+           consanguinity=%(consanguinity)s,
+           observed_features=%(observed_features)s,
+           observed_features_names=%(observed_features_names)s,
+           simplified_observed_features=%(simplified_observed_features)s,
+           simplified_observed_features_names=%(simplified_observed_features_names)s,
+           ancestor_observed_features=%(ancestor_observed_features)s,
+           unobserved_features=%(unobserved_features)s,
+           genes=%(genes)s
+           where external_id=%(external_id)s""",
+                  {'sex': individual['sex'],
+                   'consanguinity': individual['consanguinity'],
+                   'observed_features': individual['observed_features'],
+                   'observed_features_names': individual['observed_features_names'],
+                   'simplified_observed_features': individual['simplified_observed_features'],
+                   'simplified_observed_features_names': individual['simplified_observed_features_names'],
+                   'ancestor_observed_features': individual['ancestor_observed_features'],
+                   'unobserved_features': individual['unobserved_features'],
+                   'genes': individual['genes'],
+                   'external_id': individual['external_id']})
         get_db().commit()
         c.close()
     except (Exception, psycopg2.DatabaseError) as error:
@@ -264,7 +260,7 @@ def _get_hpos(features):
     hpos = []
     # TODO: this could be improved using a query with "hpo_name IN features"
     for feature in features:
-        c.execute("select * from hpo where hpo_name='%s' limit 1" % feature)
+        c.execute("select * from hpo where hpo_name=%(feature)s limit 1", {'feature': feature})
         hpos.append(dict(zip(['hpo_id', 'hpo_name', 'hpo_ancestor_ids', 'hpo_ancestor_names'], c.fetchone())))
     c.close()
     return hpos
