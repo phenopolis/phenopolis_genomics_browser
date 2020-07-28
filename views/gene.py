@@ -6,7 +6,7 @@ import ujson as json
 from flask import jsonify, session
 from views import application
 from views.auth import requires_auth
-from views.postgres import get_db_session
+from views.postgres import get_db_session, postgres_cursor
 from views.general import process_for_display
 from db import Gene
 
@@ -17,7 +17,7 @@ from db import Gene
 @application.route("/gene/<gene_id>/<subset>")
 @requires_auth
 def gene(gene_id, subset="all", language="en"):
-    config = db.helpers.query_user_config(language=language, entity='gene')
+    config = db.helpers.query_user_config(language=language, entity="gene")
     data = query_gene(gene_id)
     if not data:
         return jsonify({"Gene not found": False}), 404

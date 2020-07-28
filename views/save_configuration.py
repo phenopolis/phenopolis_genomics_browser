@@ -5,7 +5,7 @@ import psycopg2
 import db.helpers
 import ujson as json
 from flask import request, jsonify, session
-from views import *
+from views import application
 from views.auth import requires_auth
 from views.postgres import postgres_cursor, get_db
 

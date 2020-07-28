@@ -80,7 +80,7 @@ def variant(variant_id, subset="all", language="en"):
         }
         for s in v.samples
     ]
-    config = db.helpers.query_user_config(language=language, entity='variant')
+    config = db.helpers.query_user_config(language=language, entity="variant")
     # CHROM, POS, REF, ALT, = variant_id.split('-')
     data = (
         get_db_session()

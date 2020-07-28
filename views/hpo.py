@@ -18,7 +18,7 @@ from db import HPO
 @application.route("/hpo/<hpo_id>/<subset>")
 @requires_auth
 def hpo(hpo_id="HP:0000001", subset="all", language="en"):
-    config = db.helpers.query_user_config(language=language, entity='hpo')
+    config = db.helpers.query_user_config(language=language, entity="hpo")
     # print(s)
     # x=json.loads(s)
     if not hpo_id.startswith("HP:"):
