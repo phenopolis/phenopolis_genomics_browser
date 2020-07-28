@@ -1,22 +1,22 @@
+"""
+Individual view
+"""
 import itertools
-from collections import Counter
-
 import psycopg2
-from flask import session, jsonify, request
-
 import db.helpers
+import ujson as json
+from collections import Counter
+from flask import session, jsonify, request
 from views import *
 from views.auth import requires_auth
 from views.postgres import postgres_cursor, get_db
 from views.general import process_for_display
 
-import ujson as json
 
-
-@application.route('/<language>/individual/<individual_id>')
-@application.route('/<language>/individual/<individual_id>/<subset>')
-@application.route('/individual/<individual_id>')
-@application.route('/individual/<individual_id>/<subset>')
+@application.route("/<language>/individual/<individual_id>")
+@application.route("/<language>/individual/<individual_id>/<subset>")
+@application.route("/individual/<individual_id>")
+@application.route("/individual/<individual_id>/<subset>")
 @requires_auth
 def individual(individual_id, subset='all', language='en'):
     config = db.helpers.query_user_config(language=language, entity='individual')
