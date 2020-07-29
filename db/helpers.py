@@ -21,4 +21,5 @@ def cursor2dict(cursor):
 
 def cursor2one_dict(cursor):
     headers = [h[0] for h in cursor.description]
-    return dict(zip(headers, cursor.fetchone()))
+    result = cursor.fetchone()
+    return dict(zip(headers, result)) if result else None
