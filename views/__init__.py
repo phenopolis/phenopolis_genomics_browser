@@ -2,28 +2,16 @@
 Package to init views
 """
 import os
-import re
-import itertools
 import datetime
-import traceback
-from functools import wraps
-from collections import defaultdict, Counter, OrderedDict
-import logging
-from logging.handlers import SMTPHandler, RotatingFileHandler
-from logging.config import dictConfig
-from time import strftime
-from flask import Flask, session, current_app, g, Response, request, redirect, jsonify
-from flask.logging import default_handler
-from flask_sessionstore import Session, SqlAlchemySessionInterface
+from flask import Flask
+from flask_sessionstore import SqlAlchemySessionInterface
 from flask_compress import Compress
 from flask_caching import Cache
-from flask_mail import Mail, Message
-from passlib.hash import argon2
-from werkzeug.exceptions import HTTPException
+from flask_mail import Mail
 from flask_sqlalchemy import SQLAlchemy
-import psycopg2
-import ujson as json
-import pysam
+import logging
+from logging.config import dictConfig
+from flask.logging import default_handler
 
 
 def _configure_logs():
@@ -85,11 +73,6 @@ def _init_sqlalchemy():
     database.init_app(application)
     application.session_interface = SqlAlchemySessionInterface(application, database, "test_sessions", "test_sess_")
     application.permanent_session_lifetime = datetime.timedelta(hours=1)
-
-
-def cursor2dict(cursor):
-    headers = [h[0] for h in cursor.description]
-    return [dict(zip(headers, r)) for r in cursor.fetchall()]
 
 
 _configure_logs()  # NOTE: this needs to happen before starting the application

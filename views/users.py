@@ -1,8 +1,9 @@
 """
 Users view
 """
-
-from views import application, session, request, jsonify, argon2
+from flask import session, request, jsonify
+from passlib.handlers.argon2 import argon2
+from views import application
 from views.auth import requires_auth, check_auth
 from views.postgres import postgres_cursor
 

@@ -3,8 +3,11 @@ Autocomplete view
 """
 import re
 import itertools
+import ujson as json
+from flask import jsonify, session, Response
 from logzero import logger
-from views import application, Response, session, json, jsonify, cursor2dict
+from db.helpers import cursor2dict
+from views import application
 from views.exceptions import PhenopolisException
 from views.auth import requires_auth
 from views.postgres import postgres_cursor

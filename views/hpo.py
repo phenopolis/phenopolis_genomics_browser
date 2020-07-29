@@ -1,12 +1,14 @@
 """
 HPO view - Human Phenotype Ontology
 """
-
-from views import application, session, json, cursor2dict
+import ujson as json
+import db.helpers
+from flask import session
+from db.helpers import cursor2dict
+from views import application
 from views.auth import requires_auth
 from views.postgres import get_db_session, postgres_cursor
 from views.general import process_for_display
-
 from db import HPO
 
 
@@ -16,12 +18,7 @@ from db import HPO
 @application.route("/hpo/<hpo_id>/<subset>")
 @requires_auth
 def hpo(hpo_id="HP:0000001", subset="all", language="en"):
-    c = postgres_cursor()
-    c.execute(
-        "select config from user_config u where u.user_name='%s' and u.language='%s' and u.page='%s' limit 1"
-        % (session["user"], language, "hpo")
-    )
-    x = c.fetchone()[0]
+    config = db.helpers.query_user_config(language=language, entity="hpo")
     # print(s)
     # x=json.loads(s)
     if not hpo_id.startswith("HP:"):
@@ -38,6 +35,7 @@ def hpo(hpo_id="HP:0000001", subset="all", language="en"):
         {"display": i, "end_href": j}
         for i, j, in zip(res["hpo_ancestor_names"].split(";"), res["hpo_ancestor_ids"].split(";"))
     ]
+    c = postgres_cursor()
     c.execute(
         """ select *
         from individuals as i,
@@ -51,7 +49,7 @@ def hpo(hpo_id="HP:0000001", subset="all", language="en"):
     individuals = cursor2dict(c)
     if hpo_id != "HP:0000001":
         c.execute("select * from phenogenon where hpo_id='%s'" % hpo_id)
-        x[0]["phenogenon_recessive"]["data"] = [
+        config[0]["phenogenon_recessive"]["data"] = [
             {
                 "gene_id": [{"display": gene_id, "end_href": gene_id}],
                 "hpo_id": hpo_id,
@@ -61,7 +59,7 @@ def hpo(hpo_id="HP:0000001", subset="all", language="en"):
             for gene_id, hpo_id, hgf, moi_score, in c.fetchall()
         ]
         c.execute("select * from phenogenon where hpo_id='%s'" % hpo_id)
-        x[0]["phenogenon_dominant"]["data"] = [
+        config[0]["phenogenon_dominant"]["data"] = [
             {
                 "gene_id": [{"display": gene_id, "end_href": gene_id}],
                 "hpo_id": hpo_id,
@@ -72,7 +70,7 @@ def hpo(hpo_id="HP:0000001", subset="all", language="en"):
         ]
         # Chr,Start,End,HPO,Symbol,ENSEMBL,FisherPvalue,SKATO,variants,CompoundHetPvalue,HWEp,min_depth,nb_alleles_cases,case_maf,nb_ctrl_homs,nb_case_homs,MaxMissRate,nb_alleles_ctrls,nb_snps,nb_cases,minCadd,MeanCallRateCtrls,MeanCallRateCases,OddsRatio,MinSNPs,nb_ctrl_hets,total_maf,MaxCtrlMAF,ctrl_maf,nb_ctrls,nb_case_hets,maxExac
         c.execute("select Symbol,FisherPvalue,SKATO,OddsRatio,variants from skat where HPO='%s'" % hpo_id)
-        x[0]["skat"]["data"] = [
+        config[0]["skat"]["data"] = [
             {
                 "gene_id": [{"display": gene_id, "end_href": gene_id}],
                 "fisher_p_value": fisher_p_value,
@@ -83,9 +81,9 @@ def hpo(hpo_id="HP:0000001", subset="all", language="en"):
             for gene_id, fisher_p_value, skato, odds_ratio, _variants in c.fetchall()[:100]
         ]
     application.logger.debug(len(individuals))
-    x[0]["preview"] = [["Number of Individuals", len(individuals)]]
+    config[0]["preview"] = [["Number of Individuals", len(individuals)]]
     if subset == "preview":
-        return json.dumps([{subset: y["preview"]} for y in x])
+        return json.dumps([{subset: y["preview"]} for y in config])
     for ind in individuals:
         ind["internal_id"] = [{"display": ind["internal_id"]}]
         ind["simplified_observed_features_names"] = [
@@ -96,12 +94,12 @@ def hpo(hpo_id="HP:0000001", subset="all", language="en"):
         ]
         if ind["genes"]:
             ind["genes"] = [{"display": i} for i in ind.get("genes", "").split(",")]
-    x[0]["individuals"]["data"] = individuals
-    x[0]["metadata"]["data"] = [
+    config[0]["individuals"]["data"] = individuals
+    config[0]["metadata"]["data"] = [
         {"name": hpo_name, "id": hpo_id, "count": len(individuals), "parent_phenotypes": parent_phenotypes}
     ]
-    process_for_display(x[0]["metadata"]["data"])
+    process_for_display(config[0]["metadata"]["data"])
     if subset == "all":
-        return json.dumps(x)
-
-    return json.dumps([{subset: y[subset]} for y in x])
+        return json.dumps(config)
+    else:
+        return json.dumps([{subset: y[subset]} for y in config])

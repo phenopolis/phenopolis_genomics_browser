@@ -3,13 +3,16 @@ variant view
 """
 import os
 import boto3
-import requests
 import pysam
-from views import application, json, session, cursor2dict
+import requests
+import ujson as json
+import db.helpers
+from db import Variant
+from views import application
+from db.helpers import cursor2dict
 from views.auth import requires_auth
 from views.postgres import postgres_cursor, get_db_session
 from views.general import process_for_display
-from db import Variant
 from sqlalchemy import and_
 
 
@@ -77,11 +80,7 @@ def variant(variant_id, subset="all", language="en"):
         }
         for s in v.samples
     ]
-    c.execute(
-        "select config from user_config u where u.user_name='%s' and u.language='%s' and u.page='%s' limit 1"
-        % (session["user"], language, "variant")
-    )
-    x = c.fetchone()[0]
+    config = db.helpers.query_user_config(language=language, entity="variant")
     # CHROM, POS, REF, ALT, = variant_id.split('-')
     data = (
         get_db_session()
@@ -94,12 +93,12 @@ def variant(variant_id, subset="all", language="en"):
         var = {}
     else:
         var = var[0]
-    x[0]["metadata"]["data"] = [var]
-    x[0]["individuals"]["data"] = [var]
-    x[0]["frequency"]["data"] = [var]
-    x[0]["consequence"]["data"] = [var]
-    x[0]["genotypes"]["data"] = variant_dict["genotypes"]
-    x[0]["preview"] = [["Clinvar", clinical_significance]]
+    config[0]["metadata"]["data"] = [var]
+    config[0]["individuals"]["data"] = [var]
+    config[0]["frequency"]["data"] = [var]
+    config[0]["consequence"]["data"] = [var]
+    config[0]["genotypes"]["data"] = variant_dict["genotypes"]
+    config[0]["preview"] = [["Clinvar", clinical_significance]]
     if subset == "all":
-        return json.dumps(x)
-    return json.dumps([{subset: y[subset]} for y in x])
+        return json.dumps(config)
+    return json.dumps([{subset: y[subset]} for y in config])

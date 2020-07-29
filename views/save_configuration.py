@@ -2,7 +2,10 @@
 Save configurations for a user
 """
 import psycopg2
-from views import application, session, request, json, jsonify
+import db.helpers
+import ujson as json
+from flask import request, jsonify, session
+from views import application
 from views.auth import requires_auth
 from views.postgres import postgres_cursor, get_db
 
@@ -11,28 +14,24 @@ from views.postgres import postgres_cursor, get_db
 @application.route("/save_configuration/<pageType>/<pagePart>", methods=["POST"])
 @requires_auth
 def save_configuration(pageType, pagePart, language="en"):
-    c = postgres_cursor()
-    c.execute(
-        "select config from user_config u where u.user_name='%s' and u.language='%s' and u.page='%s' limit 1"
-        % (session["user"], language, pageType)
-    )
+    config = db.helpers.query_user_config(language=language, entity=pageType)
     application.logger.debug(pageType)
     application.logger.debug(pagePart)
     if pageType == "my_patients":
         pageType = "hpo"
-    x = c.fetchone()[0]
-    application.logger.debug(x)
-    for col in x[0][pagePart]["colNames"]:
+    application.logger.debug(config)
+    for col in config[0][pagePart]["colNames"]:
         if col["key"] in request.form.getlist("colNames[]"):
             application.logger.debug(col["key"], True)
             col["default"] = True
         else:
             application.logger.debug(col["key"], False)
             col["default"] = False
+    c = postgres_cursor()
     try:
         c.execute(
             "UPDATE user_config SET config=%s WHERE user_name=%s AND language=%s AND page=%s",
-            (json.dumps(x), session["user"], language, pageType),
+            (json.dumps(config), session["user"], language, pageType),
         )
         get_db().commit()
         c.close()
