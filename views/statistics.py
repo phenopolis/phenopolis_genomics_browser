@@ -1,9 +1,8 @@
 """
 Statistics view
 """
-from views import application, jsonify
-
-# from views.postgres import get_db_session
+from flask import jsonify
+from views import application
 
 
 @application.route("/statistics")

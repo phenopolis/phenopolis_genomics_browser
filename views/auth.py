@@ -2,9 +2,12 @@
 Authentication modules
 """
 
-from views import argon2, wraps, session, request, jsonify, application
-from views.postgres import get_db_session
+from functools import wraps
+from flask import session, request, jsonify
+from passlib.handlers.argon2 import argon2
 from db import User
+from views import application
+from views.postgres import get_db_session
 
 
 def check_auth(username, password):

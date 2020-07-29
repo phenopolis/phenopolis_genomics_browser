@@ -2,9 +2,10 @@
 Postgres module
 """
 import psycopg2
-from views import application, g
-from sqlalchemy.engine import create_engine
-from sqlalchemy.orm.session import sessionmaker
+from flask import g
+from sqlalchemy import create_engine
+from sqlalchemy.orm import sessionmaker
+from views import application
 
 
 def get_db():
