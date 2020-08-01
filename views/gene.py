@@ -20,7 +20,7 @@ def gene(gene_id, subset="all", language="en"):
     config = db.helpers.query_user_config(language=language, entity="gene")
     data = query_gene(gene_id)
     if not data:
-        return jsonify({"Gene not found": False}), 404
+        return jsonify(message="Gene not found"), 404
     config[0]["metadata"]["data"] = data
     chrom = config[0]["metadata"]["data"][0]["chrom"]
     start = config[0]["metadata"]["data"][0]["start"]

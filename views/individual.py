@@ -23,9 +23,8 @@ def individual(individual_id, subset="all", language="en"):
     individual = _fetch_authorized_individual(individual_id)
     # unauthorized access to individual
     if not individual:
-        config[0]["preview"] = [["Sorry", "You are not permitted to see this patient"]]
-        return json.dumps(config)
-
+        return jsonify(
+            message="Sorry, either the patient does not exist or you are not permitted to see this patient"), 404
     application.logger.debug(individual)
 
     if subset == "preview":
@@ -215,8 +214,8 @@ def update_patient_data(individual_id, language="en"):
     individual = _fetch_authorized_individual(individual_id)
     # unauthorized access to individual
     if not individual:
-        config[0]["preview"] = [["Sorry", "You are not permitted to edit this patient"]]
-        return json.dumps(config)
+        return jsonify(
+            message="Sorry, either the patient does not exist or you are not permitted to update this patient"), 404
 
     application.logger.debug(request.form)
     consanguinity = request.form.getlist("consanguinity_edit[]")[0]
