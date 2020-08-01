@@ -9,6 +9,9 @@ from db import User
 from views import application
 from views.postgres import get_db_session
 
+PASSWORD = "password"
+USER = "user"
+
 
 def check_auth(username, password):
     """
@@ -24,13 +27,13 @@ def check_auth(username, password):
 def requires_auth(f):
     @wraps(f)
     def decorated(*args, **kwargs):
-        if session.get("user"):
+        if session.get(USER):
             return f(*args, **kwargs)
         if request.method == "POST":
-            username = request.form["user"]
-            password = request.form["password"]
+            username = request.form[USER] if USER in request.form else request.headers[USER]
+            password = request.form[PASSWORD] if PASSWORD in request.form else request.headers[PASSWORD]
             if check_auth(username, password):
-                session["user"] = username
+                session[USER] = username
                 # session.permanent = True
                 return f(*args, **kwargs)
         return jsonify(error="Unauthenticated"), 401
