@@ -4,7 +4,7 @@ Postgres module
 import psycopg2
 from flask import g
 from sqlalchemy import create_engine
-from sqlalchemy.orm import sessionmaker
+from sqlalchemy.orm import sessionmaker, Session
 from views import application
 
 
@@ -19,7 +19,7 @@ def get_db():
     return g.db
 
 
-def get_db_session():
+def get_db_session() -> Session:
     """
     Opens a new database connection if there is none yet for the
     current application context.

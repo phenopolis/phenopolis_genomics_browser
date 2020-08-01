@@ -27,8 +27,8 @@ def requires_auth(f):
         if session.get("user"):
             return f(*args, **kwargs)
         if request.method == "POST":
-            username = request.form["user"]
-            password = request.form["password"]
+            username = request.headers["user"]
+            password = request.headers["password"]
             if check_auth(username, password):
                 session["user"] = username
                 # session.permanent = True
