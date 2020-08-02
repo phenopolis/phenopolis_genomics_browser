@@ -27,8 +27,10 @@ def individual(individual_id, subset="all", language="en"):
     individual = _fetch_authorized_individual(individual_id)
     # unauthorized access to individual
     if not individual:
-        return jsonify(
-            message="Sorry, either the patient does not exist or you are not permitted to see this patient"), 404
+        return (
+            jsonify(message="Sorry, either the patient does not exist or you are not permitted to see this patient"),
+            404,
+        )
     application.logger.debug(individual)
 
     if subset == "preview":
@@ -128,12 +130,15 @@ def _check_individual_valid(new_individual: Individual):
 
 def _get_new_individual_id(sqlalchemy_session):
     # NOTE: this is not robust if the database contains ids other than PH + 8 digits
-    latest_internal_id = sqlalchemy_session\
-        .query(Individual.internal_id).filter(Individual.internal_id.like("PH%"))\
-        .order_by(Individual.internal_id.desc()).first()
+    latest_internal_id = (
+        sqlalchemy_session.query(Individual.internal_id)
+        .filter(Individual.internal_id.like("PH%"))
+        .order_by(Individual.internal_id.desc())
+        .first()
+    )
     matched_id = re.compile("^PH(\d{8})$").match(latest_internal_id[0])
     if matched_id:
-        return "PH{}".format(str(int(matched_id.group(1)) + 1).zfill(8))    # pads with 0s
+        return "PH{}".format(str(int(matched_id.group(1)) + 1).zfill(8))  # pads with 0s
     else:
         raise PhenopolisException("Failed to fetch the latest internal id for an individual")
 
