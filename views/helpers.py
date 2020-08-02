@@ -22,4 +22,3 @@ def _parse_payload(payload, model_class):
     else:
         raise PhenopolisException("Payload of unexpected type: {}".format(type(payload)))
     return objects
-

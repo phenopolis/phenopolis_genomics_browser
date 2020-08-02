@@ -124,11 +124,18 @@ def create_user_idividual():
             # TODO: should not all these checks happen at the DB?
             if db_session.query(User.user).filter(User.user.match(u.user)).count() != 1:
                 raise PhenopolisException("Trying to add an entry in user_individual to a non existing user")
-            if db_session.query(Individual.internal_id).filter(Individual.internal_id.match(u.internal_id))\
-                    .count() != 1:
+            if (
+                db_session.query(Individual.internal_id).filter(Individual.internal_id.match(u.internal_id)).count()
+                != 1
+            ):
                 raise PhenopolisException("Trying to add an entry in user_individual to a non existing individual")
-            if db_session.query(User_Individual).filter(User_Individual.user.match(u.user)).filter(
-                                                        User_Individual.internal_id.match(u.internal_id)).count() > 0:
+            if (
+                db_session.query(User_Individual)
+                .filter(User_Individual.user.match(u.user))
+                .filter(User_Individual.internal_id.match(u.internal_id))
+                .count()
+                > 0
+            ):
                 raise PhenopolisException("Trying to add an entry in user_individual that already exists")
             db_session.add(u)
         db_session.commit()
