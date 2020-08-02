@@ -1,15 +1,19 @@
 """
 Individual view
 """
+import re
 import itertools
 import psycopg2
 import db.helpers
 import ujson as json
 from collections import Counter
 from flask import session, jsonify, request
+
+from db import Individual, User_Individual
 from views import application
 from views.auth import requires_auth
-from views.postgres import postgres_cursor, get_db
+from views.exceptions import PhenopolisException
+from views.postgres import postgres_cursor, get_db, get_db_session
 from views.general import process_for_display
 
 
@@ -31,6 +35,107 @@ def individual(individual_id, subset="all", language="en"):
         return _individual_preview(config, individual)
     else:
         return _individual_complete_view(config, individual, subset)
+
+
+@application.route("/<language>/update_patient_data/<individual_id>", methods=["POST"])
+@application.route("/update_patient_data/<individual_id>", methods=["POST"])
+@requires_auth
+def update_patient_data(individual_id, language="en"):
+    if session["user"] == "demo":
+        return jsonify(error="Demo user not authorised"), 405
+    config = db.helpers.query_user_config(language=language, entity="individual")
+    individual = _fetch_authorized_individual(individual_id)
+    # unauthorized access to individual
+    if not individual:
+        config[0]["preview"] = [["Sorry", "You are not permitted to edit this patient"]]
+        return json.dumps(config)
+
+    application.logger.debug(request.form)
+    consanguinity = request.form.getlist("consanguinity_edit[]")[0]
+    gender = request.form.getlist("gender_edit[]")[0]
+    genes = request.form.getlist("genes[]")
+    features = request.form.getlist("feature[]")
+    if not len(features):
+        features = ["All"]
+    gender = {"male": "M", "female": "F", "unknown": "U"}.get(gender, "unknown")
+    hpos = _get_hpos(features)
+
+    _update_individual(consanguinity, gender, genes, hpos, individual)
+    # print(c.execute("select * from individuals where external_id=?",(ind['external_id'],)).fetchall())
+    return jsonify({"success": True}), 200
+
+
+@application.route("/individual", methods=["POST"])
+@requires_auth
+def create_individual():
+    if session["user"] == "demo":
+        return jsonify(error="Demo user not authorised"), 405
+
+    if not request.is_json:
+        return jsonify(success=False, error="Only mimetype application/json is accepted"), 400
+
+    payload = request.get_json(silent=True)
+    if payload is None:
+        return jsonify(success=False, error="Empty payload or wrong formatting"), 400
+    application.logger.debug(payload)
+
+    # parse the JSON data into an individual, non existing fields will trigger a TypeError
+    try:
+        new_individual = Individual(**payload)
+    except TypeError as e:
+        application.logger.error(str(e))
+        return jsonify(success=False, error=str(e)), 400
+
+    # checks individuals validity
+    try:
+        _check_individual_valid(new_individual)
+    except PhenopolisException as e:
+        application.logger.error(str(e))
+        return jsonify(success=False, error=str(e)), 400
+
+    sqlalchemy_session = get_db_session()
+    request_ok = True
+    message = "Individual was created"
+    try:
+        # generate a new unique id for the individual
+        new_internal_id = _get_new_individual_id(sqlalchemy_session)
+        new_individual.internal_id = new_internal_id
+        # insert individual
+        sqlalchemy_session.add(new_individual)
+        # add entry to user_individual
+        # TODO: enable access to more users than the creator
+        sqlalchemy_session.add(User_Individual(user=session["user"], internal_id=new_individual.internal_id))
+        sqlalchemy_session.commit()
+    except Exception as e:
+        sqlalchemy_session.rollback()
+        application.logger.exception(e)
+        request_ok = False
+        message = str(e)
+    finally:
+        sqlalchemy_session.close()
+
+    if not request_ok:
+        return jsonify(success=False, message=message), 500
+    else:
+        return jsonify(success=True, message=message, id=new_internal_id), 200
+
+
+def _check_individual_valid(new_individual: Individual):
+    if new_individual is None:
+        raise PhenopolisException("Null individual")
+    # TODO: add more validations here
+
+
+def _get_new_individual_id(sqlalchemy_session):
+    # NOTE: this is not robust if the database contains ids other than PH + 8 digits
+    latest_internal_id = sqlalchemy_session\
+        .query(Individual.internal_id).filter(Individual.internal_id.like("PH%"))\
+        .order_by(Individual.internal_id.desc()).first()
+    matched_id = re.compile("^PH(\d{8})$").match(latest_internal_id[0])
+    if matched_id:
+        return "PH{}".format(str(int(matched_id.group(1)) + 1).zfill(8))    # pads with 0s
+    else:
+        raise PhenopolisException("Failed to fetch the latest internal id for an individual")
 
 
 def _get_hpo_ids_per_gene(variants, ind):
@@ -202,34 +307,6 @@ def _fetch_authorized_individual(individual_id):
     individual = db.helpers.cursor2one_dict(c)
     c.close()
     return individual
-
-
-@application.route("/<language>/update_patient_data/<individual_id>", methods=["POST"])
-@application.route("/update_patient_data/<individual_id>", methods=["POST"])
-@requires_auth
-def update_patient_data(individual_id, language="en"):
-    if session["user"] == "demo":
-        return jsonify(error="Demo user not authorised"), 405
-    config = db.helpers.query_user_config(language=language, entity="individual")
-    individual = _fetch_authorized_individual(individual_id)
-    # unauthorized access to individual
-    if not individual:
-        return jsonify(
-            message="Sorry, either the patient does not exist or you are not permitted to update this patient"), 404
-
-    application.logger.debug(request.form)
-    consanguinity = request.form.getlist("consanguinity_edit[]")[0]
-    gender = request.form.getlist("gender_edit[]")[0]
-    genes = request.form.getlist("genes[]")
-    features = request.form.getlist("feature[]")
-    if not len(features):
-        features = ["All"]
-    gender = {"male": "M", "female": "F", "unknown": "U"}.get(gender, "unknown")
-    hpos = _get_hpos(features)
-
-    _update_individual(consanguinity, gender, genes, hpos, individual)
-    # print(c.execute("select * from individuals where external_id=?",(ind['external_id'],)).fetchall())
-    return jsonify({"success": True}), 200
 
 
 def _update_individual(consanguinity, gender, genes, hpos, individual):
