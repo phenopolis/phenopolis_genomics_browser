@@ -13,6 +13,7 @@ from db import Individual, User_Individual
 from views import application
 from views.auth import requires_auth
 from views.exceptions import PhenopolisException
+from views.helpers import _get_json_payload, _parse_payload
 from views.postgres import postgres_cursor, get_db, get_db_session
 from views.general import process_for_display
 
@@ -73,40 +74,41 @@ def create_individual():
     if session["user"] == "demo":
         return jsonify(error="Demo user not authorised"), 405
 
-    if not request.is_json:
-        return jsonify(success=False, error="Only mimetype application/json is accepted"), 400
-
-    payload = request.get_json(silent=True)
-    if payload is None:
-        return jsonify(success=False, error="Empty payload or wrong formatting"), 400
-    application.logger.debug(payload)
+    try:
+        payload = _get_json_payload()
+    except PhenopolisException as e:
+        return jsonify(success=False, error=str(e)), 400
 
     # parse the JSON data into an individual, non existing fields will trigger a TypeError
     try:
-        new_individual = Individual(**payload)
+        new_individuals = _parse_payload(payload, Individual)
     except TypeError as e:
         application.logger.error(str(e))
         return jsonify(success=False, error=str(e)), 400
 
     # checks individuals validity
     try:
-        _check_individual_valid(new_individual)
+        for i in new_individuals:
+            _check_individual_valid(i)
     except PhenopolisException as e:
         application.logger.error(str(e))
         return jsonify(success=False, error=str(e)), 400
 
     sqlalchemy_session = get_db_session()
     request_ok = True
-    message = "Individual was created"
+    message = "Individuals were created"
+    ids_new_individuals = []
     try:
         # generate a new unique id for the individual
-        new_internal_id = _get_new_individual_id(sqlalchemy_session)
-        new_individual.internal_id = new_internal_id
-        # insert individual
-        sqlalchemy_session.add(new_individual)
-        # add entry to user_individual
-        # TODO: enable access to more users than the creator
-        sqlalchemy_session.add(User_Individual(user=session["user"], internal_id=new_individual.internal_id))
+        for i in new_individuals:
+            new_internal_id = _get_new_individual_id(sqlalchemy_session)
+            i.internal_id = new_internal_id
+            ids_new_individuals.append(new_internal_id)
+            # insert individual
+            sqlalchemy_session.add(i)
+            # add entry to user_individual
+            # TODO: enable access to more users than the creator
+            sqlalchemy_session.add(User_Individual(user=session["user"], internal_id=i.internal_id))
         sqlalchemy_session.commit()
     except Exception as e:
         sqlalchemy_session.rollback()
@@ -119,7 +121,7 @@ def create_individual():
     if not request_ok:
         return jsonify(success=False, message=message), 500
     else:
-        return jsonify(success=True, message=message, id=new_internal_id), 200
+        return jsonify(success=True, message=message, id=",".join(ids_new_individuals)), 200
 
 
 def _check_individual_valid(new_individual: Individual):
