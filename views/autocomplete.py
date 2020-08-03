@@ -15,11 +15,11 @@ from views.postgres import postgres_cursor
 CHROMOSOME_POS_REGEX = re.compile(r"^(\w+)[-:](\d+)$")
 CHROMOSOME_POS_REF_REGEX = re.compile(r"^(\w+)[-:](\d+)[-:]([ACGT\*]+)$", re.IGNORECASE)
 CHROMOSOME_POS_REF_ALT_REGEX = re.compile(r"^(\w+)[-:](\d+)[-:]([ACGT\*]+)[-:>]([ACGT\*]+)$", re.IGNORECASE)
-ENSEMBL_TRANSCRIPT_REGEX = re.compile("^ENST(\d{0,10})", re.IGNORECASE)
-ENSEMBL_PROTEIN_REGEX = re.compile("^ENSP(\d{0,10})", re.IGNORECASE)
-ENSEMBL_GENE_REGEX = re.compile("^ENSG(\d{0,10})", re.IGNORECASE)
-HPO_REGEX = re.compile("^HP:(\d{0,7})", re.IGNORECASE)
-PATIENT_REGEX = re.compile("^PH(\d{0,8})", re.IGNORECASE)
+ENSEMBL_TRANSCRIPT_REGEX = re.compile(r"^ENST(\d{0,10})", re.IGNORECASE)
+ENSEMBL_PROTEIN_REGEX = re.compile(r"^ENSP(\d{0,10})", re.IGNORECASE)
+ENSEMBL_GENE_REGEX = re.compile(r"^ENSG(\d{0,10})", re.IGNORECASE)
+HPO_REGEX = re.compile(r"^HP:(\d{0,7})", re.IGNORECASE)
+PATIENT_REGEX = re.compile(r"^PH(\d{0,8})", re.IGNORECASE)
 HGVSP = "hgvsp"
 HGVSC = "hgvsc"
 SEARCH_RESULTS_LIMIT = 20
@@ -73,7 +73,7 @@ def _search_patients(cursor, query):
     """
     if PATIENT_REGEX.match(query):
         cursor.execute(
-            r""" select i.external_id, i.internal_id from individuals i, users_individuals ui where
+            r"""select i.external_id, i.internal_id from individuals i, users_individuals ui where
             ui.internal_id=i.internal_id and ui.user=%(user)s and i.internal_id ILIKE %(query)s limit %(limit)s""",
             {"user": session["user"], "query": "{}%".format(query), "limit": SEARCH_RESULTS_LIMIT},
         )
@@ -84,19 +84,17 @@ def _search_patients(cursor, query):
 
 
 def _search_phenotypes(cursor, query):
-    """
+    r"""
     A user may search for things like 'Abnormality of body height' or for an HPO id as HP:1234567 (ie: HP:\d{7})
     """
     if HPO_REGEX.match(query):
         cursor.execute(
-            r"""
-                       select * from hpo where hpo_id ilike %(query)s limit %(limit)s""",
+            r"""select * from hpo where hpo_id ilike %(query)s limit %(limit)s""",
             {"query": "{}%".format(query), "limit": SEARCH_RESULTS_LIMIT},
         )
     else:
         cursor.execute(
-            r"""
-                       select * from hpo where hpo_name ilike %(query)s limit %(limit)s""",
+            r"""select * from hpo where hpo_name ilike %(query)s limit %(limit)s""",
             {"query": "%{}%".format(query), "limit": SEARCH_RESULTS_LIMIT},
         )
     hpo_hits = cursor2dict(cursor)
@@ -110,20 +108,20 @@ def _search_genes(cursor, query):
     if ENSEMBL_GENE_REGEX.match(query):
         cursor.execute(
             r"""select * from genes where "gene_id"::text ilike %(query)s limit %(limit)s""",
-            {"query": "{}%".format(query), "limit": SEARCH_RESULTS_LIMIT,},
+            {"query": "{}%".format(query), "limit": SEARCH_RESULTS_LIMIT},
         )
     elif ENSEMBL_TRANSCRIPT_REGEX.match(query):
         # TODO: add search by all Ensembl transcipts (ie: not only canonical) if we add those to the genes table
         cursor.execute(
             r"""select * from genes where "canonical_transcript"::text ilike %(query)s limit %(limit)s""",
-            {"query": "{}%".format(query), "limit": SEARCH_RESULTS_LIMIT,},
+            {"query": "{}%".format(query), "limit": SEARCH_RESULTS_LIMIT},
         )
     # TODO: add search by Ensembl protein if we add a column to the genes table
     else:
         cursor.execute(
             r"""select * from genes where gene_name_upper ilike %(suffix_query)s or other_names ilike %(query)s
             limit %(limit)s""",
-            {"suffix_query": "%{}%".format(query), "query": "%{}%".format(query), "limit": SEARCH_RESULTS_LIMIT,},
+            {"suffix_query": "%{}%".format(query), "query": "%{}%".format(query), "limit": SEARCH_RESULTS_LIMIT},
         )
     gene_hits = cursor2dict(cursor)
     # while the search is performed on the upper cased gene name, it returns the original gene name
