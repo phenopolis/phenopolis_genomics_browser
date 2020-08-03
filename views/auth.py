@@ -45,7 +45,7 @@ def requires_auth(f):
 @application.route("/<language>/login", methods=["POST"])
 @application.route("/login", methods=["POST"])
 def login():
-    username = request.form["name"]
+    username = request.form[USER]
     password = request.form["password"]
     if not check_auth(username, password):
         return jsonify(error="Invalid Credentials. Please try again."), 401
