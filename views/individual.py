@@ -145,19 +145,19 @@ def _get_new_individual_id(sqlalchemy_session):
         raise PhenopolisException("Failed to fetch the latest internal id for an individual")
 
 
-def _get_hpo_ids_per_gene(variants, _ind):
-    # TODO: understand what this function is supposed to return because right now it is querying the db but
-    # TODO: it does not return anything new
-    # TODO: and why this unused '_ind' arg?
-    c = postgres_cursor()
-    for y in variants:
-        c.execute("""select * from gene_hpo where gene_symbol=%(gene_symbol)s """, {"gene_symbol": y["gene_symbol"]})
-        # gene_hpo_ids = db.helpers.cursor2dict(c)
-        # y['hpo_,terms']=[{'display': c.execute("select hpo_name from hpo where hpo_id=? limit 1",(gh['hpo_id'],))
-        # .fetchone()[0], 'end_href':gh['hpo_id']} for gh in gene_hpo_ids if gh['hpo_id'] in
-        # ind['ancestor_observed_features'].split(';')]
-        y["hpo_,terms"] = []
-    return variants
+# def _get_hpo_ids_per_gene(variants, _ind):
+#     # TODO: understand what this function is supposed to return because right now it is querying the db but
+#     # TODO: it does not return anything new
+#     # TODO: and why this unused '_ind' arg?
+#     c = postgres_cursor()
+#     for y in variants:
+#         c.execute("""select * from gene_hpo where gene_symbol=%(gene_symbol)s """, {"gene_symbol": y["gene_symbol"]})
+#         # gene_hpo_ids = db.helpers.cursor2dict(c)
+#         # y['hpo_,terms']=[{'display': c.execute("select hpo_name from hpo where hpo_id=? limit 1",(gh['hpo_id'],))
+#         # .fetchone()[0], 'end_href':gh['hpo_id']} for gh in gene_hpo_ids if gh['hpo_id'] in
+#         # ind['ancestor_observed_features'].split(';')]
+#         y["hpo_,terms"] = []
+#     return variants
 
 
 def _individual_complete_view(config, individual, subset):
