@@ -9,7 +9,7 @@ import ujson as json
 from collections import Counter
 from flask import session, jsonify, request
 
-from db import Individual, User_Individual
+from db.model import Individual, UserIndividual
 from views import application
 from views.auth import requires_auth
 from views.exceptions import PhenopolisException
@@ -94,29 +94,29 @@ def create_individual():
         application.logger.error(str(e))
         return jsonify(success=False, error=str(e)), 400
 
-    sqlalchemy_session = get_db_session()
+    db_session = get_db_session()
     request_ok = True
     message = "Individuals were created"
     ids_new_individuals = []
     try:
         # generate a new unique id for the individual
         for i in new_individuals:
-            new_internal_id = _get_new_individual_id(sqlalchemy_session)
+            new_internal_id = _get_new_individual_id(db_session)
             i.internal_id = new_internal_id
             ids_new_individuals.append(new_internal_id)
             # insert individual
-            sqlalchemy_session.add(i)
+            db_session.add(i)
             # add entry to user_individual
             # TODO: enable access to more users than the creator
-            sqlalchemy_session.add(User_Individual(user=session["user"], internal_id=i.internal_id))
-        sqlalchemy_session.commit()
+            db_session.add(UserIndividual(user=session["user"], internal_id=i.internal_id))
+        db_session.commit()
     except Exception as e:
-        sqlalchemy_session.rollback()
+        db_session.rollback()
         application.logger.exception(e)
         request_ok = False
         message = str(e)
     finally:
-        sqlalchemy_session.close()
+        db_session.close()
 
     if not request_ok:
         return jsonify(success=False, message=message), 500
