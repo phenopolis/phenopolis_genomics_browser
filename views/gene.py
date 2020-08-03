@@ -6,7 +6,7 @@ import ujson as json
 from flask import jsonify, session
 from views import application
 from views.auth import requires_auth
-from views.postgres import get_db_session, postgres_cursor
+from views.postgres import get_db_session
 from views.general import process_for_display
 from db import Gene
 
@@ -96,14 +96,3 @@ def query_gene(gene_id):
             # otherwise looks for synonyms ensuring complete match by appending quotes
             data = get_db_session().query(Gene).filter(Gene.other_names.like('%"' + gene_id + '"%')).all()
     return [p.as_dict() for p in data]
-
-
-def query_user_config(language):
-    cursor = postgres_cursor()
-    cursor.execute(
-        "select config from user_config u where u.user_name='%s' and u.language='%s' and u.page='%s' limit 1"
-        % (session["user"], language, "gene")
-    )
-    config = cursor.fetchone()[0]
-    cursor.close()
-    return config

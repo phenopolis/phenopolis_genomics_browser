@@ -85,7 +85,7 @@ Compress(application)
 cache = Cache(application, config={"CACHE_TYPE": "simple"})
 mail = Mail(application)
 
-# These imports must be placed at the end of this file
+# NOTE: These imports must be placed at the end of this file
 # flake8: noqa E402
 import views.general
 import views.postgres

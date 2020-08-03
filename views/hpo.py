@@ -37,7 +37,7 @@ def hpo(hpo_id="HP:0000001", subset="all", language="en"):
     ]
     c = postgres_cursor()
     c.execute(
-        """ select *
+        """select *
         from individuals as i,
         users_individuals as ui
         where
