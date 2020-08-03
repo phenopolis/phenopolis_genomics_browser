@@ -9,7 +9,7 @@ from views import application
 from views.auth import requires_auth
 from views.postgres import get_db_session, postgres_cursor
 from views.general import process_for_display
-from db import HPO
+from db.model import HPO
 
 
 @application.route("/<language>/hpo/<hpo_id>")

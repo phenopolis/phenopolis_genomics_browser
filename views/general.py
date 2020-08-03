@@ -7,7 +7,7 @@ from time import strftime
 from flask import jsonify, request, Response, session
 from flask_mail import Message
 from werkzeug.exceptions import HTTPException
-from db import User_Individual
+from db.model import UserIndividual
 from views import application, mail
 from views.postgres import get_db_session
 
@@ -85,9 +85,9 @@ def _send_error_mail(code):
 def process_for_display(data):
     my_patients = list(
         get_db_session()
-        .query(User_Individual)
-        .filter(User_Individual.user == session["user"])
-        .with_entities(User_Individual.internal_id)
+        .query(UserIndividual)
+        .filter(UserIndividual.user == session["user"])
+        .with_entities(UserIndividual.internal_id)
     )
     for x2 in data:
         if "CHROM" in x2 and "POS" in x2 and "REF" in x2 and "ALT" in x2:
