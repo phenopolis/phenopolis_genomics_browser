@@ -6,7 +6,7 @@ Demo DB need to be updated?
 """
 
 from views.postgres import postgres_cursor, get_db_session, close_db
-from db import Gene
+from db.model import Gene
 
 
 def test_db_sql_query(_demo):
