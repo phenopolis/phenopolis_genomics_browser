@@ -37,7 +37,7 @@ class HomeBanner extends React.Component {
     const cookies = new Cookies();
 
     const loginData = qs.stringify({
-      name: 'demo',
+      user: 'demo',
       password: 'demo123',
     });
 

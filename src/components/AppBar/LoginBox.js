@@ -39,7 +39,7 @@ class LoginBox extends React.Component {
     const cookies = new Cookies();
 
     const loginData = qs.stringify({
-      name: this.state.name,
+      user: this.state.name,
       password: this.state.password,
     });
 
