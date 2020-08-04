@@ -31,16 +31,22 @@ MAXIMUM_SEARCH_RESULTS_LIMIT = 1000
 @requires_auth
 def autocomplete(query):
     arguments = request.args.to_dict()
-    query_type = arguments.get('query_type')
+    query_type = arguments.get("query_type")
     try:
-        limit = int(arguments.get('limit', DEFAULT_SEARCH_RESULTS_LIMIT))
+        limit = int(arguments.get("limit", DEFAULT_SEARCH_RESULTS_LIMIT))
     except ValueError:
-        return jsonify(success=False,
-                       message="Please, specify a numeric limit value, {}".format(arguments.get('limit'))), 400
+        return (
+            jsonify(success=False, message="Please, specify a numeric limit value, {}".format(arguments.get("limit"))),
+            400,
+        )
 
     if limit > MAXIMUM_SEARCH_RESULTS_LIMIT:
-        return jsonify(success=False,
-                       message="Please, specify a limit lower than {}".format(MAXIMUM_SEARCH_RESULTS_LIMIT)), 400
+        return (
+            jsonify(
+                success=False, message="Please, specify a limit lower than {}".format(MAXIMUM_SEARCH_RESULTS_LIMIT)
+            ),
+            400,
+        )
     logger.debug("Autocomplete query '%s' and query type '%s'", query, query_type)
 
     cursor = postgres_cursor()
@@ -61,7 +67,8 @@ def autocomplete(query):
             + ["patient:" + x for x in _search_patients(cursor, query, limit)]
             + [
                 "variant:" + x
-                for x in _search_variants_by_coordinates(cursor, query, limit) + _search_variants_by_hgvs(cursor, query, limit)
+                for x in _search_variants_by_coordinates(cursor, query, limit)
+                + _search_variants_by_hgvs(cursor, query, limit)
             ]
         )
     else:
