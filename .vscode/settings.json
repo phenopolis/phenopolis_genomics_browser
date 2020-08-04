@@ -1,0 +1,13 @@
+{
+  "prettier.jsxBracketSameLine": true,
+  "prettier.jsxSingleQuote": true,
+  "prettier.tabWidth": 2,
+  "editor.tabSize": 2,
+  "editor.insertSpaces": true,
+  "editor.detectIndentation": true,
+  "workbench.colorCustomizations": {
+    "titleBar.activeBackground": "#ffe66d",
+    "titleBar.inactiveBackground": "#ffe66d",
+    "titleBar.activeForeground": "#000"
+  }
+}

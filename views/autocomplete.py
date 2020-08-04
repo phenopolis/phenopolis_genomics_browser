@@ -22,7 +22,7 @@ HPO_REGEX = re.compile(r"^HP:(\d{0,7})", re.IGNORECASE)
 PATIENT_REGEX = re.compile(r"^PH(\d{0,8})", re.IGNORECASE)
 HGVSP = "hgvsp"
 HGVSC = "hgvsc"
-SEARCH_RESULTS_LIMIT = 20
+SEARCH_RESULTS_LIMIT = 1000
 
 
 @application.route("/<language>/autocomplete/<query_type>/<query>")
@@ -35,15 +35,26 @@ def autocomplete(query, query_type=""):
 
     cursor = postgres_cursor()
     if query_type == "gene":
-        results = _search_genes(cursor, query)
+        # results = _search_genes(cursor, query)
+        results = (["gene:" + x for x in _search_genes(cursor, query)])
+
     elif query_type == "phenotype":
-        results = _search_phenotypes(cursor, query)
+        # results = _search_phenotypes(cursor, query)
+        results = (["phenotype:" + x for x in _search_phenotypes(cursor, query)])
+
     elif query_type == "patient":
-        results = _search_patients(cursor, query)
+        # results = _search_patients(cursor, query)
+        results = (["patient:" + x for x in _search_patients(cursor, query)])
+
     elif query_type == "variant":
-        results_by_coordinates = _search_variants_by_coordinates(cursor, query)
-        results_by_hgvs = _search_variants_by_hgvs(cursor, query)
-        results = results_by_coordinates + results_by_hgvs
+        # results_by_coordinates = _search_variants_by_coordinates(cursor, query)
+        # results_by_hgvs = _search_variants_by_hgvs(cursor, query)
+        # results = results_by_coordinates + results_by_hgvs
+        results = ([
+                "variant:" + x
+                for x in _search_variants_by_coordinates(cursor, query) + _search_variants_by_hgvs(cursor, query)
+            ])
+
     elif query_type == "":
         results = (
             ["gene:" + x for x in _search_genes(cursor, query)]
@@ -61,7 +72,8 @@ def autocomplete(query, query_type=""):
     cursor.close()
 
     # removes possible duplicates and chooses 20 suggestions
-    suggestions = list(itertools.islice(list(set(results)), 0, 20))
+    # suggestions = list(itertools.islice(list(set(results)), 0, 20))
+    suggestions = list(set(results))
     return Response(json.dumps(suggestions), mimetype="application/json")
 
 
@@ -71,15 +83,26 @@ def _search_patients(cursor, query):
     'demo', for example, can only access ['PH00008256', 'PH00008258', 'PH00008267', 'PH00008268']
     so, a search for 'PH000082', for user 'demo', should return only the 4 cases above
     """
-    if PATIENT_REGEX.match(query):
-        cursor.execute(
-            r"""select i.external_id, i.internal_id from individuals i, users_individuals ui where
-            ui.internal_id=i.internal_id and ui.user=%(user)s and i.internal_id ILIKE %(query)s limit %(limit)s""",
-            {"user": session["user"], "query": "{}%".format(query), "limit": SEARCH_RESULTS_LIMIT},
-        )
-        patient_hits = cursor2dict(cursor)
-    else:
-        patient_hits = []
+
+    print('\n- - - - - My Test - - - - ')
+    print(query)
+    print('- - - - - - - - - - - - - \n')
+    # if PATIENT_REGEX.match(query):
+    #     cursor.execute(
+    #         r"""select i.external_id, i.internal_id from individuals i, users_individuals ui where
+    #         ui.internal_id=i.internal_id and ui.user=%(user)s and i.internal_id ILIKE %(query)s limit %(limit)s""",
+    #         {"user": session["user"], "query": "{}%".format(query), "limit": SEARCH_RESULTS_LIMIT},
+    #     )
+    #     patient_hits = cursor2dict(cursor)
+    # else:
+    #     patient_hits = []
+    cursor.execute(
+        r"""select i.external_id, i.internal_id from individuals i, users_individuals ui where
+        ui.internal_id=i.internal_id and ui.user=%(user)s and i.internal_id ILIKE %(query)s limit %(limit)s""",
+        {"user": session["user"], "query": "%{}%".format(query), "limit": SEARCH_RESULTS_LIMIT},
+    )
+    patient_hits = cursor2dict(cursor)
+    print(patient_hits)
     return [x["internal_id"] for x in patient_hits]
 
 
