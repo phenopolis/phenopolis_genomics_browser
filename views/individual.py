@@ -9,7 +9,7 @@ import ujson as json
 from collections import Counter
 from flask import session, jsonify, request
 
-from db import Individual, User_Individual
+from db.model import Individual, UserIndividual
 from views import application
 from views.auth import requires_auth
 from views.exceptions import PhenopolisException
@@ -94,29 +94,29 @@ def create_individual():
         application.logger.error(str(e))
         return jsonify(success=False, error=str(e)), 400
 
-    sqlalchemy_session = get_db_session()
+    db_session = get_db_session()
     request_ok = True
     message = "Individuals were created"
     ids_new_individuals = []
     try:
         # generate a new unique id for the individual
         for i in new_individuals:
-            new_internal_id = _get_new_individual_id(sqlalchemy_session)
+            new_internal_id = _get_new_individual_id(db_session)
             i.internal_id = new_internal_id
             ids_new_individuals.append(new_internal_id)
             # insert individual
-            sqlalchemy_session.add(i)
+            db_session.add(i)
             # add entry to user_individual
             # TODO: enable access to more users than the creator
-            sqlalchemy_session.add(User_Individual(user=session["user"], internal_id=i.internal_id))
-        sqlalchemy_session.commit()
+            db_session.add(UserIndividual(user=session["user"], internal_id=i.internal_id))
+        db_session.commit()
     except Exception as e:
-        sqlalchemy_session.rollback()
+        db_session.rollback()
         application.logger.exception(e)
         request_ok = False
         message = str(e)
     finally:
-        sqlalchemy_session.close()
+        db_session.close()
 
     if not request_ok:
         return jsonify(success=False, message=message), 500
@@ -138,25 +138,26 @@ def _get_new_individual_id(sqlalchemy_session):
         .order_by(Individual.internal_id.desc())
         .first()
     )
-    matched_id = re.compile("^PH(\d{8})$").match(latest_internal_id[0])
+    matched_id = re.compile(r"^PH(\d{8})$").match(latest_internal_id[0])
     if matched_id:
         return "PH{}".format(str(int(matched_id.group(1)) + 1).zfill(8))  # pads with 0s
     else:
         raise PhenopolisException("Failed to fetch the latest internal id for an individual")
 
 
-def _get_hpo_ids_per_gene(variants, ind):
-    # TODO: understand what this function is supposed to return because right now it is querying the db but
-    # TODO: it does not return anything new
-    c = postgres_cursor()
-    for y in variants:
-        c.execute(""" select * from gene_hpo where gene_symbol=%(gene_symbol)s """, {"gene_symbol": y["gene_symbol"]})
-        # gene_hpo_ids = db.helpers.cursor2dict(c)
-        # y['hpo_,terms']=[{'display': c.execute("select hpo_name from hpo where hpo_id=? limit 1",(gh['hpo_id'],))
-        # .fetchone()[0], 'end_href':gh['hpo_id']} for gh in gene_hpo_ids if gh['hpo_id'] in
-        # ind['ancestor_observed_features'].split(';')]
-        y["hpo_,terms"] = []
-    return variants
+# def _get_hpo_ids_per_gene(variants, _ind):
+#     # TODO: understand what this function is supposed to return because right now it is querying the db but
+#     # TODO: it does not return anything new
+#     # TODO: and why this unused '_ind' arg?
+#     c = postgres_cursor()
+#     for y in variants:
+#         c.execute("""select * from gene_hpo where gene_symbol=%(gene_symbol)s """, {"gene_symbol": y["gene_symbol"]})
+#         # gene_hpo_ids = db.helpers.cursor2dict(c)
+#         # y['hpo_,terms']=[{'display': c.execute("select hpo_name from hpo where hpo_id=? limit 1",(gh['hpo_id'],))
+#         # .fetchone()[0], 'end_href':gh['hpo_id']} for gh in gene_hpo_ids if gh['hpo_id'] in
+#         # ind['ancestor_observed_features'].split(';')]
+#         y["hpo_,terms"] = []
+#     return variants
 
 
 def _individual_complete_view(config, individual, subset):
@@ -206,7 +207,7 @@ def _individual_preview(config, individual):
 
 def _count_compound_heterozygous_variants(c, individual):
     c.execute(
-        """ select count (1) from (select count(1) from het_variants hv, variants v
+        """select count (1) from (select count(1) from het_variants hv, variants v
     where hv."CHROM"=v."CHROM" and hv."POS"=v."POS" and hv."REF"=v."REF" and hv."ALT"=v."ALT" and
     hv.individual=%(external_id)s group by v.gene_symbol having count(v.gene_symbol)>1) as t """,
         {"external_id": individual["external_id"]},
@@ -217,7 +218,7 @@ def _count_compound_heterozygous_variants(c, individual):
 
 def _count_heterozygous_variants(c, individual):
     c.execute(
-        """ select count(1)
+        """select count(1)
        from het_variants hv, variants v
        where
        hv."CHROM"=v."CHROM"
@@ -233,7 +234,7 @@ def _count_heterozygous_variants(c, individual):
 
 def _count_homozygous_variants(c, individual):
     c.execute(
-        """ select count(1)
+        """select count(1)
        from hom_variants hv, variants v
        where hv."CHROM"=v."CHROM"
        and hv."POS"=v."POS"
@@ -266,7 +267,7 @@ def _map_individual2output(config, individual):
 
 def _get_heterozygous_variants(c, individual):
     c.execute(
-        """ select v.*
+        """select v.*
       from het_variants hv, variants v
       where
       hv."CHROM"=v."CHROM"
@@ -284,7 +285,7 @@ def _get_heterozygous_variants(c, individual):
 
 def _get_homozygous_variants(c, individual):
     c.execute(
-        """ select v.*
+        """select v.*
        from hom_variants hv, variants v
        where hv."CHROM"=v."CHROM"
        and hv."POS"=v."POS"
@@ -302,7 +303,7 @@ def _get_homozygous_variants(c, individual):
 def _fetch_authorized_individual(individual_id):
     c = postgres_cursor()
     c.execute(
-        """ select i.*
+        """select i.*
            from users_individuals as ui, individuals as i
            where
            i.internal_id=ui.internal_id

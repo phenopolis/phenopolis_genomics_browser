@@ -865,6 +865,12 @@ CREATE INDEX variants_gene_symbol ON public.variants USING btree (gene_symbol);
 
 
 --
+-- Name: variant_pos_text_pattern_idx; Type: INDEX; Schema: public; Owner: phenopolis_api
+--
+
+CREATE INDEX variant_pos_text_pattern_idx ON public.variants (("POS"::text) text_pattern_ops);
+
+--
 -- Name: user_pagetable_colname user_pagetable_colname_pagetable_colname_fkey; Type: FK CONSTRAINT; Schema: public; Owner: phenopolis_api
 --
 

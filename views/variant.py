@@ -7,7 +7,7 @@ import pysam
 import requests
 import ujson as json
 import db.helpers
-from db import Variant
+from db.model import Variant
 from views import application
 from db.helpers import cursor2dict
 from views.auth import requires_auth

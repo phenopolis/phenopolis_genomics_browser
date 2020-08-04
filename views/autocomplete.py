@@ -89,7 +89,7 @@ def _search_patients(cursor, query, limit):
     """
     if PATIENT_REGEX.match(query):
         cursor.execute(
-            r""" select i.external_id, i.internal_id from individuals i, users_individuals ui where
+            r"""select i.external_id, i.internal_id from individuals i, users_individuals ui where
             ui.internal_id=i.internal_id and ui.user=%(user)s and i.internal_id ILIKE %(query)s limit %(limit)s""",
             {"user": session["user"], "query": "{}%".format(query), "limit": limit},
         )
@@ -105,15 +105,13 @@ def _search_phenotypes(cursor, query, limit):
     """
     if HPO_REGEX.match(query):
         cursor.execute(
-            r"""
-                       select * from hpo where hpo_id ilike %(query)s limit %(limit)s""",
-            {"query": "{}%".format(query), "limit": limit},
+            r"""select * from hpo where hpo_id ilike %(query)s limit %(limit)s""",
+            {"query": "{}%".format(query), "limit": SEARCH_RESULTS_LIMIT},
         )
     else:
         cursor.execute(
-            r"""
-                       select * from hpo where hpo_name ilike %(query)s limit %(limit)s""",
-            {"query": "%{}%".format(query), "limit": DEFAULT_SEARCH_RESULTS_LIMIT},
+            r"""select * from hpo where hpo_name ilike %(query)s limit %(limit)s""",
+            {"query": "%{}%".format(query), "limit": SEARCH_RESULTS_LIMIT},
         )
     hpo_hits = cursor2dict(cursor)
     return [x["hpo_name"] for x in hpo_hits]
@@ -126,20 +124,20 @@ def _search_genes(cursor, query, limit):
     if ENSEMBL_GENE_REGEX.match(query):
         cursor.execute(
             r"""select * from genes where "gene_id"::text ilike %(query)s limit %(limit)s""",
-            {"query": "{}%".format(query), "limit": limit},
+            {"query": "{}%".format(query), "limit": SEARCH_RESULTS_LIMIT},
         )
     elif ENSEMBL_TRANSCRIPT_REGEX.match(query):
         # TODO: add search by all Ensembl transcipts (ie: not only canonical) if we add those to the genes table
         cursor.execute(
             r"""select * from genes where "canonical_transcript"::text ilike %(query)s limit %(limit)s""",
-            {"query": "{}%".format(query), "limit": limit},
+            {"query": "{}%".format(query), "limit": SEARCH_RESULTS_LIMIT},
         )
     # TODO: add search by Ensembl protein if we add a column to the genes table
     else:
         cursor.execute(
             r"""select * from genes where gene_name_upper ilike %(suffix_query)s or other_names ilike %(query)s
             limit %(limit)s""",
-            {"suffix_query": "%{}%".format(query), "query": "%{}%".format(query), "limit": limit},
+            {"suffix_query": "%{}%".format(query), "query": "%{}%".format(query), "limit": SEARCH_RESULTS_LIMIT},
         )
     gene_hits = cursor2dict(cursor)
     # while the search is performed on the upper cased gene name, it returns the original gene name
