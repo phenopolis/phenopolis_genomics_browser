@@ -1,6 +1,7 @@
 """
 Statistics view
 """
+# TODO: what exactly one wants with this?
 from flask import jsonify
 from views import application
 

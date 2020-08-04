@@ -7,7 +7,7 @@ from time import strftime
 from flask import jsonify, request, Response, session
 from flask_mail import Message
 from werkzeug.exceptions import HTTPException
-from db import User_Individual
+from db.model import UserIndividual
 from views import application, mail
 from views.postgres import get_db_session
 
@@ -79,15 +79,16 @@ def _send_error_mail(code):
     mail.send(msg)
 
 
+# TODO: who will review this?
 # this should not be done live but offline
 # need to figure out how to encode json data type in postgres import
 # rather do the conversion on the fly
 def process_for_display(data):
     my_patients = list(
         get_db_session()
-        .query(User_Individual)
-        .filter(User_Individual.user == session["user"])
-        .with_entities(User_Individual.internal_id)
+        .query(UserIndividual)
+        .filter(UserIndividual.user == session["user"])
+        .with_entities(UserIndividual.internal_id)
     )
     for x2 in data:
         if "CHROM" in x2 and "POS" in x2 and "REF" in x2 and "ALT" in x2:
@@ -105,6 +106,7 @@ def process_for_display(data):
                 {"display": "my:" + x3, "end_href": x3} if x3 in my_patients else {"display": x3, "end_href": x3}
                 for x3 in json.loads(x2["HOM"])
             ]
+        # TODO: how to test these 2 cases below? Any example of entries containing these features?
         if "hpo_ancestors" in x2:
             x2["hpo_ancestors"] = [{"display": x3} for x3 in x2["hpo_ancestors"].split(";") if x3]
         if "genes" in x2 and x2["genes"] == "":
