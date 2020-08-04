@@ -52,7 +52,7 @@ def autocomplete(query, query_type=""):
         # results = results_by_coordinates + results_by_hgvs
         results = ([
                 "variant:" + x
-                for x in _search_variants_by_coordinates(cursor, query) + _search_variants_by_hgvs(cursor, query)
+                for x in _search_variants_by_match_name(cursor, query) + _search_variants_by_coordinates(cursor, query) + _search_variants_by_hgvs(cursor, query)
             ])
 
     elif query_type == "":
@@ -62,7 +62,7 @@ def autocomplete(query, query_type=""):
             + ["patient:" + x for x in _search_patients(cursor, query)]
             + [
                 "variant:" + x
-                for x in _search_variants_by_coordinates(cursor, query) + _search_variants_by_hgvs(cursor, query)
+                for x in _search_variants_by_match_name(cursor, query) + _search_variants_by_coordinates(cursor, query) + _search_variants_by_hgvs(cursor, query)
             ]
         )
     else:
@@ -84,9 +84,6 @@ def _search_patients(cursor, query):
     so, a search for 'PH000082', for user 'demo', should return only the 4 cases above
     """
 
-    print('\n- - - - - My Test - - - - ')
-    print(query)
-    print('- - - - - - - - - - - - - \n')
     # if PATIENT_REGEX.match(query):
     #     cursor.execute(
     #         r"""select i.external_id, i.internal_id from individuals i, users_individuals ui where
@@ -149,6 +146,20 @@ def _search_genes(cursor, query):
     gene_hits = cursor2dict(cursor)
     # while the search is performed on the upper cased gene name, it returns the original gene name
     return [x["gene_name"] for x in gene_hits]
+
+
+def _search_variants_by_match_name(cursor, query):
+    """
+    Purely match name for each variant, nothing complex, like matching 382 to 22-382
+    """
+    cursor.execute(
+        r"""select "CHROM", "POS", "REF", "ALT" from variants where
+        "CHROM"::text like %(query)s or "POS"::text like %(query)s or "REF"::text like %(query)s or "ALT"::text like %(query)s limit %(limit)s""",
+        {"query": "%{}%".format(query), "limit": SEARCH_RESULTS_LIMIT},
+    )
+    variant_hits = cursor2dict(cursor)
+    print(variant_hits)
+    return ["{CHROM}-{POS}-{REF}-{ALT}".format(**x) for x in variant_hits]
 
 
 def _search_variants_by_coordinates(cursor, query):
