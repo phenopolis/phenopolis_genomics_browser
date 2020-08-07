@@ -14,11 +14,11 @@ from views.postgres import postgres_cursor
 CHROMOSOME_POS_REGEX = re.compile(r"^(\w+)[-:](\d+)$")
 CHROMOSOME_POS_REF_REGEX = re.compile(r"^(\w+)[-:](\d+)[-:]([ACGT\*]+)$", re.IGNORECASE)
 CHROMOSOME_POS_REF_ALT_REGEX = re.compile(r"^(\w+)[-:](\d+)[-:]([ACGT\*]+)[-:>]([ACGT\*]+)$", re.IGNORECASE)
-ENSEMBL_TRANSCRIPT_REGEX = re.compile("^ENST(\d{0,10})", re.IGNORECASE)
-ENSEMBL_PROTEIN_REGEX = re.compile("^ENSP(\d{0,10})", re.IGNORECASE)
-ENSEMBL_GENE_REGEX = re.compile("^ENSG(\d{0,10})", re.IGNORECASE)
-HPO_REGEX = re.compile("^HP:(\d{0,7})", re.IGNORECASE)
-PATIENT_REGEX = re.compile("^PH(\d{0,8})", re.IGNORECASE)
+ENSEMBL_TRANSCRIPT_REGEX = re.compile(r"^ENST(\d{0,10})", re.IGNORECASE)
+ENSEMBL_PROTEIN_REGEX = re.compile(r"^ENSP(\d{0,10})", re.IGNORECASE)
+ENSEMBL_GENE_REGEX = re.compile(r"^ENSG(\d{0,10})", re.IGNORECASE)
+HPO_REGEX = re.compile(r"^HP:(\d{0,7})", re.IGNORECASE)
+PATIENT_REGEX = re.compile(r"^PH(\d{0,8})", re.IGNORECASE)
 HGVSP = "hgvsp"
 HGVSC = "hgvsc"
 
@@ -91,7 +91,6 @@ def _search_patients(cursor, query, limit):
         {"user": session["user"], "query": "%{}%".format(query), "limit": limit},
     )
     patient_hits = cursor2dict(cursor)
-    print(patient_hits)
     return ['individual::' + x["internal_id"] + '::' + x["internal_id"] for x in patient_hits]
 
 
