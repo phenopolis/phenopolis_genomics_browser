@@ -14,11 +14,11 @@ from views.postgres import postgres_cursor
 CHROMOSOME_POS_REGEX = re.compile(r"^(\w+)[-:](\d+)$")
 CHROMOSOME_POS_REF_REGEX = re.compile(r"^(\w+)[-:](\d+)[-:]([ACGT\*]+)$", re.IGNORECASE)
 CHROMOSOME_POS_REF_ALT_REGEX = re.compile(r"^(\w+)[-:](\d+)[-:]([ACGT\*]+)[-:>]([ACGT\*]+)$", re.IGNORECASE)
-ENSEMBL_TRANSCRIPT_REGEX = re.compile("^ENST(\d{0,10})", re.IGNORECASE)
-ENSEMBL_PROTEIN_REGEX = re.compile("^ENSP(\d{0,10})", re.IGNORECASE)
-ENSEMBL_GENE_REGEX = re.compile("^ENSG(\d{0,10})", re.IGNORECASE)
-HPO_REGEX = re.compile("^HP:(\d{0,7})", re.IGNORECASE)
-PATIENT_REGEX = re.compile("^PH(\d{0,8})", re.IGNORECASE)
+ENSEMBL_TRANSCRIPT_REGEX = re.compile(r"^ENST(\d{0,10})", re.IGNORECASE)
+ENSEMBL_PROTEIN_REGEX = re.compile(r"^ENSP(\d{0,10})", re.IGNORECASE)
+ENSEMBL_GENE_REGEX = re.compile(r"^ENSG(\d{0,10})", re.IGNORECASE)
+HPO_REGEX = re.compile(r"^HP:(\d{0,7})", re.IGNORECASE)
+PATIENT_REGEX = re.compile(r"^PH(\d{0,8})", re.IGNORECASE)
 HGVSP = "hgvsp"
 HGVSC = "hgvsc"
 
@@ -52,24 +52,22 @@ def autocomplete(query):
     cursor = postgres_cursor()
     if query_type == "gene":
         results = _search_genes(cursor, query, limit)
+
     elif query_type == "phenotype":
         results = _search_phenotypes(cursor, query, limit)
+
     elif query_type == "patient":
         results = _search_patients(cursor, query, limit)
+
     elif query_type == "variant":
-        results_by_coordinates = _search_variants_by_coordinates(cursor, query, limit)
-        results_by_hgvs = _search_variants_by_hgvs(cursor, query, limit)
-        results = results_by_coordinates + results_by_hgvs
+        results = _search_variants_by_coordinates(cursor, query, limit) + _search_variants_by_hgvs(cursor, query, limit)
+
     elif query_type is None or query_type == "":
         results = (
-            ["gene:" + x for x in _search_genes(cursor, query, limit)]
-            + ["phenotype:" + x for x in _search_phenotypes(cursor, query, limit)]
-            + ["patient:" + x for x in _search_patients(cursor, query, limit)]
-            + [
-                "variant:" + x
-                for x in _search_variants_by_coordinates(cursor, query, limit)
-                + _search_variants_by_hgvs(cursor, query, limit)
-            ]
+            _search_genes(cursor, query, limit)
+            + _search_phenotypes(cursor, query, limit)
+            + _search_patients(cursor, query, limit)
+            + _search_variants_by_coordinates(cursor, query, limit) + _search_variants_by_hgvs(cursor, query, limit)
         )
     else:
         message = "Autocomplete request with unsupported query type '{}'".format(query_type)
@@ -77,8 +75,8 @@ def autocomplete(query):
         raise PhenopolisException(message)
     cursor.close()
 
-    # removes possible duplicates and chooses 20 suggestions
-    return Response(json.dumps(list(set(results))), mimetype="application/json")
+    suggestions = list(set(results))
+    return Response(json.dumps(suggestions), mimetype="application/json")
 
 
 def _search_patients(cursor, query, limit):
@@ -87,16 +85,13 @@ def _search_patients(cursor, query, limit):
     'demo', for example, can only access ['PH00008256', 'PH00008258', 'PH00008267', 'PH00008268']
     so, a search for 'PH000082', for user 'demo', should return only the 4 cases above
     """
-    if PATIENT_REGEX.match(query):
-        cursor.execute(
-            r"""select i.external_id, i.internal_id from individuals i, users_individuals ui where
-            ui.internal_id=i.internal_id and ui.user=%(user)s and i.internal_id ILIKE %(query)s limit %(limit)s""",
-            {"user": session["user"], "query": "{}%".format(query), "limit": limit},
-        )
-        patient_hits = cursor2dict(cursor)
-    else:
-        patient_hits = []
-    return [x["internal_id"] for x in patient_hits]
+    cursor.execute(
+        r"""select i.external_id, i.internal_id from individuals i, users_individuals ui where
+        ui.internal_id=i.internal_id and ui.user=%(user)s and i.internal_id ILIKE %(query)s limit %(limit)s""",
+        {"user": session["user"], "query": "%{}%".format(query), "limit": limit},
+    )
+    patient_hits = cursor2dict(cursor)
+    return ['individual::' + x["internal_id"] + '::' + x["internal_id"] for x in patient_hits]
 
 
 def _search_phenotypes(cursor, query, limit):
@@ -106,15 +101,15 @@ def _search_phenotypes(cursor, query, limit):
     if HPO_REGEX.match(query):
         cursor.execute(
             r"""select * from hpo where hpo_id ilike %(query)s limit %(limit)s""",
-            {"query": "{}%".format(query), "limit": SEARCH_RESULTS_LIMIT},
+            {"query": "{}%".format(query), "limit": limit},
         )
     else:
         cursor.execute(
             r"""select * from hpo where hpo_name ilike %(query)s limit %(limit)s""",
-            {"query": "%{}%".format(query), "limit": SEARCH_RESULTS_LIMIT},
+            {"query": "%{}%".format(query), "limit": limit},
         )
     hpo_hits = cursor2dict(cursor)
-    return [x["hpo_name"] for x in hpo_hits]
+    return ['hpo::' + x["hpo_name"] + "::" + x["hpo_id"] for x in hpo_hits]
 
 
 def _search_genes(cursor, query, limit):
@@ -124,25 +119,24 @@ def _search_genes(cursor, query, limit):
     if ENSEMBL_GENE_REGEX.match(query):
         cursor.execute(
             r"""select * from genes where "gene_id"::text ilike %(query)s limit %(limit)s""",
-            {"query": "{}%".format(query), "limit": SEARCH_RESULTS_LIMIT},
+            {"query": "{}%".format(query), "limit": limit},
         )
     elif ENSEMBL_TRANSCRIPT_REGEX.match(query):
         # TODO: add search by all Ensembl transcipts (ie: not only canonical) if we add those to the genes table
         cursor.execute(
             r"""select * from genes where "canonical_transcript"::text ilike %(query)s limit %(limit)s""",
-            {"query": "{}%".format(query), "limit": SEARCH_RESULTS_LIMIT},
+            {"query": "{}%".format(query), "limit": limit},
         )
     # TODO: add search by Ensembl protein if we add a column to the genes table
     else:
         cursor.execute(
             r"""select * from genes where gene_name_upper ilike %(suffix_query)s or other_names ilike %(query)s
             limit %(limit)s""",
-            {"suffix_query": "%{}%".format(query), "query": "%{}%".format(query), "limit": SEARCH_RESULTS_LIMIT},
+            {"suffix_query": "%{}%".format(query), "query": "%{}%".format(query), "limit": limit},
         )
     gene_hits = cursor2dict(cursor)
     # while the search is performed on the upper cased gene name, it returns the original gene name
-    return [x["gene_name"] for x in gene_hits]
-
+    return [ 'gene::' +  x["gene_name"] + '::' +  x["gene_id"] for x in gene_hits]
 
 def _search_variants_by_coordinates(cursor, query, limit):
     """
@@ -176,7 +170,8 @@ def _search_variants_by_coordinates(cursor, query, limit):
         # no variant pattern, we perform no search
         return []
     variant_hits = cursor2dict(cursor)
-    return ["{CHROM}-{POS}-{REF}-{ALT}".format(**x) for x in variant_hits]
+
+    return ['variant::' + "{CHROM}-{POS}-{REF}-{ALT}".format(**x) + '::' + "{CHROM}-{POS}-{REF}-{ALT}".format(**x) for x in variant_hits]
 
 
 def _search_variants_by_hgvs(cursor, query, limit):
@@ -203,7 +198,7 @@ def _search_variants_by_hgvs(cursor, query, limit):
         # no variant pattern, we perform no search
         return []
     variant_hits = cursor2dict(cursor)
-    return ["{CHROM}-{POS}-{REF}-{ALT}".format(**x) for x in variant_hits]
+    return ['variant::' + "{CHROM}-{POS}-{REF}-{ALT}".format(**x) + '::' + "{CHROM}-{POS}-{REF}-{ALT}".format(**x) for x in variant_hits]
 
 
 def _parse_hgvs_from_query(query):
