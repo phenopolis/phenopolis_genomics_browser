@@ -53,11 +53,11 @@ def _load_config():
     application.config["MAIL_USE_TLS"] = os.getenv("MAIL_USE_TLS", "true") == "true"
     application.config["MAIL_USE_SSL"] = os.getenv("MAIL_USE_SSL", "false") == "true"
     application.config["MAIL_SUPPRESS_SEND"] = os.getenv("MAIL_SUPPRESS_SEND", "true") == "true"
-    application.config["DB_HOST"] = os.getenv("POSTGRES_HOST", "0.0.0.0")
-    application.config["DB_DATABASE"] = os.getenv("POSTGRES_DB", "phenopolis_db")
-    application.config["DB_USER"] = os.getenv("POSTGRES_USER", "phenopolis_api")
-    application.config["DB_PASSWORD"] = os.getenv("POSTGRES_PASSWORD", "phenopolis_api")
-    application.config["DB_PORT"] = os.getenv("POSTGRES_PORT", "5432")
+    application.config["DB_HOST"] = os.getenv("PH_DB_HOST", "0.0.0.0")
+    application.config["DB_DATABASE"] = os.getenv("PH_DB_NAME", "phenopolis_db")
+    application.config["DB_USER"] = os.getenv("PH_DB_USER", "phenopolis_api")
+    application.config["DB_PASSWORD"] = os.getenv("PH_DB_PASSWORD", "phenopolis_api")
+    application.config["DB_PORT"] = os.getenv("PH_DB_PORT", "5432")
     application.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = True
     db_uri = "postgresql+psycopg2://%s:%s@%s/%s" % (
         application.config["DB_USER"],

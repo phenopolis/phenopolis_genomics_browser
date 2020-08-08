@@ -19,8 +19,7 @@ services:
       image: postgres:12-alpine
       volumes:
       - ./:/app
-      - ./db/import_schema.sql:/docker-entrypoint-initdb.d/1_import_schema.sql
-      - ./db/import_demo_data.sql:/docker-entrypoint-initdb.d/2_import_demo_data.sql
+      - ./schema/initdb.d/:/docker-entrypoint-initdb.d
       env_file:
       - public.env
       - private.env
