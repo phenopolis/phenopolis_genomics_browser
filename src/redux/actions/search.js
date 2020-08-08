@@ -9,14 +9,16 @@ import {
 } from '../types/search';
 import Service from '../service';
 
-export const getSearchAutocomplete = (text) => {
+export const getSearchAutocomplete = (params) => {
   return (dispatch) => {
     dispatch({ type: GET_SEARCH_AUTOCOMPLETE });
-    Service.getSearchAutocomplete(text)
+    Service.getSearchAutocomplete(params)
       .then((res) => {
+        console.log(res);
         dispatch({ type: GET_SEARCH_AUTOCOMPLETE_SUCCESS, payload: res });
       })
       .catch((error) => {
+        console.log(error);
         dispatch({ type: GET_SEARCH_AUTOCOMPLETE_FAIL, payload: error.response });
       });
   };

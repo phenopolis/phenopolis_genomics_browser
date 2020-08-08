@@ -8,9 +8,13 @@ function getStatistics() {
 }
 
 function getSearchAutocomplete(param) {
-  return axios.get(api.SEARCH_AUTOCOMPLETE + param, {
-    withCredentials: true,
-  });
+  console.log(param);
+  return axios.get(
+    api.SEARCH_AUTOCOMPLETE + param.query + '?query_type=' + param.query_type + '&limit=1000',
+    {
+      withCredentials: true,
+    }
+  );
 }
 
 function getSearchBest(param) {

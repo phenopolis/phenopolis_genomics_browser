@@ -110,7 +110,7 @@ class SearchAutoComplete extends React.Component {
                         size="small"
                         label={item}
                         type={this.state.type}
-                        action="emit"
+                        emit={true}
                         onClick={this.handleFeatureAddChip}
                         to={item}
                       />

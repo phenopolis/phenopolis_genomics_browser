@@ -45,6 +45,9 @@ const TypeChip = (props) => {
     error: state.Preview.error,
   }));
 
+  const [type, setType] = useState('other');
+  const [anchorEl, setAnchorEl] = useState(null);
+
   useEffect(() => {
     if (best) {
       redirectTo();
@@ -52,15 +55,12 @@ const TypeChip = (props) => {
     if (['gene', 'phenotype', 'hpo', 'patient', 'individual', 'variant'].includes(props.type)) {
       setType(props.type);
     }
-  }, [best]);
+  }, [best, props.type]);
 
   const redirectTo = () => {
     history.push(best);
     dispatch(clearSearchBest());
   };
-
-  const [type, setType] = useState('other');
-  const [anchorEl, setAnchorEl] = useState(null);
 
   const ChipIcon = {
     gene: { backgroundColor: '#e07a5f', icon: faDna, des: 'Gene' },
@@ -88,7 +88,10 @@ const TypeChip = (props) => {
       dispatch(getSearchBest(guessText));
     } else if (props.action === 'forward') {
       history.push(to);
-    } else if (props.action === 'emit') {
+    } else {
+    }
+
+    if (props.emit === true) {
       props.onClick(to);
     }
   };

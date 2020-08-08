@@ -10,6 +10,18 @@
 }
 }
 
+.search-chip-middle {
+  margin: 6.5px !important;
+  padding: 10px 0px 10px 0px !important;
+  text-shadow: none;
+  font-size: 15px !important;
+  font-weight: 500;
+  // color: '#2E84CF',
+&:hover {
+  text-shadow: -0.05ex 0 grey, 0.05ex 0 grey,
+}
+}
+
 .search-chip-xl {
   margin: 8px !important;
   padding: 10px 0px 10px 0px !important;

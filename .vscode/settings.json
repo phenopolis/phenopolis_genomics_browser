@@ -4,5 +4,10 @@
   "prettier.tabWidth": 2,
   "editor.tabSize": 2,
   "editor.insertSpaces": true,
-  "editor.detectIndentation": true
+  "editor.detectIndentation": true,
+  "workbench.colorCustomizations": {
+    "titleBar.activeBackground": "#009ce9",
+    "titleBar.inactiveBackground": "#009ce9",
+    "titleBar.activeForeground": "#000"
+  }
 }

@@ -65,7 +65,7 @@
     "NavSearch": {
       "InputPlaceHolder": "Search for patient, gene, variant…",
       "Searching": "Searching for auto complete...",
-      "NoOption": "Sorry, we were unable to auto-complete.",
+      "NoOption": "Sorry, we were unable to auto-complete, no match found.",
       "NoContent": "Nothing for search.",
       "Autocomplete_Failed": "Autocomplete failed",
       "Best_Guess_Failed": "Best guess failed"

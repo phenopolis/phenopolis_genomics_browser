@@ -68,7 +68,7 @@ class HPO extends React.Component {
 
         if (respond[0] === undefined) {
           this.setState({ redirect: true, reLink: '/search' });
-          this.props.setSnack('HPM not exist.', 'warning');
+          this.props.setSnack('HPO not exist.', 'warning');
         } else {
           self.setState({
             hpoInfo: respond[0],

@@ -36,10 +36,10 @@ class HomeBanner extends React.Component {
   DemoLogin = () => {
     const cookies = new Cookies();
 
-    const loginData = qs.stringify({
+    const loginData = {
       user: 'demo',
       password: 'demo123',
-    });
+    };
 
     axios
       .post('/api/login', loginData, { withCredentials: true })

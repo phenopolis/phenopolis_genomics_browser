@@ -38,10 +38,10 @@ class LoginBox extends React.Component {
 
     const cookies = new Cookies();
 
-    const loginData = qs.stringify({
+    const loginData = {
       user: this.state.name,
       password: this.state.password,
-    });
+    };
 
     axios
       .post('/api/login', loginData, { withCredentials: true })
