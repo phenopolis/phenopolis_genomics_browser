@@ -6,4 +6,6 @@ export default {
   SEARCH_AUTOCOMPLETE: API_URL + '/autocomplete/',
   SEARCH_BEST_GUESS: API_URL + '/best_guess/',
   FETCH_PREVIEW: '/preview',
+  LOGIN: API_URL + '/login',
+  LOGOUT: API_URL + '/logout',
 };

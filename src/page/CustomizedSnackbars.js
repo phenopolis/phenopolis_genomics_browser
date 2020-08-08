@@ -97,6 +97,7 @@ class CustomizedSnackbars extends React.Component {
   render() {
     return (
       <Snackbar
+        style={{zIndex: 100000000}}
         anchorOrigin={{
           vertical: 'top',
           horizontal: 'right',

@@ -1,227 +1,128 @@
-import React from 'react';
-import PropTypes from 'prop-types';
-import compose from 'recompose/compose';
-import Cookies from 'universal-cookie';
-import { Redirect } from 'react-router';
-import { connect } from 'react-redux';
-
-import { withStyles } from '@material-ui/core/styles';
+import React, { useEffect, useState } from 'react';
+import { useTranslation } from 'react-i18next';
+import { useDispatch, useSelector } from 'react-redux';
 import { Avatar, Button, CssBaseline, TextField, Typography, Container } from '@material-ui/core';
 import LockOutlinedIcon from '@material-ui/icons/LockOutlined';
-
-import { setUser } from '../../redux/actions/users';
+import { Trans } from 'react-i18next';
+import { login } from '../../redux/actions/auth';
 import { setSnack } from '../../redux/actions/snacks';
-
-import axios from 'axios';
-
-import { withTranslation, Trans } from 'react-i18next';
 import i18next from 'i18next';
 
-const qs = require('querystring');
+const LoginBox = (props) => {
 
-class LoginBox extends React.Component {
-  constructor(props) {
-    super(props);
-    this.state = {
-      name: '',
-      password: '',
-      redirect: false,
-    };
-  }
+  const { t } = useTranslation();
+  const dispatch = useDispatch();
+  const { error, user } = useSelector((state) => ({
+    user: state.Login.data,
+    error: state.Login.error,
+  }));
+  const qs = require('querystring');
 
-  componentDidMount() {
-    console.log(this.props.redirectLink);
-  }
+  const [username, setUsername] = useState('');
+  const [password, setPassword] = useState('');
 
-  handleSubmit = (event) => {
+  useEffect(() => {
+  }, [username, password])
+
+  useEffect(() => {
+    if(error) {
+      dispatch(setSnack(i18next.t('HomePage.HomeBanner.login_fail'), 'error'));
+    }
+  }, [dispatch, error, user]);
+
+  const handleSubmit = (event) => {
     event.preventDefault();
 
-    const cookies = new Cookies();
-
     const loginData = {
-      user: this.state.name,
-      password: this.state.password,
+      user: username,
+      password: password,
     };
 
-    axios
-      .post('/api/login', loginData, { withCredentials: true })
-      .then((res) => {
-        let respond = res.data;
-        if (respond.success === 'Authenticated') {
-          cookies.set('username', respond.username, {
-            path: '/',
-            // maxAge: 10
-            maxAge: 60 * 60 * 2,
-            // maxAge: 86400 * 60 * 24 * 30
-          });
-          this.setState({ redirect: true });
-          this.props.setUser(respond.username);
 
-          this.props.setSnack(
-            respond.username + i18next.t('AppBar.LoginBox.Login_Success'),
-            'success'
-          );
-          this.props.onLoginSuccess();
-        } else {
-          this.props.setSnack(i18next.t('AppBar.LoginBox.Login_Failed'), 'error');
-        }
-      })
-      .catch((err) => {
-        this.props.setSnack(i18next.t('AppBar.LoginBox.Login_Failed'), 'error');
-      });
+    dispatch(login(loginData));
   };
 
-  handleNameChange = (event) => {
-    this.setState({ name: event.target.value });
+  const handleNameChange = (event) => {
+    setUsername(event.target.value)
   };
 
-  handlePasswordChange = (event) => {
-    this.setState({ password: event.target.value });
+  const handlePasswordChange = (event) => {
+    setPassword(event.target.value)
   };
 
-  DemoLogin = (event) => {
-    this.setState({ name: 'demo', password: 'demo123' }, () => {
-      this.handleSubmit(event);
-    });
+  const DemoLogin = (event) => {
+    const loginData = {
+      user: 'demo',
+      password: 'demo123',
+    };
+
+    dispatch(login(loginData));
   };
 
-  render() {
-    const { classes } = this.props;
-    const { t } = this.props;
+  return (
+    <Container component="main" maxWidth="xs">
+      <CssBaseline />
+      <div className='loginbox-paper'>
+        <Avatar className='loginbox-avatar'>
+          <LockOutlinedIcon />
+        </Avatar>
+        <Typography component="h1" variant="h6">
+          {t('AppBar.LoginBox.title')}
+        </Typography>
 
-    if (this.state.redirect) {
-      return (
-        <Redirect
-          to={this.props.redirectLink !== 'timeout' ? this.props.redirectLink : '/search'}
-        />
-      );
-    }
-
-    return (
-      <Container component="main" maxWidth="xs">
-        <CssBaseline />
-        <div className={classes.paper}>
-          <Avatar className={classes.avatar}>
-            <LockOutlinedIcon />
-          </Avatar>
-          <Typography component="h1" variant="h6">
-            {t('AppBar.LoginBox.title')}
-          </Typography>
-
-          <form className={classes.form} noValidate onSubmit={this.handleSubmit}>
-            <CssTextField
-              className={classes.textfild}
-              value={this.state.name}
-              onChange={this.handleNameChange}
-              variant="outlined"
-              margin="normal"
-              required
-              fullWidth
-              id="name"
-              label={t('AppBar.LoginBox.Label_User_Name')}
-              name="name"
-              placeholder="demo"
-              autoFocus
-            />
-            <CssTextField
-              className={classes.textfild}
-              value={this.state.password}
-              onChange={this.handlePasswordChange}
-              variant="outlined"
-              margin="normal"
-              required
-              fullWidth
-              name="password"
-              placeholder="demo123"
-              label={t('AppBar.LoginBox.Label_Password')}
-              type="password"
-              id="password"
-            />
-            <Button
-              type="submit"
-              fullWidth
-              variant="contained"
-              className={classes.submit}
-              style={{ backgroundColor: '#2E84CF', color: 'white' }}>
-              {t('AppBar.LoginBox.Button')}
-            </Button>
-            <div style={{ textAlign: 'center' }}>
-              <span style={{ color: 'grey' }}>
+        <form className='loginbox-form' noValidate onSubmit={(event) => handleSubmit(event)}>
+          <TextField
+            className='loginbox-textfield'
+            value={username}
+            onChange={(event) => handleNameChange(event)}
+            variant="outlined"
+            margin="normal"
+            required
+            fullWidth
+            id="name"
+            label={t('AppBar.LoginBox.Label_User_Name')}
+            name="name"
+            placeholder="demo"
+            autoFocus
+          />
+          <TextField
+            className='loginbox-textfield'
+            value={password}
+            onChange={(event) => handlePasswordChange(event)}
+            variant="outlined"
+            margin="normal"
+            required
+            fullWidth
+            name="password"
+            placeholder="demo123"
+            label={t('AppBar.LoginBox.Label_Password')}
+            type="password"
+            id="password"
+          />
+          <Button
+            type="submit"
+            fullWidth
+            variant="contained"
+            className='loginbox-submit'
+            style={{ backgroundColor: '#2E84CF', color: 'white' }}>
+            {t('AppBar.LoginBox.Button')}
+          </Button>
+          <div style={{ textAlign: 'center' }}>
+              <span className='loginBox-demolink-try' onClick={(event) => DemoLogin(event)}>
                 <Trans i18nKey="AppBar.LoginBox.Hint">
                   Click{' '}
-                  <span className={classes.demolink} onClick={this.DemoLogin}>
+                  <span>
                     {' '}
                     Demo Login
                   </span>{' '}
                   to have a try!
                 </Trans>
               </span>
-            </div>
-          </form>
-        </div>
-      </Container>
-    );
-  }
+          </div>
+        </form>
+      </div>
+    </Container>
+  );
 }
 
-LoginBox.propTypes = {
-  classes: PropTypes.object.isRequired,
-};
-
-const styles = (theme) => ({
-  paper: {
-    margin: theme.spacing(4),
-    display: 'flex',
-    flexDirection: 'column',
-    alignItems: 'center',
-  },
-  avatar: {
-    margin: theme.spacing(1),
-    backgroundColor: theme.palette.secondary.main,
-  },
-  form: {
-    width: '100%', // Fix IE 11 issue.
-    marginTop: theme.spacing(1),
-  },
-  submit: {
-    margin: theme.spacing(3, 0, 2),
-  },
-  textfild: {
-    color: '#2E84CF',
-  },
-  demolink: {
-    '&:hover': {
-      cursor: 'pointer',
-      textShadow: '-0.06ex 0 grey, 0.06ex 0 grey',
-      textDecoration: 'underline',
-    },
-  },
-});
-
-const CssTextField = withStyles({
-  root: {
-    '& label.Mui-focused': {
-      color: '#2E84CF',
-    },
-    '& .MuiInput-underline:after': {
-      borderBottomColor: 'green',
-    },
-    '& .MuiOutlinedInput-root': {
-      '& fieldset': {
-        borderColor: 'lightgray',
-      },
-      '&:hover fieldset': {
-        borderColor: 'black',
-      },
-      '&.Mui-focused fieldset': {
-        borderColor: '#2E84CF',
-      },
-    },
-  },
-})(TextField);
-
-export default compose(
-  withStyles(styles),
-  connect(null, { setUser, setSnack }),
-  withTranslation()
-)(LoginBox);
+export default LoginBox;

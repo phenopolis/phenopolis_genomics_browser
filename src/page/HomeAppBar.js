@@ -1,61 +1,29 @@
-import React from 'react';
-import { Redirect } from 'react-router';
-import { connect } from 'react-redux';
-import compose from 'recompose/compose';
-import PropTypes from 'prop-types';
-
-import { withStyles } from '@material-ui/core/styles';
-import { withWidth } from '@material-ui/core';
-
+import React, { useEffect } from 'react';
 import NoLoginBar from '../components/AppBar/NoLoginBar';
 import LoginBar from '../components/AppBar/LoginBar';
+import { useSelector } from 'react-redux';
 
-import { getUsername } from '../redux/selectors';
+const HomeAppBar = (props) => {
 
-class HomeAppBar extends React.Component {
-  constructor(props) {
-    super(props);
-    this.state = {
-      // openLoginDialog: false,
-      redirect: false,
-    };
-  }
+  const { username } = useSelector((state) => ({
+    username: state.users.username,
+  }));
 
-  getReduxName() {
-    return this.props.reduxName;
-  }
+  useEffect(() => {
+  }, [username])
 
-  // OpenDialog() {
-  //   this.setState({
-  //     openLoginDialog: !this.state.openLoginDialog
-  //   });
-  // }
+  return (
+    <div>
+      {/* <AppBar position="relative" className={classes.appbar}> */}
+      {username === '' ? (
+        <NoLoginBar> {props.children} </NoLoginBar>
+      ) : (
+        <LoginBar username={username}>{props.children}</LoginBar>
+      )}
+      {/* </AppBar> */}
+    </div>
+  );
 
-  render() {
-    if (this.state.redirect) {
-      return <Redirect to="/" />;
-    }
-
-    return (
-      <div>
-        {/* <AppBar position="relative" className={classes.appbar}> */}
-        {this.props.reduxName === '' ? (
-          <NoLoginBar> {this.props.children} </NoLoginBar>
-        ) : (
-          <LoginBar username={this.props.reduxName}>{this.props.children}</LoginBar>
-        )}
-        {/* </AppBar> */}
-      </div>
-    );
-  }
 }
 
-HomeAppBar.propTypes = {
-  classes: PropTypes.object.isRequired,
-  width: PropTypes.oneOf(['lg', 'md', 'sm', 'xl', 'xs']).isRequired,
-};
-
-const styles = (theme) => ({});
-
-const mapStateToProps = (state) => ({ reduxName: getUsername(state) });
-export default compose(withStyles(styles), withWidth(), connect(mapStateToProps, {}))(HomeAppBar);
+export default HomeAppBar;

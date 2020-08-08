@@ -4,8 +4,6 @@ import compose from 'recompose/compose';
 
 import { connect } from 'react-redux';
 import { setUser } from '../redux/actions/users';
-import { getUsername } from '../redux/selectors';
-
 import { withStyles } from '@material-ui/core/styles';
 import { CssBaseline, Typography, Container, Paper, Box } from '@material-ui/core';
 
@@ -90,7 +88,7 @@ const styles = (theme) => ({
   },
 });
 
-const mapStateToProps = (state) => ({ reduxName: getUsername(state) });
+const mapStateToProps = (state) => ({ reduxName: state.users.username });
 export default compose(
   withStyles(styles),
   connect(mapStateToProps, { setUser }),
