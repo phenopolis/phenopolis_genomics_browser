@@ -14,6 +14,5 @@ RUN apt-get update \
     && pip3 --no-cache-dir install --upgrade pip \
     && pip --no-cache-dir install setuptools==49.1.0 gunicorn==20.0.4 \
     && pip --no-cache-dir install -r requirements.txt \
-    && pip uninstall pip -y && apt-get purge python3-pip -y \
     && apt-get autoremove -y && apt-get autoclean -y && apt-get clean -y \
     && rm -rf /var/lib/apt/lists/*
