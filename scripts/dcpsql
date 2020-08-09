@@ -1,0 +1,24 @@
+#!/bin/bash
+
+set -euo pipefail
+# set -x
+
+if [ -z "${1:-}" ]; then
+    echo "
+Connect to a postgres db into a docker-compose container named NAME.
+
+Usage: $(basename $0) NAME [ARGS...]
+" >&2
+    exit 2
+fi
+
+id=$(docker-compose ps -q "$1")
+if [ -z "${id:-}" ]; then
+    echo "
+container not found: '$id'
+" >&2
+    exit 2
+fi
+
+shift
+exec dpsql "$id" "$@"
