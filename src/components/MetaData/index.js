@@ -83,7 +83,7 @@ class MetaData extends React.Component {
                                     label={chip.display}
                                     type="other"
                                     size="small"
-                                    action="forward"
+                                    action="externalforward"
                                     popover={false}
                                     to={chip.href}
                                   />

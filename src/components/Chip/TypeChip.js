@@ -38,8 +38,9 @@ const TypeChip = (props) => {
   const history = useHistory();
   const classes = useStyles();
 
-  const { best, previewInfo, previewLoaded, error } = useSelector((state) => ({
+  const { best, previewName, previewInfo, previewLoaded, error } = useSelector((state) => ({
     best: state.Search.best.redirect,
+    previewName: state.Preview.previewName,
     previewInfo: state.Preview.previewInfo,
     previewLoaded: state.Preview.previewLoaded,
     error: state.Preview.error,
@@ -88,7 +89,8 @@ const TypeChip = (props) => {
       dispatch(getSearchBest(guessText));
     } else if (props.action === 'forward') {
       history.push(to);
-    } else {
+    } else if (props.action === 'externalforward') {
+      window.location.href = to;
     }
 
     if (props.emit === true) {
@@ -162,7 +164,7 @@ const TypeChip = (props) => {
           <Typography variant="subtitle1" style={{ 'font-weight': '900', color: 'white' }}>
             {props.label}
 
-            {previewLoaded !== true ? (
+            {(previewLoaded !== true) | (props.to.split('/')[2] !== previewName) ? (
               <small style={{ color: 'white' }}>
                 {' '}
                 &nbsp;&nbsp;
@@ -172,7 +174,7 @@ const TypeChip = (props) => {
           </Typography>
         </Container>
 
-        {previewLoaded === true ? (
+        {(previewLoaded === true) & (props.to.split('/')[2] === previewName) ? (
           <Container className="chip-container">
             {(previewInfo === null) | (previewInfo === undefined) | error ? (
               <span> Can not Fetch preview information </span>
@@ -185,7 +187,11 @@ const TypeChip = (props) => {
                     </Grid>
 
                     <Grid item xs={8} className="chip-popover-datagrid">
-                      {item[1]}
+                      {typeof item[1] === 'object'
+                        ? item[1].map((subchip, subchipIndex) => {
+                            return <span key={subchipIndex}>{subchip + ', '}</span>;
+                          })
+                        : item[1]}
                     </Grid>
                   </Grid>
                 );

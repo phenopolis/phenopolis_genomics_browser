@@ -10,6 +10,6 @@ export const setUser = (newUsername) => ({
 export const logout = () => ({
   type: SET_USER,
   payload: {
-    newUsername: ''
+    newUsername: '',
   },
 });

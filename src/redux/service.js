@@ -30,13 +30,13 @@ function getPreviewInformation(param) {
 }
 
 function login(data) {
-  return axios.post(api.LOGIN, data,  {
+  return axios.post(api.LOGIN, data, {
     withCredentials: true,
   });
 }
 
 function logout() {
-  return axios.post(api.LOGOUT,   {
+  return axios.post(api.LOGOUT, {
     withCredentials: true,
   });
 }
@@ -47,5 +47,5 @@ export default {
   getSearchBest,
   getPreviewInformation,
   login,
-  logout
+  logout,
 };

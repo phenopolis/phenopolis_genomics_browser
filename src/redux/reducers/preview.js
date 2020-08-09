@@ -7,6 +7,7 @@ import {
 
 const initialState = {
   previewInfo: null,
+  previewName: null,
   previewLoaded: false,
   error: false,
 };
@@ -23,7 +24,8 @@ const Preview = (state = initialState, action) => {
       return {
         ...state,
         previewLoaded: true,
-        previewInfo: action.payload.preview,
+        previewInfo: action.payload.info,
+        previewName: action.payload.name,
       };
     }
     case GET_PREVIEW_FAIL: {
@@ -37,6 +39,7 @@ const Preview = (state = initialState, action) => {
       return {
         ...state,
         previewInfo: null,
+        previewName: null,
         previewLoaded: false,
       };
     }

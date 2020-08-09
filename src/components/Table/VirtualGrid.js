@@ -677,7 +677,11 @@ class VirtualGrid extends React.Component {
             break;
           case '=':
             if (typeof item[filter.column.key] !== 'object') {
-              if (RegExp(filter.value).test(item[filter.column.key])) {
+              if (
+                RegExp(filter.value.toUpperCase().replace(/[-\/\\^$*+?.()|[\]{}]/g, '\\$&')).test(
+                  item[filter.column.key].toString().toUpperCase()
+                )
+              ) {
               } else {
                 tmpJudge[index] = false;
               }
@@ -687,14 +691,20 @@ class VirtualGrid extends React.Component {
                 (item[filter.column.key][0] !== null)
               ) {
                 let displays = item[filter.column.key].filter((chip) => {
-                  return RegExp(filter.value).test(chip.display);
+                  return RegExp(
+                    filter.value.toUpperCase().replace(/[-\/\\^$*+?.()|[\]{}]/g, '\\$&')
+                  ).test(chip.display.toUpperCase());
                 });
                 if (displays.length > 0) {
                 } else {
                   tmpJudge[index] = false;
                 }
               } else {
-                if (RegExp(filter.value).test(item[filter.column.key].join(','))) {
+                if (
+                  RegExp(filter.value.toUpperCase().replace(/[-\/\\^$*+?.()|[\]{}]/g, '\\$&')).test(
+                    item[filter.column.key].join(',').toUpperCase()
+                  )
+                ) {
                 } else {
                   tmpJudge[index] = false;
                 }
@@ -702,7 +712,10 @@ class VirtualGrid extends React.Component {
             }
             break;
           case '==':
-            if (JSON.stringify(item[filter.column.key]) === JSON.stringify(filter.value)) {
+            if (
+              JSON.stringify(item[filter.column.key].toString().toUpperCase()) ===
+              JSON.stringify(filter.value.toUpperCase())
+            ) {
             } else {
               tmpJudge[index] = false;
             }

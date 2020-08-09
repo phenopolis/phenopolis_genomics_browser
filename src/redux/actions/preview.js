@@ -12,7 +12,10 @@ export const getPreviewInformation = (text) => {
     Service.getPreviewInformation(text)
       .then((res) => {
         console.log(res);
-        dispatch({ type: GET_PREVIEW_SUCCESS, payload: res.data[0] });
+        dispatch({
+          type: GET_PREVIEW_SUCCESS,
+          payload: { info: res.data[0].preview, name: res.config.url.split('/')[3] },
+        });
       })
       .catch((error) => {
         dispatch({ type: GET_PREVIEW_FAIL, payload: error.response });

@@ -4,13 +4,11 @@ import LoginBar from '../components/AppBar/LoginBar';
 import { useSelector } from 'react-redux';
 
 const HomeAppBar = (props) => {
-
   const { username } = useSelector((state) => ({
     username: state.users.username,
   }));
 
-  useEffect(() => {
-  }, [username])
+  useEffect(() => {}, [username]);
 
   return (
     <div>
@@ -23,7 +21,6 @@ const HomeAppBar = (props) => {
       {/* </AppBar> */}
     </div>
   );
-
-}
+};
 
 export default HomeAppBar;

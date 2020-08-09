@@ -5,27 +5,36 @@ import { Avatar, Button, CssBaseline, TextField, Typography, Container } from '@
 import LockOutlinedIcon from '@material-ui/icons/LockOutlined';
 import { Trans } from 'react-i18next';
 import { login } from '../../redux/actions/auth';
+import { setUser } from '../../redux/actions/users';
 import { setSnack } from '../../redux/actions/snacks';
+import { useHistory } from 'react-router-dom';
 import i18next from 'i18next';
 
 const LoginBox = (props) => {
-
   const { t } = useTranslation();
   const dispatch = useDispatch();
+  const history = useHistory();
   const { error, user } = useSelector((state) => ({
     user: state.Login.data,
     error: state.Login.error,
   }));
-  const qs = require('querystring');
 
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
 
   useEffect(() => {
-  }, [username, password])
+    if (user.username) {
+      dispatch(setSnack(user.username + i18next.t('HomePage.HomeBanner.login_success'), 'success'));
+      dispatch(setUser(user.username));
+      if (props.redirectLink) history.push(props.redirectLink);
+    }
+    if (error) {
+      dispatch(setSnack(i18next.t('HomePage.HomeBanner.login_fail'), 'error'));
+    }
+  }, [dispatch, error, user]);
 
   useEffect(() => {
-    if(error) {
+    if (error) {
       dispatch(setSnack(i18next.t('HomePage.HomeBanner.login_fail'), 'error'));
     }
   }, [dispatch, error, user]);
@@ -38,16 +47,15 @@ const LoginBox = (props) => {
       password: password,
     };
 
-
     dispatch(login(loginData));
   };
 
   const handleNameChange = (event) => {
-    setUsername(event.target.value)
+    setUsername(event.target.value);
   };
 
   const handlePasswordChange = (event) => {
-    setPassword(event.target.value)
+    setPassword(event.target.value);
   };
 
   const DemoLogin = (event) => {
@@ -62,17 +70,17 @@ const LoginBox = (props) => {
   return (
     <Container component="main" maxWidth="xs">
       <CssBaseline />
-      <div className='loginbox-paper'>
-        <Avatar className='loginbox-avatar'>
+      <div className="loginbox-paper">
+        <Avatar className="loginbox-avatar">
           <LockOutlinedIcon />
         </Avatar>
         <Typography component="h1" variant="h6">
           {t('AppBar.LoginBox.title')}
         </Typography>
 
-        <form className='loginbox-form' noValidate onSubmit={(event) => handleSubmit(event)}>
+        <form className="loginbox-form" noValidate onSubmit={(event) => handleSubmit(event)}>
           <TextField
-            className='loginbox-textfield'
+            className="loginbox-textfield"
             value={username}
             onChange={(event) => handleNameChange(event)}
             variant="outlined"
@@ -86,7 +94,7 @@ const LoginBox = (props) => {
             autoFocus
           />
           <TextField
-            className='loginbox-textfield'
+            className="loginbox-textfield"
             value={password}
             onChange={(event) => handlePasswordChange(event)}
             variant="outlined"
@@ -103,26 +111,26 @@ const LoginBox = (props) => {
             type="submit"
             fullWidth
             variant="contained"
-            className='loginbox-submit'
+            className="loginbox-submit"
             style={{ backgroundColor: '#2E84CF', color: 'white' }}>
             {t('AppBar.LoginBox.Button')}
           </Button>
           <div style={{ textAlign: 'center' }}>
-              <span className='loginBox-demolink-try' onClick={(event) => DemoLogin(event)}>
-                <Trans i18nKey="AppBar.LoginBox.Hint">
-                  Click{' '}
-                  <span>
-                    {' '}
-                    Demo Login
-                  </span>{' '}
-                  to have a try!
-                </Trans>
-              </span>
+            <span className="loginBox-demolink-try">
+              <Trans i18nKey="AppBar.LoginBox.Hint">
+                Click{' '}
+                <span className="loginBox-demolink" onClick={(event) => DemoLogin(event)}>
+                  {' '}
+                  Demo Login
+                </span>{' '}
+                to have a try!
+              </Trans>
+            </span>
           </div>
         </form>
       </div>
     </Container>
   );
-}
+};
 
 export default LoginBox;

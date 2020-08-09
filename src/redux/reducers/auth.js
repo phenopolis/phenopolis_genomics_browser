@@ -3,7 +3,7 @@ import { LOGIN_REQUEST, LOGIN_REQUEST_SUCCESS, LOGIN_REQUEST_FAIL } from '../typ
 const initialState = {
   data: {
     success: '',
-    username: ''
+    username: '',
   },
   loading: true,
   error: false,
@@ -15,7 +15,7 @@ const Login = (state = initialState, action) => {
       return {
         ...state,
         loading: true,
-        error: false
+        error: false,
       };
     }
     case LOGIN_REQUEST_SUCCESS: {

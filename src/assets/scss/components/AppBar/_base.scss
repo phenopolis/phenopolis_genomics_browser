@@ -1,5 +1,5 @@
 .appBar {
-  z-index: 10000 !important;
+  z-index: 1000 !important;
   //transition: background-color 150ms cubic-bezier(0.4, 0, 0.2, 1) 0ms !important;
 }
 
@@ -24,12 +24,13 @@
   width: 240px;
   flex-shrink: 0;
   white-space: nowrap;
-  //z-index: 100000 !important;
+  z-index: 2 !important;
 }
 
 .drawerOpen {
   width: 240px;
   transition: background-color 150ms cubic-bezier(0.4, 0, 0.2, 1) 0ms !important;
+  z-index: 2 !important;
 }
 
 .drawerClose {
@@ -38,10 +39,12 @@
   //justify-content: flex-end !important;
   transition: background-color 150ms cubic-bezier(0.4, 0, 0.2, 1) 0ms !important;
   width: 72px !important;
+  z-index: 2 !important;
 }
 
 .appBar-content {
   flex-grow: 1 !important;
+  padding-top: 3em;
 }
 
 .appBar-contentShift {
@@ -110,13 +113,19 @@
 
 .loginBox-demolink-try {
   color: grey;
+  margin-top: 24px !important;
+}
+
+.loginBox-demolink {
+  color: grey;
   cursor: pointer;
   margin-top: 24px !important;
 
   &:hover {
     text-shadow: -0.06ex 0 grey, 0.06ex 0 grey;
-    text-decoration: underline;
+    text-decoration: none;
   }
 }
+
 
 

@@ -12,5 +12,5 @@ export default combineReducers({
   Statistics,
   Search,
   Preview,
-  Login
+  Login,
 });

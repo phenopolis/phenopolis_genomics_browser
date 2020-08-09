@@ -17,19 +17,20 @@ export const login = (data) => {
 export const userLogout = () => {
   return (dispatch) => {
     dispatch({ type: LOGIN_REQUEST });
-    dispatch({ type: LOGIN_REQUEST_SUCCESS, payload: {
+    dispatch({
+      type: LOGIN_REQUEST_SUCCESS,
+      payload: {
         data: {
           success: '',
-          username: ''
+          username: '',
         },
         loading: false,
-        error: false}
+        error: false,
+      },
     });
 
     Service.logout()
-      .then((res) => {
-
-      })
+      .then((res) => {})
       .catch((error) => {
         dispatch({ type: LOGIN_REQUEST_FAIL, payload: error.response });
       });

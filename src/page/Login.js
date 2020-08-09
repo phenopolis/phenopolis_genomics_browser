@@ -46,9 +46,9 @@ class Login extends React.Component {
 
             <LoginBox
               onLoginSuccess={() => {}}
-              redirectLink={query.get('link') ? query.get('link') : null}>
-              /
-            </LoginBox>
+              redirectLink={
+                query.get('link') & (query.get('link') !== 'timeout') ? query.get('link') : '/'
+              }></LoginBox>
           </div>
         ) : (
           <div className={classes.root}>

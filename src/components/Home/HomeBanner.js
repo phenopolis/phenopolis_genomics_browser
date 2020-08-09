@@ -10,7 +10,6 @@ import Homebanner from '../../assets/image/Homebanner.jpg';
 import i18next from 'i18next';
 
 const HomeBanner = (props) => {
-
   const { t } = useTranslation();
   const dispatch = useDispatch();
   const { error, user } = useSelector((state) => ({
@@ -24,7 +23,7 @@ const HomeBanner = (props) => {
       dispatch(setSnack(user.username + i18next.t('HomePage.HomeBanner.login_success'), 'success'));
       dispatch(setUser(user.username));
     }
-    if(error) {
+    if (error) {
       dispatch(setSnack(i18next.t('HomePage.HomeBanner.login_fail'), 'error'));
     }
   }, [dispatch, error, user]);
@@ -36,7 +35,7 @@ const HomeBanner = (props) => {
     };
 
     dispatch(login(loginData));
-  }
+  };
 
   return (
     <div className="hero-wrapper bg-composed-wrapper bg-white" style={{ height: '70vh' }}>

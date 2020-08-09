@@ -48,7 +48,6 @@ import ES from '../../assets/svg/es.svg';
 const ActionBar = React.lazy(() => import('./ActionBar'));
 
 const LoginBar = (props) => {
-
   const { t } = useTranslation();
   const history = useHistory();
   const dispatch = useDispatch();
@@ -63,63 +62,62 @@ const LoginBar = (props) => {
   const [openSearchDrawer, setOpenSearchDrawer] = useState(false);
 
   const { username } = useSelector((state) => ({
-    username: state.users.username
+    username: state.users.username,
   }));
 
-  useEffect(() => {
-  }, [username])
+  useEffect(() => {}, [username]);
 
-      const changeLanguage = (lng) => {
-      i18next.changeLanguage(lng);
-      OpenLan();
-      if (
-        (window.location.pathname !== '/') &
-        (window.location.pathname !== '/publications') &
-        (window.location.pathname !== '/login') &
-        (window.location.pathname !== '/about') &
-        (window.location.pathname !== '/price') &
-        (window.location.pathname !== '/product') &
-        (window.location.pathname !== '/search')
-      ) {
-        window.location.reload();
-      }
-    };
+  const changeLanguage = (lng) => {
+    i18next.changeLanguage(lng);
+    OpenLan();
+    if (
+      (window.location.pathname !== '/') &
+      (window.location.pathname !== '/publications') &
+      (window.location.pathname !== '/login') &
+      (window.location.pathname !== '/about') &
+      (window.location.pathname !== '/price') &
+      (window.location.pathname !== '/product') &
+      (window.location.pathname !== '/search')
+    ) {
+      window.location.reload();
+    }
+  };
 
   const OpenLan = () => {
-    setOpenLan(!openLan)
-  }
+    setOpenLan(!openLan);
+  };
 
   const OpenMenu = () => {
-    setOpenMenu(!openMenu)
-  }
+    setOpenMenu(!openMenu);
+  };
 
   const OpenActionSideBar = () => {
     setOpenActionSideBar(!openActionSideBar);
-  }
+  };
 
   const handleClick = (event) => {
-    setAnchorEl(event.currentTarget)
+    setAnchorEl(event.currentTarget);
     OpenMenu();
   };
 
   const handleLogout = (relink) => {
-    dispatch(userLogout())
+    dispatch(userLogout());
     dispatch(setUser(''));
     dispatch(setSnack(i18next.t('AppBar.LoginBar.Logout_Success'), 'success'));
     history.push(relink);
   };
 
- const handleLanClick = (event) => {
-    setAnchorLan(event.currentTarget)
+  const handleLanClick = (event) => {
+    setAnchorLan(event.currentTarget);
     OpenLan();
   };
 
- const OpenExplore = () => {
-   setOpenExplore(!openExplore)
-  }
+  const OpenExplore = () => {
+    setOpenExplore(!openExplore);
+  };
 
- const handletoggleDrawer = () => {
-   setOpenSearchDrawer(!openSearchDrawer)
+  const handletoggleDrawer = () => {
+    setOpenSearchDrawer(!openSearchDrawer);
   };
 
   return (
@@ -140,41 +138,39 @@ const LoginBar = (props) => {
             <MenuIcon />
           </IconButton>
           <Typography
-            className='appBar-HomeLabel'
+            className="appBar-HomeLabel"
             variant="h6"
             color="inherit"
             // noWrap
             component={Link}
-            to="/">
+            to="/"
+            style={{ fontWeight: '900' }}>
             Phenopolis
           </Typography>
           <Grid container direction="row" justify="flex-end" alignItems="center">
             <Hidden smDown>
               <div>
                 <BottomNavigationAction
-                  className='appBar-navigationbutton'
+                  className="appBar-navigationbutton"
                   label={t('AppBar.LoginBar.Label_Search')}
                   showLabel
                   icon={<SearchIcon />}
                   onClick={handletoggleDrawer}
                 />
 
-                <Drawer
-                  anchor="top"
-                  open={openSearchDrawer}
-                  onClose={handletoggleDrawer}>
+                <Drawer anchor="top" open={openSearchDrawer} onClose={handletoggleDrawer}>
                   <DrawerSearch onRequestClose={handletoggleDrawer} />
                 </Drawer>
 
                 <BottomNavigationAction
-                  className='appBar-navigationbutton'
+                  className="appBar-navigationbutton"
                   label={t('AppBar.LoginBar.Label_Language')}
                   showLabel
                   icon={<TranslateIcon />}
                   onClick={(event) => handleLanClick(event)}
                 />
                 <BottomNavigationAction
-                  className='appBar-navigationbutton'
+                  className="appBar-navigationbutton"
                   label={username}
                   showLabel
                   icon={<AccountCircleIcon />}
@@ -188,10 +184,7 @@ const LoginBar = (props) => {
                   open={Boolean(openExplore)}
                   style={{ top: '3em' }}
                   onClose={() => OpenExplore()}>
-                  <MenuItem
-                    component={Link}
-                    to="/publications"
-                    onClick={() => OpenExplore()}>
+                  <MenuItem component={Link} to="/publications" onClick={() => OpenExplore()}>
                     <ListItemIcon>
                       <DescriptionIcon />
                     </ListItemIcon>
@@ -247,40 +240,37 @@ const LoginBar = (props) => {
                   onClose={() => OpenLan()}>
                   <MenuItem onClick={() => changeLanguage('en')}>
                     <ListItemIcon>
-                      <img className='imageIcon' src={GB} alt="English" />
+                      <img className="imageIcon" src={GB} alt="English" />
                     </ListItemIcon>
                     <ListItemText classes={{ primary: 'appBar-listItemText' }} primary="English" />
                   </MenuItem>
                   <MenuItem onClick={() => changeLanguage('cn')}>
                     <ListItemIcon>
-                      <img className='imageIcon' src={CN} alt="中文" />
+                      <img className="imageIcon" src={CN} alt="中文" />
                     </ListItemIcon>
                     <ListItemText classes={{ primary: 'appBar-listItemText' }} primary="中文" />
                   </MenuItem>
                   <MenuItem onClick={() => changeLanguage('ja')}>
                     <ListItemIcon>
-                      <img className='imageIcon' src={JP} alt="日本語" />
+                      <img className="imageIcon" src={JP} alt="日本語" />
                     </ListItemIcon>
                     <ListItemText classes={{ primary: 'appBar-listItemText' }} primary="日本語" />
                   </MenuItem>
                   <MenuItem onClick={() => changeLanguage('de')}>
                     <ListItemIcon>
-                      <img className='imageIcon' src={DE} alt="Deutsch" />
+                      <img className="imageIcon" src={DE} alt="Deutsch" />
                     </ListItemIcon>
                     <ListItemText classes={{ primary: 'appBar-listItemText' }} primary="Deutsch" />
                   </MenuItem>
                   <MenuItem onClick={() => changeLanguage('gr')}>
                     <ListItemIcon>
-                      <img className='imageIcon' src={GR} alt="Ελληνικά" />
+                      <img className="imageIcon" src={GR} alt="Ελληνικά" />
                     </ListItemIcon>
-                    <ListItemText
-                      classes={{ primary: 'appBar-listItemText' }}
-                      primary="Ελληνικά"
-                    />
+                    <ListItemText classes={{ primary: 'appBar-listItemText' }} primary="Ελληνικά" />
                   </MenuItem>
                   <MenuItem onClick={() => changeLanguage('es')}>
                     <ListItemIcon>
-                      <img className='imageIcon' src={ES} alt="Español" />
+                      <img className="imageIcon" src={ES} alt="Español" />
                     </ListItemIcon>
                     <ListItemText classes={{ primary: 'appBar-listItemText' }} primary="Español" />
                   </MenuItem>
@@ -288,7 +278,6 @@ const LoginBar = (props) => {
               </div>
             </Hidden>
           </Grid>
-
         </Toolbar>
       </AppBar>
 
@@ -322,13 +311,13 @@ const LoginBar = (props) => {
         />
       </Drawer>
 
-      <main className='appBar-content'>
-        <div className='appBar-toolbar' />
+      <main className="appBar-content">
+        <div className="appBar-toolbar" />
         {props.children}
         <Footer />
       </main>
     </div>
   );
-}
+};
 
 export default LoginBar;
