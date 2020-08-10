@@ -14,10 +14,7 @@ import psycopg2
 logger = logging.getLogger()
 logging.basicConfig(level=logging.INFO, format="%(asctime)s %(levelname)s %(message)s")
 
-DEFAULT_URL = (
-    "https://raw.githubusercontent.com/obophenotype/"
-    "human-phenotype-ontology/master/hp.obo"
-)
+DEFAULT_URL = "https://raw.githubusercontent.com/obophenotype/human-phenotype-ontology/master/hp.obo"
 
 
 def main():
@@ -145,15 +142,10 @@ def parse_cmdline():
 
     parser = ArgumentParser(description=__doc__)
     parser.add_argument(
-        "input",
-        nargs="?",
-        default=DEFAULT_URL,
-        help="file name or url to import from [default: %(default)s]",
+        "input", nargs="?", default=DEFAULT_URL, help="file name or url to import from [default: %(default)s]",
     )
     parser.add_argument(
-        "--dsn",
-        default="",
-        help="connection string to import into [default: %(default)r]",
+        "--dsn", default="", help="connection string to import into [default: %(default)r]",
     )
 
     opt = parser.parse_args()
