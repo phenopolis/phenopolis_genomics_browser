@@ -64,34 +64,21 @@ def main():
 def parse_cmdline():
     from optparse import OptionParser
 
-    parser = OptionParser(
-        usage="%prog [options] [patch [...]]",
-        description="Apply patches to a database.",
-    )
+    parser = OptionParser(usage="%prog [options] [patch [...]]", description="Apply patches to a database.",)
     parser.add_option(
         "--dsn",
         metavar="STRING",
         default=os.environ.get("PATCH_DSN", ""),
-        help="the database to connect to. Read from env var PATCH_DSN if set"
-        " [default: '%default']",
+        help="the database to connect to. Read from env var PATCH_DSN if set" " [default: '%default']",
     )
-    patchdir = os.path.abspath(
-        os.path.join(os.path.dirname(__file__), "../schema/patches")
+    patchdir = os.path.abspath(os.path.join(os.path.dirname(__file__), "../schema/patches"))
+    parser.add_option(
+        "--patches-dir", default=patchdir, help="directory containing the database patches [default: %default]",
     )
     parser.add_option(
-        "--patches-dir",
-        default=patchdir,
-        help="directory containing the database patches [default: %default]",
+        "--yes", "-y", action="store_true", help="assume affermative answer to all the questions",
     )
-    parser.add_option(
-        "--yes",
-        "-y",
-        action="store_true",
-        help="assume affermative answer to all the questions",
-    )
-    parser.add_option(
-        "--dry-run", "-n", action="store_true", help="just pretend"
-    )
+    parser.add_option("--dry-run", "-n", action="store_true", help="just pretend")
 
     opt, args = parser.parse_args()
     opt.patches = args
@@ -154,9 +141,7 @@ def grab_lock(_cnn=[]):
         if not msg:
             msg = "don't know who"
 
-    raise ScriptException(
-        "couldn't lock the database: somebody else is patching it (%s)" % msg
-    )
+    raise ScriptException("couldn't lock the database: somebody else is patching it (%s)" % msg)
 
 
 def with_connection(f):
@@ -189,9 +174,7 @@ def find_patches():
 
     else:
         if not os.path.isdir(opt.patches_dir):
-            raise ScriptException(
-                "patch directory not found: '%s'" % opt.patches_dir
-            )
+            raise ScriptException("patch directory not found: '%s'" % opt.patches_dir)
         pattern = os.path.join(opt.patches_dir, "*.sql")
         files = glob(pattern)
         files.sort(key=os.path.basename)
@@ -214,9 +197,7 @@ def verify_patch_table(cnn, patches):
     cnn.rollback()
 
     logger.warning(
-        "Patches table not found at dsn '%s': "
-        "assuming all the patches in input have already been applied.",
-        opt.dsn,
+        "Patches table not found at dsn '%s': " "assuming all the patches in input have already been applied.", opt.dsn,
     )
     confirm("Do you want to continue?")
 
@@ -359,10 +340,7 @@ def confirm_patch(filename, _all=[], _warned=[]):
         return True
 
     while 1:
-        logger.info(
-            "Do you want to apply '%s'? "
-            "(Y)es, (n)o, (v)iew, (s)kip forever, (a)ll, (q)uit" % filename
-        )
+        logger.info("Do you want to apply '%s'? " "(Y)es, (n)o, (v)iew, (s)kip forever, (a)ll, (q)uit" % filename)
         ans = input()
         ans = (ans or "y")[0].lower()
         if ans == "q":
@@ -391,10 +369,7 @@ def confirm_script(filename):
         return True
 
     while 1:
-        logger.info(
-            "Do you want to run the script '%s'? (Y)es, (n)o, (v)iew, (q)uit"
-            % filename
-        )
+        logger.info("Do you want to run the script '%s'? (Y)es, (n)o, (v)iew, (q)uit" % filename)
         ans = input()
         ans = (ans or "y")[0].lower()
         if ans == "q":
