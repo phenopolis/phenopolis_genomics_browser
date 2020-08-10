@@ -3,16 +3,14 @@ import CssBaseline from '@material-ui/core/CssBaseline';
 import HomeMainPart from '../components/Home/HomeMainPart';
 import HomeBanner from '../components/Home/HomeBanner';
 
-class Home extends React.Component {
-  render() {
-    return (
-      <React.Fragment>
-        <CssBaseline />
-        <HomeBanner BannerText="Phenopolis" />
-        <HomeMainPart />
-      </React.Fragment>
-    );
-  }
-}
+const Home = () => {
+  return (
+    <>
+      <CssBaseline />
+      <HomeBanner BannerText="Phenopolis" />
+      <HomeMainPart />
+    </>
+  );
+};
 
 export default Home;
