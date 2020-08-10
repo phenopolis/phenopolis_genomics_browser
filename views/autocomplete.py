@@ -67,7 +67,8 @@ def autocomplete(query):
             _search_genes(cursor, query, limit)
             + _search_phenotypes(cursor, query, limit)
             + _search_patients(cursor, query, limit)
-            + _search_variants_by_coordinates(cursor, query, limit) + _search_variants_by_hgvs(cursor, query, limit)
+            + _search_variants_by_coordinates(cursor, query, limit)
+            + _search_variants_by_hgvs(cursor, query, limit)
         )
     else:
         message = "Autocomplete request with unsupported query type '{}'".format(query_type)
@@ -91,11 +92,11 @@ def _search_patients(cursor, query, limit):
         {"user": session["user"], "query": "%{}%".format(query), "limit": limit},
     )
     patient_hits = cursor2dict(cursor)
-    return ['individual::' + x["internal_id"] + '::' + x["internal_id"] for x in patient_hits]
+    return ["individual::" + x["internal_id"] + "::" + x["internal_id"] for x in patient_hits]
 
 
 def _search_phenotypes(cursor, query, limit):
-    """
+    r"""
     A user may search for things like 'Abnormality of body height' or for an HPO id as HP:1234567 (ie: HP:\d{7})
     """
     if HPO_REGEX.match(query):
@@ -109,7 +110,7 @@ def _search_phenotypes(cursor, query, limit):
             {"query": "%{}%".format(query), "limit": limit},
         )
     hpo_hits = cursor2dict(cursor)
-    return ['hpo::' + x["hpo_name"] + "::" + x["hpo_id"] for x in hpo_hits]
+    return ["hpo::" + x["hpo_name"] + "::" + x["hpo_id"] for x in hpo_hits]
 
 
 def _search_genes(cursor, query, limit):
@@ -136,7 +137,8 @@ def _search_genes(cursor, query, limit):
         )
     gene_hits = cursor2dict(cursor)
     # while the search is performed on the upper cased gene name, it returns the original gene name
-    return [ 'gene::' +  x["gene_name"] + '::' +  x["gene_id"] for x in gene_hits]
+    return ["gene::" + x["gene_name"] + "::" + x["gene_id"] for x in gene_hits]
+
 
 def _search_variants_by_coordinates(cursor, query, limit):
     """
@@ -171,7 +173,10 @@ def _search_variants_by_coordinates(cursor, query, limit):
         return []
     variant_hits = cursor2dict(cursor)
 
-    return ['variant::' + "{CHROM}-{POS}-{REF}-{ALT}".format(**x) + '::' + "{CHROM}-{POS}-{REF}-{ALT}".format(**x) for x in variant_hits]
+    return [
+        "variant::" + "{CHROM}-{POS}-{REF}-{ALT}".format(**x) + "::" + "{CHROM}-{POS}-{REF}-{ALT}".format(**x)
+        for x in variant_hits
+    ]
 
 
 def _search_variants_by_hgvs(cursor, query, limit):
@@ -198,7 +203,10 @@ def _search_variants_by_hgvs(cursor, query, limit):
         # no variant pattern, we perform no search
         return []
     variant_hits = cursor2dict(cursor)
-    return ['variant::' + "{CHROM}-{POS}-{REF}-{ALT}".format(**x) + '::' + "{CHROM}-{POS}-{REF}-{ALT}".format(**x) for x in variant_hits]
+    return [
+        "variant::" + "{CHROM}-{POS}-{REF}-{ALT}".format(**x) + "::" + "{CHROM}-{POS}-{REF}-{ALT}".format(**x)
+        for x in variant_hits
+    ]
 
 
 def _parse_hgvs_from_query(query):
