@@ -12,13 +12,11 @@ const HomeAppBar = (props) => {
 
   return (
     <div>
-      {/* <AppBar position="relative" className={classes.appbar}> */}
       {username === '' ? (
         <NoLoginBar> {props.children} </NoLoginBar>
       ) : (
         <LoginBar username={username}>{props.children}</LoginBar>
       )}
-      {/* </AppBar> */}
     </div>
   );
 };
