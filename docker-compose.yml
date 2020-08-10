@@ -24,5 +24,3 @@ services:
       - public.env
       - private.env
       working_dir: /app
-      ports:
-      - 5432:5432
