@@ -33,3 +33,15 @@ alter default privileges in schema hpo
 set search_path to hpo, public;
 \i hpo.sql
 reset search_path;
+
+
+create schema gnomad;
+grant usage on schema gnomad to phenopolis_api;
+alter default privileges in schema gnomad
+    grant select, insert, update, delete on tables to phenopolis_api;
+alter default privileges in schema gnomad
+    grant all on sequences to phenopolis_api;
+
+set search_path to gnomad, public;
+\i gnomad.sql
+reset search_path;
