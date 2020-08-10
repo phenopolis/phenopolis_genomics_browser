@@ -4,9 +4,9 @@
 
 do $$
 begin
-    perform 1 from pg_user where usename = 'phenopolis_api';
+    perform 1 from pg_roles where rolname = 'phenopolis_api';
     if not found then
-        create user phenopolis_api;
+        create role phenopolis_api;
     end if;
 end
 $$ language plpgsql;
