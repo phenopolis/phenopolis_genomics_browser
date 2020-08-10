@@ -18,9 +18,13 @@ services:
    db:
       image: postgres:12-alpine
       volumes:
+      - db:/var/lib/postgresql/data
       - ./:/app
       - ./schema/initdb.d/:/docker-entrypoint-initdb.d
       env_file:
       - public.env
       - private.env
       working_dir: /app
+
+volumes:
+  db:
