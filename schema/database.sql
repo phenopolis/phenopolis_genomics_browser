@@ -26,7 +26,9 @@ create extension ltree;
 create schema hpo;
 grant usage on schema hpo to phenopolis_api;
 alter default privileges in schema hpo
-    grant select on tables to phenopolis_api;
+    grant select, insert, update, delete on tables to phenopolis_api;
+alter default privileges in schema hpo
+    grant all on sequences to phenopolis_api;
 
 set search_path to hpo, public;
 \i hpo.sql
