@@ -1,75 +1,49 @@
-import React from 'react';
-import axios from 'axios';
-import PropTypes from 'prop-types';
-import { withStyles } from '@material-ui/core/styles';
+import React, { useEffect } from 'react';
 import { CssBaseline, Container } from '@material-ui/core';
-import { Redirect } from 'react-router';
-
+import { useHistory } from 'react-router-dom';
 import VirtualGrid from '../components/Table/VirtualGrid';
 import Loading from '../components/General/Loading';
+import { useTranslation } from 'react-i18next';
+import { useDispatch, useSelector } from 'react-redux';
+import { getPatients } from '../redux/actions/patients';
+import { setSnack } from '../redux/actions/snacks';
 
-import compose from 'recompose/compose';
-import { withTranslation } from 'react-i18next';
+const MyPatient = () => {
+  const { t } = useTranslation();
+  const history = useHistory();
+  const dispatch = useDispatch();
+  const { error, patients, username } = useSelector((state) => ({
+    username: state.users.username,
+    patients: state.Patients.data[0],
+    error: state.Patients.error,
+  }));
+  useEffect(() => {
+    dispatch(getPatients());
 
-class MyPatient extends React.Component {
-  constructor(props) {
-    super(props);
-    this.state = {
-      AllPatientInfo: {},
-      loaded: false,
-      redirect: false,
-    };
-  }
-
-  getAllPatientInformation = () => {
-    var self = this;
-    axios
-      // .get('/api/' + i18next.t('MyPatient.entry') + '/hpo/HP:0000001', {
-      .get('/api/hpo/HP:0000001', {
-        withCredentials: true,
-      })
-      .then((res) => {
-        let respond = res.data;
-        console.log(respond[0]);
-        self.setState({
-          AllPatientInfo: respond[0],
-          loaded: true,
-        });
-      })
-      .catch((err) => {
-        console.log(err);
-        if (err.response.status === 401) {
-          this.setState({ redirect: true });
-        }
-      });
-  };
-
-  componentDidMount() {
-    this.getAllPatientInformation();
-  }
-
-  render() {
-    const { classes } = this.props;
-    const { t } = this.props;
-
-    if (this.state.redirect) {
-      return <Redirect to={'/login?link=' + window.location.pathname} />;
+    if (error) {
+      dispatch(setSnack(error, 'error'));
     }
 
-    if (this.state.loaded) {
-      return (
+    if (!username) {
+      history.push('/login?link=/my_patients');
+    }
+  }, [dispatch, error, username, history]);
+
+  return (
+    <>
+      {patients ? (
         <React.Fragment>
           <CssBaseline />
-          <div className={classes.root}>
+          <div className="myPatients-container">
             <Container maxWidth="xl">
               <VirtualGrid
-                tableData={this.state.AllPatientInfo.individuals}
+                tableData={patients.individuals}
                 title={
                   t('MyPatient.My_Patients') +
                   ' (' +
                   t('MyPatient.Total') +
                   ' ' +
-                  this.state.AllPatientInfo.preview[0][1] +
+                  patients.preview[0][1] +
                   ')'
                 }
                 subtitle=" "
@@ -77,26 +51,11 @@ class MyPatient extends React.Component {
             </Container>
           </div>
         </React.Fragment>
-      );
-    } else {
-      return <Loading message={t('MyPatient.message')} />;
-    }
-  }
-}
-
-MyPatient.propTypes = {
-  classes: PropTypes.object.isRequired,
+      ) : (
+        <Loading message={t('MyPatient.message')} />
+      )}
+    </>
+  );
 };
 
-const styles = (theme) => ({
-  root: {
-    backgroundColor: '#eeeeee',
-    padding: '4em',
-  },
-  paper: {
-    padding: theme.spacing(3),
-    marginTop: theme.spacing(3),
-  },
-});
-
-export default compose(withStyles(styles), withTranslation())(MyPatient);
+export default MyPatient;

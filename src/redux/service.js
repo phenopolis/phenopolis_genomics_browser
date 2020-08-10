@@ -41,6 +41,12 @@ function logout() {
   });
 }
 
+function getPatients() {
+  return axios.get(api.PATIENTS, {
+    withCredentials: true,
+  });
+}
+
 export default {
   getStatistics,
   getSearchAutocomplete,
@@ -48,4 +54,5 @@ export default {
   getPreviewInformation,
   login,
   logout,
+  getPatients,
 };
