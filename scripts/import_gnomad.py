@@ -18,8 +18,7 @@ import gzip
 import logging
 from urllib.parse import quote
 from urllib.request import urlopen
-
-from argparse import ArgumentParser
+from argparse import ArgumentParser, RawDescriptionHelpFormatter
 
 logger = logging.getLogger()
 logging.basicConfig(level=logging.DEBUG, format="%(asctime)s %(levelname)s %(message)s")
@@ -123,14 +122,14 @@ def as_url(name):
 
 
 def parse_cmdline():
-    parser = ArgumentParser(description=__doc__)
-    parser.add_argument("file", help="file (or url) to parse")
+    parser = ArgumentParser(description=__doc__, formatter_class=RawDescriptionHelpFormatter)
+    parser.add_argument("file", metavar="FILE_OR_URL", help="the resource to parse")
 
     g = parser.add_mutually_exclusive_group()
     g.add_argument(
         "-q",
         "--quiet",
-        help="Talk less",
+        help="talk less",
         dest="loglevel",
         action="store_const",
         const=logging.WARN,
@@ -139,7 +138,7 @@ def parse_cmdline():
     g.add_argument(
         "-v",
         "--verbose",
-        help="Talk more",
+        help="talk more",
         dest="loglevel",
         action="store_const",
         const=logging.DEBUG,
