@@ -17,17 +17,22 @@ const MyPatient = () => {
     patients: state.Patients.data[0],
     error: state.Patients.error,
   }));
+
   useEffect(() => {
     dispatch(getPatients());
+  }, [dispatch]);
 
+  useEffect(() => {
     if (error) {
       dispatch(setSnack(error, 'error'));
     }
+  }, [dispatch, error]);
 
+  useEffect(() => {
     if (!username) {
       history.push('/login?link=/my_patients');
     }
-  }, [dispatch, error, username, history]);
+  }, [username])
 
   return (
     <>

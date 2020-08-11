@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Grid, Box, Typography, Button, Container } from '@material-ui/core';
 import { Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
@@ -11,29 +11,32 @@ import i18next from 'i18next';
 
 const HomeBanner = (props) => {
   const { t } = useTranslation();
+  const [isLogin, setIsLogin] = useState(false);
   const dispatch = useDispatch();
   const { error, user } = useSelector((state) => ({
     user: state.Login.data,
     error: state.Login.error,
   }));
-  const qs = require('querystring');
 
   useEffect(() => {
-    if (user.username) {
+    if (user.username && isLogin) {
       dispatch(setSnack(user.username + i18next.t('HomePage.HomeBanner.login_success'), 'success'));
       dispatch(setUser(user.username));
     }
+  }, [dispatch, user, isLogin]);
+
+  useEffect(() => {
     if (error) {
       dispatch(setSnack(i18next.t('HomePage.HomeBanner.login_fail'), 'error'));
     }
-  }, [dispatch, error, user]);
+  }, [error])
 
   const demoLogin = () => {
     const loginData = {
       user: 'demo',
       password: 'demo123',
     };
-
+    setIsLogin(true);
     dispatch(login(loginData));
   };
 
