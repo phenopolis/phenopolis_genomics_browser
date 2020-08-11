@@ -8,5 +8,6 @@ export default {
   FETCH_PREVIEW: '/preview',
   LOGIN: API_URL + '/login',
   LOGOUT: API_URL + '/logout',
+  IS_LOGGED_IN: API_URL + '/is_logged_in',
   PATIENTS: API_URL + '/hpo/HP:0000001',
 };

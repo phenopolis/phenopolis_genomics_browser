@@ -5,6 +5,7 @@ import Statistics from './statistic';
 import Search from './search';
 import Preview from './preview';
 import Login from './auth';
+import IsLoggedIn from './isLoggedIn';
 import Patients from './patients';
 
 export default combineReducers({
@@ -14,5 +15,6 @@ export default combineReducers({
   Search,
   Preview,
   Login,
+  IsLoggedIn,
   Patients,
 });

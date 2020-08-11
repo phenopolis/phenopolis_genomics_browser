@@ -1,49 +1,44 @@
-import React from 'react';
-import compose from 'recompose/compose';
-import { Redirect } from 'react-router';
-import { connect } from 'react-redux';
+import React, { useEffect } from 'react';
+import { useHistory } from 'react-router-dom';
+import { useDispatch, useSelector } from 'react-redux';
 import { setUser } from '../redux/actions/users';
+import { isLoggedIn } from '../redux/actions/users';
 
-import axios from 'axios';
+const AuthCheck = () => {
+  const dispatch = useDispatch();
+  const history = useHistory();
 
-class AuthCheck extends React.Component {
-  constructor(props) {
-    super(props);
-    this.state = {
-      openLoginDialog: false,
-      redirect: false,
-    };
-  }
+  const { error, data } = useSelector((state) => ({
+    data: state.IsLoggedIn.data,
+    username: state.users.username,
+    error: state.IsLoggedIn.error,
+  }));
 
-  componentWillMount() {
-    axios
-      .get('/api/is_logged_in', { withCredentials: true })
-      .then((res) => {
-        let respond = res.data;
-        this.props.setUser(respond.username);
-      })
-      .catch((err) => {
-        console.log(err);
-        if (
-          (window.location.pathname !== '/') &
-          (window.location.pathname !== '/publications') &
-          (window.location.pathname !== '/login') &
-          (window.location.pathname !== '/about') &
-          (window.location.pathname !== '/price') &
-          (window.location.pathname !== '/product')
-        ) {
-          this.setState({ redirect: true });
-        }
-      });
-  }
+  useEffect(() => {
+    dispatch(isLoggedIn());
+  }, []);
 
-  render() {
-    if (this.state.redirect) {
-      return <Redirect to={'/login?link=' + window.location.pathname} />;
+  useEffect(() => {
+    if (data) {
+      dispatch(setUser(data.username));
     }
+  }, [dispatch, data]);
 
-    return <div />;
-  }
-}
+  useEffect(() => {
+    if (error) {
+      if (
+        (window.location.pathname !== '/') &
+        (window.location.pathname !== '/publications') &
+        (window.location.pathname !== '/login') &
+        (window.location.pathname !== '/about')
 
-export default compose(connect(null, { setUser }))(AuthCheck);
+      ) {
+        history.push(`/login?link=${window.location.pathname}`);
+      }
+    }
+  }, [error, history])
+
+  return <></>;
+};
+
+export default AuthCheck;

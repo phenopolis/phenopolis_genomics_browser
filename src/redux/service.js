@@ -41,6 +41,12 @@ function logout() {
   });
 }
 
+function isLoggedIn() {
+  return axios.get(api.IS_LOGGED_IN, {
+    withCredentials: true,
+  });
+}
+
 function getPatients() {
   return axios.get(api.PATIENTS, {
     withCredentials: true,
@@ -54,5 +60,6 @@ export default {
   getPreviewInformation,
   login,
   logout,
+  isLoggedIn,
   getPatients,
 };
