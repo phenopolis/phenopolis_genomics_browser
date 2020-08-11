@@ -1,15 +1,29 @@
 ## For running tests
-For the moment, these unit tests need Demo DB from docker app running, then:
+In a hurry? First be sure that `docker-compose up` is running and then just do:
+```bash
+docker-compose exec app bash -c "flake8; black --diff --check .; pytest"
+```
+
+**Consider always running these checks before submitting a Pull-Request.**
+
+If you want, you can install locally the modules needed, but your mileage may vary
 
 - install:
 
 ```bash
-pip install pytest pytest-cov python-dotenv
+pip install pytest pytest-cov python-dotenv black flake8
 ```
 
-- run it:
+- run them:
 ```bash
-python -m pytest --setup-show --cov -v
+#Flake8
+flake8
+
+#Black
+black --diff --check
+
+# Py.Test
+pytest --setup-show -v
 ```
 
 ### Using Tox
@@ -21,11 +35,10 @@ and run with:
 ```bash
 tox --skip-pkg-install
 ```
-However, binary `pysam` (installed via `pip`) is not working, so 2 tests will fail
-and hence coverage for `variants.py` will be reduced.
+However, binary `pysam` (installed via `pip`) is not working, so some tests will fail.
 
 Yet, one can still test code format with:
 ```bash
 tox --skip-pkg-install -e black,flake8
 ```
-**Consider always running `tox` before submitting a Pull-Request.**
+**Consider always running these checks before submitting a Pull-Request.**
