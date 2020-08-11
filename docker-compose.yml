@@ -1,4 +1,4 @@
-version: '3.8'
+version: '3.7'
 services:
    app:
       build:
@@ -25,6 +25,5 @@ services:
       - public.env
       - private.env
       working_dir: /app
-
 volumes:
-  db:
+   db: null
