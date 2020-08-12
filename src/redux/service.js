@@ -53,6 +53,12 @@ function getPatients() {
   });
 }
 
+function getGene(param) {
+  return axios.get(api.GENE + param, {
+    withCredentials: true,
+  });
+}
+
 export default {
   getStatistics,
   getSearchAutocomplete,
@@ -62,4 +68,5 @@ export default {
   logout,
   isLoggedIn,
   getPatients,
+  getGene,
 };
