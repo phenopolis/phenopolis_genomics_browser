@@ -36,7 +36,7 @@ class SearchAutoComplete extends React.Component {
   }
 
   handleFeatureAddChip = (item) => {
-    this.props.ModifyFeature(item, 'Add', this.state.type);
+    this.props.ModifyFeature(item.split("::")[1], 'Add', this.state.type);
   };
 
   handleFeatureDeleteChip = (item, index) => {
@@ -66,7 +66,7 @@ class SearchAutoComplete extends React.Component {
     this.setState({ autoCompleteContent: null, searchLoaded: true });
     let self = this;
     axios
-      .get('/api/autocomplete/' + type + '/' + searchText, { withCredentials: true })
+      .get('/api/autocomplete/' + searchText + '?query_type=' + type, { withCredentials: true })
       .then((res) => {
         let filteredOptions = res.data.filter((x) => {
           return self.state.featureArray.indexOf(x) < 0;
@@ -108,7 +108,7 @@ class SearchAutoComplete extends React.Component {
                       <TypeChip
                         key={index}
                         size="small"
-                        label={item}
+                        label={item.split("::")[1]}
                         type={this.state.type}
                         emit={true}
                         onClick={this.handleFeatureAddChip}
@@ -117,15 +117,15 @@ class SearchAutoComplete extends React.Component {
                     );
                   })
                 ) : (
-                  <Typography variant="subtitle1" gutterBottom>
-                    Sorry, we did not get any auto completing options...
-                  </Typography>
-                )
+                    <Typography variant="subtitle1" gutterBottom>
+                      Sorry, we did not get any auto completing options...
+                    </Typography>
+                  )
               ) : (
-                <Typography variant="subtitle1" gutterBottom>
-                  Nothing for search.
-                </Typography>
-              )}
+                    <Typography variant="subtitle1" gutterBottom>
+                      Nothing for search.
+                    </Typography>
+                  )}
             </Grid>
           </Paper>
         </Collapse>
