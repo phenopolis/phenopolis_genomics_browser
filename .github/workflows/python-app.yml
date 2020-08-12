@@ -4,7 +4,7 @@ name: Python application
 on:
    push:
       branches:
-      - test_action
+      - prod-live
    pull_request:
       branches:
       - prod-live
@@ -13,22 +13,23 @@ jobs:
       runs-on: ubuntu-latest
       steps:
       -  uses: actions/checkout@v2
-      -  name: Run docker-compose stack
-         run: docker-compose -f docker-compose2.yml up -d
-      -  name: Check folder
-         run: pwd
-      -  name: Check files
-         run: ls -ltr
-      -  name: Check running containers
-         run: docker ps -a
-      -  name: Check logs
+      -  name: Set up Python 3.8
+         uses: actions/setup-python@v2
+         with:
+           python-version: 3.8
+      -  name: Install docker-compose-wait
          run: |
-            docker logs workspace_app_1
-            docker logs workspace_db_1
-# if docker container app were running then... I wish I could run these...
+           python -m pip install --upgrade pip
+           pip install docker-compose-wait
+      -  name: Run docker-compose stack
+         run: docker-compose up -d
+      -  name: Run docker-compose-wait
+         run: |
+           docker-compose-wait
+           # curl -f http://localhost:5000/check_health
       -  name: Lint with flake8
-         run: docker-compose exec app flake8
+         run: docker-compose exec -T app flake8 -v --count
       -  name: Check format with black
-         run: docker-compose exec app black --diff --check .
+         run: docker-compose exec -T app black --diff --check .
       -  name: Test with PyTest
-         run: docker-compose exec app pytest
+         run: docker-compose exec -T app pytest --color=yes -k 'not test_variant'
