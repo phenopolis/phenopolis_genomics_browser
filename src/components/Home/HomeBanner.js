@@ -29,7 +29,7 @@ const HomeBanner = (props) => {
     if (error) {
       dispatch(setSnack(i18next.t('HomePage.HomeBanner.login_fail'), 'error'));
     }
-  }, [error])
+  }, [error]);
 
   const demoLogin = () => {
     const loginData = {

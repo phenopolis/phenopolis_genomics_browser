@@ -32,7 +32,7 @@ const MyPatient = () => {
     if (!username) {
       history.push('/login?link=/my_patients');
     }
-  }, [username])
+  }, [username]);
 
   return (
     <>
