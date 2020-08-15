@@ -6,7 +6,6 @@ on:
       branches:
       - prod-live
       - dev-live
-      - updating_pytest_part1
    pull_request:
       branches:
       - prod-live
