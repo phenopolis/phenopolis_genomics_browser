@@ -1,128 +1,101 @@
-import React from 'react';
-import axios from 'axios';
-import { Redirect } from 'react-router';
-
-import PropTypes from 'prop-types';
-import { withStyles } from '@material-ui/core/styles';
+import React, { useEffect, useState } from 'react';
+import { useHistory, useLocation } from 'react-router-dom';
+import { useDispatch, useSelector } from 'react-redux';
 import { CssBaseline, AppBar, Tabs, Tab, Container } from '@material-ui/core';
-import SwipeableViews from 'react-swipeable-views';
-
 import Loading from '../components/General/Loading';
+import { setSnack } from '../redux/actions/snacks';
+import { useTranslation } from 'react-i18next';
+import SwipeableViews from 'react-swipeable-views';
 import TabPanel from '../components/Tab/Tabpanel';
+import { getVariant } from '../redux/actions/variant';
 
 import MetaData from '../components/MetaData';
 import VirtualGrid from '../components/Table/VirtualGrid';
 
-import compose from 'recompose/compose';
-import { connect } from 'react-redux';
-import { setSnack } from '../redux/actions/snacks';
+const Variant = (props) => {
+  const { t } = useTranslation();
+  const history = useHistory();
+  const location = useLocation();
+  const dispatch = useDispatch();
+  const [value, setValue] = useState(0);
+  const [valid, setValid] = useState(false);
+  const { loading, error, variantInfo } = useSelector((state) => ({
+    variantInfo: state.Variant.data[0],
+    error: state.Variant.error,
+    loading: state.Variant.loading,
+  }));
 
-import { withTranslation } from 'react-i18next';
+  useEffect(() => {
+    setValid(false);
+    dispatch(getVariant(props.match.params.variantId));
+  }, [location]);
 
-class Variant extends React.Component {
-  constructor(props) {
-    super(props);
-    this.state = {
-      variantInfo: {},
-      loaded: false,
-      value: 0,
-      redirect: false,
-      reLink: '',
-    };
-  }
+  useEffect(() => {
+    dispatch(getVariant(props.match.params.variantId));
+  }, []);
 
-  handleChange = (event, newValue) => {
-    this.setState({ value: newValue });
+  useEffect(() => {
+    if (error === 401) {
+      history.push(`/login?link=${window.location.pathname}`);
+    }
+  }, [error]);
+
+  useEffect(() => {
+    if ((loading === false) & (variantInfo === undefined)) {
+      history.push('/search');
+      dispatch(setSnack('Variant not exist.', 'warning'));
+    } else if ((loading === false) & (variantInfo !== undefined)) {
+      if (Object.keys(variantInfo.metadata.data[0]).length === 0) {
+        history.push('/search');
+        dispatch(setSnack('Variant not exist.', 'warning'));
+      } else {
+        setValid(true);
+      }
+    }
+  }, [variantInfo, loading]);
+
+  const handleChange = (event, newValue) => {
+    setValue(newValue);
   };
 
-  handleChangeIndex = (index) => {
-    this.setState({ value: index });
+  const handleChangeIndex = (index) => {
+    setValue(index);
   };
 
-  a11yProps = (index) => {
+  const a11yProps = (index) => {
     return {
       id: `full-width-tab-${index}`,
       'aria-controls': `full-width-tabpanel-${index}`,
     };
   };
 
-  getVariantInformation = (variantId) => {
-    var self = this;
-    axios
-      // .get('/api/' + i18next.t('Variant.entry') + '/variant/' + this.props.match.params.variantId, {
-      .get('/api/variant/' + this.props.match.params.variantId, {
-        withCredentials: true,
-      })
-      .then((res) => {
-        let respond = res.data;
-        console.log(respond[0]);
-
-        if (respond[0] === undefined) {
-          this.setState({ redirect: true, reLink: '/search' });
-          this.props.setSnack('Variant not exist.', 'warning');
-        } else {
-          self.setState({
-            variantInfo: respond[0],
-            loaded: true,
-          });
-        }
-      })
-      .catch((err) => {
-        console.log(err);
-        if (err.response.status === 401) {
-          this.setState({ redirect: true, reLink: '/login?link=' + window.location.pathname });
-        }
-      });
-  };
-
-  componentDidMount() {
-    this.getVariantInformation(this.props.match.params.variantId);
-  }
-
-  componentWillReceiveProps(nextProps) {
-    if (nextProps.match.params.variantId !== this.props.match.params.variantId) {
-      this.setState({
-        variantInfo: [],
-        loaded: false,
-      });
-      this.getVariantInformation(nextProps.match.params.variantId);
-    }
-  }
-
-  render() {
-    const { classes } = this.props;
-    const { t } = this.props;
-
-    if (this.state.redirect) {
-      return <Redirect to={this.state.reLink} />;
-    }
-
-    if (this.state.loaded) {
-      return (
+  return (
+    <>
+      {valid ? (
         <React.Fragment>
           <CssBaseline />
-          <div className={classes.root}>
+          <div className="variant-container">
             <MetaData
-              metadata={this.state.variantInfo.metadata}
-              name={this.state.variantInfo.metadata.data[0].variant_id[0].display}
+              metadata={variantInfo.metadata}
+              name={variantInfo.metadata.data[0].variant_id[0].display}
             />
 
             <Container maxWidth="xl">
               <AppBar
-                className={classes.tab_appbar}
+                className="variant-tab_appbar"
                 position="static"
                 color="transparent"
                 elevation="0"
                 m={0}
                 p={0}>
                 <Tabs
-                  value={this.state.value}
-                  onChange={this.handleChange}
+                  value={value}
+                  onChange={handleChange}
                   indicatorColor="primary"
                   textColor="primary"
                   variant="fullWidth"
                   aria-label="full width tabs example"
-                  classes={{ indicator: classes.bigIndicator }}>
+                  classes={{ indicator: 'variant-bigIndicator' }}>
                   {[
                     t('Variant.FREQUENCY'),
                     t('Variant.CONSEQUENCES'),
@@ -130,121 +103,60 @@ class Variant extends React.Component {
                     t('Variant.INDIVIDUALS'),
                     t('Variant.GENOTYPES'),
                   ].map((item, index) => {
-                    return <Tab label={item} {...this.a11yProps(index)} />;
+                    return <Tab label={item} {...a11yProps(index)} />;
                   })}
                 </Tabs>
               </AppBar>
             </Container>
-            <SwipeableViews
-              axis={this.props.theme.direction === 'rtl' ? 'x-reverse' : 'x'}
-              index={this.state.value}
-              onChangeIndex={this.handleChangeIndex}>
-              <TabPanel
-                value={this.state.value}
-                index={0}
-                dir={this.props.theme.direction}
-                className={classes.tabPannel}>
+            <SwipeableViews index={value} onChangeIndex={handleChangeIndex}>
+              <TabPanel value={value} index={0} className="variant-tabPannel">
                 <VirtualGrid
-                  tableData={this.state.variantInfo.frequency}
+                  tableData={variantInfo.frequency}
                   title={t('Variant.Frequency')}
                   subtitle={t('Variant.Frequency_subtitle')}
                   configureLink="variant/frequency"
                 />
-                {/* <Variants variants={this.state.variantInfo.frequency} title={t("Variant.Frequency")} subtitle={t("Variant.Frequency_subtitle")} configureLink="variant/frequency" /> */}
               </TabPanel>
-              <TabPanel
-                value={this.state.value}
-                index={1}
-                dir={this.props.theme.direction}
-                className={classes.tabPannel}>
+              <TabPanel value={value} index={1} className="variant-tabPannel">
                 <VirtualGrid
-                  tableData={this.state.variantInfo.consequence}
+                  tableData={variantInfo.consequence}
                   title={t('Variant.Consequences')}
                   subtitle={t('Variant.Consequences_subtitle')}
                   configureLink="variant/consequence"
                 />
-                {/* <Variants variants={this.state.variantInfo.consequence} title={t("Variant.Consequences")} subtitle={t("Variant.Consequences_subtitle")} configureLink="variant/consequence" /> */}
               </TabPanel>
-              <TabPanel
-                value={this.state.value}
-                index={2}
-                dir={this.props.theme.direction}
-                className={classes.tabPannel}>
+              <TabPanel value={value} index={2} className="variant-tabPannel">
                 <VirtualGrid
-                  tableData={this.state.variantInfo.quality}
+                  tableData={variantInfo.quality}
                   title={t('Variant.Quality')}
                   subtitle={t('Variant.Quality_subtitle')}
                   configureLink="variant/quality"
                 />
-                {/* <Variants variants={this.state.variantInfo.quality} title={t("Variant.Quality")} subtitle={t("Variant.Quality_subtitle")} configureLink="variant/quality" /> */}
               </TabPanel>
-              <TabPanel
-                value={this.state.value}
-                index={3}
-                dir={this.props.theme.direction}
-                className={classes.tabPannel}>
+              <TabPanel value={value} index={3} className="variant-tabPannel">
                 <VirtualGrid
-                  tableData={this.state.variantInfo.individuals}
+                  tableData={variantInfo.individuals}
                   title={t('Variant.Individuals')}
                   subtitle={t('Variant.Individuals_subtitle')}
                   configureLink="variant/individuals"
                 />
-                {/* <Variants variants={this.state.variantInfo.individuals} title={t("Variant.Individuals")} subtitle={t("Variant.Individuals_subtitle")} configureLink="variant/individuals" /> */}
               </TabPanel>
-              <TabPanel
-                value={this.state.value}
-                index={4}
-                dir={this.props.theme.direction}
-                className={classes.tabPannel}>
+              <TabPanel value={value} index={4} className="variant-tabPannel">
                 <VirtualGrid
-                  tableData={this.state.variantInfo.genotypes}
+                  tableData={variantInfo.genotypes}
                   title={t('Variant.Genotypes')}
                   subtitle={t('Variant.Genotypes_subtitle')}
                   configureLink="variant/genotypes"
                 />
-                {/* <Variants variants={this.state.variantInfo.genotypes} title={t("Variant.Genotypes")} subtitle={t("Variant.Genotypes_subtitle")} configureLink="variant/genotypes" /> */}
               </TabPanel>
             </SwipeableViews>
           </div>
         </React.Fragment>
-      );
-    } else {
-      return <Loading message={t('Variant.message')} />;
-    }
-  }
-}
-
-Variant.propTypes = {
-  classes: PropTypes.object.isRequired,
+      ) : (
+        <Loading message={t('Variant.message')} />
+      )}
+    </>
+  );
 };
 
-const styles = (theme) => ({
-  root: {
-    backgroundColor: '#eeeeee',
-    padding: '4em',
-  },
-  tabroot: {
-    backgroundColor: 'white',
-  },
-  bigIndicator: {
-    height: 3,
-    backgroundColor: '#2E84CF',
-  },
-  paper: {
-    padding: theme.spacing(1),
-    marginTop: theme.spacing(5),
-  },
-  tab_appbar: {
-    marginTop: '3rem',
-    borderBottom: '1px solid #2E84CF',
-  },
-  tabPannel: {
-    fontSize: '0.875rem',
-  },
-});
-
-export default compose(
-  withStyles(styles, { withTheme: true }),
-  withTranslation(),
-  connect(null, { setSnack })
-)(Variant);
+export default Variant;

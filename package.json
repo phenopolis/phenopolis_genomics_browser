@@ -54,7 +54,8 @@
     "styled-components": "^5.1.1",
     "typeface-roboto": "0.0.75",
     "underscore": "^1.10.2",
-    "universal-cookie": "^4.0.3"
+    "universal-cookie": "^4.0.3",
+    "use-state-with-callback": "^1.0.18"
   },
   "scripts": {
     "start": "react-scripts start",

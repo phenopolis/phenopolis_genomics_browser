@@ -11,4 +11,5 @@ export default {
   IS_LOGGED_IN: API_URL + '/is_logged_in',
   PATIENTS: API_URL + '/hpo/HP:0000001',
   GENE: API_URL + '/gene/',
+  VARIANT: API_URL + '/variant/',
 };

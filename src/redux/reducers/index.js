@@ -8,6 +8,7 @@ import Login from './auth';
 import IsLoggedIn from './isLoggedIn';
 import Patients from './patients';
 import Gene from './gene';
+import Variant from './variant';
 
 export default combineReducers({
   users,
@@ -19,4 +20,5 @@ export default combineReducers({
   IsLoggedIn,
   Patients,
   Gene,
+  Variant,
 });
