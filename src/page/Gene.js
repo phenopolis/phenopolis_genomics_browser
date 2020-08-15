@@ -22,7 +22,7 @@ const Gene = (props) => {
   }));
 
   useEffect(() => {
-    setValid(false)
+    setValid(false);
     dispatch(getGene(props.match.params.geneId));
   }, [location]);
 
@@ -39,7 +39,7 @@ const Gene = (props) => {
     }
 
     if (geneInfo !== undefined) {
-      setValid(true)
+      setValid(true);
     }
   }, [error, geneInfo]);
 
@@ -68,8 +68,8 @@ const Gene = (props) => {
           </div>
         </React.Fragment>
       ) : (
-          <Loading message={t('Gene.message')} />
-        )}
+        <Loading message={t('Gene.message')} />
+      )}
     </>
   );
 };
