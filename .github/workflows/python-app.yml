@@ -27,7 +27,7 @@ jobs:
          run: docker-compose -f dc_4_test.yml up -d
       -  name: Run docker-compose-wait
          run: |
-           docker-compose-wait -f dc_4_test.yml exec
+           docker-compose-wait -f dc_4_test.yml
       -  name: Lint with flake8
          run: docker-compose -f dc_4_test.yml exec -T app flake8 -v --count
       -  name: Check format with black
