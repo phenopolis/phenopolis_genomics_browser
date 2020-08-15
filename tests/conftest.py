@@ -4,6 +4,8 @@ from views import application
 
 load_dotenv(dotenv_path="./private.env")
 
+pytest_plugins = ("tests.fix_api",)
+
 
 @pytest.fixture
 def _admin():
@@ -14,10 +16,4 @@ def _admin():
 @pytest.fixture(scope="module")
 def _demo():
     with application.test_request_context(path="/login", method="POST", data={"user": "demo", "password": "demo123"}):
-        yield
-
-
-@pytest.fixture
-def _nouser():
-    with application.test_request_context(path="/login", method="POST", data={"user": "nodemo", "password": "wrong"}):
         yield

@@ -12,7 +12,7 @@ services:
       - ./:/app
       env_file:
       - public.env
-      - private.env
+      #- private.env
       depends_on:
       - db
    db:
@@ -23,7 +23,7 @@ services:
       - ./schema/initdb.d/:/docker-entrypoint-initdb.d
       env_file:
       - public.env
-      - private.env
+      #- private.env
       working_dir: /app
 volumes:
    db: null

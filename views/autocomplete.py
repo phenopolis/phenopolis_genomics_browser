@@ -7,7 +7,6 @@ from flask import jsonify, session, Response, request
 from logzero import logger
 from db.helpers import cursor2dict
 from views import application
-from views.exceptions import PhenopolisException
 from views.auth import requires_auth
 from views.postgres import postgres_cursor
 
@@ -29,7 +28,7 @@ MAXIMUM_SEARCH_RESULTS_LIMIT = 1000
 @application.route("/<language>/autocomplete/<query>")
 @application.route("/autocomplete/<query>")
 @requires_auth
-def autocomplete(query):
+def autocomplete(query, language=None):
     arguments = request.args.to_dict()
     query_type = arguments.get("query_type")
     try:
@@ -73,7 +72,12 @@ def autocomplete(query):
     else:
         message = "Autocomplete request with unsupported query type '{}'".format(query_type)
         logger.error(message)
-        raise PhenopolisException(message)
+        # raise PhenopolisException(message)
+        return (
+            jsonify(success=False, message=message),
+            400,
+        )
+
     cursor.close()
 
     suggestions = list(set(results))

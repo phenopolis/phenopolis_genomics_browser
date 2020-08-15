@@ -1,37 +1,36 @@
 # This workflow will install Python dependencies, run tests and lint with a single version of Python
 # For more information see: https://help.github.com/actions/language-and-framework-guides/using-python-with-github-actions
-
 name: Python application
-
 on:
-  push:
-    branches: [ prod-live ]
-  pull_request:
-    branches: [ prod-live ]
-
+   push:
+      branches:
+      - prod-live
+      - dev-live
+   pull_request:
+      branches:
+      - prod-live
+      - dev-live
 jobs:
-  build:
-
-    runs-on: ubuntu-latest
-
-    steps:
-    - uses: actions/checkout@v2
-    - name: Set up Python 3.8
-      uses: actions/setup-python@v2
-      with:
-        python-version: 3.8
-    - name: Install dependencies
-      run: |
-        python -m pip install --upgrade pip
-        pip install flake8 pytest
-        if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
-        pip install pysam
-    - name: Lint with flake8
-      run: |
-        # stop the build if there are Python syntax errors or undefined names
-        flake8 . --count --select=E9,F63,F7,F82 --show-source --statistics
-        # exit-zero treats all errors as warnings. The GitHub editor is 127 chars wide
-        flake8 . --count --exit-zero --max-complexity=10 --max-line-length=127 --statistics
-    - name: Test with pytest
-      run: |
-        python -m pytest
+   build:
+      runs-on: ubuntu-latest
+      steps:
+      -  uses: actions/checkout@v2
+      -  name: Set up Python 3.8
+         uses: actions/setup-python@v2
+         with:
+           python-version: 3.8
+      -  name: Install docker-compose-wait
+         run: |
+           python -m pip install --upgrade pip
+           pip install docker-compose-wait
+      -  name: Run docker-compose stack
+         run: docker-compose -f dc_4_test.yml up -d
+      -  name: Run docker-compose-wait
+         run: |
+           docker-compose-wait -f dc_4_test.yml
+      -  name: Lint with flake8
+         run: docker-compose -f dc_4_test.yml exec -T app flake8 -v --count
+      -  name: Check format with black
+         run: docker-compose -f dc_4_test.yml exec -T app black --diff --check .
+      -  name: Test with PyTest
+         run: docker-compose -f dc_4_test.yml exec -T app pytest --color=yes -k 'not test_variant'
