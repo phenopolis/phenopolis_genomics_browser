@@ -14,6 +14,7 @@ from views.auth import requires_auth
 from views.postgres import postgres_cursor, get_db_session
 from views.general import process_for_display
 from sqlalchemy import and_
+from flask import jsonify
 
 
 @application.route("/<language>/variant/<variant_id>")
@@ -27,8 +28,13 @@ def variant(variant_id, subset="all", language="en"):
     pheno_ids = cursor2dict(c)
     phenoid_mapping = {ind["external_id"]: ind["internal_id"] for ind in pheno_ids}
     # print(phenoid_mapping)
-    chrom, pos, ref, alt, = variant_id.split("-")
-    url = "https://myvariant.info/v1/variant/chr%s:g.%s%s>%s?fields=clinvar.rcv.clinical_significance&dotfield=true" % (
+    try:
+        chrom, pos, ref, alt, = variant_id.split("-")
+        pos = int(pos)
+    except Exception as e:
+        print(e)
+        return jsonify(message="Variant not found"), 404
+    url = "https://myvariant.info/v1/variant/chr%s:g.%d%s>%s?fields=clinvar.rcv.clinical_significance&dotfield=true" % (
         chrom,
         pos,
         ref,
@@ -37,7 +43,6 @@ def variant(variant_id, subset="all", language="en"):
     x = requests.get(url).json()
     if x:
         clinical_significance = str(x.get("clinvar.rcv.clinical_significance", ""))
-    pos = int(pos)
     s3 = boto3.client(
         "s3",
         aws_secret_access_key=os.environ["VCF_S3_SECRET"],
@@ -54,7 +59,20 @@ def variant(variant_id, subset="all", language="en"):
     variant_file = pysam.VariantFile(vcf_file, index_filename=vcf_index)
     # samples = variant_file.header.samples
     variant_dict = dict()
-    v = next(variant_file.fetch(chrom, pos - 1, pos))
+    variant_dict["genotypes"]=[]
+    try:
+        v = next(variant_file.fetch(chrom, pos - 1, pos))
+        variant_dict["genotypes"] = [
+        {
+            "sample": [{"display": phenoid_mapping.get(s)}],
+            "GT": v.samples[s].get("GT", ""),
+            "AD": v.samples[s].get("AD", ""),
+            "DP": v.samples[s].get("DP", ""),
+        }
+        for s in v.samples
+        ]
+    except Exception as e:
+        print(e)
     # for v in variant_file.fetch(chrom, pos - 1, pos):
     #         variant_dict['pos'] = v.pos
     #         variant_dict['start'] = v.start
@@ -71,15 +89,6 @@ def variant(variant_id, subset="all", language="en"):
     #         variant_dict['filter'] = list(v.filter.keys())
     #         variant_dict['format'] = {(v.format[k].name, v.format[k].id,) for k in v.format.keys()}
     #         variant_dict['info'] = dict(v.info)
-    variant_dict["genotypes"] = [
-        {
-            "sample": [{"display": phenoid_mapping.get(s)}],
-            "GT": v.samples[s].get("GT", ""),
-            "AD": v.samples[s].get("AD", ""),
-            "DP": v.samples[s].get("DP", ""),
-        }
-        for s in v.samples
-    ]
     config = db.helpers.query_user_config(language=language, entity="variant")
     # CHROM, POS, REF, ALT, = variant_id.split('-')
     data = (
