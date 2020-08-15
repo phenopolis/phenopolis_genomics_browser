@@ -1,5 +1,5 @@
-import React, { useEffect } from 'react';
-import { useHistory } from 'react-router-dom';
+import React, { useEffect, useState } from 'react';
+import { useHistory, useLocation } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import { CssBaseline, Container } from '@material-ui/core';
 import Loading from '../components/General/Loading';
@@ -13,11 +13,18 @@ const VirtualGrid = React.lazy(() => import('../components/Table/VirtualGrid'));
 const Gene = (props) => {
   const { t } = useTranslation();
   const history = useHistory();
+  const location = useLocation();
   const dispatch = useDispatch();
+  const [valid, setValid] = useState(false);
   const { error, geneInfo } = useSelector((state) => ({
     geneInfo: state.Gene.data[0],
     error: state.Gene.error,
   }));
+
+  useEffect(() => {
+    setValid(false)
+    dispatch(getGene(props.match.params.geneId));
+  }, [location]);
 
   useEffect(() => {
     dispatch(getGene(props.match.params.geneId));
@@ -30,11 +37,15 @@ const Gene = (props) => {
     } else if (error === 401) {
       history.push(`/login?link=${window.location.pathname}`);
     }
-  }, [error]);
+
+    if (geneInfo !== undefined) {
+      setValid(true)
+    }
+  }, [error, geneInfo]);
 
   return (
     <>
-      {geneInfo ? (
+      {valid ? (
         <React.Fragment>
           <CssBaseline />
           <div className="myPatients-container">
@@ -57,8 +68,8 @@ const Gene = (props) => {
           </div>
         </React.Fragment>
       ) : (
-        <Loading message={t('Gene.message')} />
-      )}
+          <Loading message={t('Gene.message')} />
+        )}
     </>
   );
 };
