@@ -65,6 +65,12 @@ function getVariant(param) {
   });
 }
 
+function getHPO(param) {
+  return axios.get(api.HPO + param, {
+    withCredentials: true,
+  });
+}
+
 export default {
   getStatistics,
   getSearchAutocomplete,
@@ -76,4 +82,5 @@ export default {
   getPatients,
   getGene,
   getVariant,
+  getHPO,
 };

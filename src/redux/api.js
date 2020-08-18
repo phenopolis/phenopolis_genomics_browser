@@ -12,4 +12,5 @@ export default {
   PATIENTS: API_URL + '/hpo/HP:0000001',
   GENE: API_URL + '/gene/',
   VARIANT: API_URL + '/variant/',
+  HPO: API_URL + '/hpo/',
 };

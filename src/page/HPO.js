@@ -1,177 +1,138 @@
-import React from 'react';
-import axios from 'axios';
-import { Redirect } from 'react-router';
-
-import PropTypes from 'prop-types';
-import { withStyles } from '@material-ui/core/styles';
+import React, { useEffect, useState } from 'react';
+import { useHistory, useLocation } from 'react-router-dom';
+import { useDispatch, useSelector } from 'react-redux';
 import { CssBaseline, AppBar, Tabs, Tab, Container, Box, Typography } from '@material-ui/core';
-import SwipeableViews from 'react-swipeable-views';
-
 import Loading from '../components/General/Loading';
+import { setSnack } from '../redux/actions/snacks';
+import { useTranslation, Trans } from 'react-i18next';
+import SwipeableViews from 'react-swipeable-views';
 import TabPanel from '../components/Tab/Tabpanel';
+import { getHPO, unmountHPO } from '../redux/actions/hpo';
 
 import MetaData from '../components/MetaData';
 import VirtualGrid from '../components/Table/VirtualGrid';
 
-import compose from 'recompose/compose';
-import { connect } from 'react-redux';
-import { setSnack } from '../redux/actions/snacks';
+const HPO = (props) => {
+  const { t } = useTranslation();
+  const history = useHistory();
+  const location = useLocation();
+  const dispatch = useDispatch();
+  const [value, setValue] = useState(0);
+  const [valid, setValid] = useState(false);
+  const [phenogenonvalue, setPhenogenonvalue] = useState(0);
 
-import { withTranslation, Trans } from 'react-i18next';
+  const { error, hpoInfo, loading } = useSelector((state) => ({
+    hpoInfo: state.HPO.data[0],
+    error: state.HPO.error,
+    loading: state.HPO.loading,
+  }));
 
-class HPO extends React.Component {
-  constructor(props) {
-    super(props);
-    this.state = {
-      hpoInfo: {},
-      loaded: false,
-      value: 0,
-      phenogenonvalue: 0,
-      redirect: false,
-      reLink: '',
+  useEffect(() => {
+    setValid(false);
+    dispatch(getHPO(props.match.params.hpoId));
+  }, [location]);
+
+  useEffect(() => {
+    if (error === 401) {
+      history.push(`/login?link=${window.location.pathname}`);
+    }
+  }, [error]);
+
+  useEffect(() => {
+    dispatch(getHPO(props.match.params.hpoId));
+    return () => {
+      dispatch(unmountHPO());
     };
-  }
+  }, []);
 
-  handleChange = (event, newValue) => {
-    this.setState({ value: newValue });
+  useEffect(() => {
+    if (loading === false && hpoInfo === undefined) {
+      history.push('/search');
+      dispatch(setSnack('HPO not exist.', 'warning'));
+    } else if (loading === false && hpoInfo !== undefined) {
+      if (Object.keys(hpoInfo.metadata.data[0]).length === 0) {
+        history.push('/search');
+        dispatch(setSnack('HPO not exist.', 'warning'));
+      } else {
+        setValid(true);
+      }
+    }
+  }, [hpoInfo, loading]);
+
+  const handleChange = (event, newValue) => {
+    setValue(newValue);
   };
 
-  handleChangeIndex = (index) => {
-    this.setState({ value: index });
+  const handleChangeIndex = (index) => {
+    setValue(index);
   };
 
-  handleChangePhenogenon = (event, newValue) => {
-    this.setState({ phenogenonvalue: newValue });
+  const handleChangePhenogenon = (event, newValue) => {
+    setPhenogenonvalue(newValue);
   };
 
-  handleChangePhenogenonIndex = (index) => {
-    this.setState({ phenogenonvalue: index });
+  const handleChangePhenogenonIndex = (index) => {
+    setPhenogenonvalue(index);
   };
 
-  a11yProps = (index) => {
+  const a11yProps = (index) => {
     return {
       id: `full-width-tab-${index}`,
       'aria-controls': `full-width-tabpanel-${index}`,
     };
   };
 
-  getHPOinformation = (hpoId) => {
-    var self = this;
-    axios
-      // .get('/api/' + i18next.t('HPO.entry') + '/hpo/' + hpoId, {
-      .get('/api/hpo/' + hpoId, {
-        withCredentials: true,
-      })
-      .then((res) => {
-        let respond = res.data;
-        console.log(respond[0]);
-
-        if (respond[0] === undefined) {
-          this.setState({ redirect: true, reLink: '/search' });
-          this.props.setSnack('HPO not exist.', 'warning');
-        } else {
-          self.setState({
-            hpoInfo: respond[0],
-            loaded: true,
-          });
-        }
-      })
-      .catch((err) => {
-        console.log(err);
-        if (err.response.status === 401) {
-          this.setState({ redirect: true, reLink: '/login?link=' + window.location.pathname });
-        }
-      });
-  };
-
-  componentDidMount() {
-    this.getHPOinformation(this.props.match.params.hpoId);
-  }
-
-  componentWillReceiveProps(nextProps) {
-    if (nextProps.match.params.hpoId !== this.props.match.params.hpoId) {
-      this.setState({
-        hpoInfo: [],
-        loaded: false,
-      });
-      this.getHPOinformation(nextProps.match.params.hpoId);
-    }
-  }
-
-  render() {
-    const { classes } = this.props;
-    const { t } = this.props;
-
-    if (this.state.redirect) {
-      return <Redirect to={this.state.reLink} />;
-    }
-
-    if (this.state.loaded) {
-      return (
+  return (
+    <>
+      {valid ? (
         <React.Fragment>
           <CssBaseline />
-          <div className={classes.root}>
+          <div className="hpo-container">
             <MetaData
-              metadata={this.state.hpoInfo.metadata}
-              name={
-                this.state.hpoInfo.metadata.data[0].name +
-                ' - ' +
-                this.state.hpoInfo.metadata.data[0].id
-              }
+              metadata={hpoInfo.metadata}
+              name={hpoInfo.metadata.data[0].name + ' - ' + hpoInfo.metadata.data[0].id}
             />
 
             <Container maxWidth="xl">
               <AppBar
-                className={classes.tab_appbar}
+                className="hpo-tab_appbar"
                 position="static"
                 color="transparent"
                 elevation="0"
                 m={0}
                 p={0}>
                 <Tabs
-                  value={this.state.value}
-                  onChange={this.handleChange}
+                  value={value}
+                  onChange={handleChange}
                   indicatorColor="primary"
                   textColor="primary"
                   variant="fullWidth"
                   aria-label="full width tabs example"
-                  classes={{ indicator: classes.bigIndicator }}>
+                  classes={{ indicator: 'hpo-bigIndicator' }}>
                   {[
                     t('HPO.INDIVIDUALS'),
                     t('HPO.LITERATURE_GENES'),
                     t('HPO.PHENOGENON'),
                     t('HPO.SKAT'),
                   ].map((item, index) => {
-                    return <Tab label={item} {...this.a11yProps(index)} />;
+                    return <Tab label={item} {...a11yProps(index)} />;
                   })}
                 </Tabs>
               </AppBar>
             </Container>
 
-            <SwipeableViews
-              axis={this.props.theme.direction === 'rtl' ? 'x-reverse' : 'x'}
-              index={this.state.value}
-              onChangeIndex={this.handleChangeIndex}>
-              <TabPanel
-                value={this.state.value}
-                index={0}
-                dir={this.props.theme.direction}
-                className={classes.tabPannel}>
+            <SwipeableViews index={value} onChangeIndex={handleChangeIndex}>
+              <TabPanel value={value} index={0} className="hpo-tabPannel">
                 <VirtualGrid
-                  tableData={this.state.hpoInfo.individuals}
+                  tableData={hpoInfo.individuals}
                   title={t('HPO.Individuals')}
                   subtitle={t('HPO.Individuals_subtitle')}
                   configureLink="hpo/individuals"
                 />
-                {/* <Variants variants={this.state.hpoInfo.individuals} title={t("HPO.Individuals")} subtitle={t("HPO.Individuals_subtitle")} configureLink="hpo/individuals" /> */}
               </TabPanel>
-              <TabPanel
-                value={this.state.value}
-                index={1}
-                dir={this.props.theme.direction}
-                className={classes.tabPannel}>
+              <TabPanel value={value} index={1} className="hpo-tabPannel">
                 <VirtualGrid
-                  tableData={this.state.hpoInfo.literature_genes}
+                  tableData={hpoInfo.literature_genes}
                   title={t('HPO.Literature_Genes')}
                   subtitle={t('HPO.Literature_Genes_subtitle')}
                   configureLink="hpo/literature_genes"
@@ -179,11 +140,7 @@ class HPO extends React.Component {
               </TabPanel>
 
               {/* Phenogenon tab is more complex. */}
-              <TabPanel
-                value={this.state.value}
-                index={2}
-                dir={this.props.theme.direction}
-                className={classes.tabPannel}>
+              <TabPanel value={value} index={2} className="hpo-tabPannel">
                 <Typography component="div">
                   <Box fontWeight="900" fontSize="h4.fontSize" mb={0}>
                     {t('HPO.Phenogenon')}
@@ -194,29 +151,22 @@ class HPO extends React.Component {
                 </Typography>
                 <AppBar position="static" color="white" elevation="0" m={0} p={0}>
                   <Tabs
-                    value={this.state.phenogenonvalue}
-                    onChange={this.handleChangePhenogenon}
+                    value={phenogenonvalue}
+                    onChange={handleChangePhenogenon}
                     indicatorColor="primary"
                     textColor="primary"
                     variant="fullWidth"
                     aria-label="full width tabs example"
-                    classes={{ indicator: classes.bigIndicator }}>
+                    classes={{ indicator: 'hpo-bigIndicator' }}>
                     {[t('HPO.RECESSIVE'), t('HPO.DOMINANT')].map((item, index) => {
-                      return <Tab label={item} {...this.a11yProps(index)} />;
+                      return <Tab label={item} {...a11yProps(index)} />;
                     })}
                   </Tabs>
                 </AppBar>
-                <SwipeableViews
-                  axis={this.props.theme.direction === 'rtl' ? 'x-reverse' : 'x'}
-                  index={this.state.phenogenonvalue}
-                  onChangeIndex={this.handleChangePhenogenonIndex}>
-                  <TabPanel
-                    className={classes.tabPannel}
-                    value={this.state.phenogenonvalue}
-                    index={0}
-                    dir={this.props.theme.direction}>
+                <SwipeableViews index={phenogenonvalue} onChangeIndex={handleChangePhenogenonIndex}>
+                  <TabPanel className="hpo-tabPannel" value={phenogenonvalue} index={0}>
                     <VirtualGrid
-                      tableData={this.state.hpoInfo.phenogenon_recessive}
+                      tableData={hpoInfo.phenogenon_recessive}
                       title={t('Recessive')}
                       subtitle={[
                         <Trans i18nKey="HPO.RECESSIVE_subtitle">
@@ -229,13 +179,9 @@ class HPO extends React.Component {
                       configureLink="hpo/phenogenon_recessive"
                     />
                   </TabPanel>
-                  <TabPanel
-                    className={classes.tabPannel}
-                    value={this.state.phenogenonvalue}
-                    index={1}
-                    dir={this.props.theme.direction}>
+                  <TabPanel className="hpo-tabPannel" value={phenogenonvalue} index={1}>
                     <VirtualGrid
-                      tableData={this.state.hpoInfo.phenogenon_dominant}
+                      tableData={hpoInfo.phenogenon_dominant}
                       title={t('Dominant')}
                       subtitle={[
                         <Trans i18nKey="HPO.DOMINANT_subtitle">
@@ -251,13 +197,9 @@ class HPO extends React.Component {
                 </SwipeableViews>
               </TabPanel>
 
-              <TabPanel
-                value={this.state.value}
-                index={3}
-                dir={this.props.theme.direction}
-                className={classes.tabPannel}>
+              <TabPanel value={value} index={3} className="hpo-tabPannel">
                 <VirtualGrid
-                  tableData={this.state.hpoInfo.skat}
+                  tableData={hpoInfo.skat}
                   title={t('HPO.SKAT')}
                   subtitle={t('HPO.SKAT_subtitle')}
                   configureLink="hpo/skat"
@@ -266,44 +208,11 @@ class HPO extends React.Component {
             </SwipeableViews>
           </div>
         </React.Fragment>
-      );
-    } else {
-      return <Loading message={t('HPO.message')} />;
-    }
-  }
-}
-
-HPO.propTypes = {
-  classes: PropTypes.object.isRequired,
+      ) : (
+        <Loading message={t('HPO.message')} />
+      )}
+    </>
+  );
 };
 
-const styles = (theme) => ({
-  root: {
-    backgroundColor: '#eeeeee',
-    padding: '4em',
-  },
-  tabroot: {
-    backgroundColor: 'white',
-  },
-  bigIndicator: {
-    height: 3,
-    backgroundColor: '#2E84CF',
-  },
-  paper: {
-    padding: theme.spacing(1),
-    marginTop: theme.spacing(5),
-  },
-  tab_appbar: {
-    marginTop: '3rem',
-    borderBottom: '1px solid #2E84CF',
-  },
-  tabPannel: {
-    fontSize: '0.875rem',
-  },
-});
-
-export default compose(
-  withStyles(styles, { withTheme: true }),
-  withTranslation(),
-  connect(null, { setSnack })
-)(HPO);
+export default HPO;
