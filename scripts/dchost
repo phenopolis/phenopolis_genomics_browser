@@ -1,0 +1,20 @@
+#!/bin/bash
+
+# Return the ip address for a container in docker-compose
+
+set -euo pipefail
+# set -x
+
+if [[ "${1:-}" == "" ]]; then
+    echo "usage: $0 container
+
+Error: container name needed.
+" >&2
+    exit 2
+fi
+
+container=$(docker-compose ps -q "$1")
+
+docker inspect \
+    --format '{{range .NetworkSettings.Networks}}{{.IPAddress}}{{end}}' \
+    "$container"
