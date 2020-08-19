@@ -14,7 +14,7 @@ import Publication from './page/Publication';
 import Search from './page/Search';
 import AuthCheck from './page/AuthCheck';
 
-import CustomizedSnackbars from './page/CustomizedSnackbars';
+import CustomizedSnackbars from './components/CustomizedSnackbars/CustomizedSnackbars';
 
 import Gene from './page/Gene';
 import HPO from './page/HPO';
