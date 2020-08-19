@@ -45,3 +45,15 @@ alter default privileges in schema gnomad
 set search_path to gnomad, public;
 \i gnomad.sql
 reset search_path;
+
+
+create schema cadd;
+grant usage on schema cadd to phenopolis_api;
+alter default privileges in schema cadd
+    grant select, insert, update, delete on tables to phenopolis_api;
+alter default privileges in schema cadd
+    grant all on sequences to phenopolis_api;
+
+set search_path to cadd, public;
+\i cadd.sql
+reset search_path;
