@@ -13,6 +13,23 @@
 
 revoke create on schema public from public;
 
+
+-- The audit user must be able to create/manipulate tables here.
+-- Other users may be interested to access some functions or tables
+create schema audit;
+grant all on schema audit to audit;
+grant usage on schema audit to public;
+alter default privileges in schema audit
+    grant select on tables to phenopolis_api;
+
+-- The following objects are created with the audit user owner.
+set local role audit;
+set search_path to audit, public;
+\i audit.sql
+reset search_path;
+reset role;
+
+
 create schema phenopolis;
 grant usage on schema phenopolis to phenopolis_api;
 alter default privileges in schema phenopolis
