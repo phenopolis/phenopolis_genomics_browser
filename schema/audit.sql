@@ -289,6 +289,7 @@ as $f$
 		('clock', 'clock_timestamp()', 'timestamptz'),
 		('user', 'session_user', 'name'),
 		('user_id', $$current_setting('audit.user_id')$$, 'text'),
+		('appname', $$current_setting('application_name')$$, 'text'),
 		('action', 'tg_op', 'text'),
 		('schema', 'tg_table_schema', 'name'),
 		('table', 'tg_table_name', 'name')
