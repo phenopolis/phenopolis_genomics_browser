@@ -1,17 +1,15 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import { useTranslation } from 'react-i18next';
-import { makeStyles } from '@material-ui/styles';
 import { Container, Box, Typography } from '@material-ui/core';
 import paperlist from '../../assets/js/paperlist';
 
 const PublicationList = () => {
   const { t } = useTranslation();
-  const classes = useStyles();
   const publications = paperlist;
 
   return (
-    <div className={classes.root}>
+    <div className={'publication-root'}>
       <Container maxWidth="md">
         {publications.map((section, sid) => {
           return (
@@ -28,12 +26,12 @@ const PublicationList = () => {
                     {subsection.publications.map((paper, index) => {
                       return (
                         <Box
-                          className={classes.paperbox}
+                          className={'publication-paperbox'}
                           key={index}
                           fontSize="subtitle1.fontSize"
                           m={1}>
                           {index + 1} .{' '}
-                          <a className={classes.paperlink} href={paper.link}>
+                          <a className={'publication-paperlink'} href={paper.link}>
                             {paper.title}
                           </a>
                           {paper.display}
@@ -51,27 +49,7 @@ const PublicationList = () => {
   );
 };
 
-const useStyles = makeStyles((theme) => ({
-  root: {
-    padding: '4em 0em 4em 0em',
-    backgroundColor: '#eeeeee',
-  },
-  paper: {
-    textAlign: 'center',
-    color: theme.palette.text.secondary,
-  },
-  paperlink: {
-    textDecoration: 'none',
-    color: '#2E84CF',
-  },
-  paperbox: {
-    textIndent: '-1.35em',
-    paddingLeft: '4em',
-  },
-}));
-
 PublicationList.propTypes = {
-  classes: PropTypes.object.isRequired,
   width: PropTypes.oneOf(['lg', 'md', 'sm', 'xl', 'xs']).isRequired,
 };
 
