@@ -292,9 +292,9 @@ function desc(a, b, orderBy) {
       aString = Object.values(a[orderBy])
         .map((item) => {
           if (item !== null) {
-            return item.display
+            return item.display;
           } else {
-            return ''
+            return '';
           }
         })
         .join(',');
@@ -311,9 +311,9 @@ function desc(a, b, orderBy) {
       bString = Object.values(b[orderBy])
         .map((item) => {
           if (item !== null) {
-            return item.display
+            return item.display;
           } else {
-            return ''
+            return '';
           }
         })
         .join(',');
@@ -462,7 +462,7 @@ class VirtualGrid extends React.Component {
           key: mycolumns[j].key,
           type: tmpType,
           chips: [],
-          show: mycolumns[j].default === 'true' | mycolumns[j].default === true,
+          show: (mycolumns[j].default === 'true') | (mycolumns[j].default === true),
           des: mycolumns[j].description,
         });
       }
@@ -980,14 +980,14 @@ class VirtualGrid extends React.Component {
                 )}
               </AutoSizer>
             ) : (
-                <Container>
-                  <Box display="flex" justifyContent="center" alignItems="center" minHeight="50vh">
-                    <Typography variant="h4" gutterBottom style={{ color: 'grey' }}>
-                      Sorry, not even one record exist or passed your filter criteria...
+              <Container>
+                <Box display="flex" justifyContent="center" alignItems="center" minHeight="50vh">
+                  <Typography variant="h4" gutterBottom style={{ color: 'grey' }}>
+                    Sorry, not even one record exist or passed your filter criteria...
                   </Typography>
-                  </Box>
-                </Container>
-              )}
+                </Box>
+              </Container>
+            )}
           </div>
         </Paper>
         <Toolbar className={classes.toolbar}>

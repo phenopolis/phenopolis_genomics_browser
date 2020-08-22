@@ -6,7 +6,7 @@ import { Trans, useTranslation } from 'react-i18next';
 
 const Login = (props) => {
   const { reduxName } = useSelector((state) => ({
-    reduxName: state.users.username
+    reduxName: state.users.username,
   }));
   const { t } = useTranslation();
   const query = new URLSearchParams(props.location.search);
@@ -37,7 +37,8 @@ const Login = (props) => {
             onLoginSuccess={() => {}}
             redirectLink={
               query.get('link') & (query.get('link') !== 'timeout') ? query.get('link') : '/'
-            } />
+            }
+          />
         </div>
       ) : (
         <div className={'login-root'}>
@@ -57,6 +58,6 @@ const Login = (props) => {
       )}
     </>
   );
-}
+};
 
 export default Login;

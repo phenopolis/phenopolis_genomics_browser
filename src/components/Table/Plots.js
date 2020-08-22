@@ -103,7 +103,7 @@ class Plots extends React.Component {
                 if (y !== null) {
                   return y.display;
                 } else {
-                  return 'null'
+                  return 'null';
                 }
               } else {
                 return y;
@@ -196,7 +196,10 @@ class Plots extends React.Component {
           flattenData.push({ keyX: item[xAxis.key], keyY: item[yAxis.key] });
         } else {
           item[xAxis.key].forEach((chip) => {
-            flattenData.push({ keyX: chip !== null ? chip.display : 'null', keyY: item[yAxis.key] });
+            flattenData.push({
+              keyX: chip !== null ? chip.display : 'null',
+              keyY: item[yAxis.key],
+            });
           });
         }
       });
@@ -269,10 +272,16 @@ class Plots extends React.Component {
       } else {
         item[xAxis.key].forEach((chipX) => {
           if (typeof item[yAxis.key] === 'string') {
-            flattenData.push({ keyX: chipX !== null ? chipX.display : 'null', keyY: item[yAxis.key] });
+            flattenData.push({
+              keyX: chipX !== null ? chipX.display : 'null',
+              keyY: item[yAxis.key],
+            });
           } else {
             item[yAxis.key].forEach((chipY) => {
-              flattenData.push({ keyX: chipX !== null ? chipX.display : 'null', keyY: chipY !== null ? chipY.display : 'null' });
+              flattenData.push({
+                keyX: chipX !== null ? chipX.display : 'null',
+                keyY: chipY !== null ? chipY.display : 'null',
+              });
             });
           }
         });

@@ -38,7 +38,7 @@ const MySnackbarContentWrapper = (props) => {
       {...other}
     />
   );
-}
+};
 
 MySnackbarContentWrapper.propTypes = {
   className: PropTypes.string,
@@ -75,6 +75,6 @@ const CustomizedSnackbars = () => {
       />
     </Snackbar>
   );
-}
+};
 
 export default CustomizedSnackbars;
