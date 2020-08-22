@@ -100,7 +100,11 @@ class Plots extends React.Component {
           } else {
             return x[Axis.key].map((y) => {
               if (typeof y === 'object') {
-                return y.display;
+                if (y !== null) {
+                  return y.display;
+                } else {
+                  return 'null'
+                }
               } else {
                 return y;
               }
@@ -127,7 +131,6 @@ class Plots extends React.Component {
 
   CreateHistogram = (Axis) => {
     let tmpValue = this.props.dataRows.map((x) => x[Axis.key]);
-
     var bins = ecStat.histogram(tmpValue);
 
     const newHistogramOption = JSON.parse(JSON.stringify(HistogramOption));
@@ -193,7 +196,7 @@ class Plots extends React.Component {
           flattenData.push({ keyX: item[xAxis.key], keyY: item[yAxis.key] });
         } else {
           item[xAxis.key].forEach((chip) => {
-            flattenData.push({ keyX: chip.display, keyY: item[yAxis.key] });
+            flattenData.push({ keyX: chip !== null ? chip.display : 'null', keyY: item[yAxis.key] });
           });
         }
       });
@@ -266,10 +269,10 @@ class Plots extends React.Component {
       } else {
         item[xAxis.key].forEach((chipX) => {
           if (typeof item[yAxis.key] === 'string') {
-            flattenData.push({ keyX: chipX.display, keyY: item[yAxis.key] });
+            flattenData.push({ keyX: chipX !== null ? chipX.display : 'null', keyY: item[yAxis.key] });
           } else {
             item[yAxis.key].forEach((chipY) => {
-              flattenData.push({ keyX: chipX.display, keyY: chipY.display });
+              flattenData.push({ keyX: chipX !== null ? chipX.display : 'null', keyY: chipY !== null ? chipY.display : 'null' });
             });
           }
         });

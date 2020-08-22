@@ -290,7 +290,13 @@ function desc(a, b, orderBy) {
   if (typeof a[[orderBy]] === 'object') {
     if (typeof a[orderBy][0] === 'object') {
       aString = Object.values(a[orderBy])
-        .map((item) => item.display)
+        .map((item) => {
+          if (item !== null) {
+            return item.display
+          } else {
+            return ''
+          }
+        })
         .join(',');
     } else {
       aString = a[[orderBy]].join(',');
@@ -303,7 +309,13 @@ function desc(a, b, orderBy) {
   if (typeof b[[orderBy]] === 'object') {
     if (typeof b[orderBy][0] === 'object') {
       bString = Object.values(b[orderBy])
-        .map((item) => item.display)
+        .map((item) => {
+          if (item !== null) {
+            return item.display
+          } else {
+            return ''
+          }
+        })
         .join(',');
     } else {
       bString = b[[orderBy]].join(',');
@@ -450,7 +462,7 @@ class VirtualGrid extends React.Component {
           key: mycolumns[j].key,
           type: tmpType,
           chips: [],
-          show: mycolumns[j].default,
+          show: mycolumns[j].default === 'true' | mycolumns[j].default === true,
           des: mycolumns[j].description,
         });
       }
@@ -968,14 +980,14 @@ class VirtualGrid extends React.Component {
                 )}
               </AutoSizer>
             ) : (
-              <Container>
-                <Box display="flex" justifyContent="center" alignItems="center" minHeight="50vh">
-                  <Typography variant="h4" gutterBottom style={{ color: 'grey' }}>
-                    Sorry, not even one record exist or passed your filter criteria...
+                <Container>
+                  <Box display="flex" justifyContent="center" alignItems="center" minHeight="50vh">
+                    <Typography variant="h4" gutterBottom style={{ color: 'grey' }}>
+                      Sorry, not even one record exist or passed your filter criteria...
                   </Typography>
-                </Box>
-              </Container>
-            )}
+                  </Box>
+                </Container>
+              )}
           </div>
         </Paper>
         <Toolbar className={classes.toolbar}>
