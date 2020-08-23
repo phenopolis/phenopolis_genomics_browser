@@ -84,17 +84,19 @@ def create_individual():
         new_individuals = _parse_payload(payload, Individual)
     except TypeError as e:
         application.logger.error(str(e))
+        
         return jsonify(success=False, error=str(e)), 400
 
     # checks individuals validity
+    db_session = get_db_session()
+
     try:
         for i in new_individuals:
-            _check_individual_valid(i)
+            _check_individual_valid(i, db_session)
     except PhenopolisException as e:
         application.logger.error(str(e))
         return jsonify(success=False, error=str(e)), 400
 
-    db_session = get_db_session()
     request_ok = True
     message = "Individuals were created"
     ids_new_individuals = []
@@ -124,10 +126,18 @@ def create_individual():
         return jsonify(success=True, message=message, id=",".join(ids_new_individuals)), 200
 
 
-def _check_individual_valid(new_individual: Individual):
+def _check_individual_valid(new_individual: Individual, sqlalchemy_session):
     if new_individual is None:
         raise PhenopolisException("Null individual")
-    # TODO: add more validations here
+
+    exist_internal_id = (
+        sqlalchemy_session.query(Individual.external_id)
+        .filter(Individual.external_id == new_individual.external_id).all()
+    )
+
+    if len(exist_internal_id) > 0:
+        raise PhenopolisException("Individual is already exist.")
+    # TODOe: add more validations here
 
 
 def _get_new_individual_id(sqlalchemy_session):
@@ -195,8 +205,8 @@ def _individual_preview(config, individual):
     config[0]["preview"] = [
         ["External_id", individual["external_id"]],
         ["Sex", individual["sex"]],
-        ["Genes", [g for g in individual.get("genes", "").split(",")]],
-        ["Features", [f for f in individual["simplified_observed_features_names"].split(",")]],
+        ["Genes", [g for g in individual.get("genes", "").split(",") if g != '']],
+        ["Features", [f for f in individual["simplified_observed_features_names"].split(",") if f != '']],
         ["Number of hom variants", hom_count],
         ["Number of compound hets", comp_het_count],
         ["Number of het variants", het_count],
@@ -259,9 +269,9 @@ def _map_individual2output(config, individual):
         for i, j, in zip(
             individual["simplified_observed_features_names"].split(";"),
             individual["simplified_observed_features"].split(","),
-        )
+        )  if i != ""
     ]
-    config[0]["metadata"]["data"][0]["genes"] = [{"display": i} for i in individual.get("genes", "").split(",")]
+    config[0]["metadata"]["data"][0]["genes"] = [{"display": i} for i in individual.get("genes", "").split(",") if i != ""]
     return config
 
 
@@ -331,6 +341,7 @@ def _update_individual(consanguinity, gender, genes, hpos, individual):
         sorted(list(set(list(itertools.chain.from_iterable([h["hpo_ancestor_ids"].split(";") for h in hpos])))))
     )
     individual["genes"] = ",".join([x for x in genes])
+
     application.logger.info("UPDATE: {}".format(individual))
     c = postgres_cursor()
     try:
