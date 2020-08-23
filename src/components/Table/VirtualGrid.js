@@ -287,7 +287,7 @@ function handleScroll(event) {
 
 function desc(a, b, orderBy) {
   let aString = '';
-  if (typeof a[[orderBy]] === 'object' & a[[orderBy]] !== null) {
+  if ((typeof a[[orderBy]] === 'object') & (a[[orderBy]] !== null)) {
     if (typeof a[orderBy][0] === 'object') {
       aString = Object.values(a[orderBy])
         .map((item) => {
@@ -306,7 +306,7 @@ function desc(a, b, orderBy) {
   }
 
   let bString = '';
-  if (typeof b[[orderBy]] === 'object' & b[[orderBy]] !== null) {
+  if ((typeof b[[orderBy]] === 'object') & (b[[orderBy]] !== null)) {
     if (typeof b[orderBy][0] === 'object') {
       bString = Object.values(b[orderBy])
         .map((item) => {
@@ -980,14 +980,14 @@ class VirtualGrid extends React.Component {
                 )}
               </AutoSizer>
             ) : (
-                <Container>
-                  <Box display="flex" justifyContent="center" alignItems="center" minHeight="50vh">
-                    <Typography variant="h4" gutterBottom style={{ color: 'grey' }}>
-                      Sorry, not even one record exist or passed your filter criteria...
+              <Container>
+                <Box display="flex" justifyContent="center" alignItems="center" minHeight="50vh">
+                  <Typography variant="h4" gutterBottom style={{ color: 'grey' }}>
+                    Sorry, not even one record exist or passed your filter criteria...
                   </Typography>
-                  </Box>
-                </Container>
-              )}
+                </Box>
+              </Container>
+            )}
           </div>
         </Paper>
         <Toolbar className={classes.toolbar}>
