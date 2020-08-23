@@ -70,7 +70,7 @@ const HomeBanner = (props) => {
                     {t('HomePage.HomeBanner.button_no_login')}
                   </Button>
                 ) : (
-                  <Link style={{ textDecoration: 'none' }} to="/search">
+                  <Link style={{ textDecoration: 'none' }} to="/dashboard">
                     <Button
                       variant="outlined"
                       color="inherit"
@@ -79,7 +79,7 @@ const HomeBanner = (props) => {
                       // component={Link}
                       // to='/search'
                     >
-                      {t('HomePage.HomeBanner.button_login')}
+                      Dashboard
                     </Button>
                   </Link>
                 )}

@@ -6,6 +6,7 @@ export const getPatients = () => {
     dispatch({ type: GET_PATIENTS });
     Service.getPatients()
       .then((res) => {
+        console.log(res);
         dispatch({ type: GET_PATIENTS_SUCCESS, payload: res });
       })
       .catch((error) => {

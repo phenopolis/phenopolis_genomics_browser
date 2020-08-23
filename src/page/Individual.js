@@ -73,7 +73,7 @@ class Individual extends React.Component {
         if (err.response.status === 401) {
           this.setState({ redirect: true, reLink: '/login?link=' + window.location.pathname });
         } else if (err.response.status === 404) {
-          this.setState({ redirect: true, reLink: '/search' });
+          this.setState({ redirect: true, reLink: '/' });
           this.props.setSnack('Patient not exist.', 'warning');
         }
       });

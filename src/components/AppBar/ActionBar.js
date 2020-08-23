@@ -15,19 +15,25 @@ import {
   Divider,
 } from '@material-ui/core';
 
+import grey from '@material-ui/core/colors/grey';
+
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+
 import {
   faSearch,
-  faUsersMedical,
   faScroll,
+  faUsersMedical,
+  faUsers,
+  faUserPlus,
   faLanguage,
   faUserCircle,
   faSignOut,
   faKey,
-} from '@fortawesome/pro-duotone-svg-icons';
+  faAngleDown,
+  faAngleUp,
+} from '@fortawesome/pro-light-svg-icons';
 
-import ExpandLess from '@material-ui/icons/ExpandLess';
-import ExpandMore from '@material-ui/icons/ExpandMore';
+import { faTh } from '@fortawesome/pro-duotone-svg-icons';
 
 import { withTranslation } from 'react-i18next';
 
@@ -43,7 +49,8 @@ const LightTooltip = withStyles((theme) => ({
     backgroundColor: theme.palette.common.white,
     color: 'rgba(0, 0, 0, 0.87)',
     boxShadow: theme.shadows[1],
-    fontSize: 13,
+    fontSize: 15,
+    padding: '0.5em',
   },
 }))(Tooltip);
 
@@ -53,6 +60,7 @@ class ActionBar extends React.Component {
     this.state = {
       languageOpen: false,
       accountOpen: false,
+      patientOpen: false,
       languages: [
         { code: 'en', label: 'English', svg: GB },
         { code: 'cn', label: '中文', svg: CN },
@@ -84,13 +92,29 @@ class ActionBar extends React.Component {
     return (
       <div className={classes.list} role="presentation">
         <List>
-          <ListItem button onClick={this.props.ActionbarSearch}>
+          <ListItem className={classes.listItem} button component={Link} to="/dashboard">
+            <LightTooltip
+              disableHoverListener={this.props.expended}
+              title="Dashboard"
+              placement="right">
+              <ListItemIcon>
+                <FontAwesomeIcon icon={faTh} className={classes.icon} style={{ fontSize: '22' }} />
+              </ListItemIcon>
+            </LightTooltip>
+            <ListItemText primary="Dashboard" classes={{ primary: classes.listItemText }} />
+          </ListItem>
+
+          <ListItem className={classes.listItem} button onClick={this.props.ActionbarSearch}>
             <LightTooltip
               disableHoverListener={this.props.expended}
               title={t('AppBar.SideBar.Label_Search')}
               placement="right">
               <ListItemIcon>
-                <FontAwesomeIcon icon={faSearch} style={{ color: '#2196f3', fontSize: '20' }} />
+                <FontAwesomeIcon
+                  icon={faSearch}
+                  className={classes.icon}
+                  style={{ fontSize: '22' }}
+                />
               </ListItemIcon>
             </LightTooltip>
             <ListItemText
@@ -99,7 +123,10 @@ class ActionBar extends React.Component {
             />
           </ListItem>
 
-          <ListItem button component={Link} to="/my_patients">
+          <ListItem
+            className={classes.listItem}
+            button
+            onClick={() => this.setState({ patientOpen: !this.state.patientOpen })}>
             <LightTooltip
               disableHoverListener={this.props.expended}
               title={t('AppBar.SideBar.Label_Patients')}
@@ -107,7 +134,8 @@ class ActionBar extends React.Component {
               <ListItemIcon>
                 <FontAwesomeIcon
                   icon={faUsersMedical}
-                  style={{ color: '#2196f3', fontSize: '20' }}
+                  className={classes.icon}
+                  style={{ fontSize: '22' }}
                 />
               </ListItemIcon>
             </LightTooltip>
@@ -115,15 +143,63 @@ class ActionBar extends React.Component {
               primary={t('AppBar.SideBar.Label_Patients')}
               classes={{ primary: classes.listItemText }}
             />
+            {this.state.patientOpen ? (
+              <FontAwesomeIcon icon={faAngleUp} />
+            ) : (
+              <FontAwesomeIcon icon={faAngleDown} />
+            )}
           </ListItem>
 
-          <ListItem button component={Link} to="/publications">
+          <Collapse in={this.state.patientOpen} timeout="auto" unmountOnExit>
+            <List component="div" disablePadding>
+              <ListItem className={classes.nested} button component={Link} to="/my_patients">
+                <LightTooltip
+                  disableHoverListener={this.props.expended}
+                  title={t('AppBar.SideBar.Label_Patients')}
+                  placement="right">
+                  <ListItemIcon>
+                    <FontAwesomeIcon
+                      icon={faUsers}
+                      className={classes.icon}
+                      style={{ fontSize: '15' }}
+                    />
+                  </ListItemIcon>
+                </LightTooltip>
+                <ListItemText
+                  primary={t('AppBar.SideBar.Label_Patients')}
+                  classes={{ primary: classes.listItemText }}
+                />
+              </ListItem>
+
+              <ListItem className={classes.nested} button component={Link} to="/create_patient">
+                <LightTooltip
+                  disableHoverListener={this.props.expended}
+                  title="Add Patient"
+                  placement="right">
+                  <ListItemIcon>
+                    <FontAwesomeIcon
+                      icon={faUserPlus}
+                      className={classes.icon}
+                      style={{ fontSize: '15' }}
+                    />
+                  </ListItemIcon>
+                </LightTooltip>
+                <ListItemText primary="Add Patient" classes={{ primary: classes.listItemText }} />
+              </ListItem>
+            </List>
+          </Collapse>
+
+          <ListItem className={classes.listItem} button component={Link} to="/publications">
             <LightTooltip
               disableHoverListener={this.props.expended}
               title={t('AppBar.SideBar.Label_Publication')}
               placement="right">
               <ListItemIcon>
-                <FontAwesomeIcon icon={faScroll} style={{ color: '#2196f3', fontSize: '20' }} />
+                <FontAwesomeIcon
+                  icon={faScroll}
+                  className={classes.icon}
+                  style={{ fontSize: '22' }}
+                />
               </ListItemIcon>
             </LightTooltip>
             <ListItemText
@@ -132,20 +208,30 @@ class ActionBar extends React.Component {
             />
           </ListItem>
 
-          <ListItem button onClick={this.handleLanguageClick}>
+          <Divider />
+
+          <ListItem className={classes.listItem} button onClick={this.handleLanguageClick}>
             <LightTooltip
               disableHoverListener={this.props.expended}
               title={t('AppBar.SideBar.Label_Language')}
               placement="right">
               <ListItemIcon>
-                <FontAwesomeIcon icon={faLanguage} style={{ color: '#2196f3', fontSize: '20' }} />
+                <FontAwesomeIcon
+                  icon={faLanguage}
+                  className={classes.icon}
+                  style={{ fontSize: '25' }}
+                />
               </ListItemIcon>
             </LightTooltip>
             <ListItemText
               primary={t('AppBar.SideBar.Label_Language')}
               classes={{ primary: classes.listItemText }}
             />
-            {this.state.languageOpen ? <ExpandLess /> : <ExpandMore />}
+            {this.state.languageOpen ? (
+              <FontAwesomeIcon icon={faAngleUp} />
+            ) : (
+              <FontAwesomeIcon icon={faAngleDown} />
+            )}
           </ListItem>
 
           <Collapse in={this.state.languageOpen} timeout="auto" unmountOnExit>
@@ -153,6 +239,7 @@ class ActionBar extends React.Component {
               {this.state.languages.map((lan, lanIndex) => {
                 return (
                   <ListItem
+                    key={lanIndex}
                     button
                     onClick={() => changeLanguage(lan.code)}
                     className={classes.nested}>
@@ -171,22 +258,31 @@ class ActionBar extends React.Component {
             </List>
           </Collapse>
 
-          <Divider />
-
-          <ListItem button onClick={() => this.setState({ accountOpen: !this.state.accountOpen })}>
+          <ListItem
+            className={classes.listItem}
+            button
+            onClick={() => this.setState({ accountOpen: !this.state.accountOpen })}>
             <LightTooltip
               disableHoverListener={this.props.expended}
               title={this.props.username}
               placement="right">
               <ListItemIcon>
-                <FontAwesomeIcon icon={faUserCircle} style={{ color: '#2196f3', fontSize: '20' }} />
+                <FontAwesomeIcon
+                  icon={faUserCircle}
+                  className={classes.icon}
+                  style={{ fontSize: '22' }}
+                />
               </ListItemIcon>
             </LightTooltip>
             <ListItemText
               primary={this.props.username}
               classes={{ primary: classes.listItemText }}
             />
-            {this.state.accountOpen ? <ExpandLess /> : <ExpandMore />}
+            {this.state.accountOpen ? (
+              <FontAwesomeIcon icon={faAngleUp} />
+            ) : (
+              <FontAwesomeIcon icon={faAngleDown} />
+            )}
           </ListItem>
 
           <Collapse in={this.state.accountOpen} timeout="auto" unmountOnExit>
@@ -197,7 +293,11 @@ class ActionBar extends React.Component {
                   title={t('AppBar.SideBar.Label_Change_Password')}
                   placement="right">
                   <ListItemIcon>
-                    <FontAwesomeIcon icon={faKey} style={{ color: '#2196f3', fontSize: '17' }} />
+                    <FontAwesomeIcon
+                      icon={faKey}
+                      className={classes.icon}
+                      style={{ fontSize: '15' }}
+                    />
                   </ListItemIcon>
                 </LightTooltip>
                 <ListItemText
@@ -214,7 +314,8 @@ class ActionBar extends React.Component {
                   <ListItemIcon>
                     <FontAwesomeIcon
                       icon={faSignOut}
-                      style={{ color: '#2196f3', fontSize: '17' }}
+                      className={classes.icon}
+                      style={{ fontSize: '15' }}
                     />
                   </ListItemIcon>
                 </LightTooltip>
@@ -239,29 +340,52 @@ ActionBar.propTypes = {
 const styles = (theme) => ({
   list: {
     width: 239,
+    backgroundColor: 'smokewhite',
+  },
+  listItem: {
+    color: 'black',
+    '&:hover': {
+      color: '#2E84CF',
+      backgroundColor: grey[100],
+      '& $icon': {
+        color: '#2E84CF',
+      },
+      '& $listItemText': {
+        color: '#2E84CF',
+      },
+    },
+  },
+  icon: {
+    fontSize: '20',
+    marginLeft: '9px',
   },
   listItemText: {
     fontSize: '1em',
-    fontWeight: '500',
   },
   nested: {
-    paddingLeft: theme.spacing(4),
-    fontSize: '0.85em',
+    marginLeft: '3.5px',
+    fontSize: '0.8em',
+    backgroundColor: '#f5f5f5',
+    '&:hover': {
+      color: '#2E84CF',
+      backgroundColor: grey[100],
+      '& $icon': {
+        color: '#2E84CF',
+      },
+      '& $listItemText': {
+        color: '#2E84CF',
+      },
+    },
   },
   avatar: {
     width: 23,
     height: 23,
   },
   imageIcon: {
+    marginLeft: '9px',
     height: '1.2em',
     width: '1.2em',
     boxShadow: '0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19)',
-  },
-  tooltip: {
-    backgroundColor: theme.palette.common.white,
-    color: 'rgba(0, 0, 0, 0.87)',
-    boxShadow: theme.shadows[1],
-    fontSize: 11,
   },
 });
 

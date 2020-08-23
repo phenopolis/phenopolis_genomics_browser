@@ -12,7 +12,6 @@ import {
   Box,
   Tab,
   Tabs,
-  Avatar,
   IconButton,
 } from '@material-ui/core';
 
@@ -23,7 +22,6 @@ import { faSearch, faDna, faChartNetwork, faUser, faCut } from '@fortawesome/pro
 
 import TypeChip from '../Chip/TypeChip';
 
-import SearchIcon from '@material-ui/icons/Search';
 import CloseTwoToneIcon from '@material-ui/icons/CloseTwoTone';
 
 import { useTranslation } from 'react-i18next';
@@ -68,7 +66,6 @@ function a11yProps(index) {
 const useStyles = makeStyles((theme) => ({
   root: {
     flexGrow: 1,
-    backgroundColor: theme.palette.background.paper,
     display: 'flex',
   },
   tabs: {

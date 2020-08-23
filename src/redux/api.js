@@ -13,4 +13,5 @@ export default {
   GENE: API_URL + '/gene/',
   VARIANT: API_URL + '/variant/',
   HPO: API_URL + '/hpo/',
+  CREATE_INDIVIDUAL: API_URL + '/individual',
 };

@@ -1,0 +1,13 @@
+.dashboard-container {
+  // margin-top: 3em;
+  border: 1px solid red
+}
+
+.account-panel-button {
+  cursor: pointer;
+  border-radius: 0;
+  &:hover {
+    text-decoration: none;
+    background-color: #eeeeee;
+  }
+}

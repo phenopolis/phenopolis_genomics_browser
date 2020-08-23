@@ -94,7 +94,7 @@ const TypeChip = (props) => {
     }
 
     if (props.emit === true) {
-      props.onClick(to);
+      props.onClick(props.emitContent);
     }
   };
 
@@ -110,6 +110,11 @@ const TypeChip = (props) => {
     dispatch(clearPreviewInformation());
   };
 
+  const handleDeleteClick = (event, label) => {
+    event.preventDefault();
+    props.onDeleteClick(label);
+  };
+
   const open = Boolean(anchorEl);
 
   return (
@@ -119,6 +124,7 @@ const TypeChip = (props) => {
         label={props.label}
         color="primary"
         className={'search-chip-' + props.size}
+        onDelete={props.deletable ? (event) => handleDeleteClick(event, props.label) : null}
         avatar={
           <Avatar
             style={{

@@ -42,11 +42,11 @@ const Variant = (props) => {
 
   useEffect(() => {
     if ((loading === false) & (variantInfo === undefined)) {
-      history.push('/search');
+      history.push('/');
       dispatch(setSnack('Variant not exist.', 'warning'));
     } else if ((loading === false) & (variantInfo !== undefined)) {
       if (Object.keys(variantInfo.metadata.data[0]).length === 0) {
-        history.push('/search');
+        history.push('/');
         dispatch(setSnack('Variant not exist.', 'warning'));
       } else {
         setValid(true);

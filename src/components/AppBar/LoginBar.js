@@ -18,6 +18,9 @@ import {
   Drawer,
   AppBar,
   Divider,
+  Box,
+  Avatar,
+  Button,
 } from '@material-ui/core';
 
 import SearchIcon from '@material-ui/icons/Search';
@@ -28,7 +31,6 @@ import MenuIcon from '@material-ui/icons/Menu';
 import TranslateIcon from '@material-ui/icons/Translate';
 import AccountCircleIcon from '@material-ui/icons/AccountCircle';
 import ShoppingCartIcon from '@material-ui/icons/ShoppingCart';
-import ChevronLeftIcon from '@material-ui/icons/ChevronLeft';
 
 import Footer from '../General/Footer';
 import DrawerSearch from './DrawerSearch';
@@ -125,9 +127,12 @@ const LoginBar = (props) => {
       <CssBaseline />
       <AppBar
         position="fixed"
-        className={clsx('appBar', {
-          ['appBarShift']: openActionSideBar,
-        })}>
+        className={clsx(
+          'appBar'
+          // {
+          //   ['appBarShift']: openActionSideBar,
+          // }
+        )}>
         <Toolbar>
           <IconButton
             color="inherit"
@@ -296,11 +301,29 @@ const LoginBar = (props) => {
             ['drawerClose']: !openActionSideBar,
           }),
         }}>
-        <div className="appBar-toolbar">
-          <IconButton onClick={() => OpenActionSideBar()}>
-            <ChevronLeftIcon />
-          </IconButton>
-        </div>
+        <Box
+          className={clsx('app-sidebar-userbox', {
+            'app-sidebar-userbox--collapsed': !openActionSideBar,
+          })}
+          style={{ paddingTop: '6em', backgroundColor: 'smokewhite' }}>
+          <Link style={{ textDecoration: 'none' }} to="/dashboard">
+            <Avatar alt="Remy Sharp" className="app-sidebar-userbox-avatar">
+              <AccountCircleIcon style={{ height: '2.5em', width: '2.5em' }} />
+            </Avatar>
+          </Link>
+
+          <Box className="app-sidebar-userbox-name">
+            <Box>
+              <b>{username}</b>
+            </Box>
+            <Box className="app-sidebar-userbox-description">Working Hospital</Box>
+            <Box className="app-sidebar-userbox-btn-profile">
+              <Button size="small" color="primary" component={Link} to="/dashboard">
+                View Dashboard
+              </Button>
+            </Box>
+          </Box>
+        </Box>
         <Divider />
         <ActionBar
           username={username}

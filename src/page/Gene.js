@@ -32,7 +32,7 @@ const Gene = (props) => {
 
   useEffect(() => {
     if (error === 404) {
-      history.push('/search');
+      history.push('/');
       dispatch(setSnack('Gene not exist.', 'warning'));
     } else if (error === 401) {
       history.push(`/login?link=${window.location.pathname}`);

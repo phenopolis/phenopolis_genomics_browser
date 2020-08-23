@@ -26,21 +26,23 @@ class SearchAutoComplete extends React.Component {
   }
 
   componentWillReceiveProps(nextProps) {
-    this.setState({
-      featureArray: nextProps.featureArray,
-      type: nextProps.type,
-      featureInput: '',
-      autoCompleteContent: null,
-      searchLoaded: false,
-    });
+    if (JSON.stringify(nextProps.featureArray) !== JSON.stringify(this.props.featureArray)) {
+      this.setState({
+        featureArray: nextProps.featureArray,
+        type: nextProps.type,
+        featureInput: '',
+        autoCompleteContent: null,
+        searchLoaded: false,
+      });
+    }
   }
 
   handleFeatureAddChip = (item) => {
-    this.props.ModifyFeature(item.split('::')[1], 'Add', this.state.type);
+    this.props.ModifyFeature(item, 'Add', this.state.type);
   };
 
-  handleFeatureDeleteChip = (item, index) => {
-    this.props.ModifyFeature(index, 'Remove', this.state.type);
+  handleFeatureDeleteChip = (item) => {
+    this.props.ModifyFeature(item, 'Remove', this.state.type);
   };
 
   handleFeatureSearchChange = (event) => {
@@ -69,7 +71,7 @@ class SearchAutoComplete extends React.Component {
       .get('/api/autocomplete/' + searchText + '?query_type=' + type, { withCredentials: true })
       .then((res) => {
         let filteredOptions = res.data.filter((x) => {
-          return self.state.featureArray.indexOf(x) < 0;
+          return self.state.featureArray.indexOf(x.split('::')[1]) < 0;
         });
         self.setState({ autoCompleteContent: filteredOptions, searchLoaded: false });
       })
@@ -90,8 +92,23 @@ class SearchAutoComplete extends React.Component {
           classes={{
             chip: classes.chipinInput,
           }}
-          onDelete={(chip, index) => this.handleFeatureDeleteChip(chip, index)}
+          onDelete={(chip, value) => this.handleFeatureDeleteChip(chip)}
           onUpdateInput={(event) => this.handleFeatureSearchChange(event)}
+          chipRenderer={(value) => {
+            return (
+              <TypeChip
+                size="small"
+                label={value.chip}
+                type={this.state.type}
+                emit={false}
+                action="no"
+                popover={false}
+                deletable={true}
+                onDeleteClick={this.handleFeatureDeleteChip}
+                to={'//'}
+              />
+            );
+          }}
         />
 
         <Collapse in={this.state.searchLoaded === true || this.state.autoCompleteContent !== null}>
@@ -110,9 +127,11 @@ class SearchAutoComplete extends React.Component {
                         size="small"
                         label={item.split('::')[1]}
                         type={this.state.type}
+                        popover={true}
                         emit={true}
+                        emitContent={item}
                         onClick={this.handleFeatureAddChip}
-                        to={item}
+                        to={'/' + item.split('::')[0] + '/' + item.split('::')[2]}
                       />
                     );
                   })

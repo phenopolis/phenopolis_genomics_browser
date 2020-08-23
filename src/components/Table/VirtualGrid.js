@@ -690,7 +690,7 @@ class VirtualGrid extends React.Component {
           case '=':
             if (typeof item[filter.column.key] !== 'object') {
               if (
-                RegExp(filter.value.toUpperCase().replace(/[-\/\\^$*+?.()|[\]{}]/g, '\\$&')).test(
+                RegExp(filter.value.toUpperCase().replace(/[-/\\^$*+?.()|[\]{}]/g, '\\$&')).test(
                   item[filter.column.key].toString().toUpperCase()
                 )
               ) {
@@ -704,7 +704,7 @@ class VirtualGrid extends React.Component {
               ) {
                 let displays = item[filter.column.key].filter((chip) => {
                   return RegExp(
-                    filter.value.toUpperCase().replace(/[-\/\\^$*+?.()|[\]{}]/g, '\\$&')
+                    filter.value.toUpperCase().replace(/[-/\\^$*+?.()|[\]{}]/g, '\\$&')
                   ).test(chip.display.toUpperCase());
                 });
                 if (displays.length > 0) {
@@ -713,7 +713,7 @@ class VirtualGrid extends React.Component {
                 }
               } else {
                 if (
-                  RegExp(filter.value.toUpperCase().replace(/[-\/\\^$*+?.()|[\]{}]/g, '\\$&')).test(
+                  RegExp(filter.value.toUpperCase().replace(/[-/\\^$*+?.()|[\]{}]/g, '\\$&')).test(
                     item[filter.column.key].join(',').toUpperCase()
                   )
                 ) {

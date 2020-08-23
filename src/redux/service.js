@@ -71,6 +71,13 @@ function getHPO(param) {
   });
 }
 
+function createIndividual(data) {
+  console.log(data);
+  return axios.post(api.CREATE_INDIVIDUAL, data, {
+    withCredentials: true,
+  });
+}
+
 export default {
   getStatistics,
   getSearchAutocomplete,
@@ -83,4 +90,5 @@ export default {
   getGene,
   getVariant,
   getHPO,
+  createIndividual,
 };

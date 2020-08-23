@@ -9,10 +9,11 @@ import './assets/scss/base.scss';
 import HomeAppBar from './page/HomeAppBar';
 import Login from './page/Login';
 import Home from './page/Home';
-// import Product from './page/Product';
+import Dashboard from './page/Dashboard';
 import Publication from './page/Publication';
-import Search from './page/Search';
 import AuthCheck from './page/AuthCheck';
+import NotFoundPage from './page/NotFoundPage';
+import CreatePatient from './page/CreatePatient';
 
 import CustomizedSnackbars from './components/CustomizedSnackbars/CustomizedSnackbars';
 
@@ -22,7 +23,7 @@ import Individual from './page/Individual';
 import Variant from './page/Variant';
 import MyPatient from './page/MyPatient';
 
-import { BrowserRouter as Router, Route } from 'react-router-dom';
+import { BrowserRouter as Router, Route, Switch } from 'react-router-dom';
 import { CookiesProvider } from 'react-cookie';
 
 import Loading from './components/General/Loading';
@@ -48,16 +49,19 @@ function App() {
 
           <ThemeProvider theme={outerTheme}>
             <HomeAppBar>
-              <Route exact path="/" component={Home} />
-              <Route path="/login" component={Login} />
-              <Route path="/publications" component={Publication} />
-              {/* <Route path="/product" component={Product} /> */}
-              <Route path="/search" component={Search} />
-              <Route path="/my_patients" component={MyPatient} />
-              <Route path="/gene/:geneId" component={Gene} />
-              <Route path="/hpo/:hpoId" component={HPO} />
-              <Route path="/individual/:individualId" component={Individual} />
-              <Route path="/variant/:variantId" component={Variant} />
+              <Switch>
+                <Route exact path="/" component={Home} />
+                <Route path="/dashboard" component={Dashboard} />
+                <Route path="/login" component={Login} />
+                <Route path="/create_patient" component={CreatePatient} />
+                <Route path="/publications" component={Publication} />
+                <Route path="/my_patients" component={MyPatient} />
+                <Route path="/gene/:geneId" component={Gene} />
+                <Route path="/hpo/:hpoId" component={HPO} />
+                <Route path="/individual/:individualId" component={Individual} />
+                <Route path="/variant/:variantId" component={Variant} />
+                <Route component={NotFoundPage} />
+              </Switch>
             </HomeAppBar>
           </ThemeProvider>
         </Router>

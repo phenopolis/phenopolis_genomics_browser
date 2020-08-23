@@ -10,6 +10,7 @@ import Patients from './patients';
 import Gene from './gene';
 import Variant from './variant';
 import HPO from './hpo';
+import Individuals from './individuals';
 
 export default combineReducers({
   users,
@@ -23,4 +24,5 @@ export default combineReducers({
   Gene,
   Variant,
   HPO,
+  Individuals,
 });

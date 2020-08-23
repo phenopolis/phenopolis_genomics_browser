@@ -106,23 +106,25 @@ class EditPerson extends React.Component {
   };
 
   ModifyFeatureChip = (item, action, type) => {
+    console.log(item);
+    console.log(this.state.geneArray);
     if (type === 'phenotype') {
       if (action === 'Add') {
-        this.setState({ featureArray: [...this.state.featureArray, item] });
+        this.setState({ featureArray: [...this.state.featureArray, item.split('::')[1]] });
       } else {
         this.setState({
-          featureArray: this.state.featureArray.filter((x, index) => {
-            return index !== item;
+          featureArray: this.state.featureArray.filter((x) => {
+            return x !== item;
           }),
         });
       }
     } else {
       if (action === 'Add') {
-        this.setState({ geneArray: [...this.state.geneArray, item] });
+        this.setState({ geneArray: [...this.state.geneArray, item.split('::')[1]] });
       } else {
         this.setState({
-          geneArray: this.state.geneArray.filter((x, index) => {
-            return index !== item;
+          geneArray: this.state.geneArray.filter((x) => {
+            return x !== item;
           }),
         });
       }

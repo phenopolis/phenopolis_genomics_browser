@@ -6,6 +6,7 @@ export const getStatistics = () => {
     dispatch({ type: GET_STATISTICS });
     Service.getStatistics()
       .then((res) => {
+        console.log(res);
         dispatch({ type: GET_STATISTICS_SUCCESS, payload: res });
       })
       .catch((error) => {
