@@ -388,3 +388,38 @@ def _get_hpos(features):
         hpos.append(dict(zip(["hpo_id", "hpo_name", "hpo_ancestor_ids", "hpo_ancestor_names"], c.fetchone())))
     c.close()
     return hpos
+
+
+@application.route("/<language>/individual/<individual_id>", methods=["DELETE"])
+@application.route("/individual/<individual_id>", methods=["DELETE"])
+@requires_auth
+def delete_individual(individual_id, language="en"):
+  if session["user"] != "Admin":
+      return jsonify(error="Only Admin is allowed"), 405
+
+  individual = _fetch_authorized_individual(individual_id)
+
+  request_ok = True
+  message = "Patient " + individual_id + " has been deleted."
+
+  if individual:
+    try:
+        db_session = get_db_session()
+        db_session.query(Individual.internal_id).filter(Individual.internal_id == individual_id).delete()
+        db_session.query(UserIndividual.internal_id).filter(UserIndividual.internal_id == individual_id).delete()
+        db_session.commit()
+    except:
+        db_session.rollback()
+        application.logger.exception(e)
+        request_ok = False
+        message = str(e)
+    finally:
+        db_session.close()
+  else:
+      request_ok = False
+      message = "Patient " + individual_id + " does not exist."
+    
+  if not request_ok:
+      return jsonify(success=False, message=message), 500
+  else:
+      return jsonify(success=True, message=message), 200
