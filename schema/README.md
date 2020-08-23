@@ -36,12 +36,18 @@ far to the database:
 
 - If you want to add a table or change the database otherwise you should add
   a patch into the `schema/patches` directory.
+
 - In order to apply the new patches available you can run the script
   `script/patch_db.py`. This should happen in production bot if you are a dev
   with a persistent database you may want to run it against your database when
   you pull new code.
-- The wrapper `script/padch_db_dev.sh` can be run to apply new patches to the
-  database in docker-compose.
+
+- The wrapper `script/patch_docker_db.sh` can be run to apply new patches to
+  the database in docker-compose.
+
+- The wrappers `script/patch_dev_db.sh` and `script/patch_prod_db.sh` can be
+  run to apply new patches to the dev and prod database (to run on the
+  `phenopolis_api` host).
 
 
 CADD import
