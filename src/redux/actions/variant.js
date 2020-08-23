@@ -6,6 +6,7 @@ export const getVariant = (param) => {
     dispatch({ type: GET_VARIANT });
     Service.getVariant(param)
       .then((res) => {
+        console.log(res)
         dispatch({ type: GET_VARIANT_SUCCESS, payload: res });
       })
       .catch((error) => {
