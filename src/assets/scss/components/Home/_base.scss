@@ -6,3 +6,43 @@
   text-align: center;
   color: white;
 }
+
+.home-root {
+  flex-grow: 1;
+  background-color: white;
+  padding: 4em 0 4em 0;
+}
+.home-bannertext {
+  text-align: center;
+  color: white;
+}
+.home-paper {
+  padding: 4em 1em 4em 1em;
+}
+.home-gridpaper {
+  text-align: center;
+}
+.home-fontawesomeicon {
+  font-size: 50px;
+  margin-bottom: 0.3em;
+}
+.home-root2 {
+  flex-grow: 1;
+  background-color: #eeeeee;
+  padding: 4em 0 4em 0;
+}
+.home-gridpaper2 {
+  text-align: center;
+}
+.home-paper2 {
+  padding: 4em 1em 4em 1em;
+  background-color: #eeeeee !important;
+}
+.home-link {
+  text-decoration: none;
+  color: #2E84CF;
+  font-weight: 900;
+  &:hover {
+    text-shadow: -0.06ex 0 white, 0.06ex 0 white;
+  }
+}
