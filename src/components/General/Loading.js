@@ -1,26 +1,21 @@
 import React from 'react';
-import { makeStyles } from '@material-ui/styles';
-import PropTypes from 'prop-types';
 
 import { CssBaseline, Paper, Container, Box, Typography, Grid } from '@material-ui/core';
 
-import '../../assets/css/loading.css';
-
 const Loading = ({ message }) => {
-  const classes = useStyles();
   return (
     <React.Fragment>
       <CssBaseline />
-      <div className={classes.root}>
+      <div className={'loading-root'}>
         <Container maxWidth="md">
-          <Paper className={classes.paper}>
+          <Paper className={'loading-paper'}>
             <Grid
               container
               spacing={0}
               direction="column"
               alignItems="center"
               justify="center"
-              style={{ minHeight: '30vh' }}>
+              className={'loading-height--md'}>
               <Grid item xs={3}>
                 <div class="loader">
                   <div class="dot dot1">
@@ -54,7 +49,7 @@ const Loading = ({ message }) => {
               </Grid>
               <Grid item xs={10} className="mt-5 mb-3">
                 <Typography component="div">
-                  <Box fontSize="h5.fontSize" style={{ color: 'grey', fontWeight: '700' }} m={2}>
+                  <Box fontSize="h5.fontSize" className={'loading-message'} m={2}>
                     {message}
                   </Box>
                 </Typography>
@@ -65,26 +60,6 @@ const Loading = ({ message }) => {
       </div>
     </React.Fragment>
   );
-};
-
-const useStyles = makeStyles((theme) => ({
-  root: {
-    height: 'calc(100vh - 64px)',
-    position: 'relative',
-    backgroundColor: '#eeeeee',
-    padding: '5em',
-  },
-  paper: {
-    padding: '5em',
-  },
-  progress: {
-    color: '#2E84CF',
-    marginTop: '3em',
-  },
-}));
-
-Loading.propTypes = {
-  classes: PropTypes.object.isRequired,
 };
 
 export default Loading;

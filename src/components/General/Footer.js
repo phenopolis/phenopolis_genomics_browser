@@ -1,5 +1,4 @@
 import React from 'react';
-import { makeStyles } from '@material-ui/core/styles';
 import { Grid, Box, Container, CssBaseline, Typography } from '@material-ui/core';
 import { Link } from 'react-router-dom';
 import { useLocation } from 'react-router';
@@ -19,20 +18,18 @@ function Copyright() {
 }
 
 export default function StickyFooter() {
-  const classes = useStyles();
   const location = useLocation();
 
   React.useEffect(() => {
-    // window.alert(location.pathname)
   }, [location.pathname]);
 
   const { t } = useTranslation();
 
   return (
-    <div className={classes.root}>
+    <div className={'footer-root'}>
       <CssBaseline />
       {location.pathname === '/' ? (
-        <Container component="main" className={classes.main} maxWidth="xl">
+        <Container component="main" className={'footer-main'} maxWidth="xl">
           <Grid container direction="row" justify="center" alignItems="center">
             <Grid item xs={12} md={8}>
               <Typography component="div">
@@ -56,16 +53,16 @@ export default function StickyFooter() {
                   m={1}
                   component={Link}
                   to="/publications"
-                  className={classes.a}>
+                  className={'footer-link'}>
                   {i18next.t('Footer.Publications')}
                 </Box>
                 <Box fontWeight="fontWeightRegular" fontSize="body2.fontSize" m={1}>
-                  <a href="https://github.com/phenopolis" className={classes.a}>
+                  <a href="https://github.com/phenopolis" className={'footer-link'}>
                     Github
                   </a>
                 </Box>
                 <Box fontWeight="fontWeightRegular" fontSize="body2.fontSize" m={1}>
-                  <a href="mailto:info@phenopolis.org" className={classes.a}>
+                  <a href="mailto:info@phenopolis.org" className={'footer-link'}>
                     {' '}
                     {i18next.t('Contact')}{' '}
                   </a>
@@ -79,14 +76,14 @@ export default function StickyFooter() {
         </Container>
       ) : null}
 
-      <footer className={classes.footer}>
-        <Container component="main" className={classes.main} maxWidth="xl">
+      <footer className={'footer'}>
+        <Container component="main" className={'footer-main'} maxWidth="xl">
           <Grid container direction="row" justify="center" alignItems="center">
             <Grid item xs={12} md={8}>
               <Typography variant="body2" gutterBottom>
                 <Trans i18nKey="Footer.Citation">
                   If you use Phenopolis, please cite us as:
-                  <a href="https://doi.org/10.1093/bioinformatics/btx147" className={classes.a}>
+                  <a href="https://doi.org/10.1093/bioinformatics/btx147" className={'footer-link'}>
                     Pontikos, N. et al. (2017). Phenopolis: an open platform for harmonization and
                     analysis of genetic and phenotypic data. Bioinformatics, 9, 7
                   </a>
@@ -96,7 +93,7 @@ export default function StickyFooter() {
             </Grid>
             <Grid item xs={12} md={2}>
               <Link
-                className={classes.a}
+                className={'footer-link'}
                 to="https://twitter.com/phenopolis"
                 rel="noopener noreferrer"
                 target="_blank"
@@ -104,10 +101,10 @@ export default function StickyFooter() {
                   event.preventDefault();
                   window.open('https://twitter.com/phenopolis');
                 }}>
-                <FontAwesomeIcon icon={faTwitterSquare} className={classes.iconHover} size="2x" />
+                <FontAwesomeIcon icon={faTwitterSquare} className={'footer-iconHover'} size="2x" />
               </Link>
               <Link
-                className={classes.a}
+                className={'footer-link'}
                 to="https://github.com/phenopolis/"
                 rel="noopener noreferrer"
                 target="_blank"
@@ -115,7 +112,7 @@ export default function StickyFooter() {
                   event.preventDefault();
                   window.open('https://github.com/phenopolis/');
                 }}>
-                <FontAwesomeIcon icon={faGithubSquare} className={classes.iconHover} size="2x" />
+                <FontAwesomeIcon icon={faGithubSquare} className={'footer-iconHover'} size="2x" />
               </Link>
             </Grid>
           </Grid>
@@ -124,37 +121,3 @@ export default function StickyFooter() {
     </div>
   );
 }
-
-const useStyles = makeStyles((theme) => ({
-  root: {
-    display: 'flex',
-    flexDirection: 'column',
-    backgroundColor: '#0279d3',
-    color: 'white',
-  },
-  main: {
-    marginTop: theme.spacing(2),
-    marginBottom: theme.spacing(2),
-  },
-  footer: {
-    paddingTop: theme.spacing(2),
-    paddingBottom: theme.spacing(2),
-    marginTop: 'auto',
-    backgroundColor: '#0474c6',
-  },
-  a: {
-    textDecoration: 'none',
-    color: 'white',
-    '&:hover': {
-      textShadow: '-0.06ex 0 white, 0.06ex 0 white',
-    },
-  },
-  paper: {
-    padding: theme.spacing(2),
-    textAlign: 'left',
-  },
-  iconHover: {
-    margin: theme.spacing(1),
-    cursor: 'pointer',
-  },
-}));
