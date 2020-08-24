@@ -78,6 +78,12 @@ function createIndividual(data) {
   });
 }
 
+function getIndividualInformation(param) {
+  return axios.get(api.INDIVIDUAL + param, {
+    withCredentials: true,
+  });
+}
+
 export default {
   getStatistics,
   getSearchAutocomplete,
@@ -91,4 +97,5 @@ export default {
   getVariant,
   getHPO,
   createIndividual,
+  getIndividualInformation,
 };

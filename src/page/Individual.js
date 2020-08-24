@@ -1,268 +1,189 @@
-import React from 'react';
-import axios from 'axios';
-import { Redirect } from 'react-router';
-import compose from 'recompose/compose';
-import { connect } from 'react-redux';
+import React, { useState, useEffect } from 'react';
+import { useHistory, useLocation } from 'react-router-dom';
+import { useDispatch, useSelector } from 'react-redux';
 import { setSnack } from '../redux/actions/snacks';
-
-import PropTypes from 'prop-types';
-import { withStyles } from '@material-ui/core/styles';
+import { getIndividualInformation } from '../redux/actions/individual';
 import { CssBaseline, AppBar, Tabs, Tab, Container, Fab } from '@material-ui/core';
 import SwipeableViews from 'react-swipeable-views';
-
 import Loading from '../components/General/Loading';
+import Skeleton from '@material-ui/lab/Skeleton';
 import TabPanel from '../components/Tab/Tabpanel';
-
 import MetaData from '../components/MetaData';
 import VirtualGrid from '../components/Table/VirtualGrid';
-
 import EditIcon from '@material-ui/icons/Edit';
 import Dialog from '@material-ui/core/Dialog';
-
 import EditPerson from '../components/Individual/EditPerson';
-
-import { withTranslation } from 'react-i18next';
 import i18next from 'i18next';
 
-class Individual extends React.Component {
-  constructor(props) {
-    super(props);
-    this.state = {
-      message: i18next.t('Individual.message'),
-      individualInfo: {},
-      loaded: false,
-      value: 0,
-      EditOpen: false,
-      redirect: false,
-      reLink: '',
-    };
-  }
+const Individual = (props) => {
+  const [message, setMessage] = useState(i18next.t('Individual.message'));
+  const [value, setValue] = useState(0);
+  const [editOpen, setEditOpen] = useState(false);
 
-  handleChange = (event, newValue) => {
-    this.setState({ value: newValue });
+  const dispatch = useDispatch();
+  const history = useHistory();
+  const location = useLocation();
+
+  let { individualInfo, error, loading } = useSelector((state) => ({
+    individualInfo: state.Individual.data[0],
+    error: state.Individual.error,
+    loading: state.Individual.loading,
+  }));
+
+  useEffect(() => {
+    dispatch(getIndividualInformation(props.match.params.individualId));
+  }, [location]);
+
+  useEffect(() => {
+    if (error === 401) {
+      history.push(`/login?link=${window.location.pathname}`);
+    }
+    if (error === 404) {
+      history.push('/search');
+      dispatch(setSnack('Patient not exist.', 'warning'));
+    }
+  }, [error]);
+
+  const handleChange = (event, newValue) => {
+    setValue(newValue);
   };
 
-  handleChangeIndex = (index) => {
-    this.setState({ value: index });
-  };
-
-  a11yProps = (index) => {
+  const a11yProps = (index) => {
     return {
       id: `full-width-tab-${index}`,
       'aria-controls': `full-width-tabpanel-${index}`,
     };
   };
 
-  getIndividualInformation = (individualId) => {
-    var self = this;
-    axios
-      // .get('/api/' + i18next.t('Individual.entry') + '/individual/' + individualId, {
-      .get('/api/individual/' + individualId, {
-        withCredentials: true,
-      })
-      .then((res) => {
-        let respond = res.data;
-        console.log(respond[0]);
-        self.setState({
-          individualInfo: respond[0],
-          loaded: true,
-        });
-      })
-      .catch((err) => {
-        console.log(err);
-        if (err.response.status === 401) {
-          this.setState({ redirect: true, reLink: '/login?link=' + window.location.pathname });
-        } else if (err.response.status === 404) {
-          this.setState({ redirect: true, reLink: '/' });
-          this.props.setSnack('Patient not exist.', 'warning');
-        }
-      });
+  const handleChangeIndex = (index) => {
+    setValue(index);
   };
 
-  componentDidMount() {
-    this.getIndividualInformation(this.props.match.params.individualId);
-  }
-
-  componentWillReceiveProps(nextProps) {
-    if (nextProps.match.params.individualId !== this.props.match.params.individualId) {
-      this.setState({
-        individualInfo: [],
-        loaded: false,
-      });
-      this.getIndividualInformation(nextProps.match.params.individualId);
-    }
-  }
-
-  OpenDialog() {
-    this.setState({
-      EditOpen: !this.state.EditOpen,
-    });
-  }
-
-  refreshPage = (patientName) => {
-    this.setState({
-      loaded: false,
-      message: i18next.t('Individual.edit_message'),
-    });
-    this.getIndividualInformation(patientName);
+  const refreshPage = (patientName) => {
+    setMessage(i18next.t('Individual.edit_message'));
+    dispatch(getIndividualInformation(patientName));
   };
 
-  render() {
-    const { classes } = this.props;
-    const { t } = this.props;
+  const openDialog = () => {
+    setEditOpen(!editOpen);
+  }
 
-    if (this.state.redirect) {
-      return <Redirect to={this.state.reLink} />;
-    }
-
-    if (this.state.loaded) {
-      return (
-        <React.Fragment>
-          <CssBaseline />
-          <div className={classes.root}>
-            <Container maxWidth="xl">
+  return (
+    <>
+      <React.Fragment>
+        <CssBaseline />
+        <div className="individual-container">
+          <Container maxWidth="xl">
+            {individualInfo && !loading ? (
               <Fab
-                className={classes.fab}
+                className="individual-fab"
                 size="middle"
                 color="primary"
                 aria-label="add"
-                onClick={() => this.OpenDialog()}>
+                onClick={() => openDialog()}>
                 <EditIcon />
-              </Fab>
-            </Container>
-
+              </Fab>) :
+              ( <Skeleton
+                animation={'wave'}
+                variant={'circle'}
+                height={50}
+                width={50}
+                style={{top:125}}
+                className="individual-fab"
+              />)}
+          </Container>
+          {individualInfo && !loading ? (
             <MetaData
-              metadata={this.state.individualInfo.metadata}
-              name={this.props.match.params.individualId}
+              metadata={individualInfo.metadata}
+              name={props.match.params.individualId}
             />
-
+          ):( <Skeleton height={145}/> )}
+          {individualInfo && !loading ? (
             <Container maxWidth="xl">
               <AppBar
-                className={classes.tab_appbar}
+                className="individual-tab_appbar"
                 position="static"
                 color="transparent"
                 elevation="0"
                 m={0}
                 p={0}>
                 <Tabs
-                  value={this.state.value}
-                  onChange={this.handleChange}
+                  value={value}
+                  onChange={handleChange}
                   indicatorColor="primary"
                   textColor="primary"
                   variant="fullWidth"
                   aria-label="full width tabs example"
-                  classes={{ indicator: classes.bigIndicator }}>
+                  classes={{ indicator: "individual-bigIndicator" }}>
                   {[
-                    t('Individual.RARE_HOMS'),
-                    t('Individual.RARE_COMP_HETS'),
-                    t('Individual.RARE_VARIANTS'),
+                    i18next.t('Individual.RARE_HOMS'),
+                    i18next.t('Individual.RARE_COMP_HETS'),
+                    i18next.t('Individual.RARE_VARIANTS'),
                   ].map((item, index) => {
-                    return <Tab label={item} {...this.a11yProps(index)} />;
+                    return <Tab label={item} {...a11yProps(index)} key={index} />;
                   })}
                 </Tabs>
               </AppBar>
             </Container>
-            <SwipeableViews
-              axis={this.props.theme.direction === 'rtl' ? 'x-reverse' : 'x'}
-              index={this.state.value}
-              onChangeIndex={this.handleChangeIndex}>
-              <TabPanel
-                value={this.state.value}
-                index={0}
-                dir={this.props.theme.direction}
-                className={classes.tabPannel}>
-                <VirtualGrid
-                  tableData={this.state.individualInfo.rare_homs}
-                  title={t('Individual.Rare_HOMs')}
-                  subtitle={t('Individual.Rare_HOMs_subtitle')}
-                  configureLink="individual/rare_homs"
+          ):( <Skeleton height={200}/> )}
+          {individualInfo && !loading ? (
+            <>
+              <SwipeableViews
+                index={value}
+                onChangeIndex={handleChangeIndex}>
+                <TabPanel
+                  value={value}
+                  index={0}
+                  className="individual-tabPannel">
+                  <VirtualGrid
+                    tableData={individualInfo.rare_homs}
+                    title={i18next.t('Individual.Rare_HOMs')}
+                    subtitle={i18next.t('Individual.Rare_HOMs_subtitle')}
+                    configureLink="individual/rare_homs"
+                  />
+                </TabPanel>
+                <TabPanel
+                  value={value}
+                  index={1}
+                  className="individual-tabPannel">
+                  <VirtualGrid
+                    tableData={individualInfo.rare_comp_hets}
+                    title={i18next.t('Individual.Rare_Comp_Hets')}
+                    subtitle={i18next.t('Individual.Rare_Comp_Hets_subtitle')}
+                    configureLink="individual/rare_comp_hets"
+                  />
+                </TabPanel>
+                <TabPanel
+                  value={value}
+                  index={2}
+                  className="individual-tabPannel">
+                  <VirtualGrid
+                    tableData={individualInfo.rare_variants}
+                    title={i18next.t('Individual.Rare_Variants')}
+                    subtitle={i18next.t('Individual.Rare_Variants_subtitle')}
+                    configureLink="individual/rare_variants"
+                  />
+                </TabPanel>
+              </SwipeableViews>
+              <Dialog
+                fullWidth={true}
+                maxWidth={'md'}
+                open={editOpen}
+                onClose={() => openDialog()}
+                aria-labelledby="alert-dialog-title"
+                aria-describedby="alert-dialog-description">
+                <EditPerson
+                  patientName={props.match.params.individualId}
+                  metadata={individualInfo.metadata}
+                  dialogClose={() => openDialog()}
+                  refreshData={refreshPage}
                 />
-              </TabPanel>
-              <TabPanel
-                value={this.state.value}
-                index={1}
-                dir={this.props.theme.direction}
-                className={classes.tabPannel}>
-                <VirtualGrid
-                  tableData={this.state.individualInfo.rare_comp_hets}
-                  title={t('Individual.Rare_Comp_Hets')}
-                  subtitle={t('Individual.Rare_Comp_Hets_subtitle')}
-                  configureLink="individual/rare_comp_hets"
-                />
-              </TabPanel>
-              <TabPanel
-                value={this.state.value}
-                index={2}
-                dir={this.props.theme.direction}
-                className={classes.tabPannel}>
-                <VirtualGrid
-                  tableData={this.state.individualInfo.rare_variants}
-                  title={t('Individual.Rare_Variants')}
-                  subtitle={t('Individual.Rare_Variants_subtitle')}
-                  configureLink="individual/rare_variants"
-                />
-              </TabPanel>
-            </SwipeableViews>
-          </div>
-          <Dialog
-            fullWidth={true}
-            maxWidth={'md'}
-            open={this.state.EditOpen}
-            onClose={() => this.OpenDialog()}
-            aria-labelledby="alert-dialog-title"
-            aria-describedby="alert-dialog-description">
-            <EditPerson
-              patientName={this.props.match.params.individualId}
-              metadata={this.state.individualInfo.metadata}
-              dialogClose={() => this.OpenDialog()}
-              refreshData={this.refreshPage}
-            />
-          </Dialog>
-        </React.Fragment>
-      );
-    } else {
-      return <Loading message={this.state.message} />;
-    }
-  }
-}
-
-Individual.propTypes = {
-  classes: PropTypes.object.isRequired,
+              </Dialog>
+            </>
+          ) : (<Skeleton height={550}/>)}
+        </div>
+      </React.Fragment>
+    </>
+  );
 };
-
-const styles = (theme) => ({
-  root: {
-    backgroundColor: '#eeeeee',
-    padding: '4em',
-  },
-  tabroot: {
-    backgroundColor: 'white',
-  },
-  bigIndicator: {
-    height: 3,
-    backgroundColor: '#2E84CF',
-  },
-  paper: {
-    padding: theme.spacing(1),
-    marginTop: theme.spacing(5),
-  },
-  fab: {
-    zIndex: 1,
-    position: 'absolute',
-    right: theme.spacing(15),
-    top: theme.spacing(18),
-  },
-  tab_appbar: {
-    marginTop: '3rem',
-    borderBottom: '1px solid #2E84CF',
-  },
-  tabPannel: {
-    fontSize: '0.875rem',
-  },
-});
-
-export default compose(
-  withStyles(styles, { withTheme: true }),
-  withTranslation(),
-  connect(null, { setSnack })
-)(Individual);
+export default Individual;

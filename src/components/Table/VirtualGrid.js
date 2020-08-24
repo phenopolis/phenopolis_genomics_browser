@@ -407,8 +407,8 @@ class VirtualGrid extends React.Component {
     };
   }
 
-  componentWillMount() {
-    var tableData = JSON.parse(JSON.stringify(this.props.tableData));
+  modifyData() {
+    var tableData = this.props.tableData;
     var myrows = tableData.data;
     var mycolumns = tableData.colNames;
 
@@ -528,6 +528,16 @@ class VirtualGrid extends React.Component {
         }
       );
     }
+  }
+
+  componentDidUpdate(prevProps, prevState, snapshot) {
+    if(this.props.tableData?.data !== prevProps.tableData?.data) {
+      this.modifyData();
+    }
+  }
+
+  componentWillMount() {
+    this.modifyData();
   }
 
   getRowHeight = (index) => {

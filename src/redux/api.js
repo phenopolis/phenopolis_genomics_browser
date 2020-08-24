@@ -14,4 +14,5 @@ export default {
   VARIANT: API_URL + '/variant/',
   HPO: API_URL + '/hpo/',
   CREATE_INDIVIDUAL: API_URL + '/individual',
+  INDIVIDUAL: API_URL + '/individual/',
 };
