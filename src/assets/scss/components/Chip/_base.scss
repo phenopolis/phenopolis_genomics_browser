@@ -76,5 +76,48 @@
 }
 
 .chip-popover-datagrid {
-  border-bottom: 1px solid #e0e0e0,
+  border-bottom: 1px solid #e0e0e0;
+}
+
+.white-fg {
+  color: white;
+}
+
+.chip-popover {
+  pointer-events: none;
+  margin: 0.3em;
+  margin-left: 0.5em;
+}
+
+.chip-paper {
+  background-color: transparent;
+  color: #424242;
+}
+
+.gene-bg {
+  background-color: #e07a5f !important;
+}
+
+.phenotype-bg {
+  background-color: #81b29a !important;
+}
+
+.patient-bg {
+  background-color: #f2cc8f !important;
+}
+
+.hpo-bg {
+  background-color: #81b29a !important;
+}
+
+.individual-bg {
+  background-color: #f2cc8f !important;
+}
+
+.variant-bg {
+  background-color: #3d405b !important;
+}
+
+.other-bg {
+  background-color: #5C95FF !important;
 }

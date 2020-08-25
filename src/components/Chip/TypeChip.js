@@ -1,5 +1,4 @@
 import React, { useEffect, useState } from 'react';
-import { makeStyles } from '@material-ui/core/styles';
 import {
   Chip,
   Avatar,
@@ -18,25 +17,9 @@ import { getSearchBest, clearSearchBest } from '../../redux/actions/search';
 import { getPreviewInformation, clearPreviewInformation } from '../../redux/actions/preview';
 import { useHistory } from 'react-router-dom';
 
-const useStyles = makeStyles((theme) => ({
-  typography: {
-    padding: theme.spacing(2),
-  },
-  popover: {
-    pointerEvents: 'none',
-    margin: '0.3em',
-    marginLeft: '0.5em',
-  },
-  paper: {
-    backgroundColor: 'transparent',
-    color: '#424242',
-  },
-}));
-
 const TypeChip = (props) => {
   const dispatch = useDispatch();
   const history = useHistory();
-  const classes = useStyles();
 
   const { best, previewName, previewInfo, previewLoaded, error } = useSelector((state) => ({
     best: state.Search.best.redirect,
@@ -64,21 +47,13 @@ const TypeChip = (props) => {
   };
 
   const ChipIcon = {
-    gene: { backgroundColor: '#e07a5f', icon: faDna, des: 'Gene' },
-    phenotype: {
-      backgroundColor: '#81b29a',
-      icon: faChartNetwork,
-      des: 'HPO(Human Phenotype Ontology)',
-    },
-    hpo: {
-      backgroundColor: '#81b29a',
-      icon: faChartNetwork,
-      des: 'HPO(Human Phenotype Ontology)',
-    },
-    patient: { backgroundColor: '#f2cc8f', icon: faUser, des: 'Patient' },
-    individual: { backgroundColor: '#f2cc8f', icon: faUser, des: 'Patient' },
-    variant: { backgroundColor: '#3d405b', icon: faCut, des: 'Variant' },
-    other: { backgroundColor: '#5C95FF', icon: faLink, des: 'Other' },
+    gene: { icon: faDna, des: 'Gene' },
+    phenotype: { icon: faChartNetwork, des: 'HPO(Human Phenotype Ontology)' },
+    hpo: { icon: faChartNetwork, des: 'HPO(Human Phenotype Ontology)' },
+    patient: { icon: faUser, des: 'Patient' },
+    individual: { icon: faUser, des: 'Patient' },
+    variant: { icon: faCut, des: 'Variant' },
+    other: { icon: faLink, des: 'Other' },
   };
 
   const handleSearch = (event, to) => {
@@ -126,11 +101,7 @@ const TypeChip = (props) => {
         className={'search-chip-' + props.size}
         onDelete={props.deletable ? (event) => handleDeleteClick(event, props.label) : null}
         avatar={
-          <Avatar
-            style={{
-              backgroundColor: ChipIcon[type].backgroundColor,
-              color: 'white',
-            }}>
+          <Avatar className={`${type}-bg white-fg`}>
             <FontAwesomeIcon icon={ChipIcon[type].icon} />
           </Avatar>
         }
@@ -143,10 +114,8 @@ const TypeChip = (props) => {
 
       <Popover
         id="mouse-over-popover"
-        className={classes.popover}
-        classes={{
-          paper: classes.paper,
-        }}
+        className={'chip-popover'}
+        classes={{ paper: 'chip-paper' }}
         open={open}
         anchorEl={anchorEl}
         anchorOrigin={{
@@ -161,12 +130,7 @@ const TypeChip = (props) => {
         disableRestoreFocus
         elevation={8}>
         <Container
-          className={previewLoaded ? 'chip-title-loaded' : 'chip-title-unloaded'}
-          style={
-            previewLoaded !== true
-              ? { backgroundColor: ChipIcon[type].backgroundColor }
-              : { backgroundColor: ChipIcon[type].backgroundColor }
-          }>
+          className={previewLoaded ? `${type}-bg chip-title-loaded`: `${type}-bg chip-title-unloaded`}>
           <Typography variant="subtitle1" style={{ 'font-weight': '900', color: 'white' }}>
             {props.label}
 
