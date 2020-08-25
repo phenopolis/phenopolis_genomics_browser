@@ -11,11 +11,11 @@ import Login from './page/Login';
 import Home from './page/Home';
 import Dashboard from './page/Dashboard';
 import Publication from './page/Publication';
-import AuthCheck from './page/AuthCheck';
 import NotFoundPage from './page/NotFoundPage';
 import CreatePatient from './page/CreatePatient';
 
 import CustomizedSnackbars from './components/CustomizedSnackbars/CustomizedSnackbars';
+import AuthCheck from './components/AuthCheck/AuthCheck';
 
 import Gene from './page/Gene';
 import HPO from './page/HPO';
