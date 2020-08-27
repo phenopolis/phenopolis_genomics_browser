@@ -8,9 +8,9 @@ function getStatistics() {
 }
 
 function getSearchAutocomplete(param) {
-  console.log(param);
+  const limit = param.component === 'searchAutoComplete' ? '' : '&limit=1000';
   return axios.get(
-    api.SEARCH_AUTOCOMPLETE + param.query + '?query_type=' + param.query_type + '&limit=1000',
+    api.SEARCH_AUTOCOMPLETE + param.query + '?query_type=' + param.query_type + limit,
     {
       withCredentials: true,
     }

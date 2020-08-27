@@ -14,11 +14,9 @@ export const getSearchAutocomplete = (params) => {
     dispatch({ type: GET_SEARCH_AUTOCOMPLETE });
     Service.getSearchAutocomplete(params)
       .then((res) => {
-        console.log(res);
         dispatch({ type: GET_SEARCH_AUTOCOMPLETE_SUCCESS, payload: res });
       })
       .catch((error) => {
-        console.log(error);
         dispatch({ type: GET_SEARCH_AUTOCOMPLETE_FAIL, payload: error.response });
       });
   };

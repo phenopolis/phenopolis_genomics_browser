@@ -25,7 +25,7 @@ import compose from 'recompose/compose';
 import { connect } from 'react-redux';
 import { setSnack } from '../../redux/actions/snacks';
 
-import SearchAutoComplete from './SearchAutoComplete';
+import SearchAutoComplete from '../Search/AutoComplete';
 const qs = require('querystring');
 
 const styles = (theme) => ({

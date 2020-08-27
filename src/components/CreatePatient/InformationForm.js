@@ -18,7 +18,7 @@ import {
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faUser, faClipboardCheck } from '@fortawesome/pro-solid-svg-icons';
 
-import SearchAutoComplete from '../Individual/SearchAutoComplete';
+import SearchAutoComplete from '../Search/AutoComplete';
 
 import { useDispatch, useSelector } from 'react-redux';
 import { createIndividual } from '../../redux/actions/individuals';
