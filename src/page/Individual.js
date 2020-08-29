@@ -66,7 +66,7 @@ const Individual = (props) => {
 
   const openDialog = () => {
     setEditOpen(!editOpen);
-  }
+  };
 
   return (
     <>
@@ -82,22 +82,23 @@ const Individual = (props) => {
                 aria-label="add"
                 onClick={() => openDialog()}>
                 <EditIcon />
-              </Fab>) :
-              ( <Skeleton
+              </Fab>
+            ) : (
+              <Skeleton
                 animation={'wave'}
                 variant={'circle'}
                 height={50}
                 width={50}
-                style={{top:125}}
+                style={{ top: 125 }}
                 className="individual-fab"
-              />)}
+              />
+            )}
           </Container>
           {individualInfo && !loading ? (
-            <MetaData
-              metadata={individualInfo.metadata}
-              name={props.match.params.individualId}
-            />
-          ):( <Skeleton height={145}/> )}
+            <MetaData metadata={individualInfo.metadata} name={props.match.params.individualId} />
+          ) : (
+            <Skeleton height={145} />
+          )}
           {individualInfo && !loading ? (
             <Container maxWidth="xl">
               <AppBar
@@ -114,7 +115,7 @@ const Individual = (props) => {
                   textColor="primary"
                   variant="fullWidth"
                   aria-label="full width tabs example"
-                  classes={{ indicator: "individual-bigIndicator" }}>
+                  classes={{ indicator: 'individual-bigIndicator' }}>
                   {[
                     i18next.t('Individual.RARE_HOMS'),
                     i18next.t('Individual.RARE_COMP_HETS'),
@@ -125,16 +126,13 @@ const Individual = (props) => {
                 </Tabs>
               </AppBar>
             </Container>
-          ):( <Skeleton height={200}/> )}
+          ) : (
+            <Skeleton height={200} />
+          )}
           {individualInfo && !loading ? (
             <>
-              <SwipeableViews
-                index={value}
-                onChangeIndex={handleChangeIndex}>
-                <TabPanel
-                  value={value}
-                  index={0}
-                  className="individual-tabPannel">
+              <SwipeableViews index={value} onChangeIndex={handleChangeIndex}>
+                <TabPanel value={value} index={0} className="individual-tabPannel">
                   <VirtualGrid
                     tableData={individualInfo.rare_homs}
                     title={i18next.t('Individual.Rare_HOMs')}
@@ -142,10 +140,7 @@ const Individual = (props) => {
                     configureLink="individual/rare_homs"
                   />
                 </TabPanel>
-                <TabPanel
-                  value={value}
-                  index={1}
-                  className="individual-tabPannel">
+                <TabPanel value={value} index={1} className="individual-tabPannel">
                   <VirtualGrid
                     tableData={individualInfo.rare_comp_hets}
                     title={i18next.t('Individual.Rare_Comp_Hets')}
@@ -153,10 +148,7 @@ const Individual = (props) => {
                     configureLink="individual/rare_comp_hets"
                   />
                 </TabPanel>
-                <TabPanel
-                  value={value}
-                  index={2}
-                  className="individual-tabPannel">
+                <TabPanel value={value} index={2} className="individual-tabPannel">
                   <VirtualGrid
                     tableData={individualInfo.rare_variants}
                     title={i18next.t('Individual.Rare_Variants')}
@@ -180,7 +172,9 @@ const Individual = (props) => {
                 />
               </Dialog>
             </>
-          ) : (<Skeleton height={550}/>)}
+          ) : (
+            <Skeleton height={550} />
+          )}
         </div>
       </React.Fragment>
     </>

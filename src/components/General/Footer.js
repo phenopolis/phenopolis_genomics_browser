@@ -20,8 +20,7 @@ function Copyright() {
 export default function StickyFooter() {
   const location = useLocation();
 
-  React.useEffect(() => {
-  }, [location.pathname]);
+  React.useEffect(() => {}, [location.pathname]);
 
   const { t } = useTranslation();
 

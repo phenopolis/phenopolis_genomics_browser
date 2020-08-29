@@ -130,7 +130,8 @@ class Plots extends React.Component {
   };
 
   CreateHistogram = (Axis) => {
-    let tmpValue = this.props.dataRows.map((x) => x[Axis.key]);
+    console.log(Axis.key);
+    let tmpValue = this.props.dataRows.map((x) => Number(x[Axis.key]));
     var bins = ecStat.histogram(tmpValue);
 
     const newHistogramOption = JSON.parse(JSON.stringify(HistogramOption));

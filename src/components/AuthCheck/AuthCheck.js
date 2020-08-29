@@ -27,10 +27,10 @@ const AuthCheck = () => {
   useEffect(() => {
     if (error) {
       if (
-        (window.location.pathname !== '/') &&
-        (window.location.pathname !== '/publications') &&
-        (window.location.pathname !== '/login') &&
-        (window.location.pathname !== '/about')
+        window.location.pathname !== '/' &&
+        window.location.pathname !== '/publications' &&
+        window.location.pathname !== '/login' &&
+        window.location.pathname !== '/about'
       ) {
         history.push(`/login?link=${window.location.pathname}`);
       }

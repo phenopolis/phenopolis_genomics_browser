@@ -83,15 +83,9 @@ const MetaData = (props) => {
                                   popover={true}
                                   to={
                                     chip.end_href
-                                      ? (item.base_href + '/' + chip.end_href).replace(
-                                      /\/\//g,
-                                      '/'
-                                      )
+                                      ? (item.base_href + '/' + chip.end_href).replace(/\/\//g, '/')
                                       : item.base_href
-                                      ? (item.base_href + '/' + chip.display).replace(
-                                        /\/\//g,
-                                        '/'
-                                      )
+                                      ? (item.base_href + '/' + chip.display).replace(/\/\//g, '/')
                                       : (item.href + '/' + chip.display).replace(/\/\//g, '/')
                                   }
                                 />
@@ -120,6 +114,6 @@ const MetaData = (props) => {
       </Container>
     </React.Fragment>
   );
-}
+};
 
 export default MetaData;

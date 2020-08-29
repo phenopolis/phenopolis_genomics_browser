@@ -103,6 +103,6 @@ const HideColumn = (props) => {
       </CardContent>
     </Card>
   );
-}
+};
 
 export default HideColumn;

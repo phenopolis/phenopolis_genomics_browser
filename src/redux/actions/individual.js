@@ -2,7 +2,7 @@ import Service from '../service';
 import {
   INDIVIDUAL_INFO_REQUEST,
   INDIVIDUAL_INFO_REQUEST_FAIL,
-  INDIVIDUAL_INFO_REQUEST_SUCCESS
+  INDIVIDUAL_INFO_REQUEST_SUCCESS,
 } from '../types/individual';
 
 export const getIndividualInformation = (data) => {

@@ -113,7 +113,10 @@ const NoLoginBar = (props) => {
             open={Boolean(openExplore)}
             style={{ top: '3em' }}
             onClose={() => setOpenExplore(!openExplore)}>
-            <MenuItem component={Link} to="/publications" onClick={() => setOpenExplore(!openExplore)}>
+            <MenuItem
+              component={Link}
+              to="/publications"
+              onClick={() => setOpenExplore(!openExplore)}>
               <ListItemIcon>
                 <DescriptionIcon />
               </ListItemIcon>
@@ -197,7 +200,7 @@ const NoLoginBar = (props) => {
       </main>
     </div>
   );
-}
+};
 
 NoLoginBar.propTypes = {
   classes: PropTypes.object.isRequired,

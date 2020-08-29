@@ -130,7 +130,9 @@ const TypeChip = (props) => {
         disableRestoreFocus
         elevation={8}>
         <Container
-          className={previewLoaded ? `${type}-bg chip-title-loaded`: `${type}-bg chip-title-unloaded`}>
+          className={
+            previewLoaded ? `${type}-bg chip-title-loaded` : `${type}-bg chip-title-unloaded`
+          }>
           <Typography variant="subtitle1" style={{ 'font-weight': '900', color: 'white' }}>
             {props.label}
 

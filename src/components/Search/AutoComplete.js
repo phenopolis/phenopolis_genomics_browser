@@ -64,7 +64,13 @@ const AutoComplete = (props) => {
   const autocomplete = (searchText, type) => {
     setAutoCompleteContent(null);
     setSearchLoaded(true);
-    dispatch(getSearchAutocomplete({ query: searchText, query_type: type, component: 'searchAutoComplete' }));
+    dispatch(
+      getSearchAutocomplete({
+        query: searchText,
+        query_type: type,
+        component: 'searchAutoComplete',
+      })
+    );
   };
 
   return (
@@ -133,6 +139,6 @@ const AutoComplete = (props) => {
       </Collapse>
     </div>
   );
-}
+};
 
 export default AutoComplete;

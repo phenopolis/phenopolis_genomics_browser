@@ -41,7 +41,7 @@ const ActionBar = (props) => {
     { code: 'de', label: 'Deutsch', svg: DE },
     { code: 'gr', label: 'Ελληνικά', svg: GR },
     { code: 'es', label: 'Español', svg: ES },
-  ]
+  ];
 
   const [languageOpen, setLanguageOpen] = useState(false);
   const [accountOpen, setAccountOpen] = useState(false);
@@ -57,12 +57,13 @@ const ActionBar = (props) => {
     <div className={'actionbar-list'} role="presentation">
       <List>
         <ListItem className={'actionbar-listItem'} button component={Link} to="/dashboard">
-          <Tooltip
-            disableHoverListener={props.expended}
-            title="Dashboard"
-            placement="right">
+          <Tooltip disableHoverListener={props.expended} title="Dashboard" placement="right">
             <ListItemIcon>
-              <FontAwesomeIcon icon={faTh} className={'actionbar-icon'} style={{ fontSize: '22' }} />
+              <FontAwesomeIcon
+                icon={faTh}
+                className={'actionbar-icon'}
+                style={{ fontSize: '22' }}
+              />
             </ListItemIcon>
           </Tooltip>
           <ListItemText primary="Dashboard" classes={{ primary: 'actionbar-listItemText' }} />
@@ -132,10 +133,7 @@ const ActionBar = (props) => {
               />
             </ListItem>
             <ListItem className={'actionbar-nested'} button component={Link} to="/create_patient">
-              <Tooltip
-                disableHoverListener={props.expended}
-                title="Add Patient"
-                placement="right">
+              <Tooltip disableHoverListener={props.expended} title="Add Patient" placement="right">
                 <ListItemIcon>
                   <FontAwesomeIcon
                     icon={faUserPlus}
@@ -167,7 +165,10 @@ const ActionBar = (props) => {
           />
         </ListItem>
         <Divider />
-        <ListItem className={'actionbar-listItem'} button onClick={() => setLanguageOpen(!languageOpen)}>
+        <ListItem
+          className={'actionbar-listItem'}
+          button
+          onClick={() => setLanguageOpen(!languageOpen)}>
           <Tooltip
             disableHoverListener={props.expended}
             title={t('AppBar.SideBar.Label_Language')}
@@ -207,7 +208,10 @@ const ActionBar = (props) => {
                       <img className={'actionbar-imageIcon'} src={lan.svg} alt={lan.label} />
                     </ListItemIcon>
                   </Tooltip>
-                  <ListItemText primary={lan.label} classes={{ primary: 'actionbar-listItemText' }} />
+                  <ListItemText
+                    primary={lan.label}
+                    classes={{ primary: 'actionbar-listItemText' }}
+                  />
                 </ListItem>
               );
             })}
@@ -217,10 +221,7 @@ const ActionBar = (props) => {
           className={'actionbar-listItem'}
           button
           onClick={() => setAccountOpen(!accountOpen)}>
-          <Tooltip
-            disableHoverListener={props.expended}
-            title={props.username}
-            placement="right">
+          <Tooltip disableHoverListener={props.expended} title={props.username} placement="right">
             <ListItemIcon>
               <FontAwesomeIcon
                 icon={faUserCircle}
@@ -229,10 +230,7 @@ const ActionBar = (props) => {
               />
             </ListItemIcon>
           </Tooltip>
-          <ListItemText
-            primary={props.username}
-            classes={{ primary: 'actionbar-listItemText' }}
-          />
+          <ListItemText primary={props.username} classes={{ primary: 'actionbar-listItemText' }} />
           {accountOpen ? (
             <FontAwesomeIcon icon={faAngleUp} />
           ) : (
@@ -282,7 +280,7 @@ const ActionBar = (props) => {
       </List>
     </div>
   );
-}
+};
 
 ActionBar.propTypes = {
   width: PropTypes.oneOf(['lg', 'md', 'sm', 'xl', 'xs']).isRequired,

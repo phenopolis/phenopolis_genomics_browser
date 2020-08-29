@@ -33,6 +33,6 @@ const ExportExcel = (props) => {
       </CardContent>
     </Card>
   );
-}
+};
 
 export default ExportExcel;

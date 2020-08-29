@@ -32,6 +32,6 @@ const StickyHeader = (props) => {
       </div>
     </div>
   );
-}
+};
 
 export default StickyHeader;

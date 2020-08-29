@@ -531,7 +531,7 @@ class VirtualGrid extends React.Component {
   }
 
   componentDidUpdate(prevProps, prevState, snapshot) {
-    if(this.props.tableData?.data !== prevProps.tableData?.data) {
+    if (this.props.tableData?.data !== prevProps.tableData?.data) {
       this.modifyData();
     }
   }
