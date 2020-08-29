@@ -59,17 +59,27 @@ const TypeChip = (props) => {
   const handleSearch = (event, to) => {
     event.preventDefault();
 
-    if (props.action === 'guess') {
-      let guessText = to;
-      dispatch(getSearchBest(guessText));
-    } else if (props.action === 'forward') {
-      history.push(to);
-    } else if (props.action === 'externalforward') {
-      window.location.href = to;
-    }
+    if (event.button === 0) {
+      if (props.action === 'guess') {
+        let guessText = to;
+        dispatch(getSearchBest(guessText));
+      } else if (props.action === 'forward') {
+        history.push(to);
+      } else if (props.action === 'externalforward') {
+        window.location.href = to;
+      }
 
-    if (props.emit === true) {
-      props.onClick(props.emitContent);
+      if (props.emit === true) {
+        props.onClick(props.emitContent);
+      }
+    } else if (event.button == 1) {
+      if (props.action === 'forward') {
+        var win = window.open(window.location.origin + to, '_blank');
+        win.focus();
+      } else if (props.action === 'externalforward') {
+        var win = window.open(to, '_blank');
+        win.focus();
+      }
     }
   };
 
@@ -107,7 +117,7 @@ const TypeChip = (props) => {
         }
         clickable
         variant="outlined"
-        onClick={(event) => handleSearch(event, props.to)}
+        onMouseDown={(event) => handleSearch(event, props.to)}
         onMouseEnter={(event) => handlePopoverOpen(event, props.to)}
         onMouseLeave={handlePopoverClose}
       />
