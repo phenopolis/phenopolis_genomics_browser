@@ -10,6 +10,7 @@ export const getIndividualInformation = (data) => {
     dispatch({ type: INDIVIDUAL_INFO_REQUEST });
     Service.getIndividualInformation(data)
       .then((res) => {
+        console.log(res);
         dispatch({ type: INDIVIDUAL_INFO_REQUEST_SUCCESS, payload: res });
       })
       .catch((error) => {

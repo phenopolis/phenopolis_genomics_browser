@@ -67,20 +67,24 @@ class GridColumn extends React.Component {
           ) : (typeof cellData[0] === 'object') & (cellData[0] !== null) ? (
             cellData.map((chip, j) => {
               if (chip !== null) {
-                return (
-                  <TypeChip
-                    label={chip.display}
-                    type={h.base_href.replace(/[^a-zA-Z0-9_-]/g, '')}
-                    size="small"
-                    action="forward"
-                    popover={true}
-                    to={
-                      chip.end_href
-                        ? (h.base_href + '/' + chip.end_href).replace(/\/\//g, '/')
-                        : (h.base_href + '/' + chip.display).replace(/\/\//g, '/')
-                    }
-                  />
-                );
+                if (h.base_href) {
+                  return (
+                    <TypeChip
+                      label={chip.display}
+                      type={h.base_href.replace(/[^a-zA-Z0-9_-]/g, '')}
+                      size="small"
+                      action="forward"
+                      popover={true}
+                      to={
+                        chip.end_href
+                          ? (h.base_href + '/' + chip.end_href).replace(/\/\//g, '/')
+                          : (h.base_href + '/' + chip.display).replace(/\/\//g, '/')
+                      }
+                    />
+                  );
+                } else {
+                  return chip.display;
+                }
               } else {
                 return null;
               }
