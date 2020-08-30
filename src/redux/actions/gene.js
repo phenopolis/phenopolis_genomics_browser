@@ -6,6 +6,7 @@ export const getGene = (param) => {
     dispatch({ type: GET_GENE });
     Service.getGene(param)
       .then((res) => {
+        console.log(res);
         dispatch({ type: GET_GENE_SUCCESS, payload: res });
       })
       .catch((error) => {

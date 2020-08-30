@@ -410,7 +410,12 @@ class VirtualGrid extends React.Component {
   modifyData() {
     var tableData = this.props.tableData;
     var myrows = tableData.data;
-    var mycolumns = tableData.colNames;
+    var mycolumns = [...tableData.colNames];
+
+    const chromIndex = mycolumns.findIndex((column) => column.key === '#CHROM');
+    if (chromIndex >= 0) {
+      mycolumns[chromIndex].key = 'CHROM';
+    }
 
     if (myrows.length !== 0) {
       let maxColumn = 400;
