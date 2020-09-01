@@ -7,6 +7,10 @@ def test_login_logout(api):
     assert resp.status_code == 401
     assert resp.json() == {"error": "Invalid Credentials. Please try again."}
 
+    resp = api.post(None, "/login", {"user": "acme", "password": "demo1234"})
+    assert resp.status_code == 401
+    assert resp.json() == {"error": "Invalid Credentials. Please try again."}
+
     resp = api.get(None, "/is_logged_in")
     assert resp.status_code == 401
 

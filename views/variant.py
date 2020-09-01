@@ -59,17 +59,17 @@ def variant(variant_id, subset="all", language="en"):
     variant_file = pysam.VariantFile(vcf_file, index_filename=vcf_index)
     # samples = variant_file.header.samples
     variant_dict = dict()
-    variant_dict["genotypes"]=[]
+    variant_dict["genotypes"] = []
     try:
         v = next(variant_file.fetch(chrom, pos - 1, pos))
         variant_dict["genotypes"] = [
-        {
-            "sample": [{"display": phenoid_mapping.get(s)}],
-            "GT": v.samples[s].get("GT", ""),
-            "AD": v.samples[s].get("AD", ""),
-            "DP": v.samples[s].get("DP", ""),
-        }
-        for s in v.samples
+            {
+                "sample": [{"display": phenoid_mapping.get(s)}],
+                "GT": v.samples[s].get("GT", ""),
+                "AD": v.samples[s].get("AD", ""),
+                "DP": v.samples[s].get("DP", ""),
+            }
+            for s in v.samples
         ]
     except Exception as e:
         print(e)

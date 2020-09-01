@@ -84,7 +84,6 @@ def create_individual():
         new_individuals = _parse_payload(payload, Individual)
     except TypeError as e:
         application.logger.error(str(e))
-        
         return jsonify(success=False, error=str(e)), 400
 
     # checks individuals validity
@@ -112,7 +111,7 @@ def create_individual():
             # TODO: enable access to more users than the creator
             db_session.add(UserIndividual(user=session["user"], internal_id=i.internal_id))
         db_session.commit()
-    except Exception as e:
+    except PhenopolisException as e:
         db_session.rollback()
         application.logger.exception(e)
         request_ok = False
@@ -132,7 +131,8 @@ def _check_individual_valid(new_individual: Individual, sqlalchemy_session):
 
     exist_internal_id = (
         sqlalchemy_session.query(Individual.external_id)
-        .filter(Individual.external_id == new_individual.external_id).all()
+        .filter(Individual.external_id == new_individual.external_id)
+        .all()
     )
 
     if len(exist_internal_id) > 0:
@@ -205,8 +205,8 @@ def _individual_preview(config, individual):
     config[0]["preview"] = [
         ["External_id", individual["external_id"]],
         ["Sex", individual["sex"]],
-        ["Genes", [g for g in individual.get("genes", "").split(",") if g != '']],
-        ["Features", [f for f in individual["simplified_observed_features_names"].split(",") if f != '']],
+        ["Genes", [g for g in individual.get("genes", "").split(",") if g != ""]],
+        ["Features", [f for f in individual["simplified_observed_features_names"].split(",") if f != ""]],
         ["Number of hom variants", hom_count],
         ["Number of compound hets", comp_het_count],
         ["Number of het variants", het_count],
@@ -269,9 +269,12 @@ def _map_individual2output(config, individual):
         for i, j, in zip(
             individual["simplified_observed_features_names"].split(";"),
             individual["simplified_observed_features"].split(","),
-        )  if i != ""
+        )
+        if i != ""
     ]
-    config[0]["metadata"]["data"][0]["genes"] = [{"display": i} for i in individual.get("genes", "").split(",") if i != ""]
+    config[0]["metadata"]["data"][0]["genes"] = [
+        {"display": i} for i in individual.get("genes", "").split(",") if i != ""
+    ]
     return config
 
 
@@ -394,32 +397,32 @@ def _get_hpos(features):
 @application.route("/individual/<individual_id>", methods=["DELETE"])
 @requires_auth
 def delete_individual(individual_id, language="en"):
-  if session["user"] != "Admin":
-      return jsonify(error="Only Admin is allowed"), 405
+    if session["user"] != "Admin":
+        return jsonify(error="Only Admin is allowed"), 405
 
-  individual = _fetch_authorized_individual(individual_id)
+    individual = _fetch_authorized_individual(individual_id)
 
-  request_ok = True
-  message = "Patient " + individual_id + " has been deleted."
+    request_ok = True
+    message = "Patient " + individual_id + " has been deleted."
 
-  if individual:
-    try:
-        db_session = get_db_session()
-        db_session.query(Individual.internal_id).filter(Individual.internal_id == individual_id).delete()
-        db_session.query(UserIndividual.internal_id).filter(UserIndividual.internal_id == individual_id).delete()
-        db_session.commit()
-    except:
-        db_session.rollback()
-        application.logger.exception(e)
+    if individual:
+        try:
+            db_session = get_db_session()
+            db_session.query(Individual.internal_id).filter(Individual.internal_id == individual_id).delete()
+            db_session.query(UserIndividual.internal_id).filter(UserIndividual.internal_id == individual_id).delete()
+            db_session.commit()
+        except PhenopolisException as e:
+            db_session.rollback()
+            application.logger.exception(e)
+            request_ok = False
+            message = str(e)
+        finally:
+            db_session.close()
+    else:
         request_ok = False
-        message = str(e)
-    finally:
-        db_session.close()
-  else:
-      request_ok = False
-      message = "Patient " + individual_id + " does not exist."
-    
-  if not request_ok:
-      return jsonify(success=False, message=message), 500
-  else:
-      return jsonify(success=True, message=message), 200
+        message = "Patient " + individual_id + " does not exist."
+
+    if not request_ok:
+        return jsonify(success=False, message=message), 500
+    else:
+        return jsonify(success=True, message=message), 200
