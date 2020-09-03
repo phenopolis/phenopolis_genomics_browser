@@ -19,7 +19,7 @@ create table xref (
     term_id integer references term (id),
     xref text not null check (length(xref) <= 50 and xref !~ '^\s|\s$|^$'),
     description text
-    check (length(description) <= 200 and trim(description) != ''),
+    check (length(description) <= 1000 and trim(description) != ''),
     primary key (term_id, xref));
 
 create index on xref (xref);
@@ -29,7 +29,7 @@ create table synonym (
     id serial primary key,
     term_id integer references term (id),
     description text
-        check (length(description) <= 200 and trim(description) != ''));
+        check (length(description) <= 1000 and trim(description) != ''));
 
 create index on synonym (term_id);
 
