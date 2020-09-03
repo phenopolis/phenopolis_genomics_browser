@@ -27,9 +27,7 @@ def main():
     with psycopg2.connect(opt.dsn) as conn:
         create_temp_table(opt, conn)
         import_temp_table(opt, conn)
-
-    # TODO: it goes into the transaction once implemented
-    upsert_variants(opt, conn)
+        insert_variants(opt, conn)
 
 
 def create_temp_table(opt, conn):
@@ -51,7 +49,7 @@ def create_temp_table(opt, conn):
         cur.execute(sql.SQL(" ").join(parts))
     except psycopg2.errors.DuplicateTable:
         raise ScriptError(
-            f"table {IMPORT_TABLE.strings[0]} already exista: if you used'--keep-temp' you should remove it"
+            f"table {IMPORT_TABLE.strings[0]} already exista: if you used '--keep-temp' you should remove it"
         )
 
 
@@ -62,37 +60,79 @@ def import_temp_table(opt, conn):
         cur.copy_expert(stmt, f)
 
 
-def upsert_variants(opt, conn):
-    raise ScriptError("upsert not implemented yet")
+def insert_variants(opt, conn):
+    cur = conn.cursor()
+
+    # use more memory, less disk
+    cur.execute("set local work_mem to '1 GB'")
+
+    cur.execute(
+        sql.SQL(
+            """
+            insert into phenopolis.variant (chrom, pos, ref, alt)
+            select chrom, pos::bigint, ref, alt
+            from {}
+            where (hgvsc, hgvsp) != ('', '')
+            group by 1, 2, 3, 4
+            on conflict on constraint variant_pkey do nothing
+            """
+        ).format(IMPORT_TABLE)
+    )
+    logger.info("imported %s new variant records", cur.rowcount)
+
+    # TODO: do we have to update existing values too?
+
+    cur.execute(
+        sql.SQL(
+            """
+            insert into phenopolis.transcript_consequence
+                (chrom, pos, ref, alt, hgvs_c, hgvs_p, consequence, gene_id)
+            select *
+            from (
+                select
+                    chrom, pos::bigint, ref, alt,
+                    nullif(hgvsc, '') as hgvs_c,
+                    nullif(hgvsp, '') as hgvs_p,
+                    nullif(most_severe_consequence, '') as consequence,
+                    nullif(gene_id, '') as gene_id
+                from {}
+                where (hgvsc, hgvsp) != ('', '')
+            ) s
+            where not exists (
+                select 1
+                from phenopolis.transcript_consequence t
+                where (t.chrom, t.pos, t.ref, t.alt) = (s.chrom, s.pos, s.ref, s.alt)
+                and (t.hgvs_c, t.hgvs_p, t.consequence)
+                    is not distinct from (s.hgvs_c, s.hgvs_p, s.consequence)
+            )
+            """
+        ).format(IMPORT_TABLE)
+    )
+    logger.info("imported %s new transcript consequence records", cur.rowcount)
 
 
-def get_csv_titles(opt, __cacne=[]):
-    if __cacne:
-        return __cacne[0]
+def get_csv_titles(opt, __cache=[]):
+    if __cache:
+        return __cache[0]
 
     with open(opt.file) as f:
         line = f.readline()
 
     titles = line.strip().replace('"', "").lower().split(",")
-    for t in "chrom pos ref alt".split():
+    for t in "chrom pos ref alt hgvsc hgvsp".split():
         if t not in titles:
             raise ScriptError(f"column {t} not found in the csv (available: {', '.titles})")
 
-    __cacne.append(titles)
+    __cache.append(titles)
     return titles
 
 
 def parse_cmdline():
     parser = ArgumentParser(description=__doc__, formatter_class=RawDescriptionHelpFormatter)
+
     parser.add_argument("file", metavar="FILE", help="the file to import")
-
-    parser.add_argument(
-        "--dsn", default="", help="connection string to import into [default: %(default)r]",
-    )
-
-    parser.add_argument(
-        "--keep-temp", action="store_true", help="keep the temp table after import (for debugging)",
-    )
+    parser.add_argument("--dsn", default="", help="connection string to import into [default: %(default)r]")
+    parser.add_argument("--keep-temp", action="store_true", help="keep the temp table after import (for debugging)")
 
     g = parser.add_mutually_exclusive_group()
     g.add_argument(

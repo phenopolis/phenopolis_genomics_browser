@@ -13,6 +13,8 @@
 
 revoke create on schema public from public;
 
+create extension ltree;
+
 
 -- The audit user must be able to create/manipulate tables here.
 -- Other users may be interested to access some functions or tables
@@ -37,7 +39,9 @@ alter default privileges in schema phenopolis
 alter default privileges in schema phenopolis
     grant all on sequences to phenopolis_api;
 
-create extension ltree;
+set search_path to phenopolis, public;
+\i phenopolis.sql
+reset search_path;
 
 
 create schema hpo;
