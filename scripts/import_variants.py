@@ -119,9 +119,9 @@ def get_csv_titles(opt, __cache=[]):
         line = f.readline()
 
     titles = line.strip().replace('"', "").lower().split(",")
-    for t in "chrom pos ref alt hgvsc hgvsp".split():
+    for t in "chrom pos ref alt hgvsc hgvsp most_severe_consequence gene_id".split():
         if t not in titles:
-            raise ScriptError(f"column {t} not found in the csv (available: {', '.titles})")
+            raise ScriptError(f"column {t} not found in the csv (available: {', '.join(titles)})")
 
     __cache.append(titles)
     return titles
