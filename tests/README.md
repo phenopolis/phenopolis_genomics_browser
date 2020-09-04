@@ -27,7 +27,8 @@ pytest --setup-show -v
 ```
 
 ### Using coverage
-- Create file `docker-compose.override.yml` containig:
+- Install: `pip install process-tests`
+- Create file `docker-compose.override.yml` containing:
 ```yaml
 version: '3.8'
 services:
@@ -35,7 +36,7 @@ services:
       ports:
       - 5432:5432
 ```
-- Start `db` container with `postgres` port 5432 exposed (`docker-compose.override.yml` will be automagically loaded):
+- Start `db` container with `postgres` port 5432 exposed (`docker-compose.override.yml` will be _automagically_ loaded):
 ```bash
 docker-compose up db -d
 ```
