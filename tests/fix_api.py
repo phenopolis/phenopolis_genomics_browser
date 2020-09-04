@@ -32,7 +32,7 @@ if APP_ENV == "test":
             print("\n>>>>Teardown app_service")
             app_server.close()
 
-    @pytest.fixture(scope="function")
+    @pytest.fixture(scope="function")  # noqa: F811
     def api(api_url, app_server):
         api = Api(api_url)
         yield api
