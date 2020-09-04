@@ -5,7 +5,7 @@ import psycopg2
 from flask import g
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker, Session
-from views import application
+from views import application, ENV_LOG_FLAG
 
 
 def get_db():
@@ -25,7 +25,7 @@ def get_db_session() -> Session:
     current application context.
     """
     if not hasattr(g, "dbsession"):
-        engine = create_engine(application.config["SQLALCHEMY_DATABASE_URI"], echo=True)
+        engine = create_engine(application.config["SQLALCHEMY_DATABASE_URI"], echo=ENV_LOG_FLAG)
         engine.connect()
         DbSession = sessionmaker(bind=engine)
         DbSession.configure(bind=engine)
