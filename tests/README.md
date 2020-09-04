@@ -26,6 +26,24 @@ black --diff --check
 pytest --setup-show -v
 ```
 
+### Using coverage
+- Create file `docker-compose.override.yml` containig:
+```yaml
+version: '3.8'
+services:
+   db:
+      ports:
+      - 5432:5432
+```
+- Start `db` container with `postgres` port 5432 exposed (`docker-compose.override.yml` will be automagically loaded):
+```bash
+docker-compose up db -d
+```
+Then run:
+```bash
+APP_ENV=test pytest --cov views --cov db --cov-report term-missing:skip-covered -sv
+```
+which should show a coverage summary at the end.
 ### Using Tox
 Install it with:
 ```bash
