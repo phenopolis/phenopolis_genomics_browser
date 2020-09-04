@@ -103,3 +103,9 @@ In order to load hbo files in the docker db:
 dc exec app python3 ./scripts/import_hpo.py \
     --dsn "host=db user=postgres dbname=phenopolis_db"
 ```
+
+
+Variants import
+---------------
+
+You can update variants from a csv file using `scripts/import_variants.py`.
