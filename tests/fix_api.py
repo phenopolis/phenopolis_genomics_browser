@@ -7,6 +7,37 @@ from urllib.parse import urljoin
 
 import pytest
 import requests
+from views import APP_ENV
+
+
+@pytest.fixture(scope="function")
+def api(api_url):
+    api = Api(api_url)
+    yield api
+    for user in list(api.logged_in):
+        api.logout(user)
+
+
+if APP_ENV == "test":
+
+    @pytest.fixture(scope="session")
+    def app_server():
+        from process_tests import TestProcess
+        from process_tests import wait_for_strings
+
+        with TestProcess("python", "application.py") as app_server:
+            wait_for_strings(app_server.read, 10, "Running")
+            print(app_server.read())
+            yield app_server
+            print("\n>>>>Teardown app_service")
+            app_server.close()
+
+    @pytest.fixture(scope="function")
+    def api(api_url, app_server):
+        api = Api(api_url)
+        yield api
+        for user in list(api.logged_in):
+            api.logout(user)
 
 
 def pytest_addoption(parser):
@@ -21,14 +52,6 @@ def api_url(request):
     Return the api url configured by --api-url
     """
     return request.config.getoption("--api-url").rstrip("/")
-
-
-@pytest.fixture(scope="function")
-def api(api_url):
-    api = Api(api_url)
-    yield api
-    for user in list(api.logged_in):
-        api.logout(user)
 
 
 # Users readily available in the test suite
