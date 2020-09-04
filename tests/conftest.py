@@ -1,10 +1,14 @@
 import pytest
 from dotenv import load_dotenv
-from views import application
+from views import application, APP_ENV
 
 load_dotenv(dotenv_path="./private.env")
 
 pytest_plugins = ("tests.fix_api",)
+
+
+def pytest_report_header(config):
+    return ">>> APP_ENV: " + APP_ENV
 
 
 @pytest.fixture
