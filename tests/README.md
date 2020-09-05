@@ -38,7 +38,7 @@ services:
 ```
 - Start `db` container with `postgres` port 5432 exposed (`docker-compose.override.yml` will be _automagically_ loaded):
 ```bash
-docker-compose up db -d
+docker-compose up -d db
 ```
 Then run:
 ```bash
