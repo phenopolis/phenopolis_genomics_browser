@@ -5,8 +5,8 @@ import LoginBox from '../components/AppBar/LoginBox';
 import { Trans, useTranslation } from 'react-i18next';
 
 const Login = (props) => {
-  const { reduxName } = useSelector((state) => ({
-    reduxName: state.users.username,
+  const { username } = useSelector((state) => ({
+    username: state.Auth.username,
   }));
   const { t } = useTranslation();
   const query = new URLSearchParams(props.location.search);
@@ -14,7 +14,7 @@ const Login = (props) => {
   return (
     <>
       <CssBaseline />
-      {reduxName === '' ? (
+      {username === '' ? (
         <div className={'login-root'}>
           {query.get('link') ? (
             mylink === 'timeout' ? (
@@ -33,12 +33,7 @@ const Login = (props) => {
             )
           ) : null}
 
-          <LoginBox
-            onLoginSuccess={() => {}}
-            redirectLink={
-              query.get('link') & (query.get('link') !== 'timeout') ? query.get('link') : '/'
-            }
-          />
+          <LoginBox onLoginSuccess={() => {}} redirectLink={mylink ? mylink : '/dashboard'} />
         </div>
       ) : (
         <div className={'login-root'}>

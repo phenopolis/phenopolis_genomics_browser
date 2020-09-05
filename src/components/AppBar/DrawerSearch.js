@@ -28,7 +28,7 @@ import { useTranslation } from 'react-i18next';
 import { useDispatch, useSelector } from 'react-redux';
 import clsx from 'clsx';
 import { getSearchAutocomplete, clearSearchBest } from '../../redux/actions/search';
-import { setSnack } from '../../redux/actions/snacks';
+// import { setSnack } from '../../redux/actions/snacks';
 import { useHistory } from 'react-router-dom';
 
 function TabPanel(props) {
@@ -79,48 +79,9 @@ const DrawerSearch = (props) => {
   const { t } = useTranslation();
   const dispatch = useDispatch();
   const history = useHistory();
+
   const [searchContent, setSearchContent] = useState('');
   const [typing, setTyping] = useState(false);
-  const alltypes = [
-    { label: 'All', type: '', color: 'gray', icon: faSearch },
-    { label: 'Gene', type: 'gene', color: '#e07a5f', icon: faDna },
-    { label: 'HPO', type: 'phenotype', color: '#81b29a', icon: faChartNetwork },
-    { label: 'Patient', type: 'patient', color: '#f2cc8f', icon: faUser },
-    { label: 'Variant', type: 'variant', color: '#3d405b', icon: faCut },
-  ];
-
-  const { data, loading, best, error } = useSelector((state) => ({
-    data: state.Search.data,
-    loading: state.Search.loading,
-    best: state.Search.best.redirect,
-  }));
-
-  const classes = useStyles();
-  const [type, setType] = React.useState(0);
-
-  const handleTypeChange = (event, newType) => {
-    setType(newType);
-  };
-
-  useEffect(() => {
-    if (searchContent !== '') autocomplete(searchContent);
-  }, [type]);
-
-  useEffect(() => {
-    if (best) {
-      redirectTo();
-    }
-    if (error) {
-      dispatch(setSnack(error, 'error'));
-    }
-  }, [data, loading, best, error, dispatch, history]);
-
-  const redirectTo = () => {
-    history.push(best);
-    props.onRequestClose();
-    dispatch(clearSearchBest());
-  };
-
   const examples = [
     { name: 'TTLL5', type: 'gene', to: '/gene/ENSG00000119685' },
     { name: 'Abnormality of the eye', type: 'phenotype', to: '/hpo/HP:0000478' },
@@ -135,6 +96,44 @@ const DrawerSearch = (props) => {
       to: '/variant/14-76156575-A-G',
     },
   ];
+  const alltypes = [
+    { label: 'All', type: '', color: 'gray', icon: faSearch },
+    { label: 'Gene', type: 'gene', color: '#e07a5f', icon: faDna },
+    { label: 'HPO', type: 'phenotype', color: '#81b29a', icon: faChartNetwork },
+    { label: 'Patient', type: 'patient', color: '#f2cc8f', icon: faUser },
+    { label: 'Variant', type: 'variant', color: '#3d405b', icon: faCut },
+  ];
+
+  const { data, loaded, error } = useSelector((state) => ({
+    data: state.Search.data,
+    loaded: state.Search.loaded,
+  }));
+
+  const classes = useStyles();
+  const [type, setType] = React.useState(0);
+
+  const handleTypeChange = (event, newType) => {
+    setType(newType);
+  };
+
+  useEffect(() => {
+    if (searchContent !== '') autocomplete(searchContent);
+  }, [type]);
+
+  // useEffect(() => {
+  //   if (best) {
+  //     redirectTo();
+  //   }
+  //   if (error) {
+  //     dispatch(setSnack(error, 'error'));
+  //   }
+  // }, [data, loading, best, error, dispatch, history]);
+
+  // const redirectTo = () => {
+  //   history.push(best);
+  //   props.onRequestClose();
+  //   dispatch(clearSearchBest());
+  // };
 
   const handleSearchChange = (event) => {
     setSearchContent(event.target.value);
@@ -279,7 +278,7 @@ const DrawerSearch = (props) => {
                 </Grid>
                 <Grid item xs={12} container justify="center">
                   <div className="text-black py-4">
-                    {(loading === true) | typing ? (
+                    {!loaded | typing ? (
                       <div>
                         <p className="text-black-50 font-size-lg">
                           {t('AppBar.NavSearch.Searching')}{' '}

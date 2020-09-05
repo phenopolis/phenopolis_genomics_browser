@@ -106,8 +106,6 @@ class EditPerson extends React.Component {
   };
 
   ModifyFeatureChip = (item, action, type) => {
-    console.log(item);
-    console.log(this.state.geneArray);
     if (type === 'phenotype') {
       if (action === 'Add') {
         this.setState({ featureArray: [...this.state.featureArray, item.split('::')[1]] });

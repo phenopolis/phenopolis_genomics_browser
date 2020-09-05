@@ -184,7 +184,10 @@ const NoLoginBar = (props) => {
             onClose={() => setOpenLoginDialog(!openLoginDialog)}
             aria-labelledby="alert-dialog-title"
             aria-describedby="alert-dialog-description">
-            <LoginBox onLoginSuccess={() => setOpenLoginDialog(!openLoginDialog)} />
+            <LoginBox
+              onLoginSuccess={() => setOpenLoginDialog(!openLoginDialog)}
+              redirectLink={'/dashboard'}
+            />
           </Dialog>
           <Drawer open={openSideBar} onClose={() => setOpenSideBar(!openSideBar)}>
             <NoSidebar

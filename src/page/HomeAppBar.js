@@ -5,10 +5,8 @@ import { useSelector } from 'react-redux';
 
 const HomeAppBar = (props) => {
   const { username } = useSelector((state) => ({
-    username: state.users.username,
+    username: state.Auth.username,
   }));
-
-  useEffect(() => {}, [username]);
 
   return (
     <div>

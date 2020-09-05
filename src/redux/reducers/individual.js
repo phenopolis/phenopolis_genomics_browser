@@ -5,9 +5,9 @@ import {
 } from '../types/individual';
 
 const initialState = {
-  data: {},
+  data: [],
+  loaded: false,
   error: false,
-  loading: true,
 };
 
 const IndividualInformation = (state = initialState, action) => {
@@ -15,21 +15,22 @@ const IndividualInformation = (state = initialState, action) => {
     case INDIVIDUAL_INFO_REQUEST: {
       return {
         ...state,
-        loading: true,
+        loaded: false,
+        error: false,
       };
     }
     case INDIVIDUAL_INFO_REQUEST_SUCCESS: {
       return {
         ...state,
+        loaded: true,
         data: action.payload.data,
-        loading: false,
       };
     }
     case INDIVIDUAL_INFO_REQUEST_FAIL: {
       return {
         ...state,
-        error: action.payload.status,
-        loading: false,
+        loaded: false,
+        error: action.payload.error,
       };
     }
     default:

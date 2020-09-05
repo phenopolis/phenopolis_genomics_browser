@@ -1,54 +1,40 @@
 import React, { useEffect } from 'react';
 import { CssBaseline, Container } from '@material-ui/core';
-import { useHistory } from 'react-router-dom';
 import VirtualGrid from '../components/Table/VirtualGrid';
 import Loading from '../components/General/Loading';
 import { useTranslation } from 'react-i18next';
 import { useDispatch, useSelector } from 'react-redux';
-import { getPatients } from '../redux/actions/patients';
-import { setSnack } from '../redux/actions/snacks';
+import { getHPO } from '../redux/actions/hpo';
 
 const MyPatient = () => {
   const { t } = useTranslation();
-  const history = useHistory();
   const dispatch = useDispatch();
-  const { error, patients, username } = useSelector((state) => ({
-    username: state.users.username,
-    patients: state.Patients.data[0],
-    error: state.Patients.error,
+
+  const { hpoInfo, loaded, error } = useSelector((state) => ({
+    hpoInfo: state.HPO.data[0],
+    error: state.HPO.error,
+    loaded: state.HPO.loaded,
   }));
 
   useEffect(() => {
-    dispatch(getPatients());
-  }, [dispatch]);
-
-  useEffect(() => {
-    if (error) {
-      dispatch(setSnack(error, 'error'));
-    }
-  }, [dispatch, error]);
-
-  useEffect(() => {
-    if (!username) {
-      history.push('/login?link=/my_patients');
-    }
-  }, [username]);
+    dispatch(getHPO('HP:0000001'));
+  }, []);
 
   return (
     <>
-      {patients ? (
+      {loaded ? (
         <React.Fragment>
           <CssBaseline />
           <div className="myPatients-container">
             <Container maxWidth="xl">
               <VirtualGrid
-                tableData={patients.individuals}
+                tableData={hpoInfo.individuals}
                 title={
                   t('MyPatient.My_Patients') +
                   ' (' +
                   t('MyPatient.Total') +
                   ' ' +
-                  patients.preview[0][1] +
+                  hpoInfo.preview[0][1] +
                   ')'
                 }
                 subtitle=" "

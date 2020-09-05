@@ -39,7 +39,7 @@ class Plots extends React.Component {
   };
 
   onBarClick = (param) => {
-    window.alert('Bar Click: ' + param.dataIndex);
+    // window.alert('Bar Click: ' + param.dataIndex);
   };
 
   ReactSelectXAxis = (selectedOption) => {
@@ -49,7 +49,6 @@ class Plots extends React.Component {
   };
 
   ReactSelectYAxis = (selectedOption) => {
-    console.log(selectedOption);
     this.setState({ yAxis: selectedOption }, () => {
       this.getSeriesData(this.state.xAxis, this.state.yAxis);
     });
@@ -130,7 +129,6 @@ class Plots extends React.Component {
   };
 
   CreateHistogram = (Axis) => {
-    console.log(Axis.key);
     let tmpValue = this.props.dataRows.map((x) => Number(x[Axis.key]));
     var bins = ecStat.histogram(tmpValue);
 

@@ -10,9 +10,7 @@ const ValueComponent = (props) => {
   const classes = OptionStyles();
   const option = props.option;
 
-  useEffect(() => {
-    console.log(props);
-  });
+  useEffect(() => {});
 
   return (
     <div className={classes.selectOption}>

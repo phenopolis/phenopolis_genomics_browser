@@ -1,38 +1,46 @@
-import { LOGIN_REQUEST, LOGIN_REQUEST_SUCCESS, LOGIN_REQUEST_FAIL } from '../types/auth';
+import {
+  LOGIN_REQUEST,
+  LOGIN_REQUEST_SUCCESS,
+  LOGIN_REQUEST_FAIL,
+  ISLOGIN_SUCCESS,
+  ISLOGIN_FAIL,
+} from '../types/auth';
 import Service from '../service';
 
-export const login = (data) => {
+export const userLogin = (data) => {
   return (dispatch) => {
-    dispatch({ type: LOGIN_REQUEST });
-    Service.login(data)
+    dispatch({ type: LOGIN_REQUEST, payload: { relink: data.relink } });
+    Service.login(data.loginForm)
       .then((res) => {
-        dispatch({ type: LOGIN_REQUEST_SUCCESS, payload: res });
+        dispatch({ type: LOGIN_REQUEST_SUCCESS, payload: { username: res.data.username } });
       })
       .catch((error) => {
-        dispatch({ type: LOGIN_REQUEST_FAIL, payload: error.response });
+        dispatch({ type: LOGIN_REQUEST_FAIL, payload: { error: error.response } });
       });
   };
 };
 
-export const userLogout = () => {
+export const userLogout = (data) => {
   return (dispatch) => {
-    dispatch({ type: LOGIN_REQUEST });
-    dispatch({
-      type: LOGIN_REQUEST_SUCCESS,
-      payload: {
-        data: {
-          success: '',
-          username: '',
-        },
-        loading: false,
-        error: false,
-      },
-    });
-
+    dispatch({ type: LOGIN_REQUEST, payload: { relink: data.relink } });
     Service.logout()
-      .then((res) => {})
+      .then((res) => {
+        dispatch({ type: LOGIN_REQUEST_SUCCESS, payload: { username: '' } });
+      })
       .catch((error) => {
-        dispatch({ type: LOGIN_REQUEST_FAIL, payload: error.response });
+        dispatch({ type: LOGIN_REQUEST_FAIL, payload: { error: error.response } });
+      });
+  };
+};
+
+export const isLoggedIn = () => {
+  return (dispatch) => {
+    Service.isLoggedIn()
+      .then((res) => {
+        dispatch({ type: ISLOGIN_SUCCESS, payload: { username: res.data.username } });
+      })
+      .catch((error) => {
+        dispatch({ type: ISLOGIN_FAIL, payload: { error: error.response } });
       });
   };
 };

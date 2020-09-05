@@ -10,8 +10,8 @@ import {
 
 const initialState = {
   data: [],
-  best: {},
-  loading: true,
+  best: [],
+  loaded: true,
   error: false,
 };
 
@@ -20,48 +20,54 @@ const Search = (state = initialState, action) => {
     case GET_SEARCH_AUTOCOMPLETE: {
       return {
         ...state,
-        loading: true,
+        data: [],
+        best: [],
+        loaded: false,
+        error: false,
       };
     }
     case GET_SEARCH_AUTOCOMPLETE_SUCCESS: {
       return {
         ...state,
-        loading: false,
         data: action.payload.data,
+        loaded: true,
       };
     }
     case GET_SEARCH_AUTOCOMPLETE_FAIL: {
       return {
         ...state,
-        loading: false,
-        error: 'Something Went Wrong',
+        loaded: true,
+        error: action.payload.error,
       };
     }
     case GET_SEARCH_BEST: {
       return {
         ...state,
-        loading: true,
+        data: [],
+        best: [],
+        loaded: false,
+        error: false,
       };
     }
     case GET_SEARCH_BEST_SUCCESS: {
       return {
         ...state,
-        loading: false,
-        best: action.payload.data,
+        best: action.payload.best,
       };
     }
     case GET_SEARCH_BEST_FAIL: {
       return {
         ...state,
-        loading: false,
-        error: 'Something Went Wrong',
+        error: action.payload.error,
       };
     }
     case CLEAR_SEARCH_BEST: {
       return {
         ...state,
-        loading: false,
-        best: {},
+        data: [],
+        best: [],
+        loaded: false,
+        error: false,
       };
     }
     default:

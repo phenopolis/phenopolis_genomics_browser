@@ -2,7 +2,7 @@ import { GET_HPO, GET_HPO_SUCCESS, GET_HPO_FAIL, GET_HPO_UNMOUNT } from '../type
 
 const initialState = {
   data: [],
-  loading: true,
+  loaded: false,
   error: false,
 };
 
@@ -11,28 +11,22 @@ const HPO = (state = initialState, action) => {
     case GET_HPO: {
       return {
         ...state,
-        loading: true,
+        loaded: false,
+        error: false,
       };
     }
     case GET_HPO_SUCCESS: {
       return {
         ...state,
-        loading: false,
+        loaded: true,
         data: action.payload.data,
       };
     }
     case GET_HPO_FAIL: {
       return {
         ...state,
-        loading: false,
-        error: action.payload.status,
-      };
-    }
-    case GET_HPO_UNMOUNT: {
-      return {
-        ...state,
-        loading: true,
-        error: false,
+        loaded: false,
+        error: action.payload.error,
       };
     }
     default:

@@ -1,30 +1,26 @@
 import { combineReducers } from 'redux';
-import users from './users';
 import snacks from './snacks';
 import Statistics from './statistic';
 import Search from './search';
 import Preview from './preview';
-import Login from './auth';
-import IsLoggedIn from './isLoggedIn';
-import Patients from './patients';
+import Auth from './auth';
 import Gene from './gene';
 import Variant from './variant';
 import HPO from './hpo';
 import Individuals from './individuals';
 import Individual from './individual';
+import Status from './status';
 
 export default combineReducers({
-  users,
+  Auth,
   snacks,
   Statistics,
   Search,
   Preview,
-  Login,
-  IsLoggedIn,
-  Patients,
   Gene,
   Variant,
   HPO,
   Individuals,
   Individual,
+  Status,
 });

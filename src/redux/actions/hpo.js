@@ -1,4 +1,5 @@
-import { GET_HPO, GET_HPO_SUCCESS, GET_HPO_FAIL, GET_HPO_UNMOUNT } from '../types/hpo';
+import { GET_HPO, GET_HPO_SUCCESS, GET_HPO_FAIL } from '../types/hpo';
+import { SET_STATUS } from '../types/status';
 import Service from '../service';
 
 export const getHPO = (param) => {
@@ -6,22 +7,24 @@ export const getHPO = (param) => {
     dispatch({ type: GET_HPO });
     Service.getHPO(param)
       .then((res) => {
-        dispatch({ type: GET_HPO_SUCCESS, payload: res });
+        if (Array.isArray(res.data)) {
+          dispatch({ type: GET_HPO_SUCCESS, payload: { data: res.data } });
+        } else {
+          dispatch({
+            type: SET_STATUS,
+            payload: { code: 404, message: 'HPO not exist.', relink: '/' },
+          });
+        }
       })
       .catch((error) => {
-        dispatch({ type: GET_HPO_FAIL, payload: error.response });
-      });
-  };
-};
+        if (error.response.status === 401) {
+          dispatch({
+            type: SET_STATUS,
+            payload: { code: 401, message: error.response.data.message, relink: '/hpo/' + param },
+          });
+        }
 
-export const unmountHPO = () => {
-  return (dispatch) => {
-    dispatch({ type: GET_HPO });
-    dispatch({
-      type: GET_HPO_UNMOUNT,
-      payload: {
-        data: [],
-      },
-    });
+        dispatch({ type: GET_HPO_FAIL, payload: { error: error.response } });
+      });
   };
 };

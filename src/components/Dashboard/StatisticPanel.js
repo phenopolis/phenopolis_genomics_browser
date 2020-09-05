@@ -110,7 +110,7 @@ const StatisticPanel = (props) => {
                         </Button>
                       </div>
                       <div className="align-items-center" style={{ color: item.backgroundColor }}>
-                        <div className="font-weight-bold display-4 py-1 m-3">
+                        <div className="font-weight-bold display-3 text-center mt-1">
                           <CountUp
                             start={0}
                             end={item.count}

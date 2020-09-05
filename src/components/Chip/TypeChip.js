@@ -18,14 +18,24 @@ import { getPreviewInformation, clearPreviewInformation } from '../../redux/acti
 import { useHistory } from 'react-router-dom';
 
 const TypeChip = (props) => {
+  const ChipIcon = {
+    gene: { icon: faDna, des: 'Gene' },
+    phenotype: { icon: faChartNetwork, des: 'HPO(Human Phenotype Ontology)' },
+    hpo: { icon: faChartNetwork, des: 'HPO(Human Phenotype Ontology)' },
+    patient: { icon: faUser, des: 'Patient' },
+    individual: { icon: faUser, des: 'Patient' },
+    variant: { icon: faCut, des: 'Variant' },
+    other: { icon: faLink, des: 'Other' },
+  };
+
   const dispatch = useDispatch();
   const history = useHistory();
 
-  const { best, previewName, previewInfo, previewLoaded, error } = useSelector((state) => ({
+  const { best, previewName, previewInfo, loaded, error } = useSelector((state) => ({
     best: state.Search.best.redirect,
-    previewName: state.Preview.previewName,
-    previewInfo: state.Preview.previewInfo,
-    previewLoaded: state.Preview.previewLoaded,
+    previewName: state.Preview.name,
+    previewInfo: state.Preview.data,
+    loaded: state.Preview.loaded,
     error: state.Preview.error,
   }));
 
@@ -44,16 +54,6 @@ const TypeChip = (props) => {
   const redirectTo = () => {
     history.push(best);
     dispatch(clearSearchBest());
-  };
-
-  const ChipIcon = {
-    gene: { icon: faDna, des: 'Gene' },
-    phenotype: { icon: faChartNetwork, des: 'HPO(Human Phenotype Ontology)' },
-    hpo: { icon: faChartNetwork, des: 'HPO(Human Phenotype Ontology)' },
-    patient: { icon: faUser, des: 'Patient' },
-    individual: { icon: faUser, des: 'Patient' },
-    variant: { icon: faCut, des: 'Variant' },
-    other: { icon: faLink, des: 'Other' },
   };
 
   const handleSearch = (event, to) => {
@@ -140,13 +140,11 @@ const TypeChip = (props) => {
         disableRestoreFocus
         elevation={8}>
         <Container
-          className={
-            previewLoaded ? `${type}-bg chip-title-loaded` : `${type}-bg chip-title-unloaded`
-          }>
+          className={loaded ? `${type}-bg chip-title-loaded` : `${type}-bg chip-title-unloaded`}>
           <Typography variant="subtitle1" style={{ 'font-weight': '900', color: 'white' }}>
             {props.label}
 
-            {(previewLoaded !== true) | (props.to.split('/')[2] !== previewName) ? (
+            {(loaded === false) | (props.to.split('/')[2] !== previewName) ? (
               <small style={{ color: 'white' }}>
                 {' '}
                 &nbsp;&nbsp;
@@ -156,9 +154,9 @@ const TypeChip = (props) => {
           </Typography>
         </Container>
 
-        {(previewLoaded === true) & (props.to.split('/')[2] === previewName) ? (
+        {(loaded === true) & (props.to.split('/')[2] === previewName) ? (
           <Container className="chip-container">
-            {(previewInfo === null) | (previewInfo === undefined) | error ? (
+            {error ? (
               <span> Can not Fetch preview information </span>
             ) : (
               previewInfo.map((item, index) => {
@@ -171,7 +169,11 @@ const TypeChip = (props) => {
                     <Grid item xs={8} className="chip-popover-datagrid">
                       {typeof item[1] === 'object'
                         ? item[1].map((subchip, subchipIndex) => {
-                            return <span key={subchipIndex}>{subchip + ', '}</span>;
+                            return (
+                              <span key={subchipIndex}>
+                                {subchipIndex === 0 ? '' : ', '} {subchip}
+                              </span>
+                            );
                           })
                         : item[1]}
                     </Grid>

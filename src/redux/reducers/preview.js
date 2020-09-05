@@ -6,9 +6,9 @@ import {
 } from '../types/preview';
 
 const initialState = {
-  previewInfo: null,
-  previewName: null,
-  previewLoaded: false,
+  name: null,
+  data: [],
+  loaded: false,
   error: false,
 };
 
@@ -17,30 +17,35 @@ const Preview = (state = initialState, action) => {
     case GET_PREVIEW: {
       return {
         ...state,
-        previewLoaded: false,
+        name: null,
+        data: [],
+        loaded: false,
+        error: false,
       };
     }
     case GET_PREVIEW_SUCCESS: {
       return {
         ...state,
-        previewLoaded: true,
-        previewInfo: action.payload.info,
-        previewName: action.payload.name,
+        name: action.payload.name,
+        data: action.payload.data,
+        loaded: true,
       };
     }
     case GET_PREVIEW_FAIL: {
       return {
         ...state,
-        previewLoaded: true,
-        error: 'Fetch Preview failed.',
+        name: action.payload.name,
+        loaded: true,
+        error: action.payload.error,
       };
     }
     case CLEAR_PREVIEW: {
       return {
         ...state,
-        previewInfo: null,
-        previewName: null,
-        previewLoaded: false,
+        name: null,
+        data: [],
+        loaded: false,
+        error: false,
       };
     }
     default:

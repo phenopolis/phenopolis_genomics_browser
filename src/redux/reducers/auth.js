@@ -1,36 +1,56 @@
-import { LOGIN_REQUEST, LOGIN_REQUEST_SUCCESS, LOGIN_REQUEST_FAIL } from '../types/auth';
+import {
+  LOGIN_REQUEST,
+  LOGIN_REQUEST_SUCCESS,
+  LOGIN_REQUEST_FAIL,
+  ISLOGIN_SUCCESS,
+  ISLOGIN_FAIL,
+} from '../types/auth';
 
 const initialState = {
-  data: {
-    success: '',
-    username: '',
-  },
-  loading: true,
+  username: '',
   error: false,
+  notification: false,
+  relink: '/',
 };
 
-const Login = (state = initialState, action) => {
+const Auth = (state = initialState, action) => {
   switch (action.type) {
     case LOGIN_REQUEST: {
       return {
         ...state,
-        loading: true,
         error: false,
+        notification: false,
+        relink: action.payload.relink,
       };
     }
     case LOGIN_REQUEST_SUCCESS: {
       return {
         ...state,
-        loading: false,
+        username: action.payload.username,
         error: false,
-        data: action.payload.data,
+        notification: true,
       };
     }
     case LOGIN_REQUEST_FAIL: {
       return {
         ...state,
-        loading: false,
-        error: 'Something Went Wrong',
+        error: action.payload.error,
+        notification: true,
+      };
+    }
+    case ISLOGIN_SUCCESS: {
+      return {
+        ...state,
+        username: action.payload.username,
+        error: false,
+        notification: false,
+      };
+    }
+    case ISLOGIN_FAIL: {
+      return {
+        ...state,
+        error: action.payload.error,
+        notification: false,
       };
     }
     default:
@@ -38,4 +58,4 @@ const Login = (state = initialState, action) => {
   }
 };
 
-export default Login;
+export default Auth;

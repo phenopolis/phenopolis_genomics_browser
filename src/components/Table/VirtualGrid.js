@@ -208,7 +208,6 @@ class StickyGrid extends React.Component {
     }
 
     if (nextProps.highlightRow !== null) {
-      console.log(this.listRef.current);
       this.listRef.current.scrollToItem({
         align: 'start',
         rowIndex: nextProps.highlightRow,

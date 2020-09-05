@@ -17,42 +17,22 @@ const Variant = (props) => {
   const history = useHistory();
   const location = useLocation();
   const dispatch = useDispatch();
+
   const [value, setValue] = useState(0);
-  const [valid, setValid] = useState(false);
-  const { loading, error, variantInfo } = useSelector((state) => ({
+
+  const { variantInfo, loaded, error } = useSelector((state) => ({
     variantInfo: state.Variant.data[0],
+    loaded: state.Variant.loaded,
     error: state.Variant.error,
-    loading: state.Variant.loading,
   }));
 
   useEffect(() => {
-    setValid(false);
     dispatch(getVariant(props.match.params.variantId));
   }, [location]);
 
   useEffect(() => {
     dispatch(getVariant(props.match.params.variantId));
   }, []);
-
-  useEffect(() => {
-    if (error === 401) {
-      history.push(`/login?link=${window.location.pathname}`);
-    }
-  }, [error]);
-
-  useEffect(() => {
-    if ((loading === false) & (variantInfo === undefined)) {
-      history.push('/');
-      dispatch(setSnack('Variant not exist.', 'warning'));
-    } else if ((loading === false) & (variantInfo !== undefined)) {
-      if (Object.keys(variantInfo.metadata.data[0]).length === 0) {
-        history.push('/');
-        dispatch(setSnack('Variant not exist.', 'warning'));
-      } else {
-        setValid(true);
-      }
-    }
-  }, [variantInfo, loading]);
 
   const handleChange = (event, newValue) => {
     setValue(newValue);
@@ -71,7 +51,7 @@ const Variant = (props) => {
 
   return (
     <>
-      {valid ? (
+      {loaded ? (
         <React.Fragment>
           <CssBaseline />
           <div className="variant-container">

@@ -1,11 +1,10 @@
 import React, { useState, useEffect } from 'react';
-import { useHistory, useLocation } from 'react-router-dom';
+import { useLocation } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import { setSnack } from '../redux/actions/snacks';
 import { getIndividualInformation } from '../redux/actions/individual';
 import { CssBaseline, AppBar, Tabs, Tab, Container, Fab } from '@material-ui/core';
 import SwipeableViews from 'react-swipeable-views';
-import Loading from '../components/General/Loading';
 import Skeleton from '@material-ui/lab/Skeleton';
 import TabPanel from '../components/Tab/Tabpanel';
 import MetaData from '../components/MetaData';
@@ -16,33 +15,21 @@ import EditPerson from '../components/Individual/EditPerson';
 import i18next from 'i18next';
 
 const Individual = (props) => {
-  const [message, setMessage] = useState(i18next.t('Individual.message'));
   const [value, setValue] = useState(0);
   const [editOpen, setEditOpen] = useState(false);
 
   const dispatch = useDispatch();
-  const history = useHistory();
   const location = useLocation();
 
-  let { individualInfo, error, loading } = useSelector((state) => ({
+  let { individualInfo, loaded, error } = useSelector((state) => ({
     individualInfo: state.Individual.data[0],
+    loaded: state.Individual.loaded,
     error: state.Individual.error,
-    loading: state.Individual.loading,
   }));
 
   useEffect(() => {
     dispatch(getIndividualInformation(props.match.params.individualId));
   }, [location]);
-
-  useEffect(() => {
-    if (error === 401) {
-      history.push(`/login?link=${window.location.pathname}`);
-    }
-    if (error === 404) {
-      history.push('/search');
-      dispatch(setSnack('Patient not exist.', 'warning'));
-    }
-  }, [error]);
 
   const handleChange = (event, newValue) => {
     setValue(newValue);
@@ -60,7 +47,7 @@ const Individual = (props) => {
   };
 
   const refreshPage = (patientName) => {
-    setMessage(i18next.t('Individual.edit_message'));
+    setSnack(i18next.t('Individual.edit_message'));
     dispatch(getIndividualInformation(patientName));
   };
 
@@ -74,7 +61,7 @@ const Individual = (props) => {
         <CssBaseline />
         <div className="individual-container">
           <Container maxWidth="xl">
-            {individualInfo && !loading ? (
+            {loaded ? (
               <Fab
                 className="individual-fab"
                 size="middle"
@@ -94,12 +81,12 @@ const Individual = (props) => {
               />
             )}
           </Container>
-          {individualInfo && !loading ? (
+          {loaded ? (
             <MetaData metadata={individualInfo.metadata} name={props.match.params.individualId} />
           ) : (
             <Skeleton height={145} />
           )}
-          {individualInfo && !loading ? (
+          {loaded ? (
             <Container maxWidth="xl">
               <AppBar
                 className="individual-tab_appbar"
@@ -129,7 +116,7 @@ const Individual = (props) => {
           ) : (
             <Skeleton height={200} />
           )}
-          {individualInfo && !loading ? (
+          {loaded ? (
             <>
               <SwipeableViews index={value} onChangeIndex={handleChangeIndex}>
                 <TabPanel value={value} index={0} className="individual-tabPannel">

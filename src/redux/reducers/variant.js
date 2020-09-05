@@ -2,7 +2,7 @@ import { GET_VARIANT, GET_VARIANT_SUCCESS, GET_VARIANT_FAIL } from '../types/var
 
 const initialState = {
   data: [],
-  loading: true,
+  loaded: false,
   error: false,
 };
 
@@ -11,21 +11,22 @@ const Variant = (state = initialState, action) => {
     case GET_VARIANT: {
       return {
         ...state,
-        loading: true,
+        loaded: false,
+        error: false,
       };
     }
     case GET_VARIANT_SUCCESS: {
       return {
         ...state,
-        loading: false,
+        loaded: true,
         data: action.payload.data,
       };
     }
     case GET_VARIANT_FAIL: {
       return {
         ...state,
-        loading: false,
-        error: action.payload.status,
+        loaded: false,
+        error: action.payload.error,
       };
     }
     default:

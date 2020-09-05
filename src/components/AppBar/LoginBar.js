@@ -1,6 +1,5 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { useHistory } from 'react-router-dom';
 import { Link } from 'react-router-dom';
 import clsx from 'clsx';
 import {
@@ -34,9 +33,7 @@ import ShoppingCartIcon from '@material-ui/icons/ShoppingCart';
 
 import Footer from '../General/Footer';
 import DrawerSearch from './DrawerSearch';
-import { setUser } from '../../redux/actions/users';
 import { userLogout } from '../../redux/actions/auth';
-import { setSnack } from '../../redux/actions/snacks';
 
 import { useTranslation } from 'react-i18next';
 import i18next from 'i18next';
@@ -51,7 +48,6 @@ const ActionBar = React.lazy(() => import('./ActionBar'));
 
 const LoginBar = (props) => {
   const { t } = useTranslation();
-  const history = useHistory();
   const dispatch = useDispatch();
 
   const [openMenu, setOpenMenu] = useState(false);
@@ -64,10 +60,8 @@ const LoginBar = (props) => {
   const [openSearchDrawer, setOpenSearchDrawer] = useState(false);
 
   const { username } = useSelector((state) => ({
-    username: state.users.username,
+    username: state.Auth.username,
   }));
-
-  useEffect(() => {}, [username]);
 
   const changeLanguage = (lng) => {
     i18next.changeLanguage(lng);
@@ -76,10 +70,8 @@ const LoginBar = (props) => {
       (window.location.pathname !== '/') &
       (window.location.pathname !== '/publications') &
       (window.location.pathname !== '/login') &
-      (window.location.pathname !== '/about') &
-      (window.location.pathname !== '/price') &
-      (window.location.pathname !== '/product') &
-      (window.location.pathname !== '/search')
+      (window.location.pathname !== '/dashboard') &
+      (window.location.pathname !== '/create_patient')
     ) {
       window.location.reload();
     }
@@ -102,11 +94,8 @@ const LoginBar = (props) => {
     OpenMenu();
   };
 
-  const handleLogout = (relink) => {
-    dispatch(userLogout());
-    dispatch(setUser(''));
-    dispatch(setSnack(i18next.t('AppBar.LoginBar.Logout_Success'), 'success'));
-    history.push(relink);
+  const handleLogout = () => {
+    dispatch(userLogout({ relink: '/' }));
   };
 
   const handleLanClick = (event) => {
@@ -125,14 +114,7 @@ const LoginBar = (props) => {
   return (
     <div className="loginBar-container">
       <CssBaseline />
-      <AppBar
-        position="fixed"
-        className={clsx(
-          'appBar'
-          // {
-          //   ['appBarShift']: openActionSideBar,
-          // }
-        )}>
+      <AppBar position="fixed" className={clsx('appBar')}>
         <Toolbar>
           <IconButton
             color="inherit"
@@ -225,7 +207,7 @@ const LoginBar = (props) => {
                       classes={{ primary: 'appBar-listItemText' }}
                     />
                   </MenuItem>
-                  <MenuItem onClick={() => handleLogout('/')}>
+                  <MenuItem onClick={() => handleLogout()}>
                     <ListItemIcon>
                       <ExitToAppIcon />
                     </ListItemIcon>
@@ -330,7 +312,7 @@ const LoginBar = (props) => {
           expended={openActionSideBar}
           ActionbarSearch={() => handletoggleDrawer()}
           ActionSidebarClicked={() => OpenActionSideBar()}
-          ActionbarLogout={() => handleLogout('/')}
+          ActionbarLogout={() => handleLogout()}
         />
       </Drawer>
 

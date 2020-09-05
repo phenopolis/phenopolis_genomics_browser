@@ -3,41 +3,22 @@ import { Grid, Box, Typography, Button, Container } from '@material-ui/core';
 import { Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { useDispatch, useSelector } from 'react-redux';
-import { login } from '../../redux/actions/auth';
-import { setUser } from '../../redux/actions/users';
-import { setSnack } from '../../redux/actions/snacks';
+import { userLogin } from '../../redux/actions/auth';
 import Homebanner from '../../assets/image/Homebanner.jpg';
-import i18next from 'i18next';
 
 const HomeBanner = (props) => {
   const { t } = useTranslation();
-  const [isLogin, setIsLogin] = useState(false);
   const dispatch = useDispatch();
-  const { error, user } = useSelector((state) => ({
-    user: state.Login.data,
-    error: state.Login.error,
+  const { username } = useSelector((state) => ({
+    username: state.Auth.username,
   }));
 
-  useEffect(() => {
-    if (user.username && isLogin) {
-      dispatch(setSnack(user.username + i18next.t('HomePage.HomeBanner.login_success'), 'success'));
-      dispatch(setUser(user.username));
-    }
-  }, [dispatch, user, isLogin]);
-
-  useEffect(() => {
-    if (error) {
-      dispatch(setSnack(i18next.t('HomePage.HomeBanner.login_fail'), 'error'));
-    }
-  }, [error]);
-
   const demoLogin = () => {
-    const loginData = {
+    const loginForm = {
       user: 'demo',
       password: 'demo123',
     };
-    setIsLogin(true);
-    dispatch(login(loginData));
+    dispatch(userLogin({ loginForm: loginForm, relink: '/dashboard' }));
   };
 
   return (
@@ -60,7 +41,7 @@ const HomeBanner = (props) => {
                   </Box>
                 </Typography>
 
-                {user.username === '' ? (
+                {username === '' ? (
                   <Button
                     variant="outlined"
                     color="inherit"

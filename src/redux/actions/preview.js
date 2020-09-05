@@ -4,6 +4,7 @@ import {
   GET_PREVIEW_FAIL,
   CLEAR_PREVIEW,
 } from '../types/preview';
+import { SET_STATUS } from '../types/status';
 import Service from '../service';
 
 export const getPreviewInformation = (text) => {
@@ -11,14 +12,22 @@ export const getPreviewInformation = (text) => {
     dispatch({ type: GET_PREVIEW });
     Service.getPreviewInformation(text)
       .then((res) => {
-        console.log(res);
         dispatch({
           type: GET_PREVIEW_SUCCESS,
-          payload: { info: res.data[0].preview, name: res.config.url.split('/')[3] },
+          payload: { data: res.data[0].preview, name: res.config.url.split('/')[3] },
         });
       })
       .catch((error) => {
-        dispatch({ type: GET_PREVIEW_FAIL, payload: error.response });
+        if (error.response.status === 401) {
+          dispatch({
+            type: SET_STATUS,
+            payload: { code: 401, message: error.response.data.error, relink: '/' },
+          });
+        }
+        dispatch({
+          type: GET_PREVIEW_FAIL,
+          payload: { error: error.response, name: text.split('/')[2] },
+        });
       });
   };
 };

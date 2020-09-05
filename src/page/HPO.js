@@ -1,63 +1,36 @@
 import React, { useEffect, useState } from 'react';
-import { useHistory, useLocation } from 'react-router-dom';
+import { useLocation } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import { CssBaseline, AppBar, Tabs, Tab, Container, Box, Typography } from '@material-ui/core';
 import Loading from '../components/General/Loading';
-import { setSnack } from '../redux/actions/snacks';
 import { useTranslation, Trans } from 'react-i18next';
 import SwipeableViews from 'react-swipeable-views';
 import TabPanel from '../components/Tab/Tabpanel';
-import { getHPO, unmountHPO } from '../redux/actions/hpo';
+import { getHPO } from '../redux/actions/hpo';
 
 import MetaData from '../components/MetaData';
 import VirtualGrid from '../components/Table/VirtualGrid';
 
 const HPO = (props) => {
   const { t } = useTranslation();
-  const history = useHistory();
   const location = useLocation();
   const dispatch = useDispatch();
   const [value, setValue] = useState(0);
-  const [valid, setValid] = useState(false);
   const [phenogenonvalue, setPhenogenonvalue] = useState(0);
 
-  const { error, hpoInfo, loading } = useSelector((state) => ({
+  const { error, hpoInfo, loaded } = useSelector((state) => ({
     hpoInfo: state.HPO.data[0],
     error: state.HPO.error,
-    loading: state.HPO.loading,
+    loaded: state.HPO.loaded,
   }));
 
   useEffect(() => {
-    setValid(false);
     dispatch(getHPO(props.match.params.hpoId));
   }, [location]);
 
   useEffect(() => {
-    if (error === 401) {
-      history.push(`/login?link=${window.location.pathname}`);
-    }
-  }, [error]);
-
-  useEffect(() => {
     dispatch(getHPO(props.match.params.hpoId));
-    return () => {
-      dispatch(unmountHPO());
-    };
   }, []);
-
-  useEffect(() => {
-    if (loading === false && hpoInfo === undefined) {
-      history.push('/search');
-      dispatch(setSnack('HPO not exist.', 'warning'));
-    } else if (loading === false && hpoInfo !== undefined) {
-      if (Object.keys(hpoInfo.metadata.data[0]).length === 0) {
-        history.push('/search');
-        dispatch(setSnack('HPO not exist.', 'warning'));
-      } else {
-        setValid(true);
-      }
-    }
-  }, [hpoInfo, loading]);
 
   const handleChange = (event, newValue) => {
     setValue(newValue);
@@ -84,7 +57,7 @@ const HPO = (props) => {
 
   return (
     <>
-      {valid ? (
+      {loaded ? (
         <React.Fragment>
           <CssBaseline />
           <div className="hpo-container">

@@ -30,7 +30,7 @@ export default function InformationForm() {
     newPatientInfo: state.Individuals.newPatientInfo,
     loading: state.Individuals.loading,
     error: state.Individuals.error,
-    username: state.users.username,
+    username: state.Auth.username,
   }));
 
   useEffect(() => {
@@ -44,7 +44,6 @@ export default function InformationForm() {
 
   useEffect(() => {
     if (error) {
-      console.log(error);
       dispatch(setSnack(error, 'error'));
     }
   }, [error]);
@@ -70,7 +69,6 @@ export default function InformationForm() {
   };
 
   const handleModifyFeatureChip = (item, action, type) => {
-    console.log(item);
     if (type === 'phenotype') {
       if (action === 'Add') {
         setFeatureArray([
@@ -151,8 +149,6 @@ export default function InformationForm() {
       NewIndividualData[0].simplified_observed_features = 'HP:0000001';
       NewIndividualData[0].simplified_observed_features_names = 'All';
     }
-
-    console.log(NewIndividualData);
 
     dispatch(createIndividual(NewIndividualData));
     toggleConfirmModal();

@@ -3,7 +3,6 @@ import { useHistory, useLocation } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import { CssBaseline, Container } from '@material-ui/core';
 import Loading from '../components/General/Loading';
-import { setSnack } from '../redux/actions/snacks';
 import { useTranslation } from 'react-i18next';
 import { getGene } from '../redux/actions/gene';
 
@@ -12,17 +11,16 @@ const VirtualGrid = React.lazy(() => import('../components/Table/VirtualGrid'));
 
 const Gene = (props) => {
   const { t } = useTranslation();
-  const history = useHistory();
   const location = useLocation();
   const dispatch = useDispatch();
-  const [valid, setValid] = useState(false);
-  const { error, geneInfo } = useSelector((state) => ({
+
+  const { geneInfo, loaded, error } = useSelector((state) => ({
     geneInfo: state.Gene.data[0],
+    loaded: state.Gene.loaded,
     error: state.Gene.error,
   }));
 
   useEffect(() => {
-    setValid(false);
     dispatch(getGene(props.match.params.geneId));
   }, [location]);
 
@@ -30,22 +28,9 @@ const Gene = (props) => {
     dispatch(getGene(props.match.params.geneId));
   }, []);
 
-  useEffect(() => {
-    if (error === 404) {
-      history.push('/');
-      dispatch(setSnack('Gene not exist.', 'warning'));
-    } else if (error === 401) {
-      history.push(`/login?link=${window.location.pathname}`);
-    }
-
-    if (geneInfo !== undefined) {
-      setValid(true);
-    }
-  }, [error, geneInfo]);
-
   return (
     <>
-      {valid ? (
+      {loaded ? (
         <React.Fragment>
           <CssBaseline />
           <div className="myPatients-container">

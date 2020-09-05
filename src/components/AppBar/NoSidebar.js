@@ -20,7 +20,6 @@ import JP from '../../assets/svg/jp.svg';
 import DE from '../../assets/svg/de.svg';
 import GR from '../../assets/svg/gr.svg';
 import ES from '../../assets/svg/es.svg';
-import { getPatients } from '../../redux/actions/patients';
 
 const NoSideBar = (props) => {
   const [exploreOpen] = useState(false);
