@@ -87,8 +87,7 @@ def insert_variants(opt, conn):
             """
             insert into phenopolis.transcript_consequence
                 (chrom, pos, ref, alt, hgvs_c, hgvs_p, consequence, gene_id)
-            select *
-            from (
+            select * from (
                 select
                     chrom, pos::bigint, ref, alt,
                     nullif(hgvsc, '') as hgvs_c,
@@ -99,8 +98,7 @@ def insert_variants(opt, conn):
                 where (hgvsc, hgvsp) != ('', '')
             ) s
             where not exists (
-                select 1
-                from phenopolis.transcript_consequence t
+                select 1 from phenopolis.transcript_consequence t
                 where (t.chrom, t.pos, t.ref, t.alt) = (s.chrom, s.pos, s.ref, s.alt)
                 and (t.hgvs_c, t.hgvs_p, t.consequence)
                     is not distinct from (s.hgvs_c, s.hgvs_p, s.consequence)
