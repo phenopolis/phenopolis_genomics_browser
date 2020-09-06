@@ -39,4 +39,6 @@ where not exists (
     and (t.hgvs_c, t.hgvs_p, t.consequence)
         is not distinct from (s.hgvs_c, s.hgvs_p, s.consequence)
 );
+
+analyze phenopolis.variant, phenopolis.transcript_consequence;
 HERE

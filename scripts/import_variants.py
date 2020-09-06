@@ -108,6 +108,9 @@ def insert_variants(opt, conn):
     )
     logger.info("imported %s new transcript consequence records", cur.rowcount)
 
+    cur.execute("analyze phenopolis.variant, phenopolis.transcript_consequence")
+    logger.info("variants tables stats updated")
+
 
 def get_csv_titles(opt, __cache=[]):
     if __cache:
