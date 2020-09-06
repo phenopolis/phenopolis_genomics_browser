@@ -16,6 +16,7 @@ import CreatePatient from './page/CreatePatient';
 
 import CustomizedSnackbars from './components/CustomizedSnackbars/CustomizedSnackbars';
 import AuthCheck from './components/AuthCheck/AuthCheck';
+import ScrollToTop from './components/General/ScrollToTop';
 
 import Gene from './page/Gene';
 import HPO from './page/HPO';
@@ -46,7 +47,7 @@ function App() {
         <Router>
           <AuthCheck />
           <CustomizedSnackbars />
-
+          <ScrollToTop />
           <ThemeProvider theme={outerTheme}>
             <HomeAppBar>
               <Switch>
