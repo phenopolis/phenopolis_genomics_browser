@@ -18,7 +18,7 @@ def api(api_url):
         api.logout(user)
 
 
-if APP_ENV == "test":
+if APP_ENV == "coverage":
 
     @pytest.fixture(scope="session")
     def app_server():

@@ -13,11 +13,11 @@ import logging
 from logging.config import dictConfig
 from flask.logging import default_handler
 
-# Options are: prod, dev, debug (default), test (for coverage)
+# Options are: prod, dev, debug (default), coverage
 APP_ENV = os.getenv("APP_ENV", "debug")
 
 ENV_LOG_FLAG = True
-if APP_ENV in ["test", "prod"]:
+if APP_ENV in ["coverage", "prod"]:
     ENV_LOG_FLAG = False
 
 

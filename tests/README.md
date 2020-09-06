@@ -42,7 +42,7 @@ docker-compose up -d db
 ```
 Then run:
 ```bash
-APP_ENV=test pytest --cov views --cov db --cov-report term-missing:skip-covered -sv
+APP_ENV=coverage pytest --cov views --cov db --cov-report term-missing:skip-covered -sv
 ```
 which should show a coverage summary at the end.
 ### Using Tox
