@@ -657,7 +657,12 @@ class VirtualGrid extends React.Component {
         } else if ((typeof row[i.key][0] === 'object') & (row[i.key][0] !== null)) {
           tmpRow[i.key] = row[i.key].map((chip) => chip.display).join(';');
         } else {
-          tmpRow[i.key] = row[i.key].join(';');
+          let tmpValue = row[i.key];
+          if (Array.isArray(tmpValue)) {
+            tmpRow[i.key] = row[i.key].join(';');
+          } else {
+            tmpRow[i.key] = tmpValue;
+          }
         }
       });
       return tmpRow;

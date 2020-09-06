@@ -1,11 +1,9 @@
-import React, { Fragment, useEffect } from 'react';
+import React, { Fragment } from 'react';
 
 import { Card, CardMedia } from '@material-ui/core';
 
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faKey } from '@fortawesome/pro-solid-svg-icons';
-
-import { useSelector } from 'react-redux';
 
 const AccountPanel = (props) => {
   const actions = [{ name: 'Change Password', sub: '\t', icon: faKey }];

@@ -25,11 +25,9 @@ import {
 import SearchIcon from '@material-ui/icons/Search';
 import ExitToAppIcon from '@material-ui/icons/ExitToApp';
 import LockIcon from '@material-ui/icons/Lock';
-import DescriptionIcon from '@material-ui/icons/Description';
 import MenuIcon from '@material-ui/icons/Menu';
 import TranslateIcon from '@material-ui/icons/Translate';
 import AccountCircleIcon from '@material-ui/icons/AccountCircle';
-import ShoppingCartIcon from '@material-ui/icons/ShoppingCart';
 
 import Footer from '../General/Footer';
 import DrawerSearch from './DrawerSearch';
@@ -55,8 +53,6 @@ const LoginBar = (props) => {
   const [anchorLan, setAnchorLan] = useState(null);
   const [openActionSideBar, setOpenActionSideBar] = useState(false);
   const [openLan, setOpenLan] = useState(false);
-  const [openExplore, setOpenExplore] = useState(false);
-  const [anchorExplore, setAnchorExplore] = useState(null);
   const [openSearchDrawer, setOpenSearchDrawer] = useState(false);
 
   const { username } = useSelector((state) => ({
@@ -101,10 +97,6 @@ const LoginBar = (props) => {
   const handleLanClick = (event) => {
     setAnchorLan(event.currentTarget);
     OpenLan();
-  };
-
-  const OpenExplore = () => {
-    setOpenExplore(!openExplore);
   };
 
   const handletoggleDrawer = () => {
@@ -163,33 +155,6 @@ const LoginBar = (props) => {
                   icon={<AccountCircleIcon />}
                   onClick={(event) => handleClick(event)}
                 />
-
-                <Menu
-                  id="simple-menu"
-                  anchorEl={anchorExplore}
-                  keepMounted
-                  open={Boolean(openExplore)}
-                  style={{ top: '3em' }}
-                  onClose={() => OpenExplore()}>
-                  <MenuItem component={Link} to="/publications" onClick={() => OpenExplore()}>
-                    <ListItemIcon>
-                      <DescriptionIcon />
-                    </ListItemIcon>
-                    <ListItemText
-                      classes={{ primary: 'appBar-listItemText' }}
-                      primary={t('AppBar.LoginBar.Label_Publication')}
-                    />
-                  </MenuItem>
-                  <MenuItem component={Link} to="/product" onClick={() => OpenExplore()}>
-                    <ListItemIcon>
-                      <ShoppingCartIcon />
-                    </ListItemIcon>
-                    <ListItemText
-                      classes={{ primary: 'appBar-listItemText' }}
-                      primary={t('AppBar.LoginBar.Label_Product')}
-                    />
-                  </MenuItem>
-                </Menu>
 
                 <Menu
                   id="simple-menu"

@@ -10,15 +10,14 @@ const MyPatient = () => {
   const { t } = useTranslation();
   const dispatch = useDispatch();
 
-  const { hpoInfo, loaded, error } = useSelector((state) => ({
+  const { hpoInfo, loaded } = useSelector((state) => ({
     hpoInfo: state.HPO.data[0],
-    error: state.HPO.error,
     loaded: state.HPO.loaded,
   }));
 
   useEffect(() => {
     dispatch(getHPO('HP:0000001'));
-  }, []);
+  }, [dispatch]);
 
   return (
     <>

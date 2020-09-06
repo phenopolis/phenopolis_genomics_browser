@@ -26,7 +26,7 @@ const AuthCheck = () => {
 
   useEffect(() => {
     dispatch(isLoggedIn());
-  }, []);
+  }, [dispatch]);
 
   useEffect(() => {
     if (code === 401) {
@@ -37,7 +37,7 @@ const AuthCheck = () => {
       history.push('/dashboard');
     }
     dispatch({ type: RESET_STATUS });
-  }, [code]);
+  }, [code, dispatch]);
 
   useEffect(() => {
     if (username !== '' && notification) {
@@ -47,7 +47,7 @@ const AuthCheck = () => {
       dispatch(setSnack(i18next.t('AppBar.LoginBar.Logout_Success'), 'success'));
       history.push(relink);
     }
-  }, [dispatch, username, relink]);
+  }, [dispatch, username, relink, dispatch]);
 
   useEffect(() => {
     if (error) {
@@ -62,7 +62,7 @@ const AuthCheck = () => {
         history.push(`/login?link=${window.location.pathname}`);
       }
     }
-  }, [dispatch, error, history]);
+  }, [dispatch, error, history, notification]);
 
   return <></>;
 };

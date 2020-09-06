@@ -1,5 +1,4 @@
 import { GET_VARIANT, GET_VARIANT_SUCCESS, GET_VARIANT_FAIL } from '../types/variant';
-import { userLogout } from './auth';
 import { SET_STATUS } from '../types/status';
 import Service from '../service';
 

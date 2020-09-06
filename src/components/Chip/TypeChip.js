@@ -42,6 +42,11 @@ const TypeChip = (props) => {
   const [type, setType] = useState('other');
   const [anchorEl, setAnchorEl] = useState(null);
 
+  const redirectTo = () => {
+    history.push(best);
+    dispatch(clearSearchBest());
+  };
+
   useEffect(() => {
     if (best) {
       redirectTo();
@@ -50,11 +55,6 @@ const TypeChip = (props) => {
       setType(props.type);
     }
   }, [best, props.type]);
-
-  const redirectTo = () => {
-    history.push(best);
-    dispatch(clearSearchBest());
-  };
 
   const handleSearch = (event, to) => {
     event.preventDefault();
@@ -72,12 +72,12 @@ const TypeChip = (props) => {
       if (props.emit === true) {
         props.onClick(props.emitContent);
       }
-    } else if (event.button == 1) {
+    } else if (event.button === 1) {
       if (props.action === 'forward') {
-        var win = window.open(window.location.origin + to, '_blank');
+        let win = window.open(window.location.origin + to, '_blank');
         win.focus();
       } else if (props.action === 'externalforward') {
-        var win = window.open(to, '_blank');
+        let win = window.open(to, '_blank');
         win.focus();
       }
     }

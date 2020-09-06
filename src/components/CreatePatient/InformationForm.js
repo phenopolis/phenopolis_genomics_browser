@@ -26,9 +26,8 @@ import { setSnack } from '../../redux/actions/snacks';
 
 export default function InformationForm() {
   const dispatch = useDispatch();
-  const { newPatientInfo, loading, error, username } = useSelector((state) => ({
+  const { newPatientInfo, error, username } = useSelector((state) => ({
     newPatientInfo: state.Individuals.newPatientInfo,
-    loading: state.Individuals.loading,
     error: state.Individuals.error,
     username: state.Auth.username,
   }));
@@ -40,13 +39,13 @@ export default function InformationForm() {
       toggleSuccessModal();
       ResetValue();
     }
-  }, [newPatientInfo]);
+  }, [newPatientInfo, dispatch]);
 
   useEffect(() => {
     if (error) {
       dispatch(setSnack(error, 'error'));
     }
-  }, [error]);
+  }, [error, dispatch]);
 
   const [externalID, setExternalID] = useState('');
   const [gender, setGender] = useState(null);
@@ -144,7 +143,7 @@ export default function InformationForm() {
       },
     ];
 
-    if (NewIndividualData[0].observed_features == '') {
+    if (NewIndividualData[0].observed_features === '') {
       NewIndividualData[0].observed_features = 'HP:0000001';
       NewIndividualData[0].simplified_observed_features = 'HP:0000001';
       NewIndividualData[0].simplified_observed_features_names = 'All';
@@ -170,14 +169,14 @@ export default function InformationForm() {
           <Divider className="my-4" />
           <Container>
             <Grid container direction="row" alignItems="center">
-              <Grid item item xs={3}>
+              <Grid item xs={3}>
                 <Typography component="div">
                   <Box fontWeight="fontWeightLight" fontSize="subtitle1.fontSize">
                     External ID
                   </Box>
                 </Typography>
               </Grid>
-              <Grid item item xs={9}>
+              <Grid item xs={9}>
                 <TextField
                   fullWidth
                   className="mt-3 ml-4"
@@ -191,14 +190,14 @@ export default function InformationForm() {
             </Grid>
 
             <Grid container direction="row" alignItems="center" style={{ 'margin-top': '2em' }}>
-              <Grid item item xs={3}>
+              <Grid item xs={3}>
                 <Typography component="div">
                   <Box fontWeight="fontWeightLight" fontSize="subtitle1.fontSize">
                     Gender
                   </Box>
                 </Typography>
               </Grid>
-              <Grid item item xs={9}>
+              <Grid item xs={9}>
                 <RadioGroup
                   aria-label="position"
                   className="ml-4"
@@ -238,14 +237,14 @@ export default function InformationForm() {
             </Grid>
 
             <Grid container direction="row" style={{ 'margin-top': '2em' }}>
-              <Grid item item xs={3} style={{ 'margin-top': '1em' }}>
+              <Grid item xs={3} style={{ 'margin-top': '1em' }}>
                 <Typography component="div">
                   <Box fontWeight="fontWeightLight" fontSize="subtitle1.fontSize">
                     Features
                   </Box>
                 </Typography>
               </Grid>
-              <Grid item item xs={9}>
+              <Grid item xs={9}>
                 <SearchAutoComplete
                   featureArray={featureArray.map((x) => x.name)}
                   type={'phenotype'}
@@ -255,14 +254,14 @@ export default function InformationForm() {
             </Grid>
 
             <Grid container direction="row" style={{ 'margin-top': '3em' }}>
-              <Grid item item xs={3} style={{ 'margin-top': '1em' }}>
+              <Grid item xs={3} style={{ 'margin-top': '1em' }}>
                 <Typography component="div">
                   <Box fontWeight="fontWeightLight" fontSize="subtitle1.fontSize">
                     Candidate Genes
                   </Box>
                 </Typography>
               </Grid>
-              <Grid item item xs={9}>
+              <Grid item xs={9}>
                 <SearchAutoComplete
                   featureArray={geneArray.map((x) => x.name)}
                   type={'gene'}
@@ -272,14 +271,14 @@ export default function InformationForm() {
             </Grid>
 
             <Grid container direction="row" alignItems="center" style={{ 'margin-top': '3em' }}>
-              <Grid item item xs={3}>
+              <Grid item xs={3}>
                 <Typography component="div">
                   <Box fontWeight="fontWeightLight" fontSize="subtitle1.fontSize">
                     Consanguinity
                   </Box>
                 </Typography>
               </Grid>
-              <Grid item item xs={9}>
+              <Grid item xs={9}>
                 <RadioGroup
                   aria-label="position"
                   className="ml-4"

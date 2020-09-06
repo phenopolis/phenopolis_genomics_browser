@@ -1,9 +1,8 @@
 import React, { useEffect, useState } from 'react';
-import { useHistory, useLocation } from 'react-router-dom';
+import { useLocation } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import { CssBaseline, AppBar, Tabs, Tab, Container } from '@material-ui/core';
 import Loading from '../components/General/Loading';
-import { setSnack } from '../redux/actions/snacks';
 import { useTranslation } from 'react-i18next';
 import SwipeableViews from 'react-swipeable-views';
 import TabPanel from '../components/Tab/Tabpanel';
@@ -14,16 +13,14 @@ import VirtualGrid from '../components/Table/VirtualGrid';
 
 const Variant = (props) => {
   const { t } = useTranslation();
-  const history = useHistory();
   const location = useLocation();
   const dispatch = useDispatch();
 
   const [value, setValue] = useState(0);
 
-  const { variantInfo, loaded, error } = useSelector((state) => ({
+  const { variantInfo, loaded } = useSelector((state) => ({
     variantInfo: state.Variant.data[0],
     loaded: state.Variant.loaded,
-    error: state.Variant.error,
   }));
 
   useEffect(() => {

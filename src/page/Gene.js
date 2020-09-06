@@ -1,5 +1,5 @@
-import React, { useEffect, useState } from 'react';
-import { useHistory, useLocation } from 'react-router-dom';
+import React, { useEffect } from 'react';
+import { useLocation } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import { CssBaseline, Container } from '@material-ui/core';
 import Loading from '../components/General/Loading';
@@ -14,10 +14,9 @@ const Gene = (props) => {
   const location = useLocation();
   const dispatch = useDispatch();
 
-  const { geneInfo, loaded, error } = useSelector((state) => ({
+  const { geneInfo, loaded } = useSelector((state) => ({
     geneInfo: state.Gene.data[0],
     loaded: state.Gene.loaded,
-    error: state.Gene.error,
   }));
 
   useEffect(() => {

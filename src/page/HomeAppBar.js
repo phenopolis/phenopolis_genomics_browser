@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React from 'react';
 import NoLoginBar from '../components/AppBar/NoLoginBar';
 import LoginBar from '../components/AppBar/LoginBar';
 import { useSelector } from 'react-redux';

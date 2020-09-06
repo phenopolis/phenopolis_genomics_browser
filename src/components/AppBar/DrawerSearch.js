@@ -27,9 +27,7 @@ import CloseTwoToneIcon from '@material-ui/icons/CloseTwoTone';
 import { useTranslation } from 'react-i18next';
 import { useDispatch, useSelector } from 'react-redux';
 import clsx from 'clsx';
-import { getSearchAutocomplete, clearSearchBest } from '../../redux/actions/search';
-// import { setSnack } from '../../redux/actions/snacks';
-import { useHistory } from 'react-router-dom';
+import { getSearchAutocomplete } from '../../redux/actions/search';
 
 function TabPanel(props) {
   const { children, value, index, ...other } = props;
@@ -78,7 +76,6 @@ const useStyles = makeStyles((theme) => ({
 const DrawerSearch = (props) => {
   const { t } = useTranslation();
   const dispatch = useDispatch();
-  const history = useHistory();
 
   const [searchContent, setSearchContent] = useState('');
   const [typing, setTyping] = useState(false);
@@ -104,7 +101,7 @@ const DrawerSearch = (props) => {
     { label: 'Variant', type: 'variant', color: '#3d405b', icon: faCut },
   ];
 
-  const { data, loaded, error } = useSelector((state) => ({
+  const { data, loaded } = useSelector((state) => ({
     data: state.Search.data,
     loaded: state.Search.loaded,
   }));
@@ -119,21 +116,6 @@ const DrawerSearch = (props) => {
   useEffect(() => {
     if (searchContent !== '') autocomplete(searchContent);
   }, [type]);
-
-  // useEffect(() => {
-  //   if (best) {
-  //     redirectTo();
-  //   }
-  //   if (error) {
-  //     dispatch(setSnack(error, 'error'));
-  //   }
-  // }, [data, loading, best, error, dispatch, history]);
-
-  // const redirectTo = () => {
-  //   history.push(best);
-  //   props.onRequestClose();
-  //   dispatch(clearSearchBest());
-  // };
 
   const handleSearchChange = (event) => {
     setSearchContent(event.target.value);

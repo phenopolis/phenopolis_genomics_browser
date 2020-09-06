@@ -18,9 +18,8 @@ const HPO = (props) => {
   const [value, setValue] = useState(0);
   const [phenogenonvalue, setPhenogenonvalue] = useState(0);
 
-  const { error, hpoInfo, loaded } = useSelector((state) => ({
+  const { hpoInfo, loaded } = useSelector((state) => ({
     hpoInfo: state.HPO.data[0],
-    error: state.HPO.error,
     loaded: state.HPO.loaded,
   }));
 
