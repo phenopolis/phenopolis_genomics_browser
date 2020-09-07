@@ -27,7 +27,7 @@ pytest --setup-show -v
 ```
 
 ### Using coverage
-- Install: `pip install process-tests`
+- Install: `pip install process-tests gunicorn`
 - Create file `docker-compose.override.yml` containing:
 ```yaml
 version: '3.8'

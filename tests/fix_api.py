@@ -25,12 +25,13 @@ if APP_ENV == "coverage":
         from process_tests import TestProcess
         from process_tests import wait_for_strings
 
-        with TestProcess("python", "application.py") as app_server:
-            wait_for_strings(app_server.read, 10, "Running")
+        with TestProcess(
+            "gunicorn", "--bind", "0.0.0.0:5000", "--workers=1", "--threads=15", "application:application"
+        ) as app_server:
+            wait_for_strings(app_server.read, 10, "Booting")
             print(app_server.read())
             yield app_server
-            print("\n>>>>Teardown app_service")
-            app_server.close()
+            print("\n>>>>Teardown app_server")
 
     @pytest.fixture(scope="function")  # noqa: F811
     def api(api_url, app_server):
