@@ -14,7 +14,7 @@ def test_attempt_create_user(_admin):
     assert res[1] == 400
 
 
-def test_get_user(_demo):
+def test_get_user(_admin):
     """res -> tuple(flask.wrappers.Response)"""
     res = get_user("Admin")
     assert res[0].data is not None
@@ -31,5 +31,4 @@ def test_get_non_existing_user(_admin):
     """res -> tuple(flask.wrappers.Response)"""
     res = get_user("JuanSinMiedo")
     assert res[0].status_code == 200
-    assert "The user does not exist" in res
     assert res[1] == 404
