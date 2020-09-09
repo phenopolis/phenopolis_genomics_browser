@@ -21,7 +21,7 @@ def test_get_user(_admin):
     assert isinstance(user_dict, dict)
     assert user_dict.get("user") == "Admin", "user_dict={}".format(user_dict)
     assert user_dict.get("argon_password") is None, "user_dict={}".format(user_dict)
-    individual_ids = user_dict.get("individuals"), "user_dict={}".format(user_dict)
+    individual_ids = user_dict.get("individuals")
     assert isinstance(individual_ids, list), "user_dict={}".format(user_dict)
     assert len(individual_ids) > 0, "user_dict={}".format(user_dict)
 
