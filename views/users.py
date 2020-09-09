@@ -103,8 +103,8 @@ def get_user(user_id):
 
     user_dict = user.as_dict()
     # removes the password hash from the endpoint we don't want/need this around
-    del user_dict['argon_password']
-    user_dict['individuals'] = [ui.internal_id for ui in user_individuals]
+    del user_dict["argon_password"]
+    user_dict["individuals"] = [ui.internal_id for ui in user_individuals]
     return json.dumps(user_dict)
 
 
