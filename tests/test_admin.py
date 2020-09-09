@@ -17,8 +17,7 @@ def test_attempt_create_user(_admin):
 def test_get_user(_admin):
     """res -> tuple(flask.wrappers.Response)"""
     res = get_user("Admin")
-    assert res[0].data is not None
-    user_dict = json.loads(res[0].data)
+    user_dict = json.loads(res)
     assert isinstance(user_dict, dict)
     assert user_dict.get("user") == "Admin", "user_dict={}".format(user_dict)
     assert user_dict.get("argon_password") is None, "user_dict={}".format(user_dict)
