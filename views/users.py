@@ -92,7 +92,7 @@ def create_user():
 @requires_admin
 def get_user(user_id):
     db_session = get_db_session()
-    users = db_session.query(User).filter(User.internal_id == user_id).all()
+    users = db_session.query(User).filter(User.user == user_id).all()
     if len(users) > 1:
         return jsonify(message="Unexpected error fetching a user by id"), 500
     if len(users) == 0:
