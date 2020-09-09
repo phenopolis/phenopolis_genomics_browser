@@ -3,7 +3,7 @@ For tests that requires Admin access
 Using a mockup one from Demo DB
 """
 import ujson as json
-from views.users import create_user, get_user
+from views.users import create_user, get_user, get_users
 
 
 def test_attempt_create_user(_admin):
@@ -31,3 +31,13 @@ def test_get_non_existing_user(_admin):
     res = get_user("JuanSinMiedo")
     assert res[0].status_code == 200
     assert res[1] == 404
+
+
+def test_get_users(_admin):
+    """res -> tuple(flask.wrappers.Response)"""
+    res = get_users()
+    users = json.loads(res)
+    assert isinstance(users, list), "users={}".format(users)
+    assert len(users) > 2, "users={}".format(users)
+    assert "Admin" in users
+    assert "demo" in users

@@ -108,6 +108,14 @@ def get_user(user_id):
     return json.dumps(user_dict)
 
 
+@application.route("/user")
+@requires_admin
+def get_users():
+    db_session = get_db_session()
+    users = db_session.query(User).all()
+    return json.dumps([u.user for u in users])
+
+
 @application.route("/user-individual", methods=["POST"])
 @requires_admin
 def create_user_idividual():
