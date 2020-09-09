@@ -11,7 +11,7 @@ from flask import session, jsonify, request
 
 from db.model import Individual, UserIndividual
 from views import application
-from views.auth import requires_auth
+from views.auth import requires_auth, requires_admin
 from views.exceptions import PhenopolisException
 from views.helpers import _get_json_payload, _parse_payload
 from views.postgres import postgres_cursor, get_db, get_db_session
@@ -395,10 +395,8 @@ def _get_hpos(features):
 
 @application.route("/<language>/individual/<individual_id>", methods=["DELETE"])
 @application.route("/individual/<individual_id>", methods=["DELETE"])
-@requires_auth
+@requires_admin
 def delete_individual(individual_id, language="en"):
-    if session["user"] != "Admin":
-        return jsonify(error="Only Admin is allowed"), 405
 
     individual = _fetch_authorized_individual(individual_id)
 

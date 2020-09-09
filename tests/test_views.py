@@ -10,11 +10,11 @@ import pytest
 from views.variant import variant
 from views.gene import gene
 from views.hpo import hpo
-from views.individual import individual, update_patient_data
+from views.individual import individual, update_patient_data, delete_individual
 from views.general import check_health, after_request, exceptions
 from views.statistics import phenopolis_statistics
 from werkzeug.exceptions import BadHost
-from views.users import create_user
+from views.users import create_user, get_user, create_user_idividual
 
 
 def test_check_health(_demo):
@@ -149,6 +149,28 @@ def test_statistics(_demo):
 def test_create_user(_demo):
     """res -> tuple(flask.wrappers.Response)"""
     res = create_user()
+    _check_only_available_to_admin(res)
+
+
+def test_create_user_individual(_demo):
+    """res -> tuple(flask.wrappers.Response)"""
+    res = create_user_idividual()
+    _check_only_available_to_admin(res)
+
+
+def test_get_user(_demo):
+    """res -> tuple(flask.wrappers.Response)"""
+    res = get_user("whatever_user")
+    _check_only_available_to_admin(res)
+
+
+def test_delete_individual(_demo):
+    """res -> tuple(flask.wrappers.Response)"""
+    res = delete_individual("whatever_individual")
+    _check_only_available_to_admin(res)
+
+
+def _check_only_available_to_admin(res):
     assert res[0].status_code == 200
-    assert res[0].data == b'{"error":"You do not have permission to create new users"}\n'
+    assert res[0].data == b'{"error":"Admin permissions required to perform this operation"}\n'
     assert res[1] == 403
