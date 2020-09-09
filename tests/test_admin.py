@@ -38,6 +38,6 @@ def test_get_users(_admin):
     res = get_users()
     users = json.loads(res)
     assert isinstance(users, list), "users={}".format(users)
-    assert len(users) > 2, "users={}".format(users)
+    assert len(users) >= 2, "users={}".format(users)
     assert "Admin" in users
     assert "demo" in users
