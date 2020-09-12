@@ -26,6 +26,25 @@ black --diff --check
 pytest --setup-show -v
 ```
 
+### Using coverage
+- Install: `pip install process-tests gunicorn`
+- Create file `docker-compose.override.yml` containing:
+```yaml
+version: '3.8'
+services:
+   db:
+      ports:
+      - 5432:5432
+```
+- Start `db` container with `postgres` port 5432 exposed (`docker-compose.override.yml` will be _automagically_ loaded):
+```bash
+docker-compose up -d db
+```
+Then run:
+```bash
+APP_ENV=coverage pytest --cov views --cov db --cov-report term-missing:skip-covered -sv
+```
+which should show a coverage summary at the end.
 ### Using Tox
 Install it with:
 ```bash

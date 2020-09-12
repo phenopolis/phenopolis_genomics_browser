@@ -1,7 +1,7 @@
 Phenopolis API schema
 =====================
 
-This schema shoud be created automatically in the Docker Phenopolis API db.
+This schema should be created automatically in the Docker Phenopolis API db.
 
 Generally, if you have an existing database and superuser, you can create it
 using:
