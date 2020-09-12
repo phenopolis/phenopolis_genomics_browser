@@ -77,7 +77,7 @@ into COPY format in order to leave the import destination flexible. For
 instance:
 
 ```
-    import_gnomad.py -v https://example.com/gnomad.genomes.r3.0.sites.chr22.vcf.bgz \
+import_gnomad.py -v https://example.com/gnomad.genomes.r3.0.sites.chr22.vcf.bgz \
     | psql -c "copy gnomad.annotation_v3 from stdin" \
         "host=$(scripts/dchost db) user=phenopolis_api dbname=phenopolis_db"
 ```
@@ -103,6 +103,29 @@ In order to load hbo files in the docker db:
 dc exec app python3 ./scripts/import_hpo.py \
     --dsn "host=db user=postgres dbname=phenopolis_db"
 ```
+
+
+Kaviar import
+-------------
+
+Kaviar annotations can be imported using the `script/import_kaviar.py` script.
+The import input can be a local file or an url to downlaod. Note that (chrom,
+pos, ref, alt) is nit unique, so the table has an auto-increment `id` field
+too.
+
+The script prints on stdout data compatible with the `COPY` command. It can be
+used as:
+
+```
+./scripts/import_kaviar.py -v \
+    http://s3-us-west-2.amazonaws.com/kaviar-160204-public/Kaviar-160204-Public-hg19.vcf.tar \
+    | psql -c "copy kaviar.annotation_hg19 (chrom, pos, ref, alt, ac, af, an, ds) from stdin" \
+        "host=$(dchost db) dbname=phenopolis_db user=postgres"
+```
+
+You can monitor the import status using the `\dt+ kaviar.annotation_hg19_*`
+psql command. Using `-v`, the script will print periodically on stdout the number of lines
+parsed: full import of hg19 version will read > 207M lines.
 
 
 Variants import
