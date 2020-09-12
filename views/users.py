@@ -1,12 +1,12 @@
 """
 Users view
 """
+import ujson as json
 from flask import session, request, jsonify
 from passlib.handlers.argon2 import argon2
-
 from db.model import User, UserIndividual, Individual, UserConfig
 from views import application
-from views.auth import requires_auth, check_auth
+from views.auth import requires_auth, check_auth, requires_admin
 from views.exceptions import PhenopolisException
 from views.helpers import _get_json_payload, _parse_payload
 from views.postgres import postgres_cursor, get_db_session
@@ -38,10 +38,8 @@ def change_password():
 
 
 @application.route("/user", methods=["POST"])
-@requires_auth
+@requires_admin
 def create_user():
-    if session["user"] != "Admin":
-        return jsonify(error="You do not have permission to create new users"), 403
 
     try:
         payload = _get_json_payload()
@@ -90,11 +88,37 @@ def create_user():
         return jsonify(success=True, message=message, id=user_ids), 200
 
 
+@application.route("/user/<user_id>")
+@requires_admin
+def get_user(user_id):
+    db_session = get_db_session()
+    users = db_session.query(User).filter(User.user == user_id).all()
+    if len(users) > 1:
+        return jsonify(message="Unexpected error fetching a user by id"), 500
+    if len(users) == 0:
+        return jsonify(message="The user does not exist"), 404
+
+    user = users[0]
+    user_individuals = db_session.query(UserIndividual).filter(UserIndividual.user == user.user).all()
+
+    user_dict = user.as_dict()
+    # removes the password hash from the endpoint we don't want/need this around
+    del user_dict["argon_password"]
+    user_dict["individuals"] = [ui.internal_id for ui in user_individuals]
+    return json.dumps(user_dict)
+
+
+@application.route("/user")
+@requires_admin
+def get_users():
+    db_session = get_db_session()
+    users = db_session.query(User).all()
+    return json.dumps([u.user for u in users])
+
+
 @application.route("/user-individual", methods=["POST"])
-@requires_auth
+@requires_admin
 def create_user_idividual():
-    if session["user"] != "Admin":
-        return jsonify(error="You do not have permission to give access to individuals to other users"), 403
 
     try:
         payload = _get_json_payload()

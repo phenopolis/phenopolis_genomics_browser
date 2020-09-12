@@ -9,6 +9,8 @@ from db.model import User
 from views import application
 from views.postgres import get_db_session
 
+ADMIN_USER = "Admin"
+
 PASSWORD = "password"
 USER = "user"
 
@@ -29,6 +31,7 @@ def requires_auth(f):
     def decorated(*args, **kwargs):
         if session.get(USER):
             return f(*args, **kwargs)
+        # TODO: eventually we will want to remove this bit for POST endpoints
         if request.method == "POST":
             username = request.form[USER] if USER in request.form else request.headers[USER]
             password = request.form[PASSWORD] if PASSWORD in request.form else request.headers[PASSWORD]
@@ -37,6 +40,24 @@ def requires_auth(f):
                 # session.permanent = True
                 return f(*args, **kwargs)
         return jsonify(error="Unauthenticated"), 401
+
+    return decorated
+
+
+def requires_admin(f):
+    @wraps(f)
+    def decorated(*args, **kwargs):
+        if session.get(USER) == ADMIN_USER:
+            return f(*args, **kwargs)
+        # TODO: eventually we will want to remove this bit for POST endpoints
+        if request.method == "POST" and request.form[USER] == ADMIN_USER:
+            username = request.form[USER] if USER in request.form else request.headers[USER]
+            password = request.form[PASSWORD] if PASSWORD in request.form else request.headers[PASSWORD]
+            if check_auth(username, password):
+                session[USER] = username
+                # session.permanent = True
+                return f(*args, **kwargs)
+        return jsonify(error="Admin permissions required to perform this operation"), 403
 
     return decorated
 
