@@ -109,3 +109,9 @@ Variants import
 ---------------
 
 You can update variants from a csv file using `scripts/import_variants.py`.
+Currently it will only add new records to the table `phenopolis.variant` and
+`phenopolis.transcript_consequence` and will make no change to existing
+records.
+
+In order to import data from an existing `public.variants` table into the new
+tables use `scripts/migrate_variants.sh`.
