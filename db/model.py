@@ -2,7 +2,7 @@
 DB schema
 """
 # "postgres://admin:donotusethispassword@aws-us-east-1-portal.19.dblayer.com:15813/compose"
-from sqlalchemy import Column, String, Integer, Float, ForeignKey, JSON
+from sqlalchemy import Column, String, Integer, Float, ForeignKey, JSON, Boolean
 from sqlalchemy.orm import relationship
 from sqlalchemy.ext.declarative import declarative_base
 
@@ -103,6 +103,7 @@ class User(Base, AsDictable):
     user = Column("user", primary_key=True)
     argon_password = Column("argon_password", String(255))
     individuals = relationship("UserIndividual", backref="users")
+    enabled = Column("enabled", Boolean())
 
 
 class UserConfig(Base, AsDictable):

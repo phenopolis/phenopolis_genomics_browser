@@ -23,7 +23,7 @@ def check_auth(username, password):
     """
     This function is called to check if a username / password combination is valid.
     """
-    data = get_db_session().query(User).filter(User.user == username)
+    data = get_db_session().query(User).filter(User.user == username).filter(User.enabled)
     auser = [p.as_dict() for p in data]
     if not auser:
         return False

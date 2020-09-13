@@ -1,6 +1,7 @@
 """
 General modules
 """
+import distutils
 import traceback
 import ujson as json
 from time import strftime
@@ -10,6 +11,7 @@ from werkzeug.exceptions import HTTPException
 from db.model import UserIndividual
 from views import application, mail
 from views.auth import USER
+from views.exceptions import PhenopolisException
 from views.postgres import get_db_session
 
 
@@ -112,3 +114,11 @@ def process_for_display(data):
             x2["hpo_ancestors"] = [{"display": x3} for x3 in x2["hpo_ancestors"].split(";") if x3]
         if "genes" in x2 and x2["genes"] == "":
             x2["genes"] = []
+
+
+def _parse_boolean_parameter(boolean_in_a_string):
+    try:
+        parsed_boolean = bool(distutils.util.strtobool(boolean_in_a_string))
+    except ValueError as e:
+        raise PhenopolisException(str(e), 400)
+    return parsed_boolean

@@ -3,7 +3,7 @@ For tests that requires Admin access
 Using a mockup one from Demo DB
 """
 import ujson as json
-from views.users import create_user, get_user, get_users
+from views.users import create_user, get_user, get_users, enable_user
 
 
 def test_attempt_create_user(_admin):
@@ -41,3 +41,22 @@ def test_get_users(_admin):
     assert len(users) >= 2, "users={}".format(users)
     assert "Admin" in users
     assert "demo" in users
+
+
+def test_enable_user(_admin):
+    user = get_user("demo")
+    assert user.get("enabled"), "Demo user is not enabled from the beginning"
+    enable_user("demo", "False")
+    user = get_user("demo")
+    assert not user.get("enabled"), "Demo user should be disabled disabled"
+    enable_user("demo", "True")
+    user = get_user("demo")
+    assert not user.get("enabled"), "Demo user should be enabled"
+
+
+def test_bad_attempt_to_disable_user(_admin):
+    user = get_user("demo")
+    assert user.get("enabled"), "Demo user is not enabled from the beginning"
+    res = enable_user("demo", "Falsch")
+    assert res[0].status_code == 200
+    assert res[1] == 400
