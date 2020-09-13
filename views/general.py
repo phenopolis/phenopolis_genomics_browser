@@ -9,6 +9,7 @@ from flask_mail import Message
 from werkzeug.exceptions import HTTPException
 from db.model import UserIndividual
 from views import application, mail
+from views.auth import USER
 from views.postgres import get_db_session
 
 
@@ -87,7 +88,7 @@ def process_for_display(data):
     my_patients = list(
         get_db_session()
         .query(UserIndividual)
-        .filter(UserIndividual.user == session["user"])
+        .filter(UserIndividual.user == session[USER])
         .with_entities(UserIndividual.internal_id)
     )
     for x2 in data:

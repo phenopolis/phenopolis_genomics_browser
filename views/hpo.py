@@ -6,7 +6,7 @@ import db.helpers
 from flask import session
 from db.helpers import cursor2dict
 from views import application
-from views.auth import requires_auth
+from views.auth import requires_auth, USER
 from views.postgres import get_db_session, postgres_cursor
 from views.general import process_for_display
 from db.model import HPO
@@ -44,7 +44,7 @@ def hpo(hpo_id="HP:0000001", subset="all", language="en"):
         i.internal_id=ui.internal_id
         and ui.user='%s'
         and i.ancestor_observed_features like '%s'"""
-        % (session["user"], "%" + hpo_id + "%",)
+        % (session[USER], "%" + hpo_id + "%",)
     )
     individuals = cursor2dict(c)
     if hpo_id != "HP:0000001":

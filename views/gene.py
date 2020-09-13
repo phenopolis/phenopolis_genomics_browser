@@ -5,7 +5,7 @@ import db.helpers
 import ujson as json
 from flask import jsonify, session
 from views import application
-from views.auth import requires_auth
+from views.auth import requires_auth, is_demo_user
 from views.postgres import get_db_session
 from views.general import process_for_display
 from db.model import Gene
@@ -77,7 +77,7 @@ def gene(gene_id, subset="all", language="en"):
     process_for_display(config[0]["variants"]["data"])
     # print x[0]['preview']
     # print x[0]['variants']['data'][0]
-    if session["user"] == "demo" and gene_name not in ["TTLL5", "DRAM2"]:
+    if is_demo_user() and gene_name not in ["TTLL5", "DRAM2"]:
         config[0]["variants"]["data"] = []
     if subset == "all":
         return json.dumps(config)

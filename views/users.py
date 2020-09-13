@@ -6,7 +6,7 @@ from flask import session, request, jsonify
 from passlib.handlers.argon2 import argon2
 from db.model import User, UserIndividual, UserConfig
 from views import application
-from views.auth import requires_auth, check_auth, requires_admin
+from views.auth import requires_auth, check_auth, requires_admin, is_demo_user, USER
 from views.exceptions import PhenopolisException
 from views.helpers import _get_json_payload, _parse_payload
 from views.postgres import postgres_cursor, get_db_session
@@ -15,10 +15,10 @@ from views.postgres import postgres_cursor, get_db_session
 @application.route("/change_password", methods=["POST"])
 @requires_auth
 def change_password():
-    username = session["user"]
+    username = session[USER]
     password = request.form["current_password"]
     new_password_1 = request.form["new_password_1"]
-    if username == "demo":
+    if is_demo_user():
         return (
             jsonify(error="You do not have permission to change the password for username 'demo'."),
             403,
@@ -32,7 +32,7 @@ def change_password():
     application.logger.info("Login success, changing password")
     argon_password = argon2.hash(new_password_1)
     c = postgres_cursor()
-    c.execute("""update users set argon_password='%s' where user='%s' """ % (argon_password, session["user"],))
+    c.execute("""update users set argon_password='%s' where user='%s' """ % (argon_password, session[USER],))
     msg = "Password for username '" + username + "' changed. You are logged in as '" + username + "'."
     return jsonify(success=msg), 200
 

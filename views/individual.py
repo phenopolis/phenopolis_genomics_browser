@@ -11,7 +11,7 @@ from flask import session, jsonify, request
 
 from db.model import Individual, UserIndividual
 from views import application
-from views.auth import requires_auth, requires_admin
+from views.auth import requires_auth, requires_admin, is_demo_user, USER
 from views.exceptions import PhenopolisException
 from views.helpers import _get_json_payload, _parse_payload
 from views.postgres import postgres_cursor, get_db, get_db_session
@@ -44,7 +44,7 @@ def individual(individual_id, subset="all", language="en"):
 @application.route("/update_patient_data/<individual_id>", methods=["POST"])
 @requires_auth
 def update_patient_data(individual_id, language="en"):
-    if session["user"] == "demo":
+    if is_demo_user():
         return jsonify(error="Demo user not authorised"), 405
     config = db.helpers.query_user_config(language=language, entity="individual")
     individual = _fetch_authorized_individual(individual_id)
@@ -71,7 +71,7 @@ def update_patient_data(individual_id, language="en"):
 @application.route("/individual", methods=["POST"])
 @requires_auth
 def create_individual():
-    if session["user"] == "demo":
+    if is_demo_user():
         return jsonify(error="Demo user not authorised"), 405
 
     # checks individuals validity
@@ -98,7 +98,7 @@ def create_individual():
             db_session.add(i)
             # add entry to user_individual
             # TODO: enable access to more users than the creator
-            db_session.add(UserIndividual(user=session["user"], internal_id=i.internal_id))
+            db_session.add(UserIndividual(user=session[USER], internal_id=i.internal_id))
         db_session.commit()
     except PhenopolisException as e:
         db_session.rollback()
@@ -312,7 +312,7 @@ def _fetch_authorized_individual(individual_id):
            and ui.user=%(user)s
            and ui.internal_id=%(individual)s
            """,
-        {"user": session["user"], "individual": individual_id},
+        {"user": session[USER], "individual": individual_id},
     )
     individual = db.helpers.cursor2one_dict(c)
     c.close()

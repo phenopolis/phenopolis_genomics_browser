@@ -10,9 +10,13 @@ from views import application
 from views.postgres import get_db_session
 
 ADMIN_USER = "Admin"
-
+DEMO_USER = "demo"
 PASSWORD = "password"
 USER = "user"
+
+
+def is_demo_user():
+    return session[USER] == DEMO_USER
 
 
 def check_auth(username, password):
@@ -71,7 +75,7 @@ def login():
     password = request.json.get(PASSWORD)
     if not check_auth(username, password):
         return jsonify(error="Invalid Credentials. Please try again."), 401
-    session["user"] = username
+    session[USER] = username
     session.update()
     return jsonify(success="Authenticated", username=username), 200
 
@@ -82,11 +86,11 @@ def login():
 @requires_auth
 def logout():
     application.logger.info("Delete session")
-    session.pop("user", None)
+    session.pop(USER, None)
     return jsonify(success="logged out"), 200
 
 
 @application.route("/is_logged_in")
 @requires_auth
 def is_logged_in():
-    return jsonify(username=session.get("user", "")), 200
+    return jsonify(username=session.get(USER, "")), 200
