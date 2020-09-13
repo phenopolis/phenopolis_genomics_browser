@@ -382,7 +382,8 @@ ALTER SEQUENCE public.user_pagetable_colname_id_seq OWNED BY public.user_pagetab
 CREATE TABLE public.users (
     "user" text NOT NULL,
     password text,
-    argon_password text
+    argon_password text,
+    enabled boolean default true
 );
 
 
