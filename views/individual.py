@@ -13,7 +13,7 @@ from db.model import Individual, UserIndividual
 from views import application
 from views.auth import requires_auth, requires_admin
 from views.exceptions import PhenopolisException
-from views.helpers import _get_json_payload, _parse_payload
+from views.helpers import _get_json_payload
 from views.postgres import postgres_cursor, get_db, get_db_session
 from views.general import process_for_display
 

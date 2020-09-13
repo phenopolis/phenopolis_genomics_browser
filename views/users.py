@@ -8,7 +8,7 @@ from db.model import User, UserIndividual, UserConfig
 from views import application
 from views.auth import requires_auth, check_auth, requires_admin
 from views.exceptions import PhenopolisException
-from views.helpers import _get_json_payload, _parse_payload
+from views.helpers import _get_json_payload
 from views.postgres import postgres_cursor, get_db_session
 
 

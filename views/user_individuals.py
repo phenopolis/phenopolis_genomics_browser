@@ -1,13 +1,12 @@
 """
 Users Individuals view
 """
-import ujson as json
 from flask import jsonify
 from db.model import UserIndividual, User, Individual
 from views import application
 from views.auth import requires_admin
 from views.exceptions import PhenopolisException
-from views.helpers import _get_json_payload, _parse_payload
+from views.helpers import _get_json_payload
 from views.postgres import get_db_session
 
 
@@ -61,9 +60,9 @@ def delete_user_individual():
     try:
         # insert user individuals
         for u in user_individuals_to_be_deleted:
-            db_session.query(UserIndividual)\
-                .filter(UserIndividual.user == u.user)\
-                .filter(UserIndividual.internal_id == u.internal_id).delete()
+            db_session.query(UserIndividual).filter(UserIndividual.user == u.user).filter(
+                UserIndividual.internal_id == u.internal_id
+            ).delete()
         db_session.commit()
     except Exception as e:
         db_session.rollback()
