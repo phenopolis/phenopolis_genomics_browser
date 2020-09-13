@@ -6,7 +6,7 @@ from flask import session, request, jsonify
 from passlib.handlers.argon2 import argon2
 from db.model import User, UserIndividual, UserConfig
 from views import application
-from views.auth import requires_auth, check_auth, requires_admin, is_demo_user, USER
+from views.auth import requires_auth, check_auth, requires_admin, is_demo_user, USER, ADMIN_USER
 from views.exceptions import PhenopolisException
 from views.general import _parse_boolean_parameter
 from views.helpers import _get_json_payload
@@ -38,11 +38,13 @@ def change_password():
     return jsonify(success=msg), 200
 
 
-@application.route("/enable-user/<user_id>/<status>", methods=["GET"])
+@application.route("/enable-user/<user_id>/<status>", methods=["UPDATE"])
 @requires_admin
 def enable_user(user_id, status):
     db_session = get_db_session()
     try:
+        if user_id == ADMIN_USER:
+            raise PhenopolisException("Cannot change the status of Admin user!", 400)
         user = _get_user_by_id(db_session, user_id)
         user.enabled = _parse_boolean_parameter(status)
         db_session.commit()

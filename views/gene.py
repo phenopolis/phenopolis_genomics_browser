@@ -3,7 +3,7 @@ Gene view
 """
 import db.helpers
 import ujson as json
-from flask import jsonify, session
+from flask import jsonify
 from views import application
 from views.auth import requires_auth, is_demo_user
 from views.postgres import get_db_session
