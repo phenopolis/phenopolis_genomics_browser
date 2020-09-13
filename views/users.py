@@ -4,7 +4,7 @@ Users view
 import ujson as json
 from flask import session, request, jsonify
 from passlib.handlers.argon2 import argon2
-from db.model import User, UserIndividual, Individual, UserConfig
+from db.model import User, UserIndividual, UserConfig
 from views import application
 from views.auth import requires_auth, check_auth, requires_admin
 from views.exceptions import PhenopolisException
@@ -42,19 +42,7 @@ def change_password():
 def create_user():
 
     try:
-        payload = _get_json_payload()
-    except PhenopolisException as e:
-        return jsonify(success=False, error=str(e)), 400
-
-    # parse the JSON data into an individual, non existing fields will trigger a TypeError
-    try:
-        new_users = _parse_payload(payload, User)
-    except TypeError as e:
-        application.logger.error(str(e))
-        return jsonify(success=False, error=str(e)), 400
-
-    # checks individuals validity
-    try:
+        new_users = _get_json_payload(User)
         for u in new_users:
             _check_user_valid(u)
     except PhenopolisException as e:
@@ -116,69 +104,6 @@ def get_users():
     return json.dumps([u.user for u in users])
 
 
-@application.route("/user-individual", methods=["POST"])
-@requires_admin
-def create_user_idividual():
-
-    try:
-        payload = _get_json_payload()
-    except PhenopolisException as e:
-        return jsonify(success=False, error=str(e)), 400
-
-    # parse the JSON data into a user_individual, non existing fields will trigger a TypeError
-    try:
-        new_user_individuals = _parse_payload(payload, UserIndividual)
-    except TypeError as e:
-        application.logger.error(str(e))
-        return jsonify(success=False, error=str(e)), 400
-
-    # checks user individuals validity
-    try:
-        for u in new_user_individuals:
-            _check_user_individual_valid(u)
-    except PhenopolisException as e:
-        application.logger.error(str(e))
-        return jsonify(success=False, error=str(e)), 400
-
-    db_session = get_db_session()
-    request_ok = True
-    message = "User individuals were created"
-    try:
-        # insert user individuals
-        for u in new_user_individuals:
-            # TODO: should not all these checks happen at the DB?
-            _check_db_integrity_user_individual(db_session, u)
-            db_session.add(u)
-        db_session.commit()
-    except Exception as e:
-        db_session.rollback()
-        application.logger.exception(e)
-        request_ok = False
-        message = str(e)
-    finally:
-        db_session.close()
-
-    if not request_ok:
-        return jsonify(success=False, message=message), 500
-    else:
-        return jsonify(success=True, message=message), 200
-
-
-def _check_db_integrity_user_individual(db_session, u):
-    if db_session.query(User.user).filter(User.user.match(u.user)).count() != 1:
-        raise PhenopolisException("Trying to add an entry in user_individual to a non existing user")
-    if db_session.query(Individual.internal_id).filter(Individual.internal_id.match(u.internal_id)).count() != 1:
-        raise PhenopolisException("Trying to add an entry in user_individual to a non existing individual")
-    if (
-        db_session.query(UserIndividual)
-        .filter(UserIndividual.user.match(u.user))
-        .filter(UserIndividual.internal_id.match(u.internal_id))
-        .count()
-        > 0
-    ):
-        raise PhenopolisException("Trying to add an entry in user_individual that already exists")
-
-
 def _check_user_valid(new_user: User):
     if new_user is None:
         raise PhenopolisException("Null user")
@@ -186,15 +111,6 @@ def _check_user_valid(new_user: User):
         raise PhenopolisException("Missing user name")
     if new_user.argon_password is None or new_user.argon_password == "":
         raise PhenopolisException("Missing password")
-
-
-def _check_user_individual_valid(new_user_individual: UserIndividual):
-    if new_user_individual is None:
-        raise PhenopolisException("Null user individual")
-    if new_user_individual.user is None or new_user_individual.user == "":
-        raise PhenopolisException("Missing user")
-    if new_user_individual.internal_id is None or new_user_individual.internal_id == "":
-        raise PhenopolisException("Missing individual id")
 
 
 def _add_config_from_admin(db_session, new_users):
