@@ -116,9 +116,17 @@ def process_for_display(data):
             x2["genes"] = []
 
 
-def _parse_boolean_parameter(boolean_in_a_string):
-    try:
-        parsed_boolean = bool(distutils.util.strtobool(boolean_in_a_string))
-    except ValueError as e:
-        raise PhenopolisException(str(e), 400)
-    return parsed_boolean
+def _parse_boolean_parameter(val):
+    """Convert a string representation of truth to true (1) or false (0).
+        True values are 'y', 'yes', 't', 'true', 'on', and '1'; false values
+        are 'n', 'no', 'f', 'false', 'off', and '0'.  Raises ValueError if
+        'val' is anything else.
+        """
+    # NOTE: this code was adapted from https://github.com/python/cpython/blob/master/Lib/distutils/util.py#L307
+    val = val.lower()
+    if val in ('y', 'yes', 't', 'true', 'on', '1'):
+        return 1
+    elif val in ('n', 'no', 'f', 'false', 'off', '0'):
+        return 0
+    else:
+        raise PhenopolisException("invalid truth value %r" % (val,), 400)
