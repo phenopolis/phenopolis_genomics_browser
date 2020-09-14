@@ -48,10 +48,10 @@ def test_enable_user(_admin):
     assert user.get("enabled"), "Demo user is not enabled from the beginning"
     enable_user("demo", "False")
     user = json.loads(get_user("demo"))
-    assert not user.get("enabled"), "Demo user should be disabled disabled"
+    assert not user.get("enabled"), "Demo user should be disabled"
     enable_user("demo", "True")
     user = json.loads(get_user("demo"))
-    assert not user.get("enabled"), "Demo user should be enabled"
+    assert user.get("enabled"), "Demo user should be enabled"
 
 
 def test_bad_attempt_to_disable_user(_admin):
