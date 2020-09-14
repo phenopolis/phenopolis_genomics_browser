@@ -1,7 +1,6 @@
 """
 General modules
 """
-import distutils
 import traceback
 import ujson as json
 from time import strftime
@@ -124,9 +123,9 @@ def _parse_boolean_parameter(val):
         """
     # NOTE: this code was adapted from https://github.com/python/cpython/blob/master/Lib/distutils/util.py#L307
     val = val.lower()
-    if val in ('y', 'yes', 't', 'true', 'on', '1'):
+    if val in ("y", "yes", "t", "true", "on", "1"):
         return 1
-    elif val in ('n', 'no', 'f', 'false', 'off', '0'):
+    elif val in ("n", "no", "f", "false", "off", "0"):
         return 0
     else:
         raise PhenopolisException("invalid truth value %r" % (val,), 400)
