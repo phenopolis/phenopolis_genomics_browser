@@ -48,13 +48,13 @@ def test_enable_user(_admin):
     user = json.loads(response.data)
     assert user.get("enabled"), "Demo user is not enabled from the beginning"
     response, status = enable_user("demo", "False")
-    assert json.load(response.data).get("success")
+    assert json.loads(response.data).get("success")
     assert status == 200
     response, _ = get_user("demo")
     user = json.loads(response.data)
     assert not user.get("enabled"), "Demo user should be disabled"
     enable_user("demo", "True")
-    assert json.load(response.data).get("success")
+    assert json.loads(response.data).get("success")
     assert status == 200
     response, _ = get_user("demo")
     user = json.loads(response.data)
