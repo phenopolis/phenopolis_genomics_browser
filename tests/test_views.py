@@ -144,18 +144,6 @@ def test_enable_user(_demo):
     _check_only_available_to_admin(res)
 
 
-def test_delete_user_individual(_demo):
-    """res -> tuple(flask.wrappers.Response)"""
-    res = delete_user_individual()
-    _check_only_available_to_admin(res)
-
-
-def test_enable_user(_demo):
-    """res -> tuple(flask.wrappers.Response)"""
-    res = enable_user("my_user", "true")
-    _check_only_available_to_admin(res)
-
-
 def _check_only_available_to_admin(res):
     assert res[0].status_code == 200
     assert res[0].data == b'{"error":"Admin permissions required to perform this operation"}\n'
