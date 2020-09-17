@@ -4,16 +4,14 @@ Individual view
 import re
 import itertools
 from typing import List, Tuple
-
 import psycopg2
 from sqlalchemy import func, literal_column
 from sqlalchemy.dialects.postgresql import aggregate_order_by
-
 import db.helpers
 import ujson as json
 from collections import Counter
 from flask import session, jsonify, request
-
+from db.model import Individual, UserIndividual
 from views import application
 from views.auth import requires_auth, requires_admin, is_demo_user, USER, ADMIN_USER
 from views.exceptions import PhenopolisException
