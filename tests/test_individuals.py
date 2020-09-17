@@ -37,7 +37,7 @@ def test_get_unauthorised_individual_by_id(_demo):
 def test_update_patient_data_demo(_demo):
     """res -> tuple(flask.wrappers.Response)"""
     response, status = update_patient_data("PH00000001")
-    assert json.loads(response.data).get("message") == "Demo user not authorised"
+    assert json.loads(response.data).get("error") == "Demo user not authorised"
     assert status == 405
 
 

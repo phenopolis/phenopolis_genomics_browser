@@ -40,7 +40,7 @@ def get_all_individuals():
             results.append(individual_dict)
     except PhenopolisException as e:
         return jsonify(success=False, message=str(e)), e.http_status
-    return jsonify(results), 500
+    return jsonify(results), 200
 
 
 def _get_pagination_parameters():
