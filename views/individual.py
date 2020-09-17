@@ -69,9 +69,9 @@ def get_individual_by_id(individual_id, subset="all", language="en"):
     application.logger.debug(individual)
 
     if subset == "preview":
-        return _individual_preview(config, individual)
+        return jsonify(_individual_preview(config, individual)), 200
     else:
-        return _individual_complete_view(config, individual, subset)
+        return jsonify(_individual_complete_view(config, individual, subset)), 200
 
 
 @application.route("/<language>/update_patient_data/<individual_id>", methods=["POST"])
@@ -216,9 +216,9 @@ def _individual_complete_view(config, individual, subset):
     process_for_display(config[0]["rare_homs"]["data"])
     process_for_display(config[0]["rare_variants"]["data"])
     if subset == "all":
-        return json.dumps(config)
+        return config
     else:
-        return json.dumps([{subset: y[subset]} for y in config])
+        return [{subset: y[subset]} for y in config]
 
 
 def _individual_preview(config, individual):
@@ -236,7 +236,7 @@ def _individual_preview(config, individual):
         ["Number of het variants", het_count],
     ]
     cursor.close()
-    return json.dumps(config)
+    return config
 
 
 def _count_compound_heterozygous_variants(c, individual):
