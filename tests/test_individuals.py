@@ -1,7 +1,5 @@
 import pytest
 import ujson as json
-from flask import request
-
 from tests.test_views import _check_only_available_to_admin
 from views.individual import get_individual_by_id, update_patient_data, delete_individual, get_all_individuals
 
