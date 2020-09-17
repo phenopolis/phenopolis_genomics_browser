@@ -10,7 +10,6 @@ import pytest
 from views.variant import variant
 from views.gene import gene
 from views.hpo import hpo
-from views.individual import individual, update_patient_data, delete_individual
 from views.general import check_health, after_request, exceptions
 from views.statistics import phenopolis_statistics
 from werkzeug.exceptions import BadHost
@@ -103,44 +102,6 @@ def test_hpo(_demo, query, subset, msg):
     assert msg in res
 
 
-@pytest.mark.parametrize(
-    ("query", "subset", "msg"),
-    (
-        ("PH00008267", "all", '"Number of individuals that are wildtype in our dataset"'),
-        ("PH00008258", "preview", "impairment;Macular"),
-        ("PH00008258", "metadata", "WebsterURMD_Sample_IC16489"),
-    ),
-)
-def test_individual(_demo, query, subset, msg):
-    """
-    res -> str
-    """
-    res = individual(query, subset=subset)
-    assert msg in res
-
-
-def test_individual_not(_demo):
-    """
-    "demo" user has no right to acess PH00000001
-    res -> tuple(flask.wrappers.Response)
-    """
-    res = individual("PH00000001")
-    assert res[0].status_code == 200
-    assert (
-        res[0].data
-        == b'{"message":"Sorry, either the patient does not exist or you are not permitted to see this patient"}\n'
-    )
-    assert res[1] == 404
-
-
-def test_update_patient_data_demo(_demo):
-    """res -> tuple(flask.wrappers.Response)"""
-    res = update_patient_data("PH00000001")
-    assert res[0].status_code == 200
-    assert res[0].data == b'{"error":"Demo user not authorised"}\n'
-    assert res[1] == 405
-
-
 def test_statistics(_demo):
     """res -> dict"""
     res = phenopolis_statistics().json
@@ -168,12 +129,6 @@ def test_get_user(_demo):
 def test_get_users(_demo):
     """res -> tuple(flask.wrappers.Response)"""
     res = get_users()
-    _check_only_available_to_admin(res)
-
-
-def test_delete_individual(_demo):
-    """res -> tuple(flask.wrappers.Response)"""
-    res = delete_individual("whatever_individual")
     _check_only_available_to_admin(res)
 
 

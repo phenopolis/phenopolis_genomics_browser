@@ -1,7 +1,6 @@
 """
 Users view
 """
-import ujson as json
 from flask import session, request, jsonify
 from passlib.handlers.argon2 import argon2
 from db.model import User, UserIndividual, UserConfig
@@ -104,7 +103,7 @@ def get_user(user_id):
         user_dict["individuals"] = [ui.internal_id for ui in user_individuals]
     except PhenopolisException as e:
         return jsonify(success=False, message=str(e)), e.http_status
-    return json.dumps(user_dict)
+    return jsonify(user_dict), 200
 
 
 @application.route("/user")
@@ -112,7 +111,7 @@ def get_user(user_id):
 def get_users():
     db_session = get_db_session()
     users = db_session.query(User).all()
-    return json.dumps([u.user for u in users])
+    return jsonify([u.user for u in users]), 200
 
 
 def _check_user_valid(new_user: User):

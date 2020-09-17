@@ -3,7 +3,12 @@ Individual view
 """
 import re
 import itertools
+from typing import List, Tuple
+
 import psycopg2
+from sqlalchemy import func, literal_column
+from sqlalchemy.dialects.postgresql import aggregate_order_by
+
 import db.helpers
 import ujson as json
 from collections import Counter
@@ -11,11 +16,43 @@ from flask import session, jsonify, request
 
 from db.model import Individual, UserIndividual
 from views import application
-from views.auth import requires_auth, requires_admin, is_demo_user, USER
+from views.auth import requires_auth, requires_admin, is_demo_user, USER, ADMIN_USER
 from views.exceptions import PhenopolisException
 from views.helpers import _get_json_payload
 from views.postgres import postgres_cursor, get_db, get_db_session
 from views.general import process_for_display
+
+MAX_PAGE_SIZE = 100
+
+
+@application.route("/individual")
+@requires_auth
+def get_all_individuals():
+    try:
+        limit, offset = _get_pagination_parameters()
+        if limit > MAX_PAGE_SIZE:
+            return (
+                jsonify(message="The maximum page size for individuals is {}".format(MAX_PAGE_SIZE)),
+                400,
+            )
+        individuals_and_users = _fetch_all_individuals(offset=offset, limit=limit)
+        results = []
+        for i, ui in individuals_and_users:
+            individual_dict = i.as_dict()
+            individual_dict["users"] = ui
+            results.append(individual_dict)
+    except PhenopolisException as e:
+        return jsonify(success=False, message=str(e)), e.http_status
+    return jsonify(results), 500
+
+
+def _get_pagination_parameters():
+    try:
+        offset = int(request.args.get("offset", 0))
+        limit = int(request.args.get("limit", 10))
+    except ValueError as e:
+        raise PhenopolisException(str(e), 500)
+    return limit, offset
 
 
 @application.route("/<language>/individual/<individual_id>")
@@ -23,7 +60,7 @@ from views.general import process_for_display
 @application.route("/individual/<individual_id>")
 @application.route("/individual/<individual_id>/<subset>")
 @requires_auth
-def individual(individual_id, subset="all", language="en"):
+def get_individual_by_id(individual_id, subset="all", language="en"):
     config = db.helpers.query_user_config(language=language, entity="individual")
     individual = _fetch_authorized_individual(individual_id)
     # unauthorized access to individual
@@ -301,6 +338,24 @@ def _get_homozygous_variants(c, individual):
     # TODO: confirm if this needs to be enabled once the function has been corrected
     # hom_variants = get_hpo_ids_per_gene(hom_variants, individual)
     return hom_variants
+
+
+def _fetch_all_individuals(offset, limit) -> List[Tuple[Individual, List[str]]]:
+    """
+    For admin users it returns all individuals and all users having access to them.
+    But for other than admin it returns only individuals which this user has access, other users having access are
+    not returned
+    """
+    db_session = get_db_session()
+    user_id = session[USER]
+    query = db_session.query(
+        Individual, func.string_agg(UserIndividual.user, aggregate_order_by(literal_column("','"), UserIndividual.user))
+    ).filter(Individual.internal_id == UserIndividual.internal_id)
+    if user_id != ADMIN_USER:
+        query = query.filter(UserIndividual.user == user_id)
+    individuals = query.group_by(Individual).order_by(Individual.internal_id.desc()).offset(offset).limit(limit).all()
+
+    return [(i, u.split(",")) for i, u in individuals]
 
 
 def _fetch_authorized_individual(individual_id):
