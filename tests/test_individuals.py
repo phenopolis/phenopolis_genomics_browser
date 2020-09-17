@@ -18,7 +18,7 @@ def test_get_authorised_individual_by_id(_demo, query, subset, msg):
     """
     response, status = get_individual_by_id(query, subset=subset)
     assert status == 200
-    assert msg in response.data
+    assert msg in str(response.data)
 
 
 def test_get_unauthorised_individual_by_id(_demo):
@@ -29,7 +29,7 @@ def test_get_unauthorised_individual_by_id(_demo):
     response, status = get_individual_by_id("PH00000001")
     assert status == 404
     assert (
-        json.load(response.data).get("message")
+        json.loads(response.data).get("message")
         == "Sorry, either the patient does not exist or you are not permitted to see this patient"
     )
 
@@ -37,7 +37,7 @@ def test_get_unauthorised_individual_by_id(_demo):
 def test_update_patient_data_demo(_demo):
     """res -> tuple(flask.wrappers.Response)"""
     response, status = update_patient_data("PH00000001")
-    assert json.load(response.data).get("message") == "Demo user not authorised"
+    assert json.loads(response.data).get("message") == "Demo user not authorised"
     assert status == 405
 
 

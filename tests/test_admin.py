@@ -53,7 +53,7 @@ def test_enable_user(_admin):
     response, _ = get_user("demo")
     user = json.loads(response.data)
     assert not user.get("enabled"), "Demo user should be disabled"
-    enable_user("demo", "True")
+    response, status = enable_user("demo", "True")
     assert json.loads(response.data).get("success")
     assert status == 200
     response, _ = get_user("demo")
