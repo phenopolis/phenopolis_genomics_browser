@@ -68,6 +68,18 @@ set search_path to gnomad, public;
 reset search_path;
 
 
+create schema kaviar;
+grant usage on schema kaviar to phenopolis_api;
+alter default privileges in schema kaviar
+    grant select, insert, update, delete on tables to phenopolis_api;
+alter default privileges in schema kaviar
+    grant all on sequences to phenopolis_api;
+
+set search_path to kaviar, public;
+\i kaviar.sql
+reset search_path;
+
+
 create schema cadd;
 grant usage on schema cadd to phenopolis_api;
 alter default privileges in schema cadd
