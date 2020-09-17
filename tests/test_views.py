@@ -14,7 +14,8 @@ from views.individual import individual, update_patient_data, delete_individual
 from views.general import check_health, after_request, exceptions
 from views.statistics import phenopolis_statistics
 from werkzeug.exceptions import BadHost
-from views.users import create_user, get_user, create_user_idividual, get_users
+from views.users import create_user, get_user, get_users
+from views.user_individuals import create_user_individual, delete_user_individual
 
 
 def test_check_health(_demo):
@@ -154,7 +155,7 @@ def test_create_user(_demo):
 
 def test_create_user_individual(_demo):
     """res -> tuple(flask.wrappers.Response)"""
-    res = create_user_idividual()
+    res = create_user_individual()
     _check_only_available_to_admin(res)
 
 
@@ -173,6 +174,12 @@ def test_get_users(_demo):
 def test_delete_individual(_demo):
     """res -> tuple(flask.wrappers.Response)"""
     res = delete_individual("whatever_individual")
+    _check_only_available_to_admin(res)
+
+
+def test_delete_user_individual(_demo):
+    """res -> tuple(flask.wrappers.Response)"""
+    res = delete_user_individual()
     _check_only_available_to_admin(res)
 
 

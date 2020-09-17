@@ -33,8 +33,8 @@ def requires_auth(f):
             return f(*args, **kwargs)
         # TODO: eventually we will want to remove this bit for POST endpoints
         if request.method == "POST":
-            username = request.form[USER] if USER in request.form else request.headers[USER]
-            password = request.form[PASSWORD] if PASSWORD in request.form else request.headers[PASSWORD]
+            username = request.form.get(USER, request.headers.get(USER))
+            password = request.form.get(PASSWORD, request.headers.get(PASSWORD))
             if check_auth(username, password):
                 session[USER] = username
                 # session.permanent = True
@@ -50,9 +50,9 @@ def requires_admin(f):
         if session.get(USER) == ADMIN_USER:
             return f(*args, **kwargs)
         # TODO: eventually we will want to remove this bit for POST endpoints
-        if request.method == "POST" and request.form[USER] == ADMIN_USER:
-            username = request.form[USER] if USER in request.form else request.headers[USER]
-            password = request.form[PASSWORD] if PASSWORD in request.form else request.headers[PASSWORD]
+        username = request.form.get(USER, request.headers.get(USER))
+        if request.method in ["POST", "DELETE"] and username == ADMIN_USER:
+            password = request.form.get(PASSWORD, request.headers.get(PASSWORD))
             if check_auth(username, password):
                 session[USER] = username
                 # session.permanent = True

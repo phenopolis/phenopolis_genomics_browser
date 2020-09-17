@@ -13,7 +13,7 @@ from db.model import Individual, UserIndividual
 from views import application
 from views.auth import requires_auth, requires_admin
 from views.exceptions import PhenopolisException
-from views.helpers import _get_json_payload, _parse_payload
+from views.helpers import _get_json_payload
 from views.postgres import postgres_cursor, get_db, get_db_session
 from views.general import process_for_display
 
@@ -74,22 +74,11 @@ def create_individual():
     if session["user"] == "demo":
         return jsonify(error="Demo user not authorised"), 405
 
-    try:
-        payload = _get_json_payload()
-    except PhenopolisException as e:
-        return jsonify(success=False, error=str(e)), 400
-
-    # parse the JSON data into an individual, non existing fields will trigger a TypeError
-    try:
-        new_individuals = _parse_payload(payload, Individual)
-    except TypeError as e:
-        application.logger.error(str(e))
-        return jsonify(success=False, error=str(e)), 400
-
     # checks individuals validity
     db_session = get_db_session()
 
     try:
+        new_individuals = _get_json_payload(Individual)
         for i in new_individuals:
             _check_individual_valid(i, db_session)
     except PhenopolisException as e:

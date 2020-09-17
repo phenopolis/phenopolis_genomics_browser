@@ -103,5 +103,6 @@ import views.variant
 import views.individual
 import views.hpo
 import views.users
+import views.user_individuals
 import views.autocomplete
 import views.save_configuration
