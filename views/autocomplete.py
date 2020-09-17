@@ -7,7 +7,7 @@ from flask import jsonify, session, Response, request
 from logzero import logger
 from db.helpers import cursor2dict
 from views import application
-from views.auth import requires_auth
+from views.auth import requires_auth, USER
 from views.postgres import postgres_cursor
 
 CHROMOSOME_POS_REGEX = re.compile(r"^(\w+)[-:](\d+)$")
@@ -93,7 +93,7 @@ def _search_patients(cursor, query, limit):
     cursor.execute(
         r"""select i.external_id, i.internal_id from individuals i, users_individuals ui where
         ui.internal_id=i.internal_id and ui.user=%(user)s and i.internal_id ILIKE %(query)s limit %(limit)s""",
-        {"user": session["user"], "query": "%{}%".format(query), "limit": limit},
+        {"user": session[USER], "query": "%{}%".format(query), "limit": limit},
     )
     patient_hits = cursor2dict(cursor)
     return ["individual::" + x["internal_id"] + "::" + x["internal_id"] for x in patient_hits]

@@ -9,6 +9,8 @@ from flask_mail import Message
 from werkzeug.exceptions import HTTPException
 from db.model import UserIndividual
 from views import application, mail
+from views.auth import USER
+from views.exceptions import PhenopolisException
 from views.postgres import get_db_session
 
 
@@ -87,7 +89,7 @@ def process_for_display(data):
     my_patients = list(
         get_db_session()
         .query(UserIndividual)
-        .filter(UserIndividual.user == session["user"])
+        .filter(UserIndividual.user == session[USER])
         .with_entities(UserIndividual.internal_id)
     )
     for x2 in data:
@@ -111,3 +113,19 @@ def process_for_display(data):
             x2["hpo_ancestors"] = [{"display": x3} for x3 in x2["hpo_ancestors"].split(";") if x3]
         if "genes" in x2 and x2["genes"] == "":
             x2["genes"] = []
+
+
+def _parse_boolean_parameter(val):
+    """Convert a string representation of truth to true (1) or false (0).
+        True values are 'y', 'yes', 't', 'true', 'on', and '1'; false values
+        are 'n', 'no', 'f', 'false', 'off', and '0'.  Raises ValueError if
+        'val' is anything else.
+        """
+    # NOTE: this code was adapted from https://github.com/python/cpython/blob/master/Lib/distutils/util.py#L307
+    val = val.lower()
+    if val in ("y", "yes", "t", "true", "on", "1"):
+        return 1
+    elif val in ("n", "no", "f", "false", "off", "0"):
+        return 0
+    else:
+        raise PhenopolisException("invalid truth value %r" % (val,), 400)

@@ -14,7 +14,7 @@ from views.individual import individual, update_patient_data, delete_individual
 from views.general import check_health, after_request, exceptions
 from views.statistics import phenopolis_statistics
 from werkzeug.exceptions import BadHost
-from views.users import create_user, get_user, get_users
+from views.users import create_user, get_user, get_users, enable_user
 from views.user_individuals import create_user_individual, delete_user_individual
 
 
@@ -180,6 +180,12 @@ def test_delete_individual(_demo):
 def test_delete_user_individual(_demo):
     """res -> tuple(flask.wrappers.Response)"""
     res = delete_user_individual()
+    _check_only_available_to_admin(res)
+
+
+def test_enable_user(_demo):
+    """res -> tuple(flask.wrappers.Response)"""
+    res = enable_user("my_user", "true")
     _check_only_available_to_admin(res)
 
 

@@ -11,7 +11,7 @@ from flask import session, jsonify, request
 
 from db.model import Individual, UserIndividual
 from views import application
-from views.auth import requires_auth, requires_admin
+from views.auth import requires_auth, requires_admin, is_demo_user, USER
 from views.exceptions import PhenopolisException
 from views.helpers import _get_json_payload
 from views.postgres import postgres_cursor, get_db, get_db_session
@@ -44,7 +44,7 @@ def individual(individual_id, subset="all", language="en"):
 @application.route("/update_patient_data/<individual_id>", methods=["POST"])
 @requires_auth
 def update_patient_data(individual_id, language="en"):
-    if session["user"] == "demo":
+    if is_demo_user():
         return jsonify(error="Demo user not authorised"), 405
     config = db.helpers.query_user_config(language=language, entity="individual")
     individual = _fetch_authorized_individual(individual_id)
@@ -71,7 +71,7 @@ def update_patient_data(individual_id, language="en"):
 @application.route("/individual", methods=["POST"])
 @requires_auth
 def create_individual():
-    if session["user"] == "demo":
+    if is_demo_user():
         return jsonify(error="Demo user not authorised"), 405
 
     # checks individuals validity
@@ -83,7 +83,7 @@ def create_individual():
             _check_individual_valid(i, db_session)
     except PhenopolisException as e:
         application.logger.error(str(e))
-        return jsonify(success=False, error=str(e)), 400
+        return jsonify(success=False, error=str(e)), e.http_status
 
     request_ok = True
     message = "Individuals were created"
@@ -98,25 +98,26 @@ def create_individual():
             db_session.add(i)
             # add entry to user_individual
             # TODO: enable access to more users than the creator
-            db_session.add(UserIndividual(user=session["user"], internal_id=i.internal_id))
+            db_session.add(UserIndividual(user=session[USER], internal_id=i.internal_id))
         db_session.commit()
     except PhenopolisException as e:
         db_session.rollback()
         application.logger.exception(e)
         request_ok = False
         message = str(e)
+        http_status = e.http_status
     finally:
         db_session.close()
 
     if not request_ok:
-        return jsonify(success=False, message=message), 500
+        return jsonify(success=False, message=message), http_status
     else:
         return jsonify(success=True, message=message, id=",".join(ids_new_individuals)), 200
 
 
 def _check_individual_valid(new_individual: Individual, sqlalchemy_session):
     if new_individual is None:
-        raise PhenopolisException("Null individual")
+        raise PhenopolisException("Null individual", 400)
 
     exist_internal_id = (
         sqlalchemy_session.query(Individual.external_id)
@@ -125,7 +126,7 @@ def _check_individual_valid(new_individual: Individual, sqlalchemy_session):
     )
 
     if len(exist_internal_id) > 0:
-        raise PhenopolisException("Individual is already exist.")
+        raise PhenopolisException("Individual is already exist.", 400)
     # TODOe: add more validations here
 
 
@@ -141,7 +142,7 @@ def _get_new_individual_id(sqlalchemy_session):
     if matched_id:
         return "PH{}".format(str(int(matched_id.group(1)) + 1).zfill(8))  # pads with 0s
     else:
-        raise PhenopolisException("Failed to fetch the latest internal id for an individual")
+        raise PhenopolisException("Failed to fetch the latest internal id for an individual", 500)
 
 
 # def _get_hpo_ids_per_gene(variants, _ind):
@@ -312,7 +313,7 @@ def _fetch_authorized_individual(individual_id):
            and ui.user=%(user)s
            and ui.internal_id=%(individual)s
            """,
-        {"user": session["user"], "individual": individual_id},
+        {"user": session[USER], "individual": individual_id},
     )
     individual = db.helpers.cursor2one_dict(c)
     c.close()
@@ -403,6 +404,7 @@ def delete_individual(individual_id, language="en"):
             application.logger.exception(e)
             request_ok = False
             message = str(e)
+            http_status = e.http_status
         finally:
             db_session.close()
     else:
@@ -410,6 +412,6 @@ def delete_individual(individual_id, language="en"):
         message = "Patient " + individual_id + " does not exist."
 
     if not request_ok:
-        return jsonify(success=False, message=message), 500
+        return jsonify(success=False, message=message), http_status
     else:
         return jsonify(success=True, message=message), 200

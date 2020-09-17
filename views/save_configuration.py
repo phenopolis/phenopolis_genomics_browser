@@ -6,7 +6,7 @@ import db.helpers
 import ujson as json
 from flask import request, jsonify, session
 from views import application
-from views.auth import requires_auth
+from views.auth import requires_auth, USER
 from views.postgres import postgres_cursor, get_db
 
 
@@ -31,7 +31,7 @@ def save_configuration(pageType, pagePart, language="en"):
     try:
         c.execute(
             "UPDATE user_config SET config=%s WHERE user_name=%s AND language=%s AND page=%s",
-            (json.dumps(config), session["user"], language, pageType),
+            (json.dumps(config), session[USER], language, pageType),
         )
         get_db().commit()
         c.close()
