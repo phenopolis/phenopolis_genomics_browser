@@ -1,7 +1,9 @@
 #!/bin/python
-from pybiomart import Server
+from pybiomart import Server, Dataset
 import pandas as pd
+import re
 
+SYNONYM = "external_synonym"
 TRANSCRIPT_VERSION = "transcript_version"
 UNIPROTSPTREMBL = "uniprotsptrembl"
 GENE_GC_CONTENT = "percentage_gene_gc_content"
@@ -65,11 +67,38 @@ class BiomartReader(object):
             GENE_BIOTYPE,
             HGNC_ID,
             HGNC_SYMBOL,
-            GENE_GC_CONTENT
+            GENE_GC_CONTENT,
         ]
 
         genes_grch37, genes_grch38 = self._get_attributes(genes_attributes)
-        return pd.concat([genes_grch37, genes_grch38])
+
+        # flags the latest version genes to avoid repetitions
+        genes_grch37["latest"] = self._add_latest_flag(df=genes_grch37, id_field=ENSEMBL_GENE_ID, version_field=VERSION)
+        genes_grch38["latest"] = self._add_latest_flag(df=genes_grch38, id_field=ENSEMBL_GENE_ID, version_field=VERSION)
+
+        # fetch synonyms
+        synonyms_grch37 = self._get_gene_synonyms(self.dataset_grch37)
+        genes_grch37 = genes_grch37.join(synonyms_grch37, on=ENSEMBL_GENE_ID)
+        synonyms_grch38 = self._get_gene_synonyms(self.dataset_grch38)
+        genes_grch38 = genes_grch38.join(synonyms_grch38, on=ENSEMBL_GENE_ID)
+
+        genes = pd.concat([genes_grch37, genes_grch38])
+
+        # filter out non latest genes
+        genes = genes[genes.latest]
+        genes.drop("latest", axis=1, inplace=True)
+
+        # remove duplicates
+        genes.drop_duplicates([ENSEMBL_GENE_ID, ASSEMBLY], inplace=True)
+
+        # edit description to remove information between brackets
+        genes[DESCRIPTION] = genes[DESCRIPTION].transform(
+            lambda x: re.sub(r"\[.*\]", "", x).strip() if isinstance(x, str) else x
+        )
+
+        BiomartReader._genes_sanity_checks(genes)
+
+        return genes
 
     def get_transcripts(self):
         transcripts_attributes = [
@@ -87,7 +116,7 @@ class BiomartReader(object):
             CDS_LENGTH,
             TRANSCRIPT_BIOTYPE,
             UNIPARC,
-            UNIPROTSWISSPROT
+            # UNIPROTSWISSPROT
         ]
 
         transcripts_grch37, transcripts_grch38 = self._get_attributes(transcripts_attributes)
@@ -96,9 +125,25 @@ class BiomartReader(object):
         transcripts_grch37[CANONICAL] = self._add_canonical_transcript_flag(transcripts_grch37)
         transcripts_grch38[CANONICAL] = self._add_canonical_transcript_flag(transcripts_grch38)
 
+        # flags the latest version genes to avoid repetitions
+        transcripts_grch37["latest"] = self._add_latest_flag(
+            df=transcripts_grch37, id_field=ENSEMBL_TRANSCRIPT_ID, version_field=TRANSCRIPT_VERSION
+        )
+        transcripts_grch38["latest"] = self._add_latest_flag(
+            df=transcripts_grch38, id_field=ENSEMBL_TRANSCRIPT_ID, version_field=TRANSCRIPT_VERSION
+        )
+
         # TODO: add the number of exons
 
-        return pd.concat([transcripts_grch37, transcripts_grch38])
+        transcripts = pd.concat([transcripts_grch37, transcripts_grch38])
+
+        # filter out non latest genes
+        transcripts = transcripts[transcripts.latest]
+        transcripts.drop("latest", axis=1, inplace=True)
+
+        BiomartReader._transcripts_sanity_checks(transcripts)
+
+        return transcripts
 
     def get_exons(self):
         exons_attributes = [
@@ -111,11 +156,15 @@ class BiomartReader(object):
             CONSTITUTIVE,
             RANK,
             PHASE,
-            END_PHASE
+            END_PHASE,
         ]
 
         exons_grch37, exons_grch38 = self._get_attributes(exons_attributes)
-        return pd.concat([exons_grch37, exons_grch38])
+        exons = pd.concat([exons_grch37, exons_grch38])
+
+        BiomartReader._exons_sanity_checks(exons)
+
+        return exons
 
     @staticmethod
     def _add_canonical_transcript_flag(transcripts: pd.DataFrame) -> pd.Series:
@@ -126,25 +175,107 @@ class BiomartReader(object):
         """
         canonical_transcripts = transcripts.groupby(ENSEMBL_GENE_ID)[[ENSEMBL_TRANSCRIPT_ID, CDS_LENGTH]].max()
         canonical_transcripts.reset_index(inplace=True)
-        return transcripts[ENSEMBL_TRANSCRIPT_ID].isin(
-            canonical_transcripts[ENSEMBL_TRANSCRIPT_ID])
+        return transcripts[ENSEMBL_TRANSCRIPT_ID].isin(canonical_transcripts[ENSEMBL_TRANSCRIPT_ID])
+
+    @staticmethod
+    def _add_latest_flag(df: pd.DataFrame, id_field: str, version_field: str) -> pd.Series:
+        """
+        Adds a column indicating whether the gene version is the latest in this table
+        """
+        id_with_version = "id_with_version"
+        df[id_with_version] = df[[id_field, version_field]].apply(lambda x: "{}.{}".format(x[0], x[1]), axis=1)
+        latest_genes = df.groupby(id_field)[[id_with_version, version_field]].max()
+        latest_genes.reset_index(inplace=True)
+        return df[id_with_version].isin(latest_genes[id_with_version])
+
+    def _get_gene_synonyms(self, dataset: Dataset) -> pd.Series:
+        gene_synonyms_df = dataset.query(
+            attributes=[ENSEMBL_GENE_ID, SYNONYM], filters=self.filters, use_attr_names=True
+        )
+        return (
+            gene_synonyms_df.fillna("")
+            .groupby(by=ENSEMBL_GENE_ID)[SYNONYM]
+            .apply(lambda x: ",".join(BiomartReader._filter_empty_values_from_list(list(x))))
+        )
+
+    @staticmethod
+    def _filter_empty_values_from_list(list_with_empty_values):
+        return list(filter(lambda x: x is not None and x != "", list(list_with_empty_values)))
 
     def _get_attributes(self, transcripts_attributes):
         # reads the transcripts from biomart
         transcripts_grch37 = self.dataset_grch37.query(
-            attributes=transcripts_attributes,
-            filters=self.filters,
-            use_attr_names=True
+            attributes=transcripts_attributes, filters=self.filters, use_attr_names=True
         )
         transcripts_grch38 = self.dataset_grch38.query(
-            attributes=transcripts_attributes,
-            filters=self.filters,
-            use_attr_names=True
+            attributes=transcripts_attributes, filters=self.filters, use_attr_names=True
         )
         # sets the assembly for each
         transcripts_grch37[ASSEMBLY] = "GRCh37"
         transcripts_grch38[ASSEMBLY] = "GRCh38"
         return transcripts_grch37, transcripts_grch38
+
+    @staticmethod
+    def _genes_sanity_checks(genes: pd.DataFrame) -> None:
+        unique_genes = (
+            genes[[ENSEMBL_GENE_ID, ASSEMBLY]].apply(lambda x: "{}.{}".format(x[0], x[1]), axis=1).value_counts()
+        )
+        assert unique_genes[unique_genes > 1].shape[0] == 0, "Found non unique genes: {}".format(
+            unique_genes[unique_genes > 1]
+        )
+        assert genes.ensembl_gene_id.isna().sum() == 0, "Found entry without ensembl id"
+        assert genes.assembly.isna().sum() == 0, "Found entry without assembly"
+        assert genes.chromosome_name.isna().sum() == 0, "Found entry without chromosome"
+        assert genes.start_position.isna().sum() == 0, "Found entry without start"
+        assert genes.end_position.isna().sum() == 0, "Found entry without end"
+        assert genes[genes.start_position > genes.end_position].shape[0] == 0, "Start and end positions incoherent"
+
+    @staticmethod
+    def _transcripts_sanity_checks(transcripts: pd.DataFrame) -> None:
+        unique_transcripts = (
+            transcripts[[ENSEMBL_TRANSCRIPT_ID, ASSEMBLY]]
+            .apply(lambda x: "{}.{}".format(x[0], x[1]), axis=1)
+            .value_counts()
+        )
+        assert unique_transcripts[unique_transcripts > 1].shape[0] == 0, "Found non unique genes: {}".format(
+            unique_transcripts[unique_transcripts > 1]
+        )
+        assert transcripts.ensembl_transcript_id.isna().sum() == 0, "Found entry without ensembl id"
+        assert transcripts.ensembl_gene_id.isna().sum() == 0, "Found entry without gene ensembl id"
+        assert transcripts.assembly.isna().sum() == 0, "Found entry without assembly"
+        assert transcripts.chromosome_name.isna().sum() == 0, "Found entry without chromosome"
+        assert transcripts.transcript_start.isna().sum() == 0, "Found entry without start"
+        assert transcripts.transcript_end.isna().sum() == 0, "Found entry without end"
+        assert (
+            transcripts[transcripts.transcript_start > transcripts.transcript_end].shape[0] == 0
+        ), "Start and end positions incoherent"
+
+    @staticmethod
+    def _exons_sanity_checks(exons: pd.DataFrame) -> None:
+        unique_exons = (
+            exons[[ENSEMBL_TRANSCRIPT_ID, ENSEMBL_EXON_ID, ASSEMBLY]]
+            .apply(lambda x: "{}.{}.{}".format(x[0], x[1], x[2]), axis=1)
+            .value_counts()
+        )
+        assert unique_exons[unique_exons > 1].shape[0] == 0, "Found non unique exons: {}".format(
+            unique_exons[unique_exons > 1]
+        )
+        unique_exons_by_rank = (
+            exons[[ENSEMBL_TRANSCRIPT_ID, "rank", ASSEMBLY]]
+            .apply(lambda x: "{}.{}.{}".format(x[0], x[1], x[2]), axis=1)
+            .value_counts()
+        )
+        assert (
+            unique_exons_by_rank[unique_exons_by_rank > 1].shape[0] == 0
+        ), "Found non unique exons by rank: {}".format(unique_exons_by_rank[unique_exons_by_rank > 1])
+        assert exons.ensembl_exon_id.isna().sum() == 0, "Found entry without ensembl id"
+        assert exons.ensembl_transcript_id.isna().sum() == 0, "Found entry without transcript ensembl id"
+        assert exons.ensembl_gene_id.isna().sum() == 0, "Found entry without gene ensembl id"
+        assert exons.assembly.isna().sum() == 0, "Found entry without assembly"
+        assert exons.chromosome_name.isna().sum() == 0, "Found entry without chromosome"
+        assert exons.exon_chrom_start.isna().sum() == 0, "Found entry without start"
+        assert exons.exon_chrom_end.isna().sum() == 0, "Found entry without end"
+        assert exons[exons.exon_chrom_start > exons.exon_chrom_end].shape[0] == 0, "Start and end positions incoherent"
 
 
 if __name__ == "__main__":
@@ -172,11 +303,35 @@ if __name__ == "__main__":
             "TR_V_gene",
         ],
         "transcript_gencode_basic": "only",
+        # "chromosome_name": "22"
     }
     reader = BiomartReader(filters=filters)
     genes = reader.get_genes()
-    genes.to_csv("genes.csv", index=False, header=True)
+    genes.index.rename("identifier", inplace=True)
+    genes.to_csv("genes.csv", index=True, header=True)
     transcripts = reader.get_transcripts()
-    transcripts.to_csv("transcripts.csv", index=False, header=True)
+    transcripts.index.rename("identifier", inplace=True)
+    transcripts.to_csv("transcripts.csv", index=True, header=True)
     exons = reader.get_exons()
-    exons.to_csv("exons.csv", index=False, header=True)
+    exons.index.rename("identifier", inplace=True)
+    exons.to_csv("exons.csv", index=True, header=True)
+
+    genes.reset_index(inplace=True)
+    transcripts.reset_index(inplace=True)
+    exons.reset_index(inplace=True)
+
+    genes_transcripts = genes[["identifier", ENSEMBL_GENE_ID]].join(
+        transcripts[["identifier", ENSEMBL_GENE_ID]].set_index(ENSEMBL_GENE_ID),
+        on=ENSEMBL_GENE_ID,
+        lsuffix="_gene",
+        rsuffix="_transcript",
+    )[["identifier_gene", "identifier_transcript"]]
+    genes_transcripts.to_csv("genes_transcripts.csv", index=False, header=True)
+
+    transcripts_exons = transcripts[["identifier", ENSEMBL_TRANSCRIPT_ID]].join(
+        exons[["identifier", ENSEMBL_TRANSCRIPT_ID]].set_index(ENSEMBL_TRANSCRIPT_ID),
+        on=ENSEMBL_TRANSCRIPT_ID,
+        lsuffix="_transcript",
+        rsuffix="_exon",
+    )[["identifier_transcript", "identifier_exon"]]
+    transcripts_exons.to_csv("transcripts_exons.csv", index=False, header=True)
