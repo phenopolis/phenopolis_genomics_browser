@@ -16,9 +16,9 @@ create table gene (
     assembly text
     );
 
-create index gene_hgnc_symbol ON gene USING btree (hgnc_symbol);
-create index gene_hgnc_id ON gene USING btree (hgnc_id);
-create index gene_ensembl_gene_id ON gene USING btree (ensembl_gene_id);
+create index ON gene USING btree (hgnc_symbol);
+create index ON gene USING btree (hgnc_id);
+create index ON gene USING btree (ensembl_gene_id);
 
 create table transcript (
     identifier integer primary key,
@@ -40,8 +40,8 @@ create table transcript (
     canonical boolean
 );
 
-create index transcript_ensembl_gene_id ON transcript USING btree (ensembl_gene_id);
-create index transcript_ensembl_transcript_id ON transcript USING btree (ensembl_transcript_id);
+create index ON transcript USING btree (ensembl_gene_id);
+create index ON transcript USING btree (ensembl_transcript_id);
 
 create table gene_transcript (
     identifier_gene integer,
@@ -55,7 +55,7 @@ create table gene_synonym (
     primary key(identifier, external_synonym)
 );
 
-create index gene_synonym_external_synonym ON gene_synonym USING btree (external_synonym);
+create index ON gene_synonym USING btree (external_synonym);
 
 create table transcript_uniprot (
     identifier integer,
@@ -63,7 +63,7 @@ create table transcript_uniprot (
     primary key(identifier, uniprotswissprot)
 );
 
-create index transcript_uniprot_uniprotswissprot ON transcript_uniprot USING btree (uniprotswissprot);
+create index ON transcript_uniprot USING btree (uniprotswissprot);
 
 create table exon (
     identifier integer primary key,
