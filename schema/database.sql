@@ -57,40 +57,40 @@ reset search_path;
 
 
 
---create schema gnomad;
---grant usage on schema gnomad to phenopolis_api;
---alter default privileges in schema gnomad
---    grant select, insert, update, delete on tables to phenopolis_api;
---alter default privileges in schema gnomad
---    grant all on sequences to phenopolis_api;
+create schema gnomad;
+grant usage on schema gnomad to phenopolis_api;
+alter default privileges in schema gnomad
+    grant select, insert, update, delete on tables to phenopolis_api;
+alter default privileges in schema gnomad
+    grant all on sequences to phenopolis_api;
 
---set search_path to gnomad, public;
---\i gnomad.sql
---reset search_path;
-
-
---create schema kaviar;
---grant usage on schema kaviar to phenopolis_api;
---alter default privileges in schema kaviar
---    grant select, insert, update, delete on tables to phenopolis_api;
---alter default privileges in schema kaviar
---    grant all on sequences to phenopolis_api;
-
---set search_path to kaviar, public;
---\i kaviar.sql
---reset search_path;
+set search_path to gnomad, public;
+\i gnomad.sql
+reset search_path;
 
 
---create schema cadd;
---grant usage on schema cadd to phenopolis_api;
---alter default privileges in schema cadd
---    grant select, insert, update, delete on tables to phenopolis_api;
---alter default privileges in schema cadd
---    grant all on sequences to phenopolis_api;
+create schema kaviar;
+grant usage on schema kaviar to phenopolis_api;
+alter default privileges in schema kaviar
+    grant select, insert, update, delete on tables to phenopolis_api;
+alter default privileges in schema kaviar
+    grant all on sequences to phenopolis_api;
 
---set search_path to cadd, public;
---\i cadd.sql
---reset search_path;
+set search_path to kaviar, public;
+\i kaviar.sql
+reset search_path;
+
+
+create schema cadd;
+grant usage on schema cadd to phenopolis_api;
+alter default privileges in schema cadd
+    grant select, insert, update, delete on tables to phenopolis_api;
+alter default privileges in schema cadd
+    grant all on sequences to phenopolis_api;
+
+set search_path to cadd, public;
+\i cadd.sql
+reset search_path;
 
 create schema ensembl;
 grant usage on schema ensembl to phenopolis_api;
