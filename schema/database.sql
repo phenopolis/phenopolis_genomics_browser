@@ -56,7 +56,6 @@ set search_path to hpo, public;
 reset search_path;
 
 
-
 create schema gnomad;
 grant usage on schema gnomad to phenopolis_api;
 alter default privileges in schema gnomad
