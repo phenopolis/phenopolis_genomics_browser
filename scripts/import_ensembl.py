@@ -44,7 +44,7 @@ ENSEMBL_TRANSCRIPT_ID = "ensembl_transcript_id"
 ENSEMBL_GENE_ID = "ensembl_gene_id"
 
 
-class BiomartReader(object):
+class BiomartReader:
 
     BIOMART_SERVER_URL_GRCH38 = "http://www.ensembl.org"  # use GRCh38
     DATASET = "hsapiens_gene_ensembl"

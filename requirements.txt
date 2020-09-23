@@ -14,9 +14,6 @@ logzero==1.5.0
 ujson==3.0.0
 python-dotenv==0.14.0
 
-# for scripts/import_hpo.py
-obonet==0.2.5
-
 # for checks
 pytest-cov==2.10.0
 black==19.10b0
