@@ -81,6 +81,7 @@ class BiomartReader(object):
         genes_grch38["latest"] = self._add_latest_flag(df=genes_grch38, id_field=ENSEMBL_GENE_ID, version_field=VERSION)
 
         genes = pd.concat([genes_grch37, genes_grch38])
+        genes.reset_index(drop=True, inplace=True)
 
         # filter out non latest genes
         genes = genes[genes.latest]
@@ -130,9 +131,8 @@ class BiomartReader(object):
             df=transcripts_grch38, id_field=ENSEMBL_TRANSCRIPT_ID, version_field=TRANSCRIPT_VERSION
         )
 
-        # TODO: add the number of exons
-
         transcripts = pd.concat([transcripts_grch37, transcripts_grch38])
+        transcripts.reset_index(drop=True, inplace=True)
 
         # filter out non latest genes
         transcripts = transcripts[transcripts.latest]
@@ -158,6 +158,7 @@ class BiomartReader(object):
 
         exons_grch37, exons_grch38 = self._get_attributes(exons_attributes)
         exons = pd.concat([exons_grch37, exons_grch38])
+        exons.reset_index(drop=True, inplace=True)
 
         BiomartReader._exons_sanity_checks(exons)
 
@@ -207,9 +208,11 @@ class BiomartReader(object):
         """
         id_with_version = "id_with_version"
         df[id_with_version] = df[[id_field, version_field]].apply(lambda x: "{}.{}".format(x[0], x[1]), axis=1)
-        latest_genes = df.groupby(id_field)[[id_with_version, version_field]].max()
-        latest_genes.reset_index(inplace=True)
-        return df[id_with_version].isin(latest_genes[id_with_version])
+        latest = df.groupby(id_field)[[id_with_version, version_field]].max()
+        latest.reset_index(inplace=True)
+        is_latest = df[id_with_version].isin(latest[id_with_version])
+        df.drop(id_with_version, axis=1, inplace=True)
+        return is_latest
 
     @staticmethod
     def _filter_empty_values_from_list(list_with_empty_values):
@@ -320,14 +323,17 @@ if __name__ == "__main__":
 
     genes = reader.get_genes()
     genes.index.rename("identifier", inplace=True)
+    genes.index += 1
     genes.to_csv("genes.csv", index=True, header=True)
 
     transcripts = reader.get_transcripts()
     transcripts.index.rename("identifier", inplace=True)
+    transcripts.index += 1
     transcripts.to_csv("transcripts.csv", index=True, header=True)
 
     exons = reader.get_exons()
     exons.index.rename("identifier", inplace=True)
+    exons.index += 1
     exons.to_csv("exons.csv", index=True, header=True)
 
     genes.reset_index(inplace=True)

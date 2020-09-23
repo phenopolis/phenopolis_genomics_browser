@@ -138,3 +138,23 @@ records.
 
 In order to import data from an existing `public.variants` table into the new
 tables use `scripts/migrate_variants.sh`.
+
+
+Ensembl import
+--------------
+
+You can import gene, transcript and exon annotations from Ensembl running 
+`scripts/import_ensembl.py.
+
+Load the data as follows:
+```
+\copy ensembl.gene FROM 'genes.csv' delimiter ',' CSV HEADER;
+\copy ensembl.transcript FROM 'transcripts.csv' delimiter ',' CSV HEADER;
+\copy ensembl.exon FROM 'exons.csv' delimiter ',' CSV HEADER;
+\copy ensembl.gene_transcript FROM 'genes_transcripts.csv' delimiter ',' CSV HEADER;
+\copy ensembl.transcript_exon FROM 'transcripts_exons.csv' delimiter ',' CSV HEADER;
+\copy ensembl.gene_synonym FROM 'gene_synonyms.csv' delimiter ',' CSV HEADER;
+\copy ensembl.transcript_uniprot FROM 'transcripts_uniprot.csv' delimiter ',' CSV HEADER;
+```
+
+`
