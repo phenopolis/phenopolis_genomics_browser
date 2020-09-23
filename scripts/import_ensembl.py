@@ -1,4 +1,4 @@
-#!/bin/python
+#!/usr/bin/env python3
 from typing import List, Tuple
 
 from pybiomart import Server
