@@ -144,7 +144,7 @@ Ensembl import
 --------------
 
 You can import gene, transcript and exon annotations from Ensembl running 
-`scripts/import_ensembl.py.
+`scripts/import_ensembl.py`.
 
 Load the data as follows:
 ```
@@ -156,5 +156,3 @@ Load the data as follows:
 \copy ensembl.gene_synonym FROM 'gene_synonyms.csv' delimiter ',' CSV HEADER;
 \copy ensembl.transcript_uniprot FROM 'transcripts_uniprot.csv' delimiter ',' CSV HEADER;
 ```
-
-`
