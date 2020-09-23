@@ -174,6 +174,7 @@ class BiomartReader(object):
             on=[ENSEMBL_GENE_ID, ASSEMBLY],
         )[["identifier", SYNONYM]]
         # remove empty synonyms
+        synonyms.rename({"identifier": "gene"}, axis=1, inplace=True)
         synonyms.dropna(inplace=True)
         return synonyms
 
@@ -187,6 +188,7 @@ class BiomartReader(object):
             on=[ENSEMBL_TRANSCRIPT_ID, ASSEMBLY],
         )[["identifier", UNIPROTSWISSPROT]]
         # remove empty synonyms
+        uniprot.rename({"identifier": "transcript"}, axis=1, inplace=True)
         uniprot.dropna(inplace=True)
         return uniprot
 
@@ -352,6 +354,7 @@ if __name__ == "__main__":
         lsuffix="_gene",
         rsuffix="_transcript",
     )[["identifier_gene", "identifier_transcript"]]
+    genes_transcripts.rename({"identifier_gene": "gene", "identifier_transcript": "transcript"}, axis=1, inplace=True)
     genes_transcripts.to_csv("genes_transcripts.csv", index=False, header=True)
 
     transcripts_exons = transcripts[["identifier", ENSEMBL_TRANSCRIPT_ID]].join(
@@ -360,6 +363,8 @@ if __name__ == "__main__":
         lsuffix="_transcript",
         rsuffix="_exon",
     )[["identifier_transcript", "identifier_exon"]]
+    transcripts_exons.rename({"identifier_exon": "exon", "identifier_transcript": "transcript"}, axis=1, inplace=True)
     transcripts_exons.to_csv("transcripts_exons.csv", index=False, header=True)
+
     end_time = time.time()
     logging.warning("Finished in {} seconds".format(end_time - start_time))

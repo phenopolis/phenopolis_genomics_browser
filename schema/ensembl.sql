@@ -44,23 +44,23 @@ create index ON transcript USING btree (ensembl_gene_id);
 create index ON transcript USING btree (ensembl_transcript_id);
 
 create table gene_transcript (
-    identifier_gene integer,
-    identifier_transcript integer,
-    primary key(identifier_gene, identifier_transcript)
+    gene integer,
+    transcript integer,
+    primary key(gene, transcript)
 );
 
 create table gene_synonym (
-    identifier integer,
+    gene integer,
     external_synonym text,
-    primary key(identifier, external_synonym)
+    primary key(gene, external_synonym)
 );
 
 create index ON gene_synonym USING btree (external_synonym);
 
 create table transcript_uniprot (
-    identifier integer,
+    transcript integer,
     uniprotswissprot text,
-    primary key(identifier, uniprotswissprot)
+    primary key(transcript, uniprotswissprot)
 );
 
 create index ON transcript_uniprot USING btree (uniprotswissprot);
@@ -81,7 +81,7 @@ create table exon (
 );
 
 create table transcript_exon (
-    identifier_transcript integer,
-    identifier_exon integer,
-    primary key (identifier_transcript, identifier_exon)
+    transcript integer,
+    exon integer,
+    primary key (transcript, exon)
 );
