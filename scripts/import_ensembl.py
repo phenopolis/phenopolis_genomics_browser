@@ -1,7 +1,11 @@
 #!/bin/python
-from pybiomart import Server, Dataset
+from typing import List, Tuple
+
+from pybiomart import Server
 import pandas as pd
 import re
+import logging
+import time
 
 SYNONYM = "external_synonym"
 TRANSCRIPT_VERSION = "transcript_version"
@@ -76,12 +80,6 @@ class BiomartReader(object):
         genes_grch37["latest"] = self._add_latest_flag(df=genes_grch37, id_field=ENSEMBL_GENE_ID, version_field=VERSION)
         genes_grch38["latest"] = self._add_latest_flag(df=genes_grch38, id_field=ENSEMBL_GENE_ID, version_field=VERSION)
 
-        # fetch synonyms
-        synonyms_grch37 = self._get_gene_synonyms(self.dataset_grch37)
-        genes_grch37 = genes_grch37.join(synonyms_grch37, on=ENSEMBL_GENE_ID)
-        synonyms_grch38 = self._get_gene_synonyms(self.dataset_grch38)
-        genes_grch38 = genes_grch38.join(synonyms_grch38, on=ENSEMBL_GENE_ID)
-
         genes = pd.concat([genes_grch37, genes_grch38])
 
         # filter out non latest genes
@@ -116,7 +114,6 @@ class BiomartReader(object):
             CDS_LENGTH,
             TRANSCRIPT_BIOTYPE,
             UNIPARC,
-            # UNIPROTSWISSPROT
         ]
 
         transcripts_grch37, transcripts_grch38 = self._get_attributes(transcripts_attributes)
@@ -166,6 +163,32 @@ class BiomartReader(object):
 
         return exons
 
+    def get_gene_synonyms(self, genes: pd.DataFrame) -> pd.DataFrame:
+        synonym_attributes = [ENSEMBL_GENE_ID, SYNONYM]
+        synonyms_grch37, synonyms_grch38 = self._get_attributes(synonym_attributes)
+        synonyms = pd.concat([synonyms_grch37, synonyms_grch38])
+        # map synonyms to internal gene ids
+        synonyms = genes[["identifier", ENSEMBL_GENE_ID, ASSEMBLY]].join(
+            synonyms[[SYNONYM, ENSEMBL_GENE_ID, ASSEMBLY]].set_index([ENSEMBL_GENE_ID, ASSEMBLY]),
+            on=[ENSEMBL_GENE_ID, ASSEMBLY],
+        )[["identifier", SYNONYM]]
+        # remove empty synonyms
+        synonyms.dropna(inplace=True)
+        return synonyms
+
+    def get_uniprot(self, trancripts: pd.DataFrame) -> pd.DataFrame:
+        uniprot_attributes = [ENSEMBL_TRANSCRIPT_ID, UNIPROTSWISSPROT]
+        uniprot_grch37, uniprot_grch38 = self._get_attributes(uniprot_attributes)
+        uniprot = pd.concat([uniprot_grch37, uniprot_grch38])
+        # map synonyms to internal gene ids
+        uniprot = trancripts[["identifier", ENSEMBL_TRANSCRIPT_ID, ASSEMBLY]].join(
+            uniprot[[UNIPROTSWISSPROT, ENSEMBL_TRANSCRIPT_ID, ASSEMBLY]].set_index([ENSEMBL_TRANSCRIPT_ID, ASSEMBLY]),
+            on=[ENSEMBL_TRANSCRIPT_ID, ASSEMBLY],
+        )[["identifier", UNIPROTSWISSPROT]]
+        # remove empty synonyms
+        uniprot.dropna(inplace=True)
+        return uniprot
+
     @staticmethod
     def _add_canonical_transcript_flag(transcripts: pd.DataFrame) -> pd.Series:
         """
@@ -188,28 +211,14 @@ class BiomartReader(object):
         latest_genes.reset_index(inplace=True)
         return df[id_with_version].isin(latest_genes[id_with_version])
 
-    def _get_gene_synonyms(self, dataset: Dataset) -> pd.Series:
-        gene_synonyms_df = dataset.query(
-            attributes=[ENSEMBL_GENE_ID, SYNONYM], filters=self.filters, use_attr_names=True
-        )
-        return (
-            gene_synonyms_df.fillna("")
-            .groupby(by=ENSEMBL_GENE_ID)[SYNONYM]
-            .apply(lambda x: ",".join(BiomartReader._filter_empty_values_from_list(list(x))))
-        )
-
     @staticmethod
     def _filter_empty_values_from_list(list_with_empty_values):
         return list(filter(lambda x: x is not None and x != "", list(list_with_empty_values)))
 
-    def _get_attributes(self, transcripts_attributes):
+    def _get_attributes(self, attributes: List) -> Tuple[pd.DataFrame, pd.DataFrame]:
         # reads the transcripts from biomart
-        transcripts_grch37 = self.dataset_grch37.query(
-            attributes=transcripts_attributes, filters=self.filters, use_attr_names=True
-        )
-        transcripts_grch38 = self.dataset_grch38.query(
-            attributes=transcripts_attributes, filters=self.filters, use_attr_names=True
-        )
+        transcripts_grch37 = self.dataset_grch37.query(attributes=attributes, filters=self.filters, use_attr_names=True)
+        transcripts_grch38 = self.dataset_grch38.query(attributes=attributes, filters=self.filters, use_attr_names=True)
         # sets the assembly for each
         transcripts_grch37[ASSEMBLY] = "GRCh37"
         transcripts_grch38[ASSEMBLY] = "GRCh38"
@@ -303,15 +312,20 @@ if __name__ == "__main__":
             "TR_V_gene",
         ],
         "transcript_gencode_basic": "only",
-        # "chromosome_name": "22"
+        # "chromosome_name": "22"   # use for testing
     }
+    logging.warning("Starting...")
+    start_time = time.time()
     reader = BiomartReader(filters=filters)
+
     genes = reader.get_genes()
     genes.index.rename("identifier", inplace=True)
     genes.to_csv("genes.csv", index=True, header=True)
+
     transcripts = reader.get_transcripts()
     transcripts.index.rename("identifier", inplace=True)
     transcripts.to_csv("transcripts.csv", index=True, header=True)
+
     exons = reader.get_exons()
     exons.index.rename("identifier", inplace=True)
     exons.to_csv("exons.csv", index=True, header=True)
@@ -319,6 +333,12 @@ if __name__ == "__main__":
     genes.reset_index(inplace=True)
     transcripts.reset_index(inplace=True)
     exons.reset_index(inplace=True)
+
+    synonyms = reader.get_gene_synonyms(genes=genes)
+    synonyms.to_csv("gene_synonyms.csv", index=False, header=True)
+
+    uniprot = reader.get_uniprot(trancripts=transcripts)
+    uniprot.to_csv("transcripts_uniprot.csv", index=False, header=True)
 
     genes_transcripts = genes[["identifier", ENSEMBL_GENE_ID]].join(
         transcripts[["identifier", ENSEMBL_GENE_ID]].set_index(ENSEMBL_GENE_ID),
@@ -335,3 +355,5 @@ if __name__ == "__main__":
         rsuffix="_exon",
     )[["identifier_transcript", "identifier_exon"]]
     transcripts_exons.to_csv("transcripts_exons.csv", index=False, header=True)
+    end_time = time.time()
+    logging.warning("Finished in {} seconds".format(end_time - start_time))
