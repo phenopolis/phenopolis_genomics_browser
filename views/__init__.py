@@ -22,6 +22,8 @@ if APP_ENV in ["coverage", "prod"]:
 
 
 def _configure_logs():
+    application_environment = APP_ENV
+    log_level = logging.DEBUG if application_environment == "debug" else logging.ERROR
     dictConfig(
         {
             "version": 1,
@@ -35,7 +37,7 @@ def _configure_logs():
                     "formatter": "default",
                 },
                 "info_rotating_file_handler": {
-                    "level": "INFO",
+                    "level": log_level,
                     "formatter": "default",
                     "class": "logging.handlers.RotatingFileHandler",
                     "filename": "phenopolis.log",
@@ -44,7 +46,7 @@ def _configure_logs():
                     "backupCount": 10,
                 },
             },
-            "root": {"level": "INFO", "handlers": ["wsgi"]},
+            "root": {"level": log_level, "handlers": ["wsgi"]},
         }
     )
     # add SQLalchemy logs
