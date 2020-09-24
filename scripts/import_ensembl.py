@@ -95,7 +95,7 @@ class BiomartReader:
             lambda x: re.sub(r"\[.*\]", "", x).strip() if isinstance(x, str) else x
         )
 
-        BiomartReader._genes_sanity_checks(genes)
+        self._genes_sanity_checks(genes)
 
         return genes
 
@@ -138,7 +138,7 @@ class BiomartReader:
         transcripts = transcripts[transcripts.latest]
         transcripts.drop("latest", axis=1, inplace=True)
 
-        BiomartReader._transcripts_sanity_checks(transcripts)
+        self._transcripts_sanity_checks(transcripts)
 
         return transcripts
 
@@ -160,7 +160,7 @@ class BiomartReader:
         exons = pd.concat([exons_grch37, exons_grch38])
         exons.reset_index(drop=True, inplace=True)
 
-        BiomartReader._exons_sanity_checks(exons)
+        self._exons_sanity_checks(exons)
 
         return exons
 
@@ -192,8 +192,7 @@ class BiomartReader:
         uniprot.dropna(inplace=True)
         return uniprot
 
-    @staticmethod
-    def _add_canonical_transcript_flag(transcripts: pd.DataFrame) -> pd.Series:
+    def _add_canonical_transcript_flag(self, transcripts: pd.DataFrame) -> pd.Series:
         """
         Adds a column indicating whether the transcript is canonical
         If more than one transcript chooses the one with the longest CDS trying to replicate the
@@ -203,8 +202,7 @@ class BiomartReader:
         canonical_transcripts.reset_index(inplace=True)
         return transcripts[ENSEMBL_TRANSCRIPT_ID].isin(canonical_transcripts[ENSEMBL_TRANSCRIPT_ID])
 
-    @staticmethod
-    def _add_latest_flag(df: pd.DataFrame, id_field: str, version_field: str) -> pd.Series:
+    def _add_latest_flag(self, df: pd.DataFrame, id_field: str, version_field: str) -> pd.Series:
         """
         Adds a column indicating whether the gene version is the latest in this table
         """
@@ -216,10 +214,6 @@ class BiomartReader:
         df.drop(id_with_version, axis=1, inplace=True)
         return is_latest
 
-    @staticmethod
-    def _filter_empty_values_from_list(list_with_empty_values):
-        return list(filter(lambda x: x is not None and x != "", list(list_with_empty_values)))
-
     def _get_attributes(self, attributes: List) -> Tuple[pd.DataFrame, pd.DataFrame]:
         # reads the transcripts from biomart
         transcripts_grch37 = self.dataset_grch37.query(attributes=attributes, filters=self.filters, use_attr_names=True)
@@ -229,8 +223,7 @@ class BiomartReader:
         transcripts_grch38[ASSEMBLY] = "GRCh38"
         return transcripts_grch37, transcripts_grch38
 
-    @staticmethod
-    def _genes_sanity_checks(genes: pd.DataFrame) -> None:
+    def _genes_sanity_checks(self, genes: pd.DataFrame) -> None:
         unique_genes = (
             genes[[ENSEMBL_GENE_ID, ASSEMBLY]].apply(lambda x: "{}.{}".format(x[0], x[1]), axis=1).value_counts()
         )
@@ -244,8 +237,7 @@ class BiomartReader:
         assert genes.end_position.isna().sum() == 0, "Found entry without end"
         assert genes[genes.start_position > genes.end_position].shape[0] == 0, "Start and end positions incoherent"
 
-    @staticmethod
-    def _transcripts_sanity_checks(transcripts: pd.DataFrame) -> None:
+    def _transcripts_sanity_checks(self, transcripts: pd.DataFrame) -> None:
         unique_transcripts = (
             transcripts[[ENSEMBL_TRANSCRIPT_ID, ASSEMBLY]]
             .apply(lambda x: "{}.{}".format(x[0], x[1]), axis=1)
@@ -264,8 +256,7 @@ class BiomartReader:
             transcripts[transcripts.transcript_start > transcripts.transcript_end].shape[0] == 0
         ), "Start and end positions incoherent"
 
-    @staticmethod
-    def _exons_sanity_checks(exons: pd.DataFrame) -> None:
+    def _exons_sanity_checks(self, exons: pd.DataFrame) -> None:
         unique_exons = (
             exons[[ENSEMBL_TRANSCRIPT_ID, ENSEMBL_EXON_ID, ASSEMBLY]]
             .apply(lambda x: "{}.{}.{}".format(x[0], x[1], x[2]), axis=1)
