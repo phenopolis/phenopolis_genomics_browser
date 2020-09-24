@@ -9,7 +9,6 @@ import time
 
 SYNONYM = "external_synonym"
 TRANSCRIPT_VERSION = "transcript_version"
-UNIPROTSPTREMBL = "uniprotsptrembl"
 GENE_GC_CONTENT = "percentage_gene_gc_content"
 HGNC_SYMBOL = "hgnc_symbol"
 HGNC_ID = "hgnc_id"
@@ -95,6 +94,10 @@ class BiomartReader:
             lambda x: re.sub(r"\[.*\]", "", x).strip() if isinstance(x, str) else x
         )
 
+        # some column renaming
+        genes.rename({GENE_BIOTYPE: "biotype", START_POSITION: "start", END_POSITION: "end",
+                      CHROMOSOME_NAME: "chromosome"}, axis=1, inplace=True)
+
         self._genes_sanity_checks(genes)
 
         return genes
@@ -138,6 +141,10 @@ class BiomartReader:
         transcripts = transcripts[transcripts.latest]
         transcripts.drop("latest", axis=1, inplace=True)
 
+        # some column renaming
+        transcripts.rename({TRANSCRIPT_VERSION: VERSION, TRANSCRIPT_BIOTYPE: "biotype", TRANSCRIPT_START: "start",
+                            TRANSCRIPT_END: "end", CHROMOSOME_NAME: "chromosome"}, axis=1, inplace=True)
+
         self._transcripts_sanity_checks(transcripts)
 
         return transcripts
@@ -159,6 +166,10 @@ class BiomartReader:
         exons_grch37, exons_grch38 = self._get_attributes(exons_attributes)
         exons = pd.concat([exons_grch37, exons_grch38])
         exons.reset_index(drop=True, inplace=True)
+
+        # some column renaming
+        exons.rename({EXON_CHROM_START: "start", EXON_CHROM_END: "end", CHROMOSOME_NAME: "chromosome"},
+                     axis=1, inplace=True)
 
         self._exons_sanity_checks(exons)
 
@@ -232,10 +243,10 @@ class BiomartReader:
         )
         assert genes.ensembl_gene_id.isna().sum() == 0, "Found entry without ensembl id"
         assert genes.assembly.isna().sum() == 0, "Found entry without assembly"
-        assert genes.chromosome_name.isna().sum() == 0, "Found entry without chromosome"
-        assert genes.start_position.isna().sum() == 0, "Found entry without start"
-        assert genes.end_position.isna().sum() == 0, "Found entry without end"
-        assert genes[genes.start_position > genes.end_position].shape[0] == 0, "Start and end positions incoherent"
+        assert genes.chromosome.isna().sum() == 0, "Found entry without chromosome"
+        assert genes.start.isna().sum() == 0, "Found entry without start"
+        assert genes.end.isna().sum() == 0, "Found entry without end"
+        assert genes[genes.start > genes.end].shape[0] == 0, "Start and end positions incoherent"
 
     def _transcripts_sanity_checks(self, transcripts: pd.DataFrame) -> None:
         unique_transcripts = (
@@ -249,11 +260,11 @@ class BiomartReader:
         assert transcripts.ensembl_transcript_id.isna().sum() == 0, "Found entry without ensembl id"
         assert transcripts.ensembl_gene_id.isna().sum() == 0, "Found entry without gene ensembl id"
         assert transcripts.assembly.isna().sum() == 0, "Found entry without assembly"
-        assert transcripts.chromosome_name.isna().sum() == 0, "Found entry without chromosome"
-        assert transcripts.transcript_start.isna().sum() == 0, "Found entry without start"
-        assert transcripts.transcript_end.isna().sum() == 0, "Found entry without end"
+        assert transcripts.chromosome.isna().sum() == 0, "Found entry without chromosome"
+        assert transcripts.start.isna().sum() == 0, "Found entry without start"
+        assert transcripts.end.isna().sum() == 0, "Found entry without end"
         assert (
-            transcripts[transcripts.transcript_start > transcripts.transcript_end].shape[0] == 0
+            transcripts[transcripts.start > transcripts.end].shape[0] == 0
         ), "Start and end positions incoherent"
 
     def _exons_sanity_checks(self, exons: pd.DataFrame) -> None:
@@ -277,10 +288,10 @@ class BiomartReader:
         assert exons.ensembl_transcript_id.isna().sum() == 0, "Found entry without transcript ensembl id"
         assert exons.ensembl_gene_id.isna().sum() == 0, "Found entry without gene ensembl id"
         assert exons.assembly.isna().sum() == 0, "Found entry without assembly"
-        assert exons.chromosome_name.isna().sum() == 0, "Found entry without chromosome"
-        assert exons.exon_chrom_start.isna().sum() == 0, "Found entry without start"
-        assert exons.exon_chrom_end.isna().sum() == 0, "Found entry without end"
-        assert exons[exons.exon_chrom_start > exons.exon_chrom_end].shape[0] == 0, "Start and end positions incoherent"
+        assert exons.chromosome.isna().sum() == 0, "Found entry without chromosome"
+        assert exons.start.isna().sum() == 0, "Found entry without start"
+        assert exons.end.isna().sum() == 0, "Found entry without end"
+        assert exons[exons.start > exons.end].shape[0] == 0, "Start and end positions incoherent"
 
 
 if __name__ == "__main__":
