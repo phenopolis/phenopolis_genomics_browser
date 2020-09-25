@@ -95,8 +95,11 @@ class BiomartReader:
         )
 
         # some column renaming
-        genes.rename({GENE_BIOTYPE: "biotype", START_POSITION: "start", END_POSITION: "end",
-                      CHROMOSOME_NAME: "chromosome"}, axis=1, inplace=True)
+        genes.rename(
+            {GENE_BIOTYPE: "biotype", START_POSITION: "start", END_POSITION: "end", CHROMOSOME_NAME: "chromosome"},
+            axis=1,
+            inplace=True,
+        )
 
         self._genes_sanity_checks(genes)
 
@@ -142,8 +145,17 @@ class BiomartReader:
         transcripts.drop("latest", axis=1, inplace=True)
 
         # some column renaming
-        transcripts.rename({TRANSCRIPT_VERSION: VERSION, TRANSCRIPT_BIOTYPE: "biotype", TRANSCRIPT_START: "start",
-                            TRANSCRIPT_END: "end", CHROMOSOME_NAME: "chromosome"}, axis=1, inplace=True)
+        transcripts.rename(
+            {
+                TRANSCRIPT_VERSION: VERSION,
+                TRANSCRIPT_BIOTYPE: "biotype",
+                TRANSCRIPT_START: "start",
+                TRANSCRIPT_END: "end",
+                CHROMOSOME_NAME: "chromosome",
+            },
+            axis=1,
+            inplace=True,
+        )
 
         self._transcripts_sanity_checks(transcripts)
 
@@ -168,8 +180,9 @@ class BiomartReader:
         exons.reset_index(drop=True, inplace=True)
 
         # some column renaming
-        exons.rename({EXON_CHROM_START: "start", EXON_CHROM_END: "end", CHROMOSOME_NAME: "chromosome"},
-                     axis=1, inplace=True)
+        exons.rename(
+            {EXON_CHROM_START: "start", EXON_CHROM_END: "end", CHROMOSOME_NAME: "chromosome"}, axis=1, inplace=True
+        )
 
         self._exons_sanity_checks(exons)
 
@@ -263,9 +276,7 @@ class BiomartReader:
         assert transcripts.chromosome.isna().sum() == 0, "Found entry without chromosome"
         assert transcripts.start.isna().sum() == 0, "Found entry without start"
         assert transcripts.end.isna().sum() == 0, "Found entry without end"
-        assert (
-            transcripts[transcripts.start > transcripts.end].shape[0] == 0
-        ), "Start and end positions incoherent"
+        assert transcripts[transcripts.start > transcripts.end].shape[0] == 0, "Start and end positions incoherent"
 
     def _exons_sanity_checks(self, exons: pd.DataFrame) -> None:
         unique_exons = (
