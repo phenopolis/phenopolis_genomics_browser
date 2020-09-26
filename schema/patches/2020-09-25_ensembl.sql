@@ -1,3 +1,11 @@
+create schema ensembl;
+grant usage on schema ensembl to phenopolis_api;
+alter default privileges in schema ensembl
+    grant select, insert, update, delete on tables to phenopolis_api;
+alter default privileges in schema ensembl
+    grant all on sequences to phenopolis_api;
+
+set search_path to ensembl, public;
 
 create table gene (
     identifier integer primary key,
