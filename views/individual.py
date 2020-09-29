@@ -43,15 +43,6 @@ def get_all_individuals():
     return jsonify(results), 200
 
 
-def _get_pagination_parameters():
-    try:
-        offset = int(request.args.get("offset", 0))
-        limit = int(request.args.get("limit", 10))
-    except ValueError as e:
-        raise PhenopolisException(str(e), 500)
-    return limit, offset
-
-
 @application.route("/<language>/individual/<individual_id>")
 @application.route("/<language>/individual/<individual_id>/<subset>")
 @application.route("/individual/<individual_id>")
@@ -147,6 +138,50 @@ def create_individual():
         return jsonify(success=False, message=message), http_status
     else:
         return jsonify(success=True, message=message, id=",".join(ids_new_individuals)), 200
+
+
+@application.route("/<language>/individual/<individual_id>", methods=["DELETE"])
+@application.route("/individual/<individual_id>", methods=["DELETE"])
+@requires_admin
+def delete_individual(individual_id, language="en"):
+
+    individual = _fetch_authorized_individual(individual_id)
+
+    request_ok = True
+    message = "Patient " + individual_id + " has been deleted."
+
+    if individual:
+        try:
+            db_session = get_db_session()
+            db_session.delete(individual)
+            db_session.query(UserIndividual.internal_id).filter(UserIndividual.internal_id == individual_id).delete()
+            db_session.commit()
+        except PhenopolisException as e:
+            db_session.rollback()
+            application.logger.exception(e)
+            request_ok = False
+            message = str(e)
+            http_status = e.http_status
+        finally:
+            db_session.close()
+    else:
+        request_ok = False
+        message = "Patient " + individual_id + " does not exist."
+
+    if not request_ok:
+        return jsonify(success=False, message=message), http_status
+    else:
+        return jsonify(success=True, message=message), 200
+
+
+
+def _get_pagination_parameters():
+    try:
+        offset = int(request.args.get("offset", 0))
+        limit = int(request.args.get("limit", 10))
+    except ValueError as e:
+        raise PhenopolisException(str(e), 500)
+    return limit, offset
 
 
 def _check_individual_valid(new_individual: Individual, sqlalchemy_session):
@@ -392,37 +427,3 @@ def _get_hpos(features):
         hpos.append(dict(zip(["hpo_id", "hpo_name", "hpo_ancestor_ids", "hpo_ancestor_names"], c.fetchone())))
     c.close()
     return hpos
-
-
-@application.route("/<language>/individual/<individual_id>", methods=["DELETE"])
-@application.route("/individual/<individual_id>", methods=["DELETE"])
-@requires_admin
-def delete_individual(individual_id, language="en"):
-
-    individual = _fetch_authorized_individual(individual_id)
-
-    request_ok = True
-    message = "Patient " + individual_id + " has been deleted."
-
-    if individual:
-        try:
-            db_session = get_db_session()
-            db_session.delete(individual)
-            db_session.query(UserIndividual.internal_id).filter(UserIndividual.internal_id == individual_id).delete()
-            db_session.commit()
-        except PhenopolisException as e:
-            db_session.rollback()
-            application.logger.exception(e)
-            request_ok = False
-            message = str(e)
-            http_status = e.http_status
-        finally:
-            db_session.close()
-    else:
-        request_ok = False
-        message = "Patient " + individual_id + " does not exist."
-
-    if not request_ok:
-        return jsonify(success=False, message=message), http_status
-    else:
-        return jsonify(success=True, message=message), 200

@@ -1,7 +1,7 @@
 import pytest
 from dotenv import load_dotenv
 from views import application, APP_ENV
-from views.auth import ADMIN_USER, USER
+from views.auth import ADMIN_USER, USER, DEMO_USER
 
 load_dotenv(dotenv_path="./private.env")
 load_dotenv(dotenv_path="./public.env")
@@ -30,4 +30,12 @@ def _admin_client():
     with application.test_client() as client:
         with client.session_transaction() as session:
             session[USER] = ADMIN_USER
+        yield client
+
+
+@pytest.fixture
+def _demo_client():
+    with application.test_client() as client:
+        with client.session_transaction() as session:
+            session[USER] = DEMO_USER
         yield client
