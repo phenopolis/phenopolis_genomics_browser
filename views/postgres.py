@@ -15,6 +15,7 @@ def get_db():
             database=application.config["DB_DATABASE"],
             user=application.config["DB_USER"],
             password=application.config["DB_PASSWORD"],
+            port=application.config["DB_PORT"]
         )
     return g.db
 

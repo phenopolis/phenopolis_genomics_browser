@@ -66,7 +66,6 @@ def get_individual_by_id(individual_id, subset="all", language="en"):
             jsonify(message="Sorry, either the patient does not exist or you are not permitted to see this patient"),
             404,
         )
-    application.logger.debug(individual)
 
     if subset == "preview":
         return jsonify(_individual_preview(config, individual)), 200
@@ -88,17 +87,18 @@ def update_patient_data(individual_id, language="en"):
         return json.dumps(config)
 
     application.logger.debug(request.form)
-    consanguinity = request.form.getlist("consanguinity_edit[]")[0]
-    gender = request.form.getlist("gender_edit[]")[0]
+    consanguinity = request.form.get("consanguinity_edit[]")
+    gender = request.form.get("gender_edit[]")
     genes = request.form.getlist("genes[]")
     features = request.form.getlist("feature[]")
     if not len(features):
         features = ["All"]
+
+    # TODO: simplfy this gender translation
     gender = {"male": "M", "female": "F", "unknown": "U"}.get(gender, "unknown")
     hpos = _get_hpos(features)
 
     _update_individual(consanguinity, gender, genes, hpos, individual)
-    # print(c.execute("select * from individuals where external_id=?",(ind['external_id'],)).fetchall())
     return jsonify({"success": True}), 200
 
 
@@ -194,7 +194,7 @@ def _get_new_individual_id(sqlalchemy_session):
 #     return variants
 
 
-def _individual_complete_view(config, individual, subset):
+def _individual_complete_view(config, individual: Individual, subset):
     cursor = postgres_cursor()
     # hom variants
     hom_variants = _get_homozygous_variants(cursor, individual)
@@ -221,16 +221,16 @@ def _individual_complete_view(config, individual, subset):
         return [{subset: y[subset]} for y in config]
 
 
-def _individual_preview(config, individual):
+def _individual_preview(config, individual: Individual):
     cursor = postgres_cursor()
     hom_count = _count_homozygous_variants(cursor, individual)
     het_count = _count_heterozygous_variants(cursor, individual)
     comp_het_count = _count_compound_heterozygous_variants(cursor, individual)
     config[0]["preview"] = [
-        ["External_id", individual["external_id"]],
-        ["Sex", individual["sex"]],
-        ["Genes", [g for g in individual.get("genes", "").split(",") if g != ""]],
-        ["Features", [f for f in individual["simplified_observed_features_names"].split(",") if f != ""]],
+        ["External_id", individual.external_id],
+        ["Sex", individual.sex],
+        ["Genes", [g for g in individual.genes.split(",") if g != ""]],
+        ["Features", [f for f in individual.simplified_observed_features_names.split(",") if f != ""]],
         ["Number of hom variants", hom_count],
         ["Number of compound hets", comp_het_count],
         ["Number of het variants", het_count],
@@ -239,18 +239,18 @@ def _individual_preview(config, individual):
     return config
 
 
-def _count_compound_heterozygous_variants(c, individual):
+def _count_compound_heterozygous_variants(c, individual: Individual):
     c.execute(
         """select count (1) from (select count(1) from het_variants hv, variants v
     where hv."CHROM"=v."CHROM" and hv."POS"=v."POS" and hv."REF"=v."REF" and hv."ALT"=v."ALT" and
     hv.individual=%(external_id)s group by v.gene_symbol having count(v.gene_symbol)>1) as t """,
-        {"external_id": individual["external_id"]},
+        {"external_id": individual.external_id},
     )
     comp_het_count = c.fetchone()[0]
     return comp_het_count
 
 
-def _count_heterozygous_variants(c, individual):
+def _count_heterozygous_variants(c, individual: Individual):
     c.execute(
         """select count(1)
        from het_variants hv, variants v
@@ -260,13 +260,13 @@ def _count_heterozygous_variants(c, individual):
        and hv."REF"=v."REF"
        and hv."ALT"=v."ALT"
        and hv.individual=%(external_id)s """,
-        {"external_id": individual["external_id"]},
+        {"external_id": individual.external_id},
     )
     het_count = c.fetchone()[0]
     return het_count
 
 
-def _count_homozygous_variants(c, individual):
+def _count_homozygous_variants(c, individual: Individual):
     c.execute(
         """select count(1)
        from hom_variants hv, variants v
@@ -275,34 +275,35 @@ def _count_homozygous_variants(c, individual):
        and hv."REF"=v."REF"
        and hv."ALT"=v."ALT"
        and hv.individual=%(external_id)s """,
-        {"external_id": individual["external_id"]},
+        {"external_id": individual.external_id},
     )
     hom_count = c.fetchone()[0]
     return hom_count
 
 
-def _map_individual2output(config, individual):
-    config[0]["metadata"]["data"][0]["sex"] = individual["sex"]
-    config[0]["metadata"]["data"][0]["consanguinity"] = individual.get("consanguinity")
-    config[0]["metadata"]["data"][0]["ethnicity"] = individual.get("ethnicity")
-    config[0]["metadata"]["data"][0]["pi"] = individual.get("pi")
-    config[0]["metadata"]["data"][0]["internal_id"] = [{"display": individual["internal_id"]}]
-    config[0]["metadata"]["data"][0]["external_id"] = individual["external_id"]
+def _map_individual2output(config, individual: Individual):
+    config[0]["metadata"]["data"][0]["sex"] = individual.sex
+    config[0]["metadata"]["data"][0]["consanguinity"] = individual.consanguinity
+    config[0]["metadata"]["data"][0]["ethnicity"] = individual.ethnicity
+    config[0]["metadata"]["data"][0]["pi"] = individual.pi
+    config[0]["metadata"]["data"][0]["internal_id"] = [{"display": individual.internal_id}]
+    config[0]["metadata"]["data"][0]["external_id"] = individual.external_id
     config[0]["metadata"]["data"][0]["simplified_observed_features"] = [
         {"display": i, "end_href": j}
         for i, j, in zip(
-            individual["simplified_observed_features_names"].split(";"),
-            individual["simplified_observed_features"].split(","),
+            individual.simplified_observed_features_names.split(";") if individual.simplified_observed_features_names else [],
+            individual.simplified_observed_features.split(",") if individual.simplified_observed_features else [],
         )
         if i != ""
     ]
+    genes = individual.genes.split(",") if individual.genes else []
     config[0]["metadata"]["data"][0]["genes"] = [
-        {"display": i} for i in individual.get("genes", "").split(",") if i != ""
+        {"display": i} for i in genes if i != ""
     ]
     return config
 
 
-def _get_heterozygous_variants(c, individual):
+def _get_heterozygous_variants(c, individual: Individual):
     c.execute(
         """select v.*
       from het_variants hv, variants v
@@ -312,7 +313,7 @@ def _get_heterozygous_variants(c, individual):
       and hv."REF"=v."REF"
       and hv."ALT"=v."ALT"
       and hv.individual=%(external_id)s """,
-        {"external_id": individual["external_id"]},
+        {"external_id": individual.external_id},
     )
     rare_variants = db.helpers.cursor2dict(c)
     # TODO: confirm if this needs to be enabled once the function has been corrected
@@ -320,7 +321,7 @@ def _get_heterozygous_variants(c, individual):
     return rare_variants
 
 
-def _get_homozygous_variants(c, individual):
+def _get_homozygous_variants(c, individual: Individual):
     c.execute(
         """select v.*
        from hom_variants hv, variants v
@@ -329,7 +330,7 @@ def _get_homozygous_variants(c, individual):
        and hv."REF"=v."REF"
        and hv."ALT"=v."ALT"
        and hv.individual=%(external_id)s """,
-        {"external_id": individual["external_id"]},
+        {"external_id": individual.external_id},
     )
     hom_variants = db.helpers.cursor2dict(c)
     # TODO: confirm if this needs to be enabled once the function has been corrected
@@ -355,73 +356,31 @@ def _fetch_all_individuals(offset, limit) -> List[Tuple[Individual, List[str]]]:
     return [(i, u.split(",")) for i, u in individuals]
 
 
-def _fetch_authorized_individual(individual_id):
-    c = postgres_cursor()
-    c.execute(
-        """select i.*
-           from users_individuals as ui, individuals as i
-           where
-           i.internal_id=ui.internal_id
-           and ui.user=%(user)s
-           and ui.internal_id=%(individual)s
-           """,
-        {"user": session[USER], "individual": individual_id},
-    )
-    individual = db.helpers.cursor2one_dict(c)
-    c.close()
-    return individual
+def _fetch_authorized_individual(individual_id) -> Individual:
+    db_session = get_db_session()
+    return db_session.query(Individual).join(UserIndividual)\
+        .filter(UserIndividual.user == session[USER]).filter(Individual.internal_id == individual_id).first()
 
 
-def _update_individual(consanguinity, gender, genes, hpos, individual):
+def _update_individual(consanguinity, gender, genes, hpos, individual: Individual):
+
     # update
     # features to hpo ids
-    individual["sex"] = gender
-    individual["consanguinity"] = consanguinity
-    individual["observed_features"] = ",".join([h["hpo_id"] for h in hpos])
-    individual["observed_features_names"] = ";".join([h["hpo_name"] for h in hpos])
-    individual["simplified_observed_features"] = individual["observed_features"]
-    individual["simplified_observed_features_names"] = individual["observed_features_names"]
-    individual["unobserved_features"] = ""
-    individual["ancestor_observed_features"] = ";".join(
+    individual.sex = gender
+    individual.consanguinity = consanguinity
+    individual.observed_features = ",".join([h["hpo_id"] for h in hpos])
+    individual.observed_features_names = ";".join([h["hpo_name"] for h in hpos])
+    individual.ancestor_observed_features = ";".join(
         sorted(list(set(list(itertools.chain.from_iterable([h["hpo_ancestor_ids"].split(";") for h in hpos])))))
     )
-    individual["genes"] = ",".join([x for x in genes])
+    individual.genes = ",".join([x for x in genes])
 
-    application.logger.info("UPDATE: {}".format(individual))
-    c = postgres_cursor()
+    db_session = get_db_session()
     try:
-        c.execute(
-            """update individuals set
-           sex=%(sex)s,
-           consanguinity=%(consanguinity)s,
-           observed_features=%(observed_features)s,
-           observed_features_names=%(observed_features_names)s,
-           simplified_observed_features=%(simplified_observed_features)s,
-           simplified_observed_features_names=%(simplified_observed_features_names)s,
-           ancestor_observed_features=%(ancestor_observed_features)s,
-           unobserved_features=%(unobserved_features)s,
-           genes=%(genes)s
-           where external_id=%(external_id)s""",
-            {
-                "sex": individual["sex"],
-                "consanguinity": individual["consanguinity"],
-                "observed_features": individual["observed_features"],
-                "observed_features_names": individual["observed_features_names"],
-                "simplified_observed_features": individual["simplified_observed_features"],
-                "simplified_observed_features_names": individual["simplified_observed_features_names"],
-                "ancestor_observed_features": individual["ancestor_observed_features"],
-                "unobserved_features": individual["unobserved_features"],
-                "genes": individual["genes"],
-                "external_id": individual["external_id"],
-            },
-        )
-        get_db().commit()
-        c.close()
+        db_session.commit()
     except (Exception, psycopg2.DatabaseError) as error:
         application.logger.exception(error)
-        get_db().rollback()
-    finally:
-        c.close()
+        db_session.rollback()
 
 
 def _get_hpos(features):
@@ -448,7 +407,7 @@ def delete_individual(individual_id, language="en"):
     if individual:
         try:
             db_session = get_db_session()
-            db_session.query(Individual.internal_id).filter(Individual.internal_id == individual_id).delete()
+            db_session.delete(individual)
             db_session.query(UserIndividual.internal_id).filter(UserIndividual.internal_id == individual_id).delete()
             db_session.commit()
         except PhenopolisException as e:

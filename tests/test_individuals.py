@@ -1,7 +1,10 @@
 import pytest
 import ujson as json
+
+from db.model import Individual
 from tests.test_views import _check_only_available_to_admin
 from views.individual import get_individual_by_id, update_patient_data, delete_individual, get_all_individuals
+from views.postgres import get_db_session
 
 
 @pytest.mark.parametrize(
@@ -42,6 +45,27 @@ def test_update_patient_data_demo(_demo):
 
 
 # TODO: add a test that updates a individual. It is required to pass a POST JSON payload
+def test_update_patient_data(_admin_client):
+
+    # fetch current sex
+    individual_id = "PH00008267"
+    db_session = get_db_session()
+    individual = db_session.query(Individual).filter(Individual.internal_id == individual_id).first()
+    sex = individual.sex
+
+    # update sex
+    # TODO: make the API more coherent regarding this sex translation
+    new_sex, new_sex_for_api = ("F", "female") if sex == "M" else ("M", "male")
+    response = _admin_client.post("/update_patient_data/{}".format(individual_id),
+                      data="gender_edit[]={}".format(new_sex_for_api),
+                      content_type='application/x-www-form-urlencoded')
+    assert response.status_code == 200
+
+    # fetch new sex
+    db_session.refresh(individual)
+    observed_sex = individual.sex
+    assert observed_sex == new_sex, "Update did not work"
+
 
 
 def test_delete_individual_failing_for_non_admin(_demo):
