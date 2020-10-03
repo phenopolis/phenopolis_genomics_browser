@@ -131,8 +131,6 @@ def create_individual():
         request_ok = False
         message = str(e)
         http_status = e.http_status
-    finally:
-        db_session.close()
 
     if not request_ok:
         return jsonify(success=False, message=message), http_status
@@ -140,38 +138,37 @@ def create_individual():
         return jsonify(success=True, message=message, id=",".join(ids_new_individuals)), 200
 
 
-@application.route("/<language>/individual/<individual_id>", methods=["DELETE"])
 @application.route("/individual/<individual_id>", methods=["DELETE"])
 @requires_admin
-def delete_individual(individual_id, language="en"):
+def delete_individual(individual_id):
 
     individual = _fetch_authorized_individual(individual_id)
 
     request_ok = True
+    http_status = 200
     message = "Patient " + individual_id + " has been deleted."
 
     if individual:
+        db_session = get_db_session()
         try:
-            db_session = get_db_session()
+            user_individuals = db_session.query(UserIndividual).filter(
+                UserIndividual.internal_id == individual_id).all()
+            for ui in user_individuals:
+                db_session.delete(ui)
             db_session.delete(individual)
-            db_session.query(UserIndividual.internal_id).filter(UserIndividual.internal_id == individual_id).delete()
             db_session.commit()
-        except PhenopolisException as e:
+        except Exception as e:
             db_session.rollback()
             application.logger.exception(e)
             request_ok = False
             message = str(e)
             http_status = e.http_status
-        finally:
-            db_session.close()
     else:
         request_ok = False
         message = "Patient " + individual_id + " does not exist."
+        http_status = 404
 
-    if not request_ok:
-        return jsonify(success=False, message=message), http_status
-    else:
-        return jsonify(success=True, message=message), 200
+    return jsonify(success=request_ok, message=message), http_status
 
 
 def _get_pagination_parameters():

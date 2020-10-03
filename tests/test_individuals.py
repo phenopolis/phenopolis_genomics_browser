@@ -1,10 +1,10 @@
+import string
+
 import pytest
 import ujson as json
-from flask import session
-
+import random
 from db.model import Individual
 from tests.test_views import _check_only_available_to_admin
-from views.auth import USER
 from views.individual import get_individual_by_id, delete_individual, get_all_individuals
 from views.postgres import get_db_session
 
@@ -135,14 +135,14 @@ def test_update_individual_with_admin_user(_admin_client):
 
 def test_create_individual_with_demo_user_fails(_demo_client):
     individual = Individual()
-    individual.internal_id = "PH_TEST000001"
+    individual.internal_id = _get_random_individual_id()
     response = _demo_client.post("/individual", data=json.dumps(individual.as_dict()), content_type='text/json')
     assert response.status_code == 405
 
 
 def test_create_individual_with_admin_user(_admin_client):
     individual = Individual()
-    test_individual_id = "PH_TEST000007"
+    test_individual_id = _get_random_individual_id()
     individual.external_id = test_individual_id
     individual.pi = "3.1416"
     response = _admin_client.post("/individual", data=json.dumps(individual.as_dict()), content_type='application/json')
@@ -159,7 +159,7 @@ def test_create_individual_with_admin_user(_admin_client):
 
 def test_create_individual_existing_individual_fails(_admin_client):
     individual = Individual()
-    test_individual_id = "PH_TEST000008"
+    test_individual_id = _get_random_individual_id()
     individual.external_id = test_individual_id
     individual.pi = "3.1416"
     response = _admin_client.post("/individual", data=json.dumps(individual.as_dict()), content_type='application/json')
@@ -179,11 +179,11 @@ def test_create_individual_existing_individual_fails(_admin_client):
 
 def test_create_multiple_individuals(_admin_client):
     individual = Individual()
-    test_individual_id = "PH_TEST000010"
+    test_individual_id = _get_random_individual_id()
     individual.external_id = test_individual_id
     individual.pi = "3.1416"
     individual2 = Individual()
-    test_individual_id2 = "PH_TEST000011"
+    test_individual_id2 = _get_random_individual_id()
     individual2.external_id = test_individual_id2
     individual2.pi = "3.141600000001983983"
     response = _admin_client.post("/individual", data=json.dumps([individual.as_dict(), individual2.as_dict()]),
@@ -209,7 +209,35 @@ def test_delete_individual_failing_for_non_admin(_demo):
     _check_only_available_to_admin(res)
 
 
-# TODO: add a test that deletes an individual. It is required to pass a POST JSON payload
+def test_delete_individual(_admin_client):
+    # creates an individual
+    individual = Individual()
+    test_individual_id = _get_random_individual_id()
+    individual.external_id = test_individual_id
+    individual.pi = "3.1416"
+    response = _admin_client.post("/individual", data=json.dumps([individual.as_dict()]),
+                                  content_type='application/json')
+    assert response.status_code == 200
+
+    # confirms existence of new individual
+    db_session = get_db_session()
+    observed_individual = db_session.query(Individual).filter(Individual.external_id == test_individual_id).first()
+    assert observed_individual is not None, "Empty newly created individual"
+
+    # deletes individual
+    response = _admin_client.delete("/individual/{}".format(observed_individual.internal_id), content_type='application/json')
+    assert response.status_code == 200
+
+    # confirms it does not exist
+    observed_individual = db_session.query(Individual).filter(Individual.external_id == test_individual_id).first()
+    assert observed_individual is None, "Deletion was not successful"
+
+
+def test_delete_not_existing_individual(_admin_client):
+    # deletes individual
+    response = _admin_client.delete("/individual/{}".format(_get_random_individual_id()),
+                                    content_type='application/json')
+    assert response.status_code == 404
 
 
 def test_get_all_individuals_default_page(_demo):
@@ -265,3 +293,7 @@ def test_get_all_individuals_second_page(_demo):
 def _clean_test_individuals(db_session, test_individual_id):
     db_session.query(Individual).filter(Individual.external_id == test_individual_id).delete()
     db_session.commit()
+
+
+def _get_random_individual_id():
+    return "PH_TEST{}".format(''.join(random.choices(string.digits, k=8)))
