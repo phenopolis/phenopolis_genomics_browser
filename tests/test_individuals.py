@@ -42,17 +42,31 @@ def test_get_unauthorised_individual_by_id(_demo):
 def test_get_individual_complete_view_by_id(_admin):
 
     # test individual with homozygous variants
-    response, status = get_individual_by_id("PH00008256", subset="all")
+    individual_complete_view = _get_complete_view_individual_by_id(identifier="PH00008256")
+    assert len(individual_complete_view.get("rare_homs", {}).get("data")) == 1, \
+        "Unexpected number of homozygous variants"
+    assert len(individual_complete_view.get("rare_variants", {}).get("data")) == 0, \
+        "Unexpected number of heterozygous variants"
+    assert len(individual_complete_view.get("rare_comp_hets", {}).get("data")) == 0, \
+        "Unexpected number of compound heterozygous variants"
+
+    # test individual with heterozygous variants
+    individual_complete_view = _get_complete_view_individual_by_id(identifier="PH00008267")
+    assert len(individual_complete_view.get("rare_homs", {}).get("data")) == 0, \
+        "Unexpected number of homozygous variants"
+    assert len(individual_complete_view.get("rare_variants", {}).get("data")) == 2, \
+        "Unexpected number of heterozygous variants"
+    assert len(individual_complete_view.get("rare_comp_hets", {}).get("data")) == 2, \
+        "Unexpected number of compound heterozygous variants"
+
+
+def _get_complete_view_individual_by_id(identifier):
+    response, status = get_individual_by_id(identifier, subset="all")
     assert status == 200
     data = json.loads(response.data)
     assert len(data) == 1, "Missing expected data"
     individual_complete_view = data[0]
-    rare_homozygous_variants = individual_complete_view.get("rare_homs", {}).get("data")
-    assert len(rare_homozygous_variants) == 1, "Unexpected number of homozygous variants"
-    rare_heterozygous_variants = individual_complete_view.get("rare_variants", {}).get("data")
-    assert len(rare_heterozygous_variants) == 0, "Unexpected number of heterozygous variants"
-    rare_compound_heterozygous_variants = individual_complete_view.get("rare_comp_hets", {}).get("data")
-    assert len(rare_compound_heterozygous_variants) == 0, "Unexpected number of compound heterozygous variants"
+    return individual_complete_view
 
 
 def test_update_individual_with_demo_user_fails(_demo_client):

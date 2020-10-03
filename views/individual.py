@@ -11,7 +11,7 @@ import db.helpers
 import ujson as json
 from collections import Counter
 from flask import session, jsonify, request
-from db.model import Individual, UserIndividual, Variant, HomozygousVariant
+from db.model import Individual, UserIndividual, Variant, HomozygousVariant, HeterozygousVariant
 from views import application
 from views.auth import requires_auth, requires_admin, is_demo_user, USER, ADMIN_USER
 from views.exceptions import PhenopolisException
@@ -229,21 +229,15 @@ def _get_new_individual_id(sqlalchemy_session):
 
 
 def _individual_complete_view(config, individual: Individual, subset):
-    cursor = postgres_cursor()
     # hom variants
-    hom_variants = _get_homozygous_variants(cursor, individual)
-    config[0]["rare_homs"]["data"] = list(map(lambda x: x.as_dict(), hom_variants))
+    config[0]["rare_homs"]["data"] = list(map(lambda x: x.as_dict(), _get_homozygous_variants(individual)))
     # rare variants
-    rare_variants = _get_heterozygous_variants(cursor, individual)
-    config[0]["rare_variants"]["data"] = rare_variants
+    config[0]["rare_variants"]["data"] = list(map(lambda x: x.as_dict(), _get_heterozygous_variants(individual)))
     # rare_comp_hets
     gene_counter = Counter([v["gene_symbol"] for v in config[0]["rare_variants"]["data"]])
     rare_comp_hets_variants = [v for v in config[0]["rare_variants"]["data"] if gene_counter[v["gene_symbol"]] > 1]
-    cursor.close()
-
-    # TODO: confirm if this needs to be enabled once the function has been corrected
-    # rare_comp_hets_variants = _get_hpo_ids_per_gene(rare_comp_hets_variants, individual)
     config[0]["rare_comp_hets"]["data"] = rare_comp_hets_variants
+
     if not config[0]["metadata"]["data"]:
         config[0]["metadata"]["data"] = [dict()]
     config = _map_individual2output(config, individual)
@@ -316,12 +310,8 @@ def _count_homozygous_variants(c, individual: Individual):
 
 
 def _map_individual2output(config, individual: Individual):
-    config[0]["metadata"]["data"][0]["sex"] = individual.sex
-    config[0]["metadata"]["data"][0]["consanguinity"] = individual.consanguinity
-    config[0]["metadata"]["data"][0]["ethnicity"] = individual.ethnicity
-    config[0]["metadata"]["data"][0]["pi"] = individual.pi
+    config[0]["metadata"]["data"][0].update(individual.as_dict())
     config[0]["metadata"]["data"][0]["internal_id"] = [{"display": individual.internal_id}]
-    config[0]["metadata"]["data"][0]["external_id"] = individual.external_id
     config[0]["metadata"]["data"][0]["simplified_observed_features"] = [
         {"display": i, "end_href": j}
         for i, j, in zip(
@@ -331,37 +321,25 @@ def _map_individual2output(config, individual: Individual):
         if i != ""
     ]
     genes = individual.genes.split(",") if individual.genes else []
-    config[0]["metadata"]["data"][0]["genes"] = [
-        {"display": i} for i in genes if i != ""
-    ]
+    config[0]["metadata"]["data"][0]["genes"] = [{"display": i} for i in genes if i != ""]
     return config
 
 
-def _get_heterozygous_variants(c, individual: Individual):
-    c.execute(
-        """select v.*
-      from het_variants hv, variants v
-      where
-      hv."CHROM"=v."CHROM"
-      and hv."POS"=v."POS"
-      and hv."REF"=v."REF"
-      and hv."ALT"=v."ALT"
-      and hv.individual=%(external_id)s """,
-        {"external_id": individual.external_id},
-    )
-    rare_variants = db.helpers.cursor2dict(c)
-    # TODO: confirm if this needs to be enabled once the function has been corrected
-    # rare_variants = get_hpo_ids_per_gene(rare_variants, individual)
-    return rare_variants
+def _get_heterozygous_variants(individual: Individual) -> List[Variant]:
+
+    results = get_db_session().query(HeterozygousVariant, Variant) \
+        .filter(HeterozygousVariant.individual == individual.external_id) \
+        .join(Variant, and_(HeterozygousVariant.CHROM == Variant.CHROM, HeterozygousVariant.POS == Variant.POS,
+                            HeterozygousVariant.REF == Variant.REF, HeterozygousVariant.ALT == Variant.ALT)).all()
+    return [variant for _, variant in results]
 
 
-def _get_homozygous_variants(c, individual: Individual) -> List[Variant]:
+def _get_homozygous_variants(individual: Individual) -> List[Variant]:
 
     results = get_db_session().query(HomozygousVariant, Variant) \
         .filter(HomozygousVariant.individual == individual.external_id) \
         .join(Variant, and_(HomozygousVariant.CHROM == Variant.CHROM, HomozygousVariant.POS == Variant.POS,
                             HomozygousVariant.REF == Variant.REF, HomozygousVariant.ALT == Variant.ALT)).all()
-
     return [variant for _, variant in results]
 
 

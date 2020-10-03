@@ -64,6 +64,7 @@ class Variant(Base, AsDictable):
     af_converge = Column("af_converge", String)
     af_hgvd = Column("af_hgvd", String)
     gene_id = Column("gene_id", String(255), ForeignKey("genes.gene_id"))
+    gene_symbol = Column("gene_symbol", String(255))
     hgvsc = Column("hgvsc", String(255))
     hgvsp = Column("hgvsp", String(255))
     dann = Column("dann", String)
@@ -72,10 +73,10 @@ class Variant(Base, AsDictable):
 
 class HeterozygousVariant(Base, AsDictable):
     __tablename__ = "het_variants"
-    chromosome = Column("CHROM", String(2), primary_key=True)
-    position = Column("POS", String(255), primary_key=True)
-    reference = Column("REF", String(255), primary_key=True)
-    alternate = Column("ALT", String(255), primary_key=True)
+    CHROM = Column("CHROM", String(2), primary_key=True)
+    POS = Column("POS", String(255), primary_key=True)
+    REF = Column("REF", String(255), primary_key=True)
+    ALT = Column("ALT", String(255), primary_key=True)
     individual = Column("individual", String(255), ForeignKey("individuals.internal_id"), primary_key=True)
 
 
