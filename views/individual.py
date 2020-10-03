@@ -5,18 +5,18 @@ import re
 import itertools
 from typing import List, Tuple
 import psycopg2
-from sqlalchemy import func, literal_column
+from sqlalchemy import func, literal_column, and_
 from sqlalchemy.dialects.postgresql import aggregate_order_by
 import db.helpers
 import ujson as json
 from collections import Counter
 from flask import session, jsonify, request
-from db.model import Individual, UserIndividual
+from db.model import Individual, UserIndividual, Variant, HomozygousVariant
 from views import application
 from views.auth import requires_auth, requires_admin, is_demo_user, USER, ADMIN_USER
 from views.exceptions import PhenopolisException
 from views.helpers import _get_json_payload
-from views.postgres import postgres_cursor, get_db, get_db_session
+from views.postgres import postgres_cursor, get_db_session
 from views.general import process_for_display
 
 MAX_PAGE_SIZE = 100
@@ -174,7 +174,6 @@ def delete_individual(individual_id, language="en"):
         return jsonify(success=True, message=message), 200
 
 
-
 def _get_pagination_parameters():
     try:
         offset = int(request.args.get("offset", 0))
@@ -233,7 +232,7 @@ def _individual_complete_view(config, individual: Individual, subset):
     cursor = postgres_cursor()
     # hom variants
     hom_variants = _get_homozygous_variants(cursor, individual)
-    config[0]["rare_homs"]["data"] = hom_variants
+    config[0]["rare_homs"]["data"] = list(map(lambda x: x.as_dict(), hom_variants))
     # rare variants
     rare_variants = _get_heterozygous_variants(cursor, individual)
     config[0]["rare_variants"]["data"] = rare_variants
@@ -356,21 +355,14 @@ def _get_heterozygous_variants(c, individual: Individual):
     return rare_variants
 
 
-def _get_homozygous_variants(c, individual: Individual):
-    c.execute(
-        """select v.*
-       from hom_variants hv, variants v
-       where hv."CHROM"=v."CHROM"
-       and hv."POS"=v."POS"
-       and hv."REF"=v."REF"
-       and hv."ALT"=v."ALT"
-       and hv.individual=%(external_id)s """,
-        {"external_id": individual.external_id},
-    )
-    hom_variants = db.helpers.cursor2dict(c)
-    # TODO: confirm if this needs to be enabled once the function has been corrected
-    # hom_variants = get_hpo_ids_per_gene(hom_variants, individual)
-    return hom_variants
+def _get_homozygous_variants(c, individual: Individual) -> List[Variant]:
+
+    results = get_db_session().query(HomozygousVariant, Variant) \
+        .filter(HomozygousVariant.individual == individual.external_id) \
+        .join(Variant, and_(HomozygousVariant.CHROM == Variant.CHROM, HomozygousVariant.POS == Variant.POS,
+                            HomozygousVariant.REF == Variant.REF, HomozygousVariant.ALT == Variant.ALT)).all()
+
+    return [variant for _, variant in results]
 
 
 def _fetch_all_individuals(offset, limit) -> List[Tuple[Individual, List[str]]]:

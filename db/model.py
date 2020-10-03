@@ -36,12 +36,12 @@ class Gene(Base, AsDictable):
 
 class Variant(Base, AsDictable):
     __tablename__ = "variants"
-    variant_id = Column(Integer, primary_key=True)  # needs composite key
-    CHROM = Column("CHROM", String(2))
-    POS = Column("POS", String(255))
+    variant_id = Column(Integer)
+    CHROM = Column("CHROM", String(2), primary_key=True)
+    POS = Column("POS", String(255), primary_key=True)
     ID = Column("ID", String(255))
-    REF = Column("REF", String(255))
-    ALT = Column("ALT", String(255))
+    REF = Column("REF", String(255), primary_key=True)
+    ALT = Column("ALT", String(255), primary_key=True)
     AF = Column("AF", Float)
     AC = Column("AC", Integer)
     AN = Column("AN", Integer)
@@ -72,22 +72,20 @@ class Variant(Base, AsDictable):
 
 class HeterozygousVariant(Base, AsDictable):
     __tablename__ = "het_variants"
-    variant_id = Column(Integer, ForeignKey("variants.variant_id"), primary_key=True)  # needs composite key
-    chrom = Column("chrom", String(2))
-    pos = Column("position", String(255))
-    ref = Column("ref", String(255))
-    alt = Column("alt", String(255))
-    individual = Column("individual", String(255), ForeignKey("individuals.internal_id"))
+    chromosome = Column("CHROM", String(2), primary_key=True)
+    position = Column("POS", String(255), primary_key=True)
+    reference = Column("REF", String(255), primary_key=True)
+    alternate = Column("ALT", String(255), primary_key=True)
+    individual = Column("individual", String(255), ForeignKey("individuals.internal_id"), primary_key=True)
 
 
 class HomozygousVariant(Base, AsDictable):
     __tablename__ = "hom_variants"
-    variant_id = Column(Integer, ForeignKey("variants.variant_id"), primary_key=True)  # needs composite key
-    chrom = Column("chrom", String(2))
-    pos = Column("position", String(255))
-    ref = Column("ref", String(255))
-    alt = Column("alt", String(255))
-    individual = Column("individual", String(255), ForeignKey("individuals.internal_id"))
+    CHROM = Column("CHROM", String(2), primary_key=True)
+    POS = Column("POS", String(255), primary_key=True)
+    REF = Column("REF", String(255), primary_key=True)
+    ALT = Column("ALT", String(255), primary_key=True)
+    individual = Column("individual", String(255), ForeignKey("individuals.external_id"), primary_key=True)
 
 
 class HPO(Base, AsDictable):

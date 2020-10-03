@@ -39,6 +39,22 @@ def test_get_unauthorised_individual_by_id(_demo):
     )
 
 
+def test_get_individual_complete_view_by_id(_admin):
+
+    # test individual with homozygous variants
+    response, status = get_individual_by_id("PH00008256", subset="all")
+    assert status == 200
+    data = json.loads(response.data)
+    assert len(data) == 1, "Missing expected data"
+    individual_complete_view = data[0]
+    rare_homozygous_variants = individual_complete_view.get("rare_homs", {}).get("data")
+    assert len(rare_homozygous_variants) == 1, "Unexpected number of homozygous variants"
+    rare_heterozygous_variants = individual_complete_view.get("rare_variants", {}).get("data")
+    assert len(rare_heterozygous_variants) == 0, "Unexpected number of heterozygous variants"
+    rare_compound_heterozygous_variants = individual_complete_view.get("rare_comp_hets", {}).get("data")
+    assert len(rare_compound_heterozygous_variants) == 0, "Unexpected number of compound heterozygous variants"
+
+
 def test_update_individual_with_demo_user_fails(_demo_client):
     # fetch current sex
     individual_id = "PH00008267"
