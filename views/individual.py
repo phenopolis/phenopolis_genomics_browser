@@ -250,10 +250,9 @@ def _individual_complete_view(config, individual: Individual, subset):
 
 
 def _individual_preview(config, individual: Individual):
-    cursor = postgres_cursor()
-    hom_count = _count_homozygous_variants(cursor, individual)
-    het_count = _count_heterozygous_variants(cursor, individual)
-    comp_het_count = _count_compound_heterozygous_variants(cursor, individual)
+    hom_count = _count_homozygous_variants(individual)
+    het_count = _count_heterozygous_variants(individual)
+    comp_het_count = _count_compound_heterozygous_variants(individual)
     config[0]["preview"] = [
         ["External_id", individual.external_id],
         ["Sex", individual.sex],
@@ -263,50 +262,21 @@ def _individual_preview(config, individual: Individual):
         ["Number of compound hets", comp_het_count],
         ["Number of het variants", het_count],
     ]
-    cursor.close()
     return config
 
 
-def _count_compound_heterozygous_variants(c, individual: Individual):
-    c.execute(
-        """select count (1) from (select count(1) from het_variants hv, variants v
-    where hv."CHROM"=v."CHROM" and hv."POS"=v."POS" and hv."REF"=v."REF" and hv."ALT"=v."ALT" and
-    hv.individual=%(external_id)s group by v.gene_symbol having count(v.gene_symbol)>1) as t """,
-        {"external_id": individual.external_id},
-    )
-    comp_het_count = c.fetchone()[0]
-    return comp_het_count
+def _count_compound_heterozygous_variants(individual: Individual):
+    return _query_heterozygous_variants(individual)\
+        .with_entities(Variant.gene_symbol) \
+        .group_by(Variant.gene_symbol).having(func.count(Variant.gene_symbol) > 1).count()
 
 
-def _count_heterozygous_variants(c, individual: Individual):
-    c.execute(
-        """select count(1)
-       from het_variants hv, variants v
-       where
-       hv."CHROM"=v."CHROM"
-       and hv."POS"=v."POS"
-       and hv."REF"=v."REF"
-       and hv."ALT"=v."ALT"
-       and hv.individual=%(external_id)s """,
-        {"external_id": individual.external_id},
-    )
-    het_count = c.fetchone()[0]
-    return het_count
+def _count_heterozygous_variants(individual: Individual) -> int:
+    return _query_heterozygous_variants(individual).count()
 
 
-def _count_homozygous_variants(c, individual: Individual):
-    c.execute(
-        """select count(1)
-       from hom_variants hv, variants v
-       where hv."CHROM"=v."CHROM"
-       and hv."POS"=v."POS"
-       and hv."REF"=v."REF"
-       and hv."ALT"=v."ALT"
-       and hv.individual=%(external_id)s """,
-        {"external_id": individual.external_id},
-    )
-    hom_count = c.fetchone()[0]
-    return hom_count
+def _count_homozygous_variants(individual: Individual) -> int:
+    return _query_homozygous_variants(individual).count()
 
 
 def _map_individual2output(config, individual: Individual):
@@ -326,21 +296,27 @@ def _map_individual2output(config, individual: Individual):
 
 
 def _get_heterozygous_variants(individual: Individual) -> List[Variant]:
+    return _query_heterozygous_variants(individual).all()
 
-    results = get_db_session().query(HeterozygousVariant, Variant) \
+
+def _query_heterozygous_variants(individual):
+    return get_db_session().query(HeterozygousVariant, Variant) \
         .filter(HeterozygousVariant.individual == individual.external_id) \
         .join(Variant, and_(HeterozygousVariant.CHROM == Variant.CHROM, HeterozygousVariant.POS == Variant.POS,
-                            HeterozygousVariant.REF == Variant.REF, HeterozygousVariant.ALT == Variant.ALT)).all()
-    return [variant for _, variant in results]
+                            HeterozygousVariant.REF == Variant.REF, HeterozygousVariant.ALT == Variant.ALT)) \
+        .with_entities(Variant)
 
 
 def _get_homozygous_variants(individual: Individual) -> List[Variant]:
+    return _query_homozygous_variants(individual).all()
 
-    results = get_db_session().query(HomozygousVariant, Variant) \
+
+def _query_homozygous_variants(individual):
+    return get_db_session().query(HomozygousVariant, Variant) \
         .filter(HomozygousVariant.individual == individual.external_id) \
         .join(Variant, and_(HomozygousVariant.CHROM == Variant.CHROM, HomozygousVariant.POS == Variant.POS,
-                            HomozygousVariant.REF == Variant.REF, HomozygousVariant.ALT == Variant.ALT)).all()
-    return [variant for _, variant in results]
+                            HomozygousVariant.REF == Variant.REF, HomozygousVariant.ALT == Variant.ALT)) \
+        .with_entities(Variant)
 
 
 def _fetch_all_individuals(offset, limit) -> List[Tuple[Individual, List[str]]]:
