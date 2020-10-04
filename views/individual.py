@@ -11,7 +11,7 @@ import db.helpers
 import ujson as json
 from collections import Counter
 from flask import session, jsonify, request
-from db.model import Individual, UserIndividual, Variant, HomozygousVariant, HeterozygousVariant
+from db.model import Individual, UserIndividual, Variant, HomozygousVariant, HeterozygousVariant, HPO
 from views import application
 from views.auth import requires_auth, requires_admin, is_demo_user, USER, ADMIN_USER
 from views.exceptions import PhenopolisException
@@ -340,16 +340,16 @@ def _fetch_authorized_individual(individual_id) -> Individual:
         .filter(UserIndividual.user == session[USER]).filter(Individual.internal_id == individual_id).first()
 
 
-def _update_individual(consanguinity, gender, genes, hpos, individual: Individual):
+def _update_individual(consanguinity, gender, genes, hpos: List[HPO], individual: Individual):
 
     # update
     # features to hpo ids
     individual.sex = gender
     individual.consanguinity = consanguinity
-    individual.observed_features = ",".join([h["hpo_id"] for h in hpos])
-    individual.observed_features_names = ";".join([h["hpo_name"] for h in hpos])
+    individual.observed_features = ",".join([h.hpo_id for h in hpos])
+    individual.observed_features_names = ";".join([h.hpo_name for h in hpos])
     individual.ancestor_observed_features = ";".join(
-        sorted(list(set(list(itertools.chain.from_iterable([h["hpo_ancestor_ids"].split(";") for h in hpos])))))
+        sorted(list(set(list(itertools.chain.from_iterable([h.hpo_ancestor_ids.split(";") for h in hpos])))))
     )
     individual.genes = ",".join([x for x in genes])
 
@@ -361,12 +361,5 @@ def _update_individual(consanguinity, gender, genes, hpos, individual: Individua
         db_session.rollback()
 
 
-def _get_hpos(features):
-    c = postgres_cursor()
-    hpos = []
-    # TODO: this could be improved using a query with "hpo_name IN features"
-    for feature in features:
-        c.execute("select * from hpo where hpo_name=%(feature)s limit 1", {"feature": feature})
-        hpos.append(dict(zip(["hpo_id", "hpo_name", "hpo_ancestor_ids", "hpo_ancestor_names"], c.fetchone())))
-    c.close()
-    return hpos
+def _get_hpos(features: List[str]) -> List[HPO]:
+    return get_db_session().query(HPO).filter(HPO.hpo_name.in_(features)).all()

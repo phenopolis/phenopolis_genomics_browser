@@ -123,14 +123,26 @@ def test_update_individual_with_admin_user(_admin_client):
     # TODO: make the API more coherent regarding this sex translation
     new_sex, new_sex_for_api = ("F", "female") if sex == "M" else ("M", "male")
     response = _admin_client.post("/update_patient_data/{}".format(individual_id),
-                      data="gender_edit[]={}".format(new_sex_for_api),
+                      data="gender_edit[]={}&feature[]=Abnormality of body height"
+                           "&feature[]=Multicystic kidney dysplasia"
+                           "&feature[]=Mode of inheritance".format(new_sex_for_api),
                       content_type='application/x-www-form-urlencoded')
     assert response.status_code == 200
 
-    # fetch new sex
+    # confirm observed data
     db_session.refresh(individual)
     observed_sex = individual.sex
-    assert observed_sex == new_sex, "Update did not work"
+    assert observed_sex == new_sex, "Update sex did not work"
+    observed_hpo_names = individual.observed_features_names
+    assert len(observed_hpo_names.split(";")) == 3, "Update HPOs did not work"
+    assert "Abnormality of body height" in observed_hpo_names, "Update HPOs did not work"
+    assert "Multicystic kidney dysplasia" in observed_hpo_names, "Update HPOs did not work"
+    assert "Mode of inheritance" in observed_hpo_names, "Update HPOs did not work"
+    observed_hpos = individual.observed_features
+    assert len(observed_hpos.split(",")) == 3, "Update HPOs did not work"
+    assert "HP:0000002" in observed_hpos, "Update HPOs did not work"
+    assert "HP:0000003" in observed_hpos, "Update HPOs did not work"
+    assert "HP:0000005" in observed_hpos, "Update HPOs did not work"
 
 
 def test_create_individual_with_demo_user_fails(_demo_client):
