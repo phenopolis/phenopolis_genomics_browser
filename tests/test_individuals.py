@@ -43,21 +43,19 @@ def test_get_individual_complete_view_by_id(_admin):
 
     # test individual with homozygous variants
     individual_view = _get_view_individual_by_id(identifier="PH00008256")
-    assert len(individual_view.get("rare_homs", {}).get("data")) == 1, \
-        "Unexpected number of homozygous variants"
-    assert len(individual_view.get("rare_variants", {}).get("data")) == 0, \
-        "Unexpected number of heterozygous variants"
-    assert len(individual_view.get("rare_comp_hets", {}).get("data")) == 0, \
-        "Unexpected number of compound heterozygous variants"
+    assert len(individual_view.get("rare_homs", {}).get("data")) == 1, "Unexpected number of homozygous variants"
+    assert len(individual_view.get("rare_variants", {}).get("data")) == 0, "Unexpected number of heterozygous variants"
+    assert (
+        len(individual_view.get("rare_comp_hets", {}).get("data")) == 0
+    ), "Unexpected number of compound heterozygous variants"
 
     # test individual with heterozygous variants
     individual_view = _get_view_individual_by_id(identifier="PH00008267")
-    assert len(individual_view.get("rare_homs", {}).get("data")) == 0, \
-        "Unexpected number of homozygous variants"
-    assert len(individual_view.get("rare_variants", {}).get("data")) == 2, \
-        "Unexpected number of heterozygous variants"
-    assert len(individual_view.get("rare_comp_hets", {}).get("data")) == 2, \
-        "Unexpected number of compound heterozygous variants"
+    assert len(individual_view.get("rare_homs", {}).get("data")) == 0, "Unexpected number of homozygous variants"
+    assert len(individual_view.get("rare_variants", {}).get("data")) == 2, "Unexpected number of heterozygous variants"
+    assert (
+        len(individual_view.get("rare_comp_hets", {}).get("data")) == 2
+    ), "Unexpected number of compound heterozygous variants"
 
 
 def test_get_individual_preview_by_id(_admin):
@@ -100,9 +98,11 @@ def test_update_individual_with_demo_user_fails(_demo_client):
     # update sex
     # TODO: make the API more coherent regarding this sex translation
     new_sex, new_sex_for_api = ("F", "female") if sex == "M" else ("M", "male")
-    response = _demo_client.post("/update_patient_data/{}".format(individual_id),
-                                 data="gender_edit[]={}".format(new_sex_for_api),
-                                 content_type='application/x-www-form-urlencoded')
+    response = _demo_client.post(
+        "/update_patient_data/{}".format(individual_id),
+        data="gender_edit[]={}".format(new_sex_for_api),
+        content_type="application/x-www-form-urlencoded",
+    )
     assert response.status_code == 405
 
     # fetch new sex
@@ -122,11 +122,13 @@ def test_update_individual_with_admin_user(_admin_client):
     # update sex
     # TODO: make the API more coherent regarding this sex translation
     new_sex, new_sex_for_api = ("F", "female") if sex == "M" else ("M", "male")
-    response = _admin_client.post("/update_patient_data/{}".format(individual_id),
-                                  data="gender_edit[]={}&feature[]=Abnormality of body height"
-                                       "&feature[]=Multicystic kidney dysplasia"
-                                       "&feature[]=Mode of inheritance".format(new_sex_for_api),
-                                  content_type='application/x-www-form-urlencoded')
+    response = _admin_client.post(
+        "/update_patient_data/{}".format(individual_id),
+        data="gender_edit[]={}&feature[]=Abnormality of body height"
+        "&feature[]=Multicystic kidney dysplasia"
+        "&feature[]=Mode of inheritance".format(new_sex_for_api),
+        content_type="application/x-www-form-urlencoded",
+    )
     assert response.status_code == 200
 
     # confirm observed data
@@ -148,7 +150,7 @@ def test_update_individual_with_admin_user(_admin_client):
 def test_create_individual_with_demo_user_fails(_demo_client):
     individual = Individual()
     individual.internal_id = _get_random_individual_id()
-    response = _demo_client.post("/individual", data=json.dumps(individual.as_dict()), content_type='text/json')
+    response = _demo_client.post("/individual", data=json.dumps(individual.as_dict()), content_type="text/json")
     assert response.status_code == 405
 
 
@@ -157,7 +159,7 @@ def test_create_individual_with_admin_user(_admin_client):
     test_individual_id = _get_random_individual_id()
     individual.external_id = test_individual_id
     individual.pi = "3.1416"
-    response = _admin_client.post("/individual", data=json.dumps(individual.as_dict()), content_type='application/json')
+    response = _admin_client.post("/individual", data=json.dumps(individual.as_dict()), content_type="application/json")
     assert response.status_code == 200
 
     db_session = get_db_session()
@@ -174,7 +176,7 @@ def test_create_individual_existing_individual_fails(_admin_client):
     test_individual_id = _get_random_individual_id()
     individual.external_id = test_individual_id
     individual.pi = "3.1416"
-    response = _admin_client.post("/individual", data=json.dumps(individual.as_dict()), content_type='application/json')
+    response = _admin_client.post("/individual", data=json.dumps(individual.as_dict()), content_type="application/json")
     assert response.status_code == 200
 
     db_session = get_db_session()
@@ -182,7 +184,7 @@ def test_create_individual_existing_individual_fails(_admin_client):
     assert observed_individual is not None, "Empty newly created individual"
     assert observed_individual.pi == individual.pi, "Field pi from created individual is not what it should"
 
-    response = _admin_client.post("/individual", data=json.dumps(individual.as_dict()), content_type='application/json')
+    response = _admin_client.post("/individual", data=json.dumps(individual.as_dict()), content_type="application/json")
     assert response.status_code == 400
 
     # cleans the database
@@ -198,8 +200,9 @@ def test_create_multiple_individuals(_admin_client):
     test_individual_id2 = _get_random_individual_id()
     individual2.external_id = test_individual_id2
     individual2.pi = "3.141600000001983983"
-    response = _admin_client.post("/individual", data=json.dumps([individual.as_dict(), individual2.as_dict()]),
-                                  content_type='application/json')
+    response = _admin_client.post(
+        "/individual", data=json.dumps([individual.as_dict(), individual2.as_dict()]), content_type="application/json"
+    )
     assert response.status_code == 200
 
     db_session = get_db_session()
@@ -227,8 +230,9 @@ def test_delete_individual(_admin_client):
     test_individual_id = _get_random_individual_id()
     individual.external_id = test_individual_id
     individual.pi = "3.1416"
-    response = _admin_client.post("/individual", data=json.dumps([individual.as_dict()]),
-                                  content_type='application/json')
+    response = _admin_client.post(
+        "/individual", data=json.dumps([individual.as_dict()]), content_type="application/json"
+    )
     assert response.status_code == 200
 
     # confirms existence of new individual
@@ -237,7 +241,9 @@ def test_delete_individual(_admin_client):
     assert observed_individual is not None, "Empty newly created individual"
 
     # deletes individual
-    response = _admin_client.delete("/individual/{}".format(observed_individual.internal_id), content_type='application/json')
+    response = _admin_client.delete(
+        "/individual/{}".format(observed_individual.internal_id), content_type="application/json"
+    )
     assert response.status_code == 200
 
     # confirms it does not exist
@@ -247,8 +253,9 @@ def test_delete_individual(_admin_client):
 
 def test_delete_not_existing_individual(_admin_client):
     # deletes individual
-    response = _admin_client.delete("/individual/{}".format(_get_random_individual_id()),
-                                    content_type='application/json')
+    response = _admin_client.delete(
+        "/individual/{}".format(_get_random_individual_id()), content_type="application/json"
+    )
     assert response.status_code == 404
 
 
@@ -295,7 +302,7 @@ def test_get_all_individuals_with_pagination(_admin_client):
     assert len(third_page) == 5
 
     # check elements between the pages are different
-    internal_ids = [i.get('internal_id') for i in first_page + second_page + third_page]
+    internal_ids = [i.get("internal_id") for i in first_page + second_page + third_page]
     assert len(set(internal_ids)) == 15
 
 
@@ -305,4 +312,4 @@ def _clean_test_individuals(db_session, test_individual_id):
 
 
 def _get_random_individual_id():
-    return "PH_TEST{}".format(''.join(random.choices(string.digits, k=8)))
+    return "PH_TEST{}".format("".join(random.choices(string.digits, k=8)))

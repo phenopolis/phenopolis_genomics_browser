@@ -57,11 +57,11 @@ def get_individual_by_id(individual_id, subset="all", language="en"):
             jsonify(message="Sorry, either the patient does not exist or you are not permitted to see this patient"),
             404,
         )
-
     if subset == "preview":
-        return jsonify(_individual_preview(config, individual)), 200
+        individual_view = _individual_preview(config, individual)
     else:
-        return jsonify(_individual_complete_view(config, individual, subset)), 200
+        individual_view = _individual_complete_view(config, individual, subset)
+    return jsonify(individual_view), 200
 
 
 @application.route("/<language>/update_patient_data/<individual_id>", methods=["POST"])
@@ -75,6 +75,7 @@ def update_patient_data(individual_id, language="en"):
     # unauthorized access to individual
     if not individual:
         config[0]["preview"] = [["Sorry", "You are not permitted to edit this patient"]]
+        # TODO: change this output to the same structure as others
         return json.dumps(config)
 
     application.logger.debug(request.form)
@@ -111,6 +112,7 @@ def create_individual():
         return jsonify(success=False, error=str(e)), e.http_status
 
     request_ok = True
+    http_status = 200
     message = "Individuals were created"
     ids_new_individuals = []
     try:
@@ -132,10 +134,7 @@ def create_individual():
         message = str(e)
         http_status = e.http_status
 
-    if not request_ok:
-        return jsonify(success=False, message=message), http_status
-    else:
-        return jsonify(success=True, message=message, id=",".join(ids_new_individuals)), 200
+    return jsonify(success=request_ok, message=message, id=",".join(ids_new_individuals)), http_status
 
 
 @application.route("/individual/<individual_id>", methods=["DELETE"])
@@ -151,8 +150,9 @@ def delete_individual(individual_id):
     if individual:
         db_session = get_db_session()
         try:
-            user_individuals = db_session.query(UserIndividual).filter(
-                UserIndividual.internal_id == individual_id).all()
+            user_individuals = (
+                db_session.query(UserIndividual).filter(UserIndividual.internal_id == individual_id).all()
+            )
             for ui in user_individuals:
                 db_session.delete(ui)
             db_session.delete(individual)
@@ -210,21 +210,6 @@ def _get_new_individual_id(sqlalchemy_session):
         raise PhenopolisException("Failed to fetch the latest internal id for an individual", 500)
 
 
-# def _get_hpo_ids_per_gene(variants, _ind):
-#     # TODO: understand what this function is supposed to return because right now it is querying the db but
-#     # TODO: it does not return anything new
-#     # TODO: and why this unused '_ind' arg?
-#     c = postgres_cursor()
-#     for y in variants:
-#         c.execute("""select * from gene_hpo where gene_symbol=%(gene_symbol)s """, {"gene_symbol": y["gene_symbol"]})
-#         # gene_hpo_ids = db.helpers.cursor2dict(c)
-#         # y['hpo_,terms']=[{'display': c.execute("select hpo_name from hpo where hpo_id=? limit 1",(gh['hpo_id'],))
-#         # .fetchone()[0], 'end_href':gh['hpo_id']} for gh in gene_hpo_ids if gh['hpo_id'] in
-#         # ind['ancestor_observed_features'].split(';')]
-#         y["hpo_,terms"] = []
-#     return variants
-
-
 def _individual_complete_view(config, individual: Individual, subset):
     # hom variants
     config[0]["rare_homs"]["data"] = list(map(lambda x: x.as_dict(), _get_homozygous_variants(individual)))
@@ -264,9 +249,13 @@ def _individual_preview(config, individual: Individual):
 
 
 def _count_compound_heterozygous_variants(individual: Individual):
-    return _query_heterozygous_variants(individual)\
-        .with_entities(Variant.gene_symbol) \
-        .group_by(Variant.gene_symbol).having(func.count(Variant.gene_symbol) > 1).count()
+    return (
+        _query_heterozygous_variants(individual)
+        .with_entities(Variant.gene_symbol)
+        .group_by(Variant.gene_symbol)
+        .having(func.count(Variant.gene_symbol) > 1)
+        .count()
+    )
 
 
 def _count_heterozygous_variants(individual: Individual) -> int:
@@ -283,7 +272,9 @@ def _map_individual2output(config, individual: Individual):
     config[0]["metadata"]["data"][0]["simplified_observed_features"] = [
         {"display": i, "end_href": j}
         for i, j, in zip(
-            individual.simplified_observed_features_names.split(";") if individual.simplified_observed_features_names else [],
+            individual.simplified_observed_features_names.split(";")
+            if individual.simplified_observed_features_names
+            else [],
             individual.simplified_observed_features.split(",") if individual.simplified_observed_features else [],
         )
         if i != ""
@@ -298,11 +289,21 @@ def _get_heterozygous_variants(individual: Individual) -> List[Variant]:
 
 
 def _query_heterozygous_variants(individual):
-    return get_db_session().query(HeterozygousVariant, Variant) \
-        .filter(HeterozygousVariant.individual == individual.external_id) \
-        .join(Variant, and_(HeterozygousVariant.CHROM == Variant.CHROM, HeterozygousVariant.POS == Variant.POS,
-                            HeterozygousVariant.REF == Variant.REF, HeterozygousVariant.ALT == Variant.ALT)) \
+    return (
+        get_db_session()
+        .query(HeterozygousVariant, Variant)
+        .filter(HeterozygousVariant.individual == individual.external_id)
+        .join(
+            Variant,
+            and_(
+                HeterozygousVariant.CHROM == Variant.CHROM,
+                HeterozygousVariant.POS == Variant.POS,
+                HeterozygousVariant.REF == Variant.REF,
+                HeterozygousVariant.ALT == Variant.ALT,
+            ),
+        )
         .with_entities(Variant)
+    )
 
 
 def _get_homozygous_variants(individual: Individual) -> List[Variant]:
@@ -310,11 +311,21 @@ def _get_homozygous_variants(individual: Individual) -> List[Variant]:
 
 
 def _query_homozygous_variants(individual):
-    return get_db_session().query(HomozygousVariant, Variant) \
-        .filter(HomozygousVariant.individual == individual.external_id) \
-        .join(Variant, and_(HomozygousVariant.CHROM == Variant.CHROM, HomozygousVariant.POS == Variant.POS,
-                            HomozygousVariant.REF == Variant.REF, HomozygousVariant.ALT == Variant.ALT)) \
+    return (
+        get_db_session()
+        .query(HomozygousVariant, Variant)
+        .filter(HomozygousVariant.individual == individual.external_id)
+        .join(
+            Variant,
+            and_(
+                HomozygousVariant.CHROM == Variant.CHROM,
+                HomozygousVariant.POS == Variant.POS,
+                HomozygousVariant.REF == Variant.REF,
+                HomozygousVariant.ALT == Variant.ALT,
+            ),
+        )
         .with_entities(Variant)
+    )
 
 
 def _fetch_all_individuals(offset, limit) -> List[Tuple[Individual, List[str]]]:
@@ -337,8 +348,13 @@ def _fetch_all_individuals(offset, limit) -> List[Tuple[Individual, List[str]]]:
 
 def _fetch_authorized_individual(individual_id) -> Individual:
     db_session = get_db_session()
-    return db_session.query(Individual).join(UserIndividual)\
-        .filter(UserIndividual.user == session[USER]).filter(Individual.internal_id == individual_id).first()
+    return (
+        db_session.query(Individual)
+        .join(UserIndividual)
+        .filter(UserIndividual.user == session[USER])
+        .filter(Individual.internal_id == individual_id)
+        .first()
+    )
 
 
 def _update_individual(consanguinity, gender, genes, hpos: List[HPO], individual: Individual):
