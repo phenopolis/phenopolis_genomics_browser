@@ -101,8 +101,8 @@ def test_update_individual_with_demo_user_fails(_demo_client):
     # TODO: make the API more coherent regarding this sex translation
     new_sex, new_sex_for_api = ("F", "female") if sex == "M" else ("M", "male")
     response = _demo_client.post("/update_patient_data/{}".format(individual_id),
-                                  data="gender_edit[]={}".format(new_sex_for_api),
-                                  content_type='application/x-www-form-urlencoded')
+                                 data="gender_edit[]={}".format(new_sex_for_api),
+                                 content_type='application/x-www-form-urlencoded')
     assert response.status_code == 405
 
     # fetch new sex
@@ -123,10 +123,10 @@ def test_update_individual_with_admin_user(_admin_client):
     # TODO: make the API more coherent regarding this sex translation
     new_sex, new_sex_for_api = ("F", "female") if sex == "M" else ("M", "male")
     response = _admin_client.post("/update_patient_data/{}".format(individual_id),
-                      data="gender_edit[]={}&feature[]=Abnormality of body height"
-                           "&feature[]=Multicystic kidney dysplasia"
-                           "&feature[]=Mode of inheritance".format(new_sex_for_api),
-                      content_type='application/x-www-form-urlencoded')
+                                  data="gender_edit[]={}&feature[]=Abnormality of body height"
+                                       "&feature[]=Multicystic kidney dysplasia"
+                                       "&feature[]=Mode of inheritance".format(new_sex_for_api),
+                                  content_type='application/x-www-form-urlencoded')
     assert response.status_code == 200
 
     # confirm observed data
@@ -277,29 +277,26 @@ def test_get_all_individuals_with_admin_default_page(_admin):
     assert found_individual_multiple_users, "Only Admin user reported as users with access to individuals"
 
 
-def test_get_all_individuals_second_page(_demo):
-    # TODO: setting query parameters like this does not work... use fix_api.py
-    pass
-    # fetch first page
-    # request.args["offset"] = "0"
-    # request.args["limit"] = "5"
-    # response, status = get_all_individuals()
-    # assert status == 200
-    # first_page = json.loads(response.data)
-    # assert len(first_page) == 5, "Page is not of size 5"
-    #
-    # # fetch second page
-    # request.args["offset"] = "5"
-    # request.args["limit"] = "5"
-    # response, status = get_all_individuals()
-    # assert status == 200
-    # second_page = json.loads(response.data)
-    # assert len(second_page) == 5, "Page is not of size 5"
-    #
-    # # ensures that pages do not overlap
-    # assert (
-    #     len(set([i.internal_id for i in first_page]).intersection([i.internal_id for i in second_page])) == 0
-    # ), "Successive pages of individuals overlap"
+def test_get_all_individuals_with_pagination(_admin_client):
+
+    response = _admin_client.get("/individual?limit=5&offset=0")
+    assert response.status_code == 200
+    first_page = json.loads(response.data)
+    assert len(first_page) == 5
+
+    response = _admin_client.get("/individual?limit=5&offset=5")
+    assert response.status_code == 200
+    second_page = json.loads(response.data)
+    assert len(second_page) == 5
+
+    response = _admin_client.get("/individual?limit=5&offset=10")
+    assert response.status_code == 200
+    third_page = json.loads(response.data)
+    assert len(third_page) == 5
+
+    # check elements between the pages are different
+    internal_ids = [i.get('internal_id') for i in first_page + second_page + third_page]
+    assert len(set(internal_ids)) == 15
 
 
 def _clean_test_individuals(db_session, test_individual_id):

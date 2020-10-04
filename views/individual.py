@@ -16,7 +16,7 @@ from views import application
 from views.auth import requires_auth, requires_admin, is_demo_user, USER, ADMIN_USER
 from views.exceptions import PhenopolisException
 from views.helpers import _get_json_payload
-from views.postgres import postgres_cursor, get_db_session
+from views.postgres import get_db_session
 from views.general import process_for_display
 
 MAX_PAGE_SIZE = 100
@@ -250,6 +250,7 @@ def _individual_preview(config, individual: Individual):
     hom_count = _count_homozygous_variants(individual)
     het_count = _count_heterozygous_variants(individual)
     comp_het_count = _count_compound_heterozygous_variants(individual)
+    # TODO: make a dict of this and not a list of lists
     config[0]["preview"] = [
         ["External_id", individual.external_id],
         ["Sex", individual.sex],
