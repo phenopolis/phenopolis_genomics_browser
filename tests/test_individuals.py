@@ -296,14 +296,15 @@ def test_get_all_individuals_with_pagination(_admin_client):
     second_page = json.loads(response.data)
     assert len(second_page) == 2
 
+    # the third page
     response = _admin_client.get("/individual?limit=2&offset=4")
     assert response.status_code == 200
     third_page = json.loads(response.data)
-    assert len(third_page) == 2
+    assert len(third_page) == 1
 
     # check elements between the pages are different
     internal_ids = [i.get("internal_id") for i in first_page + second_page + third_page]
-    assert len(set(internal_ids)) == 6
+    assert len(set(internal_ids)) == 5
 
 
 def _clean_test_individuals(db_session, test_individual_id):
