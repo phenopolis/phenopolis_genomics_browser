@@ -11,12 +11,14 @@ const AutoComplete = (props) => {
   const [type, setType] = useState(null);
   const [featureInput, setFeatureInput] = useState('');
   const [autoCompleteContent, setAutoCompleteContent] = useState(null);
-  const [searchLoaded, setSearchLoaded] = useState(false);
+  const [typing, setTyping] = useState(false);
+  const [searchPanel, setSearchPanel] = useState(false);
 
   const dispatch = useDispatch();
-  const { data, error } = useSelector((state) => ({
+  const { data, error, loaded } = useSelector((state) => ({
     data: state.Search.data,
     error: state.Search.error,
+    loaded: state.Search.loaded,
   }));
 
   useEffect(() => {
@@ -28,42 +30,44 @@ const AutoComplete = (props) => {
   }, [props.featureArray, error]);
 
   useEffect(() => {
-    if (data && searchLoaded) {
+    if (data) {
       const filteredOptions = data.filter((x) => {
-        return featureArray.indexOf(x.split('::')[1]);
+        return featureArray.indexOf(x.split('::')[1]) < 0;
       });
       setAutoCompleteContent(filteredOptions.length ? filteredOptions : []);
-      setSearchLoaded(false);
     }
   }, [data]);
 
   const handleFeatureAddChip = (item) => {
     props.ModifyFeature(item, 'Add', type);
+    ResetState();
   };
 
   const handleFeatureDeleteChip = (item) => {
     props.ModifyFeature(item, 'Remove', type);
+    ResetState();
   };
 
   const handleFeatureSearchChange = (event) => {
     setFeatureInput(event.target.value);
-    changeName(event.target.value);
   };
 
-  const changeName = (searchText) => {
-    setTimeout(() => {
-      if (searchText !== '') {
-        autocomplete(searchText, type);
+  useEffect(() => {
+    setTyping(true);
+    if (featureInput !== '') setSearchPanel(true);
+
+    const timeout = setTimeout(() => {
+      if (featureInput !== '') {
+        autocomplete(featureInput, type);
       } else {
-        setAutoCompleteContent(null);
-        setSearchLoaded(false);
+        setSearchPanel(false);
       }
     }, 500);
-  };
+    return () => clearTimeout(timeout);
+  }, [featureInput]);
 
   const autocomplete = (searchText, type) => {
-    setAutoCompleteContent(null);
-    setSearchLoaded(true);
+    setTyping(false);
     dispatch(
       getSearchAutocomplete({
         query: searchText,
@@ -71,6 +75,13 @@ const AutoComplete = (props) => {
         component: 'searchAutoComplete',
       })
     );
+  };
+
+  const ResetState = () => {
+    setFeatureInput('');
+    setAutoCompleteContent(null);
+    setTyping(false);
+    setSearchPanel(false);
   };
 
   return (
@@ -100,10 +111,10 @@ const AutoComplete = (props) => {
           );
         }}
       />
-      <Collapse in={searchLoaded === true || autoCompleteContent !== null}>
+      <Collapse in={searchPanel === true}>
         <Paper elevation={0} className={'autocomplete-paperCollapse'}>
           <Grid container justify="center">
-            {searchLoaded === true ? (
+            {!loaded | typing ? (
               <Typography variant="subtitle1" gutterBottom>
                 Searching for auto completing...
               </Typography>

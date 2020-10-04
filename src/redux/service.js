@@ -83,6 +83,26 @@ function getIndividualInformation(param) {
   });
 }
 
+function getAllIndividual(param) {
+  return axios.get(api.FETCH_ALL_INDIVIDUAL, {
+    withCredentials: true,
+  });
+}
+
+function updateOneIndividual(param) {
+  console.log(param);
+  return axios.post(api.UPDATE_INDIVIDUAL + param.patient_id, param.data, {
+    withCredentials: true,
+  });
+}
+
+function deleteOneIndividual(param) {
+  console.log(param);
+  return axios.delete(api.DELETE_INDIVIDUAL + param, {
+    withCredentials: true,
+  });
+}
+
 export default {
   getStatistics,
   getSearchAutocomplete,
@@ -95,6 +115,9 @@ export default {
   getGene,
   getVariant,
   getHPO,
-  createIndividual,
   getIndividualInformation,
+  createIndividual,
+  getAllIndividual,
+  updateOneIndividual,
+  deleteOneIndividual,
 };

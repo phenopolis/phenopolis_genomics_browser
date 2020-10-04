@@ -172,10 +172,11 @@ const innerGridElementType = React.forwardRef(({ children, ...rest }, ref) => (
 ));
 
 const createItemData = memoize(
-  (rows, columns, toggleItemActive, currentRow, currentColumn, highlightRow) => ({
+  (rows, columns, toggleItemActive, toggleAction, currentRow, currentColumn, highlightRow) => ({
     rows,
     columns,
     toggleItemActive,
+    toggleAction,
     currentRow,
     currentColumn,
     highlightRow,
@@ -232,6 +233,7 @@ class StickyGrid extends React.Component {
       mycolumns,
       children,
       toggleItemActive,
+      toggleAction,
       currentRow,
       currentColumn,
       highlightRow,
@@ -245,6 +247,7 @@ class StickyGrid extends React.Component {
       myrows,
       mycolumns,
       toggleItemActive,
+      toggleAction,
       currentRow,
       currentColumn,
       highlightRow
@@ -432,6 +435,7 @@ class VirtualGrid extends React.Component {
         let headSize = calculateSize(mycolumns[j].name, { font: 'Arial', fontSize: '14px' });
         if (headSize.width + 50 > tmpWidth[j]) tmpWidth[j] = headSize.width + 50;
 
+        if (mycolumns[j].key === 'action') tmpWidth[j] = 180;
         // Add a quick patch here to assign variable's type and class.
 
         let tmpType = '';
@@ -556,6 +560,10 @@ class VirtualGrid extends React.Component {
 
   toggleItemActive = (rowIndex, columnIndex) => {
     this.setState({ currentRow: rowIndex, currentColumn: columnIndex });
+  };
+
+  toggleAction = (rowIndex, action) => {
+    this.props.handleActionClick(rowIndex, action);
   };
 
   handleFilterPopoverOpen = (index) => {
@@ -986,6 +994,7 @@ class VirtualGrid extends React.Component {
                     myrows={this.state.filteredData}
                     mycolumns={this.state.filteredColumn}
                     toggleItemActive={this.toggleItemActive}
+                    toggleAction={this.toggleAction}
                     currentRow={this.state.currentRow}
                     currentColumn={this.state.currentColumn}
                     highlightRow={this.state.highlightIndex}

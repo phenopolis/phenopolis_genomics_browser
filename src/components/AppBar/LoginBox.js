@@ -19,7 +19,6 @@ const LoginBox = (props) => {
       user: username,
       password: password,
     };
-    console.log(props.redirectLink);
     dispatch(userLogin({ loginForm: loginForm, relink: props.redirectLink }));
   };
 

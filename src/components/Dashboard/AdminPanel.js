@@ -25,7 +25,7 @@ const AdminPanel = (props) => {
       sub: 'View/Delete all Patients.',
       icon: faUsersClass,
       color: '#43a047',
-      to: '/dashboard',
+      to: '/manage_patient',
     },
     {
       name: 'Create New Acount',

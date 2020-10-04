@@ -3,9 +3,12 @@ import PropTypes from 'prop-types';
 import { withStyles } from '@material-ui/core/styles';
 import '../../assets/css/arrowbox.css';
 
-import { TableCell, Typography } from '@material-ui/core';
+import { TableCell, Typography, ButtonGroup, Button, IconButton } from '@material-ui/core';
 
 import TypeChip from '../Chip/TypeChip';
+
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faPencil, faTrashAlt } from '@fortawesome/pro-light-svg-icons';
 
 class GridColumn extends React.Component {
   constructor(props) {
@@ -17,6 +20,11 @@ class GridColumn extends React.Component {
   componentWillMount() {
     const mystyle = JSON.parse(JSON.stringify(this.props.style));
     mystyle['backgroundColor'] = 'white';
+
+    let key = this.props.data.columns[this.props.columnIndex].key;
+    if (key === 'action') {
+      mystyle['backgroundColor'] = '#f8f9ff';
+    }
 
     if (this.props.data.highlightRow === this.props.rowIndex) {
       mystyle.backgroundColor = '#fff9c4';
@@ -37,6 +45,11 @@ class GridColumn extends React.Component {
     } else {
       mystyle = JSON.parse(JSON.stringify(nextProps.style));
       mystyle.backgroundColor = 'white';
+
+      let key = this.props.data.columns[this.props.columnIndex].key;
+      if (key === 'action') {
+        mystyle['backgroundColor'] = '#f8f9ff';
+      }
     }
 
     this.setState({ mystyle: mystyle });
@@ -44,6 +57,10 @@ class GridColumn extends React.Component {
 
   myfunction = () => {
     this.props.data.toggleItemActive(this.props.rowIndex, this.props.columnIndex);
+  };
+
+  triggerAction = (action) => {
+    this.props.data.toggleAction(this.props.rowIndex, action);
   };
 
   render() {
@@ -59,40 +76,56 @@ class GridColumn extends React.Component {
         id={rowIndex + 1 + ',' + (columnIndex + 1)}
         style={this.state.mystyle}
         onMouseEnter={this.myfunction}>
-        <div>
-          {(typeof cellData !== 'object') | (cellData === null) ? (
-            <Typography variant="body2" gutterBottom>
-              {cellData}
-            </Typography>
-          ) : (typeof cellData[0] === 'object') & (cellData[0] !== null) ? (
-            cellData.map((chip, j) => {
-              if (chip !== null) {
-                if (h.base_href) {
-                  return (
-                    <TypeChip
-                      label={chip.display}
-                      type={h.base_href.replace(/[^a-zA-Z0-9_-]/g, '')}
-                      size="small"
-                      action="forward"
-                      popover={true}
-                      to={
-                        chip.end_href
-                          ? (h.base_href + '/' + chip.end_href).replace(/\/\//g, '/')
-                          : (h.base_href + '/' + chip.display).replace(/\/\//g, '/')
-                      }
-                    />
-                  );
+        {key === 'action' ? (
+          <div>
+            <ButtonGroup variant="text" aria-label="text primary button group">
+              <IconButton aria-label="update" onClick={() => this.triggerAction('update')}>
+                <FontAwesomeIcon icon={faPencil} style={{ fontSize: '15' }} />
+              </IconButton>
+              <IconButton
+                aria-label="delete"
+                color="secondary"
+                onClick={() => this.triggerAction('delete')}>
+                <FontAwesomeIcon icon={faTrashAlt} style={{ fontSize: '15' }} />
+              </IconButton>
+            </ButtonGroup>
+          </div>
+        ) : (
+          <div>
+            {(typeof cellData !== 'object') | (cellData === null) ? (
+              <Typography variant="body2" gutterBottom>
+                {cellData}
+              </Typography>
+            ) : (typeof cellData[0] === 'object') & (cellData[0] !== null) ? (
+              cellData.map((chip, j) => {
+                if (chip !== null) {
+                  if (h.base_href) {
+                    return (
+                      <TypeChip
+                        label={chip.display}
+                        type={h.base_href.replace(/[^a-zA-Z0-9_-]/g, '')}
+                        size="small"
+                        action="forward"
+                        popover={true}
+                        to={
+                          chip.end_href
+                            ? (h.base_href + '/' + chip.end_href).replace(/\/\//g, '/')
+                            : (h.base_href + '/' + chip.display).replace(/\/\//g, '/')
+                        }
+                      />
+                    );
+                  } else {
+                    return chip.display;
+                  }
                 } else {
-                  return chip.display;
+                  return null;
                 }
-              } else {
-                return null;
-              }
-            })
-          ) : (
-            <div>{cellData.join(',')}</div>
-          )}
-        </div>
+              })
+            ) : (
+              <div>{cellData.join(', ')}</div>
+            )}
+          </div>
+        )}
       </TableCell>
     );
   }

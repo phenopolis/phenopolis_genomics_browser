@@ -1,5 +1,5 @@
 import React, { Fragment, useState, useEffect } from 'react';
-import { Link } from 'react-router-dom';
+
 import {
   Grid,
   FormControlLabel,
@@ -11,53 +11,76 @@ import {
   RadioGroup,
   Radio,
   TextField,
+  DialogActions,
   Button,
-  Dialog,
+  Collapse,
+  Paper,
 } from '@material-ui/core';
 
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faUser, faClipboardCheck } from '@fortawesome/pro-solid-svg-icons';
-
 import SearchAutoComplete from '../Search/AutoComplete';
-
 import { useDispatch, useSelector } from 'react-redux';
-import { createIndividual } from '../../redux/actions/individuals';
-import { setSnack } from '../../redux/actions/snacks';
+import { updateOneIndividual, ResetUpdate } from '../../redux/actions/individuals';
 
-export default function InformationForm() {
+const qs = require('querystring');
+
+export default function InformationUpdate(props) {
   const dispatch = useDispatch();
-  const { newPatientInfo, error, username } = useSelector((state) => ({
-    newPatientInfo: state.Individuals.newPatientInfo,
-    error: state.Individuals.error,
-    username: state.Auth.username,
-  }));
 
-  useEffect(() => {
-    if (newPatientInfo !== null) {
-      dispatch(setSnack(newPatientInfo.id + ' is created!', 'success'));
-      setNewID(newPatientInfo.id);
-      toggleSuccessModal();
-      ResetValue();
-    }
-  }, [newPatientInfo, dispatch]);
-
-  useEffect(() => {
-    if (error) {
-      dispatch(setSnack(error, 'error'));
-    }
-  }, [error, dispatch]);
-
+  const [internalID, setInternalID] = useState('');
   const [externalID, setExternalID] = useState('');
   const [gender, setGender] = useState(null);
   const [consanguinity, setConsanguinity] = useState(null);
   const [featureArray, setFeatureArray] = useState([]);
   const [geneArray, setGeneArray] = useState([]);
 
-  const [ConfirmModal, setConfirmModal] = useState(false);
-  const [newID, setNewID] = useState('');
-  const [SuccessModal, setSuccessModal] = useState(false);
-  const toggleConfirmModal = () => setConfirmModal(!ConfirmModal);
-  const toggleSuccessModal = () => setSuccessModal(!SuccessModal);
+  const [ConfirmOpen, setConfirmOpen] = useState(false);
+
+  const { updateLoaded } = useSelector((state) => ({
+    updateLoaded: state.Individuals.updateLoaded,
+  }));
+
+  useEffect(() => {
+    AssignPropstoStates();
+  }, []);
+
+  useEffect(() => {
+    if (updateLoaded) {
+      handleReset();
+      dispatch(ResetUpdate());
+      props.actionSuccess('update');
+    }
+  }, [updateLoaded]);
+
+  const AssignPropstoStates = () => {
+    let userInfo = props.userInfo;
+
+    setInternalID(userInfo.internal_id[0].display);
+    setExternalID(userInfo.external_id);
+
+    if (userInfo.sex === 'M') {
+      setGender('male');
+    } else if (userInfo.sex === 'F') {
+      setGender('female');
+    } else {
+      setGender('unknown');
+    }
+
+    setConsanguinity(userInfo.consanguinity);
+    const tmpFeature = userInfo.simplified_observed_features_names.map((name, index) => {
+      return {
+        type: 'hpo',
+        name: name.display,
+      };
+    });
+    setFeatureArray(tmpFeature);
+    const tmpGene = userInfo.genes.map((gene, index) => {
+      return {
+        type: 'gene',
+        name: gene.display,
+      };
+    });
+    setGeneArray(tmpGene);
+  };
 
   const handleGenderChange = (event) => {
     setGender(event.target.value);
@@ -75,8 +98,6 @@ export default function InformationForm() {
           {
             type: item.split('::')[0],
             name: item.split('::')[1],
-            feature: item.split('::')[2],
-            full: item,
           },
         ]);
       } else {
@@ -93,8 +114,6 @@ export default function InformationForm() {
           {
             type: item.split('::')[0],
             name: item.split('::')[1],
-            feature: item.split('::')[2],
-            full: item,
           },
         ]);
       } else {
@@ -107,64 +126,36 @@ export default function InformationForm() {
     }
   };
 
-  const reviewInfo = () => {
-    if (externalID === '') {
-      dispatch(setSnack('External ID can not be empty.', 'error'));
-      return;
-    }
-
-    if (gender === null) {
-      dispatch(setSnack('Gender need to be selected.', 'error'));
-      return;
-    }
-
-    if (consanguinity === null) {
-      dispatch(setSnack('Consanguinity need to be selected.', 'error'));
-      return;
-    }
-
-    toggleConfirmModal();
+  const handleOpenConfirm = () => {
+    setConfirmOpen(true);
   };
 
-  const handleSubmit = () => {
-    const NewIndividualData = [
-      {
-        external_id: externalID,
-        sex: gender,
-        observed_features: featureArray.map((x) => x.feature).join(','),
-        unobserved_features: '',
-        pi: username,
-        consanguinity: consanguinity,
-        simplified_observed_features_names: featureArray.map((x) => x.name).join(';'),
-        simplified_observed_features: featureArray.map((x) => x.feature).join(','),
-        genes: geneArray.map((x) => x.name).join(','),
-        ancestor_observed_features: 'HP:0000001',
-        ancestor_observed_features_names: 'All',
-      },
-    ];
-
-    if (NewIndividualData[0].observed_features === '') {
-      NewIndividualData[0].observed_features = 'HP:0000001';
-      NewIndividualData[0].simplified_observed_features = 'HP:0000001';
-      NewIndividualData[0].simplified_observed_features_names = 'All';
-    }
-
-    dispatch(createIndividual(NewIndividualData));
-    toggleConfirmModal();
+  const handleReset = () => {
+    AssignPropstoStates();
+    setConfirmOpen(false);
   };
 
-  const ResetValue = () => {
-    setExternalID('');
-    setGender(null);
-    setConsanguinity(null);
-    setFeatureArray([]);
-    setGeneArray([]);
+  const handleSubmitUpdate = () => {
+    var formData = qs.stringify({
+      'gender_edit[]': gender,
+      'consanguinity_edit[]': consanguinity,
+    });
+
+    featureArray.forEach((x) => {
+      formData = `${formData}&feature%5B%5D=${x.name.split(' ').join('+')}`;
+    });
+
+    geneArray.forEach((x) => {
+      formData = `${formData}&genes%5B%5D=${x.name.split(' ').join('+')}`;
+    });
+
+    dispatch(updateOneIndividual({ patient_id: internalID, data: formData }));
   };
 
   return (
     <Fragment>
-      <Container className="mt-3 px-5 py-3">
-        <Card className="p-4 mb-5">
+      <Container className="mt-0 px-0 py-0">
+        <Card className="p-4 mb-2">
           <div className="font-size-lg font-weight-bold">Basic</div>
           <Divider className="my-4" />
           <Container>
@@ -180,6 +171,7 @@ export default function InformationForm() {
                 <TextField
                   fullWidth
                   className="mt-3 ml-4"
+                  disabled={true}
                   id="standard-basic"
                   value={externalID}
                   onChange={(event) => setExternalID(event.target.value)}
@@ -209,7 +201,7 @@ export default function InformationForm() {
                   <Grid container spacing={2}>
                     <Grid item xs={3}>
                       <FormControlLabel
-                        value="M"
+                        value="male"
                         control={<Radio color="primary" />}
                         label="Male"
                         labelPlacement="Male"
@@ -217,7 +209,7 @@ export default function InformationForm() {
                     </Grid>
                     <Grid item xs={3}>
                       <FormControlLabel
-                        value="F"
+                        value="female"
                         control={<Radio color="primary" />}
                         label="Female"
                         labelPlacement="Female"
@@ -317,71 +309,54 @@ export default function InformationForm() {
             </Grid>
           </Container>
         </Card>
+
+        <Collapse in={ConfirmOpen}>
+          <Paper
+            elevation={5}
+            style={{
+              backgroundColor: '#f44336',
+              color: 'white',
+              padding: '1.5em',
+              margin: '0.5em 0em',
+            }}>
+            <Grid container direction="row" justify="space-around" alignItems="center">
+              <Grid item xs={6}>
+                This will update the database. Are you sure you want to continue?
+              </Grid>
+              <Grid item xs={6}>
+                <Grid container direction="row" justify="flex-end" alignItems="center">
+                  <Button
+                    variant="outlined"
+                    style={{ color: 'white', border: '1px solid white', 'margin-right': '1em' }}
+                    onClick={() => setConfirmOpen(false)}>
+                    Give up
+                  </Button>
+                  <Button
+                    variant="outlined"
+                    style={{ color: 'white', border: '1px solid white' }}
+                    onClick={() => handleSubmitUpdate()}>
+                    Confirm
+                  </Button>
+                </Grid>
+              </Grid>
+            </Grid>
+          </Paper>
+        </Collapse>
+
+        <DialogActions>
+          <Button
+            color="secondary"
+            variant="contained"
+            disabled={ConfirmOpen}
+            autoFocus
+            onClick={() => handleOpenConfirm()}>
+            <span className="btn-wrapper--label">Save</span>
+          </Button>
+          <Button color="primary" onClick={() => handleReset()}>
+            <span className="btn-wrapper--label">RESET</span>
+          </Button>
+        </DialogActions>
       </Container>
-
-      <div className="card-footer bg-secondary p-4 text-center">
-        <Button color="secondary" variant="contained" onClick={reviewInfo}>
-          <span className="btn-wrapper--label">Save Information</span>
-        </Button>
-      </div>
-
-      <Dialog open={ConfirmModal} onClose={toggleConfirmModal}>
-        <div className="text-center p-5">
-          <div className="avatar-icon-wrapper rounded-circle m-0">
-            <div className="d-inline-flex justify-content-center p-0 rounded-circle avatar-icon-wrapper bg-neutral-warning text-warning m-0 d-130">
-              <FontAwesomeIcon icon={faUser} className="d-flex align-self-center display-3" />
-            </div>
-          </div>
-          <h4 className="font-weight-bold mt-4">
-            Do you want to create <b className="text-success">{externalID + ' '}</b>?
-          </h4>
-          <p className="mb-0 font-size-md text-muted">You can later update the information</p>
-          <div className="pt-4">
-            <Button
-              onClick={toggleConfirmModal}
-              variant="outlined"
-              color="default"
-              className="mx-1">
-              <span className="btn-wrapper--label">Cancel</span>
-            </Button>
-            <Button onClick={handleSubmit} color="secondary" variant="contained" className="mx-1">
-              <span className="btn-wrapper--label">Create</span>
-            </Button>
-          </div>
-        </div>
-      </Dialog>
-
-      <Dialog open={SuccessModal} onClose={toggleSuccessModal}>
-        <div className="text-center p-5">
-          <div className="avatar-icon-wrapper rounded-circle m-0">
-            <div className="d-inline-flex justify-content-center p-0 rounded-circle avatar-icon-wrapper bg-neutral-success text-success m-0 d-130">
-              <FontAwesomeIcon
-                icon={faClipboardCheck}
-                className="d-flex align-self-center display-3"
-              />
-            </div>
-          </div>
-          <h4 className="font-weight-bold mt-4">
-            <b className="text-success">{newID}</b> is created successfully
-          </h4>
-          <p className="mb-0 font-size-md text-muted">Do you want to check in patient page now?</p>
-          <div className="pt-4">
-            <Button
-              color="Primary"
-              fullWidth={true}
-              variant="contained"
-              className="mx-1"
-              component={Link}
-              to={'/individual/' + newID}
-              onClick={toggleSuccessModal}>
-              <span className="btn-wrapper--label">Turn to patient page</span>
-            </Button>
-            <Button onClick={toggleSuccessModal} style={{ color: 'darkgrey' }}>
-              Not now
-            </Button>
-          </div>
-        </div>
-      </Dialog>
     </Fragment>
   );
 }
