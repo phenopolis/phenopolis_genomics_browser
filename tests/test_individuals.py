@@ -286,24 +286,24 @@ def test_get_all_individuals_with_admin_default_page(_admin):
 
 def test_get_all_individuals_with_pagination(_admin_client):
 
-    response = _admin_client.get("/individual?limit=5&offset=0")
+    response = _admin_client.get("/individual?limit=2&offset=0")
     assert response.status_code == 200
     first_page = json.loads(response.data)
-    assert len(first_page) == 5
+    assert len(first_page) == 2
 
-    response = _admin_client.get("/individual?limit=5&offset=5")
+    response = _admin_client.get("/individual?limit=2&offset=2")
     assert response.status_code == 200
     second_page = json.loads(response.data)
-    assert len(second_page) == 5
+    assert len(second_page) == 2
 
-    response = _admin_client.get("/individual?limit=5&offset=10")
+    response = _admin_client.get("/individual?limit=2&offset=4")
     assert response.status_code == 200
     third_page = json.loads(response.data)
-    assert len(third_page) == 5
+    assert len(third_page) == 2
 
     # check elements between the pages are different
     internal_ids = [i.get("internal_id") for i in first_page + second_page + third_page]
-    assert len(set(internal_ids)) == 15
+    assert len(set(internal_ids)) == 6
 
 
 def _clean_test_individuals(db_session, test_individual_id):
