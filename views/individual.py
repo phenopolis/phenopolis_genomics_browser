@@ -19,7 +19,7 @@ from views.helpers import _get_json_payload
 from views.postgres import postgres_cursor, get_db, get_db_session
 from views.general import process_for_display
 
-MAX_PAGE_SIZE = 100
+MAX_PAGE_SIZE = 100000
 
 
 @application.route("/individual")
