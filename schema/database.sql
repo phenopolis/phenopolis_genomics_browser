@@ -90,3 +90,14 @@ alter default privileges in schema cadd
 set search_path to cadd, public;
 \i cadd.sql
 reset search_path;
+
+create schema ensembl;
+grant usage on schema ensembl to phenopolis_api;
+alter default privileges in schema ensembl
+    grant select, insert, update, delete on tables to phenopolis_api;
+alter default privileges in schema ensembl
+    grant all on sequences to phenopolis_api;
+
+set search_path to ensembl, public;
+\i ensembl.sql
+reset search_path;
