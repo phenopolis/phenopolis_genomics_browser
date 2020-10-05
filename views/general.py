@@ -92,6 +92,7 @@ def process_for_display(data):
         .filter(UserIndividual.user == session[USER])
         .with_entities(UserIndividual.internal_id)
     )
+    # TODO: avoid this trnasformation to dict and use the objects themselves
     for x2 in data:
         if "CHROM" in x2 and "POS" in x2 and "REF" in x2 and "ALT" in x2:
             variant_id = "%s-%s-%s-%s" % (x2["CHROM"], x2["POS"], x2["REF"], x2["ALT"],)

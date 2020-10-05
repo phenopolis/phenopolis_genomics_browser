@@ -66,10 +66,11 @@ def _load_config():
     application.config["DB_PASSWORD"] = os.getenv("PH_DB_PASSWORD", "phenopolis_api")
     application.config["DB_PORT"] = os.getenv("PH_DB_PORT", "5432")
     application.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = True
-    db_uri = "postgresql+psycopg2://%s:%s@%s/%s" % (
+    db_uri = "postgresql+psycopg2://%s:%s@%s:%s/%s" % (
         application.config["DB_USER"],
         application.config["DB_PASSWORD"],
         application.config["DB_HOST"],
+        application.config["DB_PORT"],
         application.config["DB_DATABASE"],
     )
     application.config["SQLALCHEMY_DATABASE_URI"] = db_uri
