@@ -4,7 +4,6 @@ from views import application, APP_ENV
 from views.auth import ADMIN_USER, USER, DEMO_USER
 
 load_dotenv(dotenv_path="./private.env")
-load_dotenv(dotenv_path="./public.env")
 
 pytest_plugins = ("tests.fix_api",)
 
