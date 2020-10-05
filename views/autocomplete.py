@@ -4,7 +4,6 @@ Autocomplete view
 import re
 import ujson as json
 from flask import jsonify, session, Response, request
-from logzero import logger
 from db.helpers import cursor2dict
 from views import application
 from views.auth import requires_auth, USER
@@ -46,7 +45,7 @@ def autocomplete(query, language=None):
             ),
             400,
         )
-    logger.debug("Autocomplete query '%s' and query type '%s'", query, query_type)
+    application.logger.debug("Autocomplete query '%s' and query type '%s'", query, query_type)
 
     cursor = postgres_cursor()
     if query_type == "gene":
@@ -71,7 +70,7 @@ def autocomplete(query, language=None):
         )
     else:
         message = "Autocomplete request with unsupported query type '{}'".format(query_type)
-        logger.error(message)
+        application.logger.error(message)
         # raise PhenopolisException(message)
         return (
             jsonify(success=False, message=message),
