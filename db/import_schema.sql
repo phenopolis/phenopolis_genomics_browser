@@ -546,6 +546,10 @@ ALTER TABLE ONLY public.test_sessions
     ADD CONSTRAINT test_sessions_pkey PRIMARY KEY (id);
 
 
+ALTER TABLE ONLY public.hpo
+    ADD CONSTRAINT hpo_pkey PRIMARY KEY (hpo_id);
+
+
 --
 -- Name: test_sessions test_sessions_session_id_key; Type: CONSTRAINT; Schema: public; Owner: phenopolis_api
 --
