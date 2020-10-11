@@ -19,6 +19,7 @@ ENSEMBL_PROTEIN_REGEX = re.compile(r"^ENSP(\d{0,10})", re.IGNORECASE)
 ENSEMBL_GENE_REGEX = re.compile(r"^ENSG(\d{0,10})", re.IGNORECASE)
 HPO_REGEX = re.compile(r"^HP:(\d{0,7})", re.IGNORECASE)
 PATIENT_REGEX = re.compile(r"^PH(\d{0,8})", re.IGNORECASE)
+NUMERIC_REGEX = re.compile(r"^\d+$", re.IGNORECASE)
 HGVSP = "hgvsp"
 HGVSC = "hgvsc"
 
@@ -107,8 +108,8 @@ def _search_phenotypes(query, limit):
     r"""
     A user may search for things like 'Abnormality of body height' or for an HPO id as HP:1234567 (ie: HP:\d{7})
     """
-    if HPO_REGEX.match(query):
-        phenotypes = get_db_session().query(HPO).filter(HPO.hpo_id.ilike("{}%".format(query)))\
+    if HPO_REGEX.match(query) or NUMERIC_REGEX.match(query):
+        phenotypes = get_db_session().query(HPO).filter(HPO.hpo_id.ilike("%{}%".format(query)))\
             .order_by(HPO.hpo_id.asc()).limit(limit).all()
     else:
         # TODO: search also over synonyms
@@ -128,13 +129,13 @@ def _search_genes(cursor, query, limit):
     if ENSEMBL_GENE_REGEX.match(query):
         cursor.execute(
             r"""select * from genes where "gene_id"::text ilike %(query)s limit %(limit)s""",
-            {"query": "{}%".format(query), "limit": limit},
+            {"query": "%{}%".format(query), "limit": limit},
         )
     elif ENSEMBL_TRANSCRIPT_REGEX.match(query):
         # TODO: add search by all Ensembl transcipts (ie: not only canonical) if we add those to the genes table
         cursor.execute(
             r"""select * from genes where "canonical_transcript"::text ilike %(query)s limit %(limit)s""",
-            {"query": "{}%".format(query), "limit": limit},
+            {"query": "%{}%".format(query), "limit": limit},
         )
     # TODO: add search by Ensembl protein if we add a column to the genes table
     else:

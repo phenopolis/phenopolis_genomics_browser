@@ -1,6 +1,6 @@
 import pytest
 
-from views.autocomplete import HPO_REGEX
+from views.autocomplete import HPO_REGEX, NUMERIC_REGEX
 
 
 @pytest.mark.parametrize(
@@ -15,6 +15,7 @@ from views.autocomplete import HPO_REGEX
         # phenotype search
         ("gallbladder", "phenotype", "hpo::Gallbladder dyskinesia::HP:0012442"),
         ("HP:0000010", "phenotype", "hpo::Recurrent urinary tract infections::HP:0000010"),
+        ("10", "phenotype", "hpo::Recurrent urinary tract infections::HP:0000010"),
         ("HP:000001", "phenotype", "hpo::Recurrent urinary tract infections::HP:0000010"),
         ("intellect", "phenotype", "hpo::Intellectual disability::HP:0001249"),
         ("intelligence", "phenotype", None),
@@ -51,7 +52,7 @@ def test_autocomplete(_demo_client, query, qt, msg):
             # the results must be sorted by individual.internal_id
             assert resp.json == sorted(resp.json)
         elif qt == "phenotype":
-            if HPO_REGEX.match(query):
+            if HPO_REGEX.match(query) or NUMERIC_REGEX.match(query):
                 # HPO query by query id, results sorted by hpo.hpo_id
                 phenotypes_ids = [x.split("::")[2] for x in resp.json]
                 assert phenotypes_ids == sorted(phenotypes_ids)
