@@ -3,7 +3,7 @@ Autocomplete view
 """
 import re
 from flask import jsonify, session, request
-from sqlalchemy import and_
+from sqlalchemy import and_, asc, func
 
 from db.helpers import cursor2dict
 from db.model import Individual, UserIndividual, HPO
@@ -113,8 +113,9 @@ def _search_phenotypes(query, limit):
     else:
         # TODO: search also over synonyms
         # TODO: return the distance so the frontend have greater flexibility
+        # NOTE: order results by similarity and then by hpo_name (case insensitive)
         phenotypes_and_distances = get_db_session().query(HPO, HPO.hpo_name.op("<->")(query).label("distance"))\
-            .filter(HPO.hpo_name.op("%%")(query)).order_by("distance", HPO.hpo_name).limit(limit).all()
+            .filter(HPO.hpo_name.op("%%")(query)).order_by("distance", asc(func.lower(HPO.hpo_name))).limit(limit).all()
         phenotypes = [p for p, _ in phenotypes_and_distances]
 
     return ["hpo::" + x.hpo_name + "::" + x.hpo_id for x in phenotypes]

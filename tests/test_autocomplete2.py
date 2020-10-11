@@ -11,23 +11,29 @@ from views.autocomplete import HPO_REGEX
         ("kiaa099", "gene", "gene::TTLL5::ENSG00000119685"),
         ("ENSG0000015617", "gene", "gene::DRAM2::ENSG00000156171"),
         ("ENST00000557636", "gene", "gene::TTLL5::ENSG00000119685"),
+
         # phenotype search
         ("gallbladder", "phenotype", "hpo::Gallbladder dyskinesia::HP:0012442"),
         ("HP:0000010", "phenotype", "hpo::Recurrent urinary tract infections::HP:0000010"),
         ("HP:000001", "phenotype", "hpo::Recurrent urinary tract infections::HP:0000010"),
         ("intellect", "phenotype", "hpo::Intellectual disability::HP:0001249"),
         ("intelligence", "phenotype", None),
+        ("intellectual disability", "phenotype", "hpo::Intellectual disability::HP:0001249"),
+        ("intellectually disabled", "phenotype", "hpo::Intellectual disability::HP:0001249"),
         ("cognitive", "phenotype", "hpo::Cognitive impairment::HP:0100543"),
         # TODO: when we search over HPO synonyms this search should return dyschromatopsia, red-gree dyschromatopsia,
         # TODO: monochromacy, tritanomaly and protanomaly
         ("color blindness", "phenotype", "hpo::Blindness::HP:0000618"),
         ("achromatopsia", "phenotype", "hpo::Achromatopsia::HP:0011516"),
+        ("хороший", "phenotype", None),
+
         # patient search
         ("PH000082", "patient", "individual::PH00008267::PH00008267"),
         ("82", "patient", "individual::PH00008267::PH00008267"),
         ("0082", "patient", "individual::PH00008267::PH00008267"),
         ("PH0082", "patient", None),
         ("PH000083", "patient", None),
+
         # variant search
         ("14-76156", "variant", "variant::14-76156575-A-G::14-76156575-A-G"),
         ("14-76156-A-G", "variant", "variant::14-76156575-A-G::14-76156575-A-G"),
