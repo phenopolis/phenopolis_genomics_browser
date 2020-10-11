@@ -3,10 +3,10 @@ Autocomplete view
 """
 import re
 from flask import jsonify, session, request
-from sqlalchemy import and_, asc, func
+from sqlalchemy import and_, asc, func, or_
 
 from db.helpers import cursor2dict
-from db.model import Individual, UserIndividual, HPO
+from db.model import Individual, UserIndividual, HPO, Gene
 from views import application
 from views.auth import requires_auth, USER
 from views.postgres import postgres_cursor, get_db_session
@@ -51,7 +51,7 @@ def autocomplete(query):
 
     cursor = postgres_cursor()
     if query_type == "gene":
-        suggestions = _search_genes(cursor, query, limit)
+        suggestions = _search_genes(query, limit)
 
     elif query_type == "phenotype":
         suggestions = _search_phenotypes(query, limit)
@@ -64,7 +64,7 @@ def autocomplete(query):
 
     elif query_type is None or query_type == "":
         suggestions = (
-            _search_genes(cursor, query, limit)
+            _search_genes(query, limit)
             + _search_phenotypes(query, limit)
             + _search_patients(query, limit)
             + _search_variants_by_coordinates(cursor, query, limit)
@@ -122,31 +122,39 @@ def _search_phenotypes(query, limit):
     return ["hpo::" + x.hpo_name + "::" + x.hpo_id for x in phenotypes]
 
 
-def _search_genes(cursor, query, limit):
+def _search_genes(query, limit):
     """
-    Either search for a gene_id like 'ensg000...', or by gene name like 'ttll...', or by gene synonym like 'asd...'
+    Either search for:
+    - a gene id like 'ENSG000...'
+    - a transcript id like 'ENST000...'
+    - a numeric id without any qualifier like '12345'
+    - a gene name like 'TTLL...'
+    - a gene synonym like 'asd...'
+
+    The order of results is sorted by gene identifier for the 3 searches by identifier; and it is sorted by similarity
+    for gene name and gene synonym searches
     """
-    if ENSEMBL_GENE_REGEX.match(query):
-        cursor.execute(
-            r"""select * from genes where "gene_id"::text ilike %(query)s limit %(limit)s""",
-            {"query": "%{}%".format(query), "limit": limit},
-        )
-    elif ENSEMBL_TRANSCRIPT_REGEX.match(query):
-        # TODO: add search by all Ensembl transcipts (ie: not only canonical) if we add those to the genes table
-        cursor.execute(
-            r"""select * from genes where "canonical_transcript"::text ilike %(query)s limit %(limit)s""",
-            {"query": "%{}%".format(query), "limit": limit},
-        )
+    # TODO: add search by all Ensembl transcipts (ie: not only canonical) if we add those to the genes table
     # TODO: add search by Ensembl protein if we add a column to the genes table
+    is_identifier_query = ENSEMBL_GENE_REGEX.match(query) or ENSEMBL_TRANSCRIPT_REGEX.match(query) or \
+                          NUMERIC_REGEX.match(query)
+    if is_identifier_query:
+        genes = get_db_session().query(Gene) \
+            .filter(or_(Gene.gene_id.ilike("%{}%".format(query)),
+                        Gene.canonical_transcript.ilike("%{}%".format(query)))) \
+            .order_by(Gene.gene_id.asc()).limit(limit).all()
     else:
-        cursor.execute(
-            r"""select * from genes where gene_name_upper ilike %(suffix_query)s or other_names ilike %(query)s
-            limit %(limit)s""",
-            {"suffix_query": "%{}%".format(query), "query": "%{}%".format(query), "limit": limit},
-        )
-    gene_hits = cursor2dict(cursor)
+        # NOTE: makes two queries by gene name and by other names and returns only the closest results
+        genes_by_gene_name = get_db_session().query(Gene, Gene.gene_name.op("<->")(query).label("distance"))\
+            .filter(Gene.gene_name.op("%%")(query)).order_by("distance", asc(func.lower(Gene.gene_name)))\
+            .limit(limit).all()
+        genes_by_other_names = get_db_session()\
+            .query(Gene, Gene.other_names.op("<->")(query).label("distance")) \
+            .filter(Gene.other_names.op("%%")(query)).order_by("distance", asc(func.lower(Gene.gene_name))) \
+            .limit(limit).all()
+        genes = [g for g, _ in sorted(genes_by_gene_name + genes_by_other_names, key=lambda x: x[1])[0: limit]]
     # while the search is performed on the upper cased gene name, it returns the original gene name
-    return ["gene::" + x["gene_name"] + "::" + x["gene_id"] for x in gene_hits]
+    return ["gene::" + x.gene_name + "::" + x.gene_id for x in genes]
 
 
 def _search_variants_by_coordinates(cursor, query, limit):

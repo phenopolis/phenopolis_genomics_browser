@@ -592,6 +592,7 @@ ALTER TABLE ONLY public.variants
 CREATE INDEX genes_gene_id_idx ON public.genes USING btree (gene_id);
 
 
+
 --
 -- Name: hpo_ancestor_names; Type: INDEX; Schema: public; Owner: phenopolis_api
 --
@@ -625,6 +626,10 @@ CREATE INDEX i_gene_name ON public.genes USING btree (gene_name);
 --
 
 CREATE INDEX i_gene_name_upper ON public.genes USING btree (gene_name_upper);
+
+-- adds GIST index
+CREATE INDEX ON public.genes USING GIST (gene_name public.gist_trgm_ops);
+CREATE INDEX ON public.genes USING GIST (other_names public.gist_trgm_ops);
 
 
 --

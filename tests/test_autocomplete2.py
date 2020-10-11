@@ -6,11 +6,16 @@ from views.autocomplete import HPO_REGEX, NUMERIC_REGEX
 @pytest.mark.parametrize(
     ("query", "qt", "msg"),
     (
+        # gene search
         ("ttll", "", "gene::TTLL5::ENSG00000119685"),
         ("ttll", "gene", "gene::TTLL5::ENSG00000119685"),
+        # TODO: populate the genes.csv for testing with a larger dataset
+        ("BRC", "gene", None),
         ("kiaa099", "gene", "gene::TTLL5::ENSG00000119685"),
         ("ENSG0000015617", "gene", "gene::DRAM2::ENSG00000156171"),
+        ("15617", "gene", "gene::DRAM2::ENSG00000156171"),
         ("ENST00000557636", "gene", "gene::TTLL5::ENSG00000119685"),
+        ("557636", "gene", "gene::TTLL5::ENSG00000119685"),
 
         # phenotype search
         ("gallbladder", "phenotype", "hpo::Gallbladder dyskinesia::HP:0012442"),
