@@ -9,7 +9,7 @@ from sqlalchemy import and_, asc, func, or_, Text, cast
 from db.model import Individual, UserIndividual, HPO, Gene, Variant
 from views import application
 from views.auth import requires_auth, USER
-from views.postgres import postgres_cursor, get_db_session
+from views.postgres import get_db_session
 
 CHROMOSOME_POS_REGEX = re.compile(r"^(\w+)[-:](\d+)$")
 CHROMOSOME_POS_REF_REGEX = re.compile(r"^(\w+)[-:](\d+)[-:]([ACGT\*]+)$", re.IGNORECASE)
@@ -49,7 +49,6 @@ def autocomplete(query):
         )
     application.logger.debug("Autocomplete query '%s' and query type '%s'", query, query_type)
 
-    cursor = postgres_cursor()
     if query_type == "gene":
         suggestions = _search_genes(query, limit)
 
@@ -78,9 +77,6 @@ def autocomplete(query):
             400,
         )
 
-    cursor.close()
-
-    # FIXME: this was messing up with order of results but is this braking somethign?
     return jsonify(suggestions), 200
 
 
