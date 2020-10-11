@@ -1,5 +1,7 @@
 import pytest
 
+from views.autocomplete import HPO_REGEX
+
 
 @pytest.mark.parametrize(
     ("query", "qt", "msg"),
@@ -9,8 +11,17 @@ import pytest
         ("kiaa099", "gene", "gene::TTLL5::ENSG00000119685"),
         ("ENSG0000015617", "gene", "gene::DRAM2::ENSG00000156171"),
         ("ENST00000557636", "gene", "gene::TTLL5::ENSG00000119685"),
+        # phenotype search
         ("gallbladder", "phenotype", "hpo::Gallbladder dyskinesia::HP:0012442"),
         ("HP:0000010", "phenotype", "hpo::Recurrent urinary tract infections::HP:0000010"),
+        ("HP:000001", "phenotype", "hpo::Recurrent urinary tract infections::HP:0000010"),
+        ("intellect", "phenotype", "hpo::Intellectual disability::HP:0001249"),
+        ("intelligence", "phenotype", None),
+        ("cognitive", "phenotype", "hpo::Cognitive impairment::HP:0100543"),
+        # TODO: when we search over HPO synonyms this search should return dyschromatopsia, red-gree dyschromatopsia,
+        # TODO: monochromacy, tritanomaly and protanomaly
+        ("color blindness", "phenotype", "hpo::Blindness::HP:0000618"),
+        ("achromatopsia", "phenotype", "hpo::Achromatopsia::HP:0011516"),
         # patient search
         ("PH000082", "patient", "individual::PH00008267::PH00008267"),
         ("82", "patient", "individual::PH00008267::PH00008267"),
@@ -31,7 +42,20 @@ def test_autocomplete(_demo_client, query, qt, msg):
     if msg:
         assert msg in resp.json
         if qt == "patient":
+            # the results must be sorted by individual.internal_id
             assert resp.json == sorted(resp.json)
+        elif qt == "phenotype":
+            if HPO_REGEX.match(query):
+                # HPO query by query id, results sorted by hpo.hpo_id
+                phenotypes_ids = [x.split("::")[2] for x in resp.json]
+                assert phenotypes_ids == sorted(phenotypes_ids)
+            else:
+                # HPO query by name, results sorted by query similarity to hpo.hpo_name
+                phenotypes_names = [x.split("::")[1] for x in resp.json]
+                # NOTE: semantic search simplification for "easy" search, results having an exact match of the query are
+                # sorted by length og HPO name, inexact searches are more tricky
+                assert phenotypes_names == sorted(phenotypes_names,
+                                                  key=lambda x: len(x) if query.lower() in x.lower() else 100 + len(x))
     else:
         assert len(resp.json) == 0
 

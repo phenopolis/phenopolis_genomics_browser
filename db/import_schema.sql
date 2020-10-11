@@ -16,6 +16,9 @@ SET xmloption = content;
 SET client_min_messages = warning;
 SET row_security = off;
 
+-- Extension for trigram search over text fields
+CREATE EXTENSION pg_trgm WITH SCHEMA PUBLIC;
+
 --
 -- Name: colname_class_type; Type: TYPE; Schema: public; Owner: phenopolis_api
 --
@@ -671,6 +674,9 @@ CREATE INDEX idx_16548_i_hpo_id ON public.hpo USING btree (hpo_id);
 --
 
 CREATE INDEX idx_16548_i_hpo_name ON public.hpo USING btree (hpo_name);
+
+-- adds GIST index
+CREATE INDEX ON public.hpo USING GIST (hpo_name public.gist_trgm_ops);
 
 
 --

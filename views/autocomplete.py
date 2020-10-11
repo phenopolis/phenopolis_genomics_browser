@@ -2,12 +2,11 @@
 Autocomplete view
 """
 import re
-import ujson as json
-from flask import jsonify, session, Response, request
+from flask import jsonify, session, request
 from sqlalchemy import and_
 
 from db.helpers import cursor2dict
-from db.model import Individual, UserIndividual
+from db.model import Individual, UserIndividual, HPO
 from views import application
 from views.auth import requires_auth, USER
 from views.postgres import postgres_cursor, get_db_session
@@ -54,10 +53,10 @@ def autocomplete(query):
         suggestions = _search_genes(cursor, query, limit)
 
     elif query_type == "phenotype":
-        suggestions = _search_phenotypes(cursor, query, limit)
+        suggestions = _search_phenotypes(query, limit)
 
     elif query_type == "patient":
-        suggestions = _search_patients(cursor, query, limit)
+        suggestions = _search_patients(query, limit)
 
     elif query_type == "variant":
         suggestions = _search_variants_by_coordinates(cursor, query, limit) + _search_variants_by_hgvs(cursor, query, limit)
@@ -65,8 +64,8 @@ def autocomplete(query):
     elif query_type is None or query_type == "":
         suggestions = (
             _search_genes(cursor, query, limit)
-            + _search_phenotypes(cursor, query, limit)
-            + _search_patients(cursor, query, limit)
+            + _search_phenotypes(query, limit)
+            + _search_patients(query, limit)
             + _search_variants_by_coordinates(cursor, query, limit)
             + _search_variants_by_hgvs(cursor, query, limit)
         )
@@ -86,7 +85,7 @@ def autocomplete(query):
     return jsonify(suggestions), 200
 
 
-def _search_patients(cursor, query, limit):
+def _search_patients(query, limit):
     r"""'
     Patient (internal_id) format: PH (PH\d{8}) e.g. 'PH00005862' and are restricted to a particular user
     'demo', for example, can only access ['PH00008256', 'PH00008258', 'PH00008267', 'PH00008268']
@@ -104,22 +103,21 @@ def _search_patients(cursor, query, limit):
     return ["individual::" + x.internal_id + "::" + x.internal_id for x in individuals]
 
 
-def _search_phenotypes(cursor, query, limit):
+def _search_phenotypes(query, limit):
     r"""
     A user may search for things like 'Abnormality of body height' or for an HPO id as HP:1234567 (ie: HP:\d{7})
     """
     if HPO_REGEX.match(query):
-        cursor.execute(
-            r"""select * from hpo where hpo_id ilike %(query)s limit %(limit)s""",
-            {"query": "{}%".format(query), "limit": limit},
-        )
+        phenotypes = get_db_session().query(HPO).filter(HPO.hpo_id.ilike("{}%".format(query)))\
+            .order_by(HPO.hpo_id.asc()).limit(limit).all()
     else:
-        cursor.execute(
-            r"""select * from hpo where hpo_name ilike %(query)s limit %(limit)s""",
-            {"query": "%{}%".format(query), "limit": limit},
-        )
-    hpo_hits = cursor2dict(cursor)
-    return ["hpo::" + x["hpo_name"] + "::" + x["hpo_id"] for x in hpo_hits]
+        # TODO: search also over synonyms
+        # TODO: return the distance so the frontend have greater flexibility
+        phenotypes_and_distances = get_db_session().query(HPO, HPO.hpo_name.op("<->")(query).label("distance"))\
+            .filter(HPO.hpo_name.op("%%")(query)).order_by("distance", HPO.hpo_name).limit(limit).all()
+        phenotypes = [p for p, _ in phenotypes_and_distances]
+
+    return ["hpo::" + x.hpo_name + "::" + x.hpo_id for x in phenotypes]
 
 
 def _search_genes(cursor, query, limit):
