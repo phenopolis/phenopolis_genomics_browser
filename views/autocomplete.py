@@ -4,10 +4,13 @@ Autocomplete view
 import re
 import ujson as json
 from flask import jsonify, session, Response, request
+from sqlalchemy import and_
+
 from db.helpers import cursor2dict
+from db.model import Individual, UserIndividual
 from views import application
 from views.auth import requires_auth, USER
-from views.postgres import postgres_cursor
+from views.postgres import postgres_cursor, get_db_session
 
 CHROMOSOME_POS_REGEX = re.compile(r"^(\w+)[-:](\d+)$")
 CHROMOSOME_POS_REF_REGEX = re.compile(r"^(\w+)[-:](\d+)[-:]([ACGT\*]+)$", re.IGNORECASE)
@@ -24,10 +27,9 @@ DEFAULT_SEARCH_RESULTS_LIMIT = 20
 MAXIMUM_SEARCH_RESULTS_LIMIT = 1000
 
 
-@application.route("/<language>/autocomplete/<query>")
 @application.route("/autocomplete/<query>")
 @requires_auth
-def autocomplete(query, language=None):
+def autocomplete(query):
     arguments = request.args.to_dict()
     query_type = arguments.get("query_type")
     try:
@@ -49,19 +51,19 @@ def autocomplete(query, language=None):
 
     cursor = postgres_cursor()
     if query_type == "gene":
-        results = _search_genes(cursor, query, limit)
+        suggestions = _search_genes(cursor, query, limit)
 
     elif query_type == "phenotype":
-        results = _search_phenotypes(cursor, query, limit)
+        suggestions = _search_phenotypes(cursor, query, limit)
 
     elif query_type == "patient":
-        results = _search_patients(cursor, query, limit)
+        suggestions = _search_patients(cursor, query, limit)
 
     elif query_type == "variant":
-        results = _search_variants_by_coordinates(cursor, query, limit) + _search_variants_by_hgvs(cursor, query, limit)
+        suggestions = _search_variants_by_coordinates(cursor, query, limit) + _search_variants_by_hgvs(cursor, query, limit)
 
     elif query_type is None or query_type == "":
-        results = (
+        suggestions = (
             _search_genes(cursor, query, limit)
             + _search_phenotypes(cursor, query, limit)
             + _search_patients(cursor, query, limit)
@@ -79,8 +81,9 @@ def autocomplete(query, language=None):
 
     cursor.close()
 
-    suggestions = list(set(results))
-    return Response(json.dumps(suggestions), mimetype="application/json")
+    # FIXME: this was messing up qith order of results but is this braking somethign?
+    #suggestions = list(set(suggestions))
+    return jsonify(suggestions), 200
 
 
 def _search_patients(cursor, query, limit):
@@ -89,13 +92,16 @@ def _search_patients(cursor, query, limit):
     'demo', for example, can only access ['PH00008256', 'PH00008258', 'PH00008267', 'PH00008268']
     so, a search for 'PH000082', for user 'demo', should return only the 4 cases above
     """
-    cursor.execute(
-        r"""select i.external_id, i.internal_id from individuals i, users_individuals ui where
-        ui.internal_id=i.internal_id and ui.user=%(user)s and i.internal_id ILIKE %(query)s limit %(limit)s""",
-        {"user": session[USER], "query": "%{}%".format(query), "limit": limit},
-    )
-    patient_hits = cursor2dict(cursor)
-    return ["individual::" + x["internal_id"] + "::" + x["internal_id"] for x in patient_hits]
+    individuals = get_db_session().query(Individual, UserIndividual)\
+        .filter(and_(UserIndividual.internal_id == Individual.internal_id,
+                     UserIndividual.user == session[USER],
+                     Individual.internal_id.ilike("%{}%".format(query)))) \
+        .with_entities(Individual) \
+        .order_by(Individual.internal_id.asc()) \
+        .limit(limit) \
+        .all()
+
+    return ["individual::" + x.internal_id + "::" + x.internal_id for x in individuals]
 
 
 def _search_phenotypes(cursor, query, limit):
