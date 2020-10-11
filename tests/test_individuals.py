@@ -229,9 +229,7 @@ def test_delete_individual(_admin_client):
     test_individual_id = _get_random_individual_id()
     individual.external_id = test_individual_id
     individual.pi = "3.1416"
-    response = _admin_client.post(
-        "/individual", json=[individual.as_dict()], content_type="application/json"
-    )
+    response = _admin_client.post("/individual", json=[individual.as_dict()], content_type="application/json")
     assert response.status_code == 200
 
     # confirms existence of new individual
