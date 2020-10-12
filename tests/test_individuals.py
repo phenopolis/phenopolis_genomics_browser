@@ -1,7 +1,6 @@
 import string
 
 import pytest
-import ujson as json
 import random
 from db.model import Individual
 from tests.test_views import _check_only_available_to_admin
@@ -34,7 +33,7 @@ def test_get_unauthorised_individual_by_id(_demo):
     response, status = get_individual_by_id("PH00000001")
     assert status == 404
     assert (
-        json.loads(response.data).get("message")
+        response.json.get("message")
         == "Sorry, either the patient does not exist or you are not permitted to see this patient"
     )
 
@@ -82,7 +81,7 @@ def test_get_individual_preview_by_id(_admin):
 def _get_view_individual_by_id(identifier, subset="all"):
     response, status = get_individual_by_id(identifier, subset=subset)
     assert status == 200
-    data = json.loads(response.data)
+    data = response.json
     assert len(data) == 1, "Missing expected data"
     individual_complete_view = data[0]
     return individual_complete_view
@@ -150,7 +149,7 @@ def test_update_individual_with_admin_user(_admin_client):
 def test_create_individual_with_demo_user_fails(_demo_client):
     individual = Individual()
     individual.internal_id = _get_random_individual_id()
-    response = _demo_client.post("/individual", data=json.dumps(individual.as_dict()), content_type="text/json")
+    response = _demo_client.post("/individual", json=individual.as_dict(), content_type="text/json")
     assert response.status_code == 405
 
 
@@ -159,7 +158,7 @@ def test_create_individual_with_admin_user(_admin_client):
     test_individual_id = _get_random_individual_id()
     individual.external_id = test_individual_id
     individual.pi = "3.1416"
-    response = _admin_client.post("/individual", data=json.dumps(individual.as_dict()), content_type="application/json")
+    response = _admin_client.post("/individual", json=individual.as_dict(), content_type="application/json")
     assert response.status_code == 200
 
     db_session = get_db_session()
@@ -176,7 +175,7 @@ def test_create_individual_existing_individual_fails(_admin_client):
     test_individual_id = _get_random_individual_id()
     individual.external_id = test_individual_id
     individual.pi = "3.1416"
-    response = _admin_client.post("/individual", data=json.dumps(individual.as_dict()), content_type="application/json")
+    response = _admin_client.post("/individual", json=individual.as_dict(), content_type="application/json")
     assert response.status_code == 200
 
     db_session = get_db_session()
@@ -184,7 +183,7 @@ def test_create_individual_existing_individual_fails(_admin_client):
     assert observed_individual is not None, "Empty newly created individual"
     assert observed_individual.pi == individual.pi, "Field pi from created individual is not what it should"
 
-    response = _admin_client.post("/individual", data=json.dumps(individual.as_dict()), content_type="application/json")
+    response = _admin_client.post("/individual", json=individual.as_dict(), content_type="application/json")
     assert response.status_code == 400
 
     # cleans the database
@@ -201,7 +200,7 @@ def test_create_multiple_individuals(_admin_client):
     individual2.external_id = test_individual_id2
     individual2.pi = "3.141600000001983983"
     response = _admin_client.post(
-        "/individual", data=json.dumps([individual.as_dict(), individual2.as_dict()]), content_type="application/json"
+        "/individual", json=[individual.as_dict(), individual2.as_dict()], content_type="application/json"
     )
     assert response.status_code == 200
 
@@ -230,9 +229,7 @@ def test_delete_individual(_admin_client):
     test_individual_id = _get_random_individual_id()
     individual.external_id = test_individual_id
     individual.pi = "3.1416"
-    response = _admin_client.post(
-        "/individual", data=json.dumps([individual.as_dict()]), content_type="application/json"
-    )
+    response = _admin_client.post("/individual", json=[individual.as_dict()], content_type="application/json")
     assert response.status_code == 200
 
     # confirms existence of new individual
@@ -262,7 +259,7 @@ def test_delete_not_existing_individual(_admin_client):
 def test_get_all_individuals_default_page(_demo):
     response, status = get_all_individuals()
     assert status == 200
-    individuals = json.loads(response.data)
+    individuals = response.json
     assert len(individuals) <= 100, "Page is greater than the maximum size of 100"
     assert len(individuals) > 0, "There are no results"
     for i in individuals:
@@ -273,7 +270,7 @@ def test_get_all_individuals_default_page(_demo):
 def test_get_all_individuals_with_admin_default_page(_admin):
     response, status = get_all_individuals()
     assert status == 200
-    individuals = json.loads(response.data)
+    individuals = response.json
     assert len(individuals) <= 100, "Page is greater than the maximum size of 100"
     assert len(individuals) > 0, "There are no results"
     found_individual_multiple_users = False
@@ -288,18 +285,18 @@ def test_get_all_individuals_with_pagination(_admin_client):
 
     response = _admin_client.get("/individual?limit=2&offset=0")
     assert response.status_code == 200
-    first_page = json.loads(response.data)
+    first_page = response.json
     assert len(first_page) == 2
 
     response = _admin_client.get("/individual?limit=2&offset=2")
     assert response.status_code == 200
-    second_page = json.loads(response.data)
+    second_page = response.json
     assert len(second_page) == 2
 
     # the third page
     response = _admin_client.get("/individual?limit=2&offset=4")
     assert response.status_code == 200
-    third_page = json.loads(response.data)
+    third_page = response.json
     assert len(third_page) == 1
 
     # check elements between the pages are different
