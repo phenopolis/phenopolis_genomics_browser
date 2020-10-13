@@ -308,16 +308,16 @@ def test_get_individual_not_having_duplicated_keys(_admin):
 
     # test individual with homozygous variants
     individual_view = _get_view_individual_by_id(identifier="PH00008256")
-    column_names = [c['key'] for c in individual_view.get("rare_homs").get("colNames")]
+    column_names = [c["key"] for c in individual_view.get("rare_homs").get("colNames")]
     assert len(column_names) == len(set(column_names)), "There are duplicated column names in the rare variants"
     assert "#CHROM" not in column_names
 
     # test individuals with heterozygous and compound heterozygous
     individual_view = _get_view_individual_by_id(identifier="PH00008267")
-    column_names = [c['key'] for c in individual_view.get("rare_comp_hets").get("colNames")]
+    column_names = [c["key"] for c in individual_view.get("rare_comp_hets").get("colNames")]
     assert len(column_names) == len(set(column_names)), "There are duplicated column names in the rare variants"
     assert "#CHROM" not in column_names
-    column_names = [c['key'] for c in individual_view.get("rare_variants").get("colNames")]
+    column_names = [c["key"] for c in individual_view.get("rare_variants").get("colNames")]
     assert len(column_names) == len(set(column_names)), "There are duplicated column names in the rare variants"
     assert "#CHROM" not in column_names
 

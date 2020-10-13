@@ -30,6 +30,6 @@ def test_gene_not_found(_demo):
 def test_gene_not_having_duplicated_keys(_demo):
     resp = gene("TTLL5")
     gene_results = json.loads(resp)
-    column_names = [c['key'] for c in gene_results[0]['variants']['colNames']]
+    column_names = [c["key"] for c in gene_results[0]["variants"]["colNames"]]
     assert len(column_names) == len(set(column_names)), "There are duplicated column names in the variants"
     assert "#CHROM" not in column_names
