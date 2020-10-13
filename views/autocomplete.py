@@ -155,11 +155,13 @@ def _search_genes(query, limit):
         ENSEMBL_GENE_REGEX.match(query) or ENSEMBL_TRANSCRIPT_REGEX.match(query) or NUMERIC_REGEX.match(query)
     )
     if is_identifier_query:
+        query_without_version = remove_version_from_id(query)
         genes = (
             get_db_session()
             .query(Gene)
             .filter(
-                or_(Gene.gene_id.ilike("%{}%".format(query)), Gene.canonical_transcript.ilike("%{}%".format(query)))
+                or_(Gene.gene_id.ilike("%{}%".format(query_without_version)),
+                    Gene.canonical_transcript.ilike("%{}%".format(query_without_version)))
             )
             .order_by(Gene.gene_id.asc())
             .limit(limit)
@@ -277,7 +279,7 @@ def _search_variants_by_hgvs(hgvs_type, entity, hgvs, limit) -> List[Variant]:
             )
         elif ENSEMBL_GENE_REGEX.match(entity):
             # search for HGVS on the variants for the given gene id
-            ensembl_gene_id_without_version = re.sub(r"\..*", "", entity)
+            ensembl_gene_id_without_version = remove_version_from_id(entity)
             variants = (
                 get_db_session()
                     .query(Variant)
@@ -313,7 +315,7 @@ def _search_variants_by_hgvs(hgvs_type, entity, hgvs, limit) -> List[Variant]:
             )
         elif ENSEMBL_GENE_REGEX.match(entity):
             # search for HGVS on the variants for the given gene id
-            ensembl_protein_id_without_version = re.sub(r"\..*", "", entity)
+            ensembl_protein_id_without_version = remove_version_from_id(entity)
             variants = (
                 get_db_session()
                 .query(Variant)
@@ -338,6 +340,11 @@ def _search_variants_by_hgvs(hgvs_type, entity, hgvs, limit) -> List[Variant]:
         variants = []
 
     return variants
+
+
+def remove_version_from_id(entity):
+    ensembl_gene_id_without_version = re.sub(r"\..*", "", entity)
+    return ensembl_gene_id_without_version
 
 
 def _parse_hgvs_from_query(query):
