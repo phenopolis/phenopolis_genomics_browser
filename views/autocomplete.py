@@ -160,8 +160,10 @@ def _search_genes(query, limit):
             get_db_session()
             .query(Gene)
             .filter(
-                or_(Gene.gene_id.ilike("%{}%".format(query_without_version)),
-                    Gene.canonical_transcript.ilike("%{}%".format(query_without_version)))
+                or_(
+                    Gene.gene_id.ilike("%{}%".format(query_without_version)),
+                    Gene.canonical_transcript.ilike("%{}%".format(query_without_version)),
+                )
             )
             .order_by(Gene.gene_id.asc())
             .limit(limit)
@@ -282,22 +284,23 @@ def _search_variants_by_hgvs(hgvs_type, entity, hgvs, limit) -> List[Variant]:
             ensembl_gene_id_without_version = remove_version_from_id(entity)
             variants = (
                 get_db_session()
-                    .query(Variant)
-                    .filter(and_(Variant.gene_id == ensembl_gene_id_without_version,
-                                 Variant.hgvsc.ilike("%{}%".format(hgvs))))
-                    .order_by(Variant.CHROM.asc(), Variant.POS.asc())
-                    .limit(limit)
-                    .all()
+                .query(Variant)
+                .filter(
+                    and_(Variant.gene_id == ensembl_gene_id_without_version, Variant.hgvsc.ilike("%{}%".format(hgvs)))
+                )
+                .order_by(Variant.CHROM.asc(), Variant.POS.asc())
+                .limit(limit)
+                .all()
             )
         else:
             # search for HGVS on the variants for the given gene symbol
             variants = (
                 get_db_session()
-                    .query(Variant)
-                    .filter(and_(Variant.gene_symbol == entity, Variant.hgvsc.ilike("%{}%".format(hgvs))))
-                    .order_by(Variant.CHROM.asc(), Variant.POS.asc())
-                    .limit(limit)
-                    .all()
+                .query(Variant)
+                .filter(and_(Variant.gene_symbol == entity, Variant.hgvsc.ilike("%{}%".format(hgvs))))
+                .order_by(Variant.CHROM.asc(), Variant.POS.asc())
+                .limit(limit)
+                .all()
             )
     elif hgvs_type == HGVSP:
         if ENSEMBL_PROTEIN_REGEX.match(entity):
@@ -319,8 +322,11 @@ def _search_variants_by_hgvs(hgvs_type, entity, hgvs, limit) -> List[Variant]:
             variants = (
                 get_db_session()
                 .query(Variant)
-                .filter(and_(Variant.gene_id == ensembl_protein_id_without_version,
-                             Variant.hgvsp.ilike("%{}%".format(hgvs))))
+                .filter(
+                    and_(
+                        Variant.gene_id == ensembl_protein_id_without_version, Variant.hgvsp.ilike("%{}%".format(hgvs))
+                    )
+                )
                 .order_by(Variant.CHROM.asc(), Variant.POS.asc())
                 .limit(limit)
                 .all()

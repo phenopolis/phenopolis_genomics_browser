@@ -13,7 +13,7 @@ from views.autocomplete import HPO_REGEX, NUMERIC_REGEX
         ("BRC", "gene", None),
         ("kiaa099", "gene", "gene::TTLL5::ENSG00000119685"),
         ("ENSG0000015617", "gene", "gene::DRAM2::ENSG00000156171"),
-        ("ENSG0000015617.3", "gene", "gene::DRAM2::ENSG00000156171"), # version is ignored
+        ("ENSG0000015617.3", "gene", "gene::DRAM2::ENSG00000156171"),  # version is ignored
         ("15617", "gene", "gene::DRAM2::ENSG00000156171"),
         ("ENST00000557636", "gene", "gene::TTLL5::ENSG00000119685"),
         ("557636", "gene", "gene::TTLL5::ENSG00000119685"),
