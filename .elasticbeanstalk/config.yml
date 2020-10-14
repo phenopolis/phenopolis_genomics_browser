@@ -2,7 +2,7 @@ branch-defaults:
   prod-live:
     environment: Phenopolis-prod
   dev-live:
-    environment: Phenopolisapi-dev-env
+    environment: phenopolis-live-dev
 environment-defaults:
   Phenopolis-prod:
     branch: null

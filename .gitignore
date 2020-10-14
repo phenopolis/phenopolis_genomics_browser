@@ -72,3 +72,6 @@ private.env
 
 # pycharm
 .idea
+
+.pytest_cache
+.vscode/

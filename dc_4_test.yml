@@ -1,0 +1,29 @@
+version: '3.8'
+services:
+   app:
+      build:
+         context: .
+      image: phenopolis_api
+      command: sh -c "gunicorn -b 0.0.0.0:5000 --reload --workers=1 --threads=15 application:application"
+      ports:
+      - 5000:5000
+      working_dir: /app
+      volumes:
+      - ./:/app
+      env_file:
+      - public.env
+      #- private.env
+      depends_on:
+      - db
+   db:
+      image: postgres:12-alpine
+      volumes:
+      - db:/var/lib/postgresql/data
+      - ./:/app
+      - ./schema/initdb.d/:/docker-entrypoint-initdb.d
+      env_file:
+      - public.env
+      #- private.env
+      working_dir: /app
+volumes:
+   db: null

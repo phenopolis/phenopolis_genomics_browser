@@ -1,11 +1,13 @@
-from views import *
-# from views.postgres import get_db_session
+"""
+Statistics view
+"""
+# TODO: what exactly one wants with this?
+from flask import jsonify
+from views import application
 
-@application.route('/statistics')
+
+@application.route("/statistics")
 def phenopolis_statistics():
-    '''
-    Stats
-    '''
     # total_patients=get_db_session().query(Individual).count()
     total_patients = 8000
     # male_patients=get_db_session().query(Individual).filter(Individual.sex=='M').count()
@@ -21,16 +23,17 @@ def phenopolis_statistics():
     pass_variants = 700000
     # nonpass_variants=get_db_session().query(Variant).filter(Variant.FILTER!='PASS').count()
     nonpass_variants = 100000
-#     pass_exac_variants = 0
-#     pass_nonexac_variants = 0
-    return jsonify(exomes="{:,}".format(total_patients),
-                   males="{:,}".format(male_patients),
-                   females="{:,}".format(female_patients),
-                   unknowns="{:,}".format(unknown_patients),
-                   total_variants="{:,}".format(total_variants),
-                   exac_variants="{:,}".format(exac_variants),
-                   pass_variants="{:,}".format(pass_variants),
-                   nonpass_variants="{:,}".format(nonpass_variants),
-                   # image=image.decode('utf8'))
-                   version_number=0)
-
+    #     pass_exac_variants = 0
+    #     pass_nonexac_variants = 0
+    return jsonify(
+        exomes="{:,}".format(total_patients),
+        males="{:,}".format(male_patients),
+        females="{:,}".format(female_patients),
+        unknowns="{:,}".format(unknown_patients),
+        total_variants="{:,}".format(total_variants),
+        exac_variants="{:,}".format(exac_variants),
+        pass_variants="{:,}".format(pass_variants),
+        nonpass_variants="{:,}".format(nonpass_variants),
+        # image=image.decode('utf8'))
+        version_number=0,
+    )

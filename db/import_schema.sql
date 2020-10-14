@@ -16,6 +16,9 @@ SET xmloption = content;
 SET client_min_messages = warning;
 SET row_security = off;
 
+-- Extension for trigram search over text fields
+CREATE EXTENSION pg_trgm WITH SCHEMA PUBLIC;
+
 --
 -- Name: colname_class_type; Type: TYPE; Schema: public; Owner: phenopolis_api
 --
@@ -382,7 +385,8 @@ ALTER SEQUENCE public.user_pagetable_colname_id_seq OWNED BY public.user_pagetab
 CREATE TABLE public.users (
     "user" text NOT NULL,
     password text,
-    argon_password text
+    argon_password text,
+    enabled boolean default true
 );
 
 
@@ -545,6 +549,10 @@ ALTER TABLE ONLY public.test_sessions
     ADD CONSTRAINT test_sessions_pkey PRIMARY KEY (id);
 
 
+ALTER TABLE ONLY public.hpo
+    ADD CONSTRAINT hpo_pkey PRIMARY KEY (hpo_id);
+
+
 --
 -- Name: test_sessions test_sessions_session_id_key; Type: CONSTRAINT; Schema: public; Owner: phenopolis_api
 --
@@ -584,6 +592,7 @@ ALTER TABLE ONLY public.variants
 CREATE INDEX genes_gene_id_idx ON public.genes USING btree (gene_id);
 
 
+
 --
 -- Name: hpo_ancestor_names; Type: INDEX; Schema: public; Owner: phenopolis_api
 --
@@ -617,6 +626,10 @@ CREATE INDEX i_gene_name ON public.genes USING btree (gene_name);
 --
 
 CREATE INDEX i_gene_name_upper ON public.genes USING btree (gene_name_upper);
+
+-- adds GIST index
+CREATE INDEX ON public.genes USING GIST (gene_name public.gist_trgm_ops);
+CREATE INDEX ON public.genes USING GIST (other_names public.gist_trgm_ops);
 
 
 --
@@ -666,6 +679,9 @@ CREATE INDEX idx_16548_i_hpo_id ON public.hpo USING btree (hpo_id);
 --
 
 CREATE INDEX idx_16548_i_hpo_name ON public.hpo USING btree (hpo_name);
+
+-- adds GIST index
+CREATE INDEX ON public.hpo USING GIST (hpo_name public.gist_trgm_ops);
 
 
 --
@@ -863,6 +879,12 @@ CREATE INDEX variants_gene_id_idx1 ON public.variants USING btree (gene_id);
 
 CREATE INDEX variants_gene_symbol ON public.variants USING btree (gene_symbol);
 
+
+--
+-- Name: variant_pos_text_pattern_idx; Type: INDEX; Schema: public; Owner: phenopolis_api
+--
+
+CREATE INDEX variant_pos_text_pattern_idx ON public.variants (("POS"::text) text_pattern_ops);
 
 --
 -- Name: user_pagetable_colname user_pagetable_colname_pagetable_colname_fkey; Type: FK CONSTRAINT; Schema: public; Owner: phenopolis_api
