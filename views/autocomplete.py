@@ -14,12 +14,14 @@ from views.postgres import get_db_session
 CHROMOSOME_POS_REGEX = re.compile(r"^(\w+)[-:](\d+)$")
 CHROMOSOME_POS_REF_REGEX = re.compile(r"^(\w+)[-:](\d+)[-:]([ACGT\*]+)$", re.IGNORECASE)
 CHROMOSOME_POS_REF_ALT_REGEX = re.compile(r"^(\w+)[-:](\d+)[-:]([ACGT\*]+)[-:>]([ACGT\*]+)$", re.IGNORECASE)
-ENSEMBL_TRANSCRIPT_REGEX = re.compile(r"^ENST(\d{0,10})", re.IGNORECASE)
-ENSEMBL_PROTEIN_REGEX = re.compile(r"^ENSP(\d{0,10})", re.IGNORECASE)
-ENSEMBL_GENE_REGEX = re.compile(r"^ENSG(\d{0,10})", re.IGNORECASE)
+ENSEMBL_TRANSCRIPT_REGEX = re.compile(r"^ENST(\d{0,12})(\.\d{1,2})?", re.IGNORECASE)
+ENSEMBL_PROTEIN_REGEX = re.compile(r"^ENSP(\d{0,12})(\.\d{1,2})?", re.IGNORECASE)
+ENSEMBL_GENE_REGEX = re.compile(r"^^ENSG(\d{0,12})(\.\d{1,2})?", re.IGNORECASE)
 HPO_REGEX = re.compile(r"^HP:(\d{0,7})", re.IGNORECASE)
 PATIENT_REGEX = re.compile(r"^PH(\d{0,8})", re.IGNORECASE)
 NUMERIC_REGEX = re.compile(r"^\d+$", re.IGNORECASE)
+HGVS_C_REGEX = re.compile(r"(.+):(c.*)")
+HGVS_P_REGEX = re.compile(r"(.+):(p.*)")
 HGVSP = "hgvsp"
 HGVSC = "hgvsc"
 
@@ -153,11 +155,15 @@ def _search_genes(query, limit):
         ENSEMBL_GENE_REGEX.match(query) or ENSEMBL_TRANSCRIPT_REGEX.match(query) or NUMERIC_REGEX.match(query)
     )
     if is_identifier_query:
+        query_without_version = remove_version_from_id(query)
         genes = (
             get_db_session()
             .query(Gene)
             .filter(
-                or_(Gene.gene_id.ilike("%{}%".format(query)), Gene.canonical_transcript.ilike("%{}%".format(query)))
+                or_(
+                    Gene.gene_id.ilike("%{}%".format(query_without_version)),
+                    Gene.canonical_transcript.ilike("%{}%".format(query_without_version)),
+                )
             )
             .order_by(Gene.gene_id.asc())
             .limit(limit)
@@ -188,12 +194,12 @@ def _search_genes(query, limit):
 
 def _search_variants(query, limit):
     chrom, pos, ref, alt = _parse_variant_from_query(query.upper())
-    hgvs_type = _parse_hgvs_from_query(query)
+    hgvs_type, entity, hgvs = _parse_hgvs_from_query(query)
     variants = []
     if chrom is not None:
         variants = _search_variants_by_coordinates(chrom, pos, ref, alt, limit)
     elif hgvs_type is not None:
-        variants = _search_variants_by_hgvs(query, hgvs_type, limit)
+        variants = _search_variants_by_hgvs(hgvs_type, entity, hgvs, limit)
 
     return [
         "variant::"
@@ -252,7 +258,7 @@ def _search_variants_by_coordinates(chrom, pos, ref, alt, limit) -> List[Variant
     return variants
 
 
-def _search_variants_by_hgvs(query, hgvs_type, limit) -> List[Variant]:
+def _search_variants_by_hgvs(hgvs_type, entity, hgvs, limit) -> List[Variant]:
     """
     Assuming a user is searching for ENSP00000451572.1:p.His383Tyr, ENST00000355467.4:c.30C>T or
     ENST00000505973.1:n.97C>T
@@ -260,23 +266,81 @@ def _search_variants_by_hgvs(query, hgvs_type, limit) -> List[Variant]:
     corresponding text column. The query must start with either ENST or ENSP to be performed
     """
     if hgvs_type == HGVSC:
-        variants = (
-            get_db_session()
-            .query(Variant)
-            .filter(Variant.hgvsc.ilike("%{}%".format(query)))
-            .order_by(Variant.CHROM.asc(), Variant.POS.asc())
-            .limit(limit)
-            .all()
-        )
+        if ENSEMBL_TRANSCRIPT_REGEX.match(entity):
+            # search for HGVS including the transcript id over all variants table
+            # TODO: when we have a transcript in the variants table, improve this query to avoid whole table scan
+            # NOTE: the % after transcript deals with missing transcript version, as a positive side effect this allow
+            # for partial ids
+            variants = (
+                get_db_session()
+                .query(Variant)
+                .filter(Variant.hgvsc.ilike("%{}%:{}%".format(entity, hgvs)))
+                .order_by(Variant.CHROM.asc(), Variant.POS.asc())
+                .limit(limit)
+                .all()
+            )
+        elif ENSEMBL_GENE_REGEX.match(entity):
+            # search for HGVS on the variants for the given gene id
+            ensembl_gene_id_without_version = remove_version_from_id(entity)
+            variants = (
+                get_db_session()
+                .query(Variant)
+                .filter(
+                    and_(Variant.gene_id == ensembl_gene_id_without_version, Variant.hgvsc.ilike("%{}%".format(hgvs)))
+                )
+                .order_by(Variant.CHROM.asc(), Variant.POS.asc())
+                .limit(limit)
+                .all()
+            )
+        else:
+            # search for HGVS on the variants for the given gene symbol
+            variants = (
+                get_db_session()
+                .query(Variant)
+                .filter(and_(Variant.gene_symbol == entity, Variant.hgvsc.ilike("%{}%".format(hgvs))))
+                .order_by(Variant.CHROM.asc(), Variant.POS.asc())
+                .limit(limit)
+                .all()
+            )
     elif hgvs_type == HGVSP:
-        variants = (
-            get_db_session()
-            .query(Variant)
-            .filter(Variant.hgvsp.ilike("%{}%".format(query)))
-            .order_by(Variant.CHROM.asc(), Variant.POS.asc())
-            .limit(limit)
-            .all()
-        )
+        if ENSEMBL_PROTEIN_REGEX.match(entity):
+            # search for HGVS including the transcript id over all variants table
+            # TODO: when we have a transcript in the variants table, improve this query to avoid whole table scan
+            # NOTE: the % after transcript deals with missing transcript version, as a positive side effect this allow
+            # for partial ids
+            variants = (
+                get_db_session()
+                .query(Variant)
+                .filter(Variant.hgvsp.ilike("%{}%:{}%".format(entity, hgvs)))
+                .order_by(Variant.CHROM.asc(), Variant.POS.asc())
+                .limit(limit)
+                .all()
+            )
+        elif ENSEMBL_GENE_REGEX.match(entity):
+            # search for HGVS on the variants for the given gene id
+            ensembl_protein_id_without_version = remove_version_from_id(entity)
+            variants = (
+                get_db_session()
+                .query(Variant)
+                .filter(
+                    and_(
+                        Variant.gene_id == ensembl_protein_id_without_version, Variant.hgvsp.ilike("%{}%".format(hgvs))
+                    )
+                )
+                .order_by(Variant.CHROM.asc(), Variant.POS.asc())
+                .limit(limit)
+                .all()
+            )
+        else:
+            # search for HGVS on the variants for the given gene symbol
+            variants = (
+                get_db_session()
+                .query(Variant)
+                .filter(and_(Variant.gene_symbol == entity, Variant.hgvsp.ilike("%{}%".format(hgvs))))
+                .order_by(Variant.CHROM.asc(), Variant.POS.asc())
+                .limit(limit)
+                .all()
+            )
     else:
         # no variant pattern, we perform no search
         variants = []
@@ -284,13 +348,24 @@ def _search_variants_by_hgvs(query, hgvs_type, limit) -> List[Variant]:
     return variants
 
 
+def remove_version_from_id(entity):
+    ensembl_gene_id_without_version = re.sub(r"\..*", "", entity)
+    return ensembl_gene_id_without_version
+
+
 def _parse_hgvs_from_query(query):
-    hgvs_type = None
-    if ENSEMBL_PROTEIN_REGEX.match(query):
-        hgvs_type = HGVSP
-    if ENSEMBL_TRANSCRIPT_REGEX.match(query):
+    match = HGVS_C_REGEX.match(query)
+    hgvs_type, entity, hgvs = None, None, None
+    if match:
         hgvs_type = HGVSC
-    return hgvs_type
+        entity = match.group(1)
+        hgvs = match.group(2)
+    match = HGVS_P_REGEX.match(query)
+    if match:
+        hgvs_type = HGVSP
+        entity = match.group(1)
+        hgvs = match.group(2)
+    return hgvs_type, entity, hgvs
 
 
 def _parse_variant_from_query(query):
