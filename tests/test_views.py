@@ -72,24 +72,6 @@ def test_exceptions(_demo):
 @pytest.mark.parametrize(
     ("query", "subset", "msg"),
     (
-        ("ENSG00000119685", "all", "tubulin tyrosine ligase-like family, member 5"),
-        ("ENSG00000119685", "preview", '{"preview":'),
-        ("TTLL5", "all", "tubulin tyrosine ligase-like family, member 5"),
-        ("ENSG00000119685", "variants", "variant_id"),
-        ("KIAA0998", "all", "tubulin tyrosine ligase-like family, member 5"),
-        ("STAMP", "all", "tubulin tyrosine ligase-like family, member 5"),
-        ("NOTREAL", "all", "mockup gene for test"),
-    ),
-)
-def test_gene(_demo, query, subset, msg):
-    """res -> str"""
-    res = gene(query, subset=subset)
-    assert msg in res
-
-
-@pytest.mark.parametrize(
-    ("query", "subset", "msg"),
-    (
         ("HP:0000478", "all", "Retinal dystrophy;Abnormal fundus morphology"),
         ("Neurogenic bladder", "all", "HP:0000011"),
         ("HP:0000478", "preview", '[{"preview":[["Number of Individuals"'),
