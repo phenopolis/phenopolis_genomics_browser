@@ -167,7 +167,7 @@ def test_create_individual_with_admin_user(_admin_client):
     assert observed_individual.pi == individual.pi, "Field pi from created individual is not what it should"
 
     # cleans the database
-    _clean_test_individuals(db_session, test_individual_id)
+    _clean_test_individuals(test_individual_id)
 
 
 def test_create_individual_existing_individual_fails(_admin_client):
@@ -187,7 +187,7 @@ def test_create_individual_existing_individual_fails(_admin_client):
     assert response.status_code == 400
 
     # cleans the database
-    _clean_test_individuals(db_session, test_individual_id)
+    _clean_test_individuals(test_individual_id)
 
 
 def test_create_multiple_individuals(_admin_client):
@@ -213,8 +213,8 @@ def test_create_multiple_individuals(_admin_client):
     assert observed_individual2.pi == individual2.pi, "Field pi from created individual is not what it should"
 
     # cleans the database
-    _clean_test_individuals(db_session, test_individual_id)
-    _clean_test_individuals(db_session, test_individual_id2)
+    _clean_test_individuals(test_individual_id)
+    _clean_test_individuals(test_individual_id2)
 
 
 def test_delete_individual_failing_for_non_admin(_demo):
@@ -322,7 +322,8 @@ def test_get_individual_not_having_duplicated_keys(_admin):
     assert "#CHROM" not in column_names
 
 
-def _clean_test_individuals(db_session, test_individual_id):
+def _clean_test_individuals(test_individual_id):
+    db_session = get_db_session()
     db_session.query(Individual).filter(Individual.external_id == test_individual_id).delete()
     db_session.commit()
 
