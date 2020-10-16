@@ -102,7 +102,7 @@ class User(Base, AsDictable):
     user = Column("user", primary_key=True)
     argon_password = Column("argon_password", String(255))
     individuals = relationship("UserIndividual", backref="users")
-    enabled = Column("enabled", Boolean())
+    enabled = Column("enabled", Boolean(), default=True)
 
 
 class UserConfig(Base, AsDictable):
