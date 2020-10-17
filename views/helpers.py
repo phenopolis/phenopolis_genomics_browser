@@ -4,14 +4,16 @@ from views import application
 from views.exceptions import PhenopolisException
 
 
-def _get_json_payload(clazz):
+def _get_json_payload(clazz=None):
     if not request.is_json:
         raise PhenopolisException("Only mimetype application/json is accepted", 400)
     payload = request.get_json(silent=True)
     if payload is None:
         raise PhenopolisException("Empty payload or wrong formatting", 400)
     application.logger.debug(payload)
-    return _parse_payload(payload, clazz)
+    if clazz is not None:
+        return _parse_payload(payload, clazz)
+    return payload
 
 
 def _parse_payload(payload, model_class):

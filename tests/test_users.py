@@ -1,7 +1,10 @@
 import json
 
+from passlib.handlers.argon2 import argon2
+
 from db.model import User
 from tests.test_views import _check_only_available_to_admin
+from views.auth import NONDEMO_USER
 from views.postgres import get_db_session
 from views.user_individuals import delete_user_individual, create_user_individual
 from views.users import enable_user, get_users, get_user, create_user
@@ -142,6 +145,26 @@ def test_create_user_with_explicit_disabled_flag(_admin_client):
     finally:
         # cleans the database
         _clean_test_users(user_name)
+
+
+def test_change_password(_nondemo_client):
+    new_password = "p4$$w0rd"
+    old_password = "password"
+
+    # verifies old password is what it should
+    db_session = get_db_session()
+    observed_user = db_session.query(User).filter(User.user == NONDEMO_USER).first()
+    assert argon2.verify(old_password, observed_user.argon_password)
+
+    # changes the password
+    response = _nondemo_client.post(
+        "/user/change_password", json={"current_password": old_password, "new_password_1": new_password},
+        content_type="application/json")
+    assert response.status_code == 200
+
+    # checks that the password is changed
+    observed_user = db_session.query(User).filter(User.user == NONDEMO_USER).first()
+    assert argon2.verify(new_password, observed_user.argon_password)
 
 
 def _assert_create_user(_admin_client, user, expected_enabled):
