@@ -37,7 +37,7 @@ def change_password():
     return jsonify(success=msg), 200
 
 
-@application.route("/enable-user/<user_id>/<status>", methods=["UPDATE"])
+@application.route("/enable-user/<user_id>/<status>", methods=["PUT"])
 @requires_admin
 def enable_user(user_id, status):
     db_session = get_db_session()
