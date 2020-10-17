@@ -12,7 +12,7 @@ from views.helpers import _get_json_payload
 from views.postgres import get_db_session
 
 
-@application.route("/user/change_password", methods=["POST"])
+@application.route("/user/change-password", methods=["POST"])
 @requires_auth
 def change_password():
     try:
@@ -45,7 +45,7 @@ def change_password():
     return jsonify(success=msg), 200
 
 
-@application.route("/user/<user_id>/enabled-status/<status>", methods=["PUT"])
+@application.route("/user/<user_id>/enabled/<status>", methods=["PUT"])
 @requires_admin
 def enable_user(user_id, status):
     db_session = get_db_session()
