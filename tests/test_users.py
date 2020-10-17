@@ -158,7 +158,7 @@ def test_change_password(_nondemo_client):
 
     # changes the password
     response = _nondemo_client.post(
-        "/user/change-password", json={"current_password": old_password, "new_password_1": new_password},
+        "/user/change-password", json={"current_password": old_password, "new_password": new_password},
         content_type="application/json")
     assert response.status_code == 200
 
