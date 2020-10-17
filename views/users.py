@@ -1,7 +1,7 @@
 """
 Users view
 """
-from flask import session, request, jsonify
+from flask import session, jsonify
 from passlib.handlers.argon2 import argon2
 from db.model import User, UserIndividual, UserConfig
 from views import application
@@ -9,35 +9,43 @@ from views.auth import requires_auth, check_auth, requires_admin, is_demo_user, 
 from views.exceptions import PhenopolisException
 from views.general import _parse_boolean_parameter
 from views.helpers import _get_json_payload
-from views.postgres import postgres_cursor, get_db_session
+from views.postgres import get_db_session
 
 
-@application.route("/change_password", methods=["POST"])
+@application.route("/user/change-password", methods=["POST"])
 @requires_auth
 def change_password():
-    username = session[USER]
-    password = request.form["current_password"]
-    new_password_1 = request.form["new_password_1"]
-    if is_demo_user():
-        return (
-            jsonify(error="You do not have permission to change the password for username 'demo'."),
-            403,
-        )
-    if not check_auth(username, password):
-        application.logger.info("Change password:- Login Failed")
-        return (
-            jsonify(error="Username and current password incorrect. Please try again."),
-            401,
-        )
-    application.logger.info("Login success, changing password")
-    argon_password = argon2.hash(new_password_1)
-    c = postgres_cursor()
-    c.execute("""update users set argon_password='%s' where user='%s' """ % (argon_password, session[USER],))
-    msg = "Password for username '" + username + "' changed. You are logged in as '" + username + "'."
+    try:
+        username = session[USER]
+        data = _get_json_payload()
+        password = data.get("current_password")
+        new_password_1 = data.get("new_password_1")
+        if is_demo_user():
+            return (
+                jsonify(error="You do not have permission to change the password for username 'demo'."),
+                403,
+            )
+        if not check_auth(username, password):
+            application.logger.info("Change password:- Login Failed")
+            return (
+                jsonify(error="Username and current password incorrect. Please try again."),
+                401,
+            )
+        application.logger.info("Login success, changing password")
+
+        db_session = get_db_session()
+        user = db_session.query(User).filter(User.user == username).first()
+        user.argon_password = argon2.hash(new_password_1)
+        db_session.commit()
+        msg = "Password for username '" + username + "' changed. You are logged in as '" + username + "'."
+    except PhenopolisException as e:
+        application.logger.error(str(e))
+        return jsonify(success=False, error=str(e)), e.http_status
+
     return jsonify(success=msg), 200
 
 
-@application.route("/enable-user/<user_id>/<status>", methods=["UPDATE"])
+@application.route("/user/<user_id>/enabled/<status>", methods=["PUT"])
 @requires_admin
 def enable_user(user_id, status):
     db_session = get_db_session()
