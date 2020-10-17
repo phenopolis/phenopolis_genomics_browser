@@ -8,7 +8,7 @@ import { TableCell, Typography, ButtonGroup, Button, IconButton } from '@materia
 import TypeChip from '../Chip/TypeChip';
 
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faPencil, faTrashAlt } from '@fortawesome/pro-light-svg-icons';
+import { faPencil, faTrashAlt } from '@fortawesome/pro-solid-svg-icons';
 
 class GridColumn extends React.Component {
   constructor(props) {
@@ -79,10 +79,14 @@ class GridColumn extends React.Component {
         {key === 'action' ? (
           <div>
             <ButtonGroup variant="text" aria-label="text primary button group">
-              <IconButton aria-label="update" onClick={() => this.triggerAction('update')}>
+              <IconButton
+                className="bg-white text-first d-40 rounded-circle p-0 ml-1"
+                aria-label="update"
+                onClick={() => this.triggerAction('update')}>
                 <FontAwesomeIcon icon={faPencil} style={{ fontSize: '15' }} />
               </IconButton>
               <IconButton
+                className="bg-white text-third d-40 rounded-circle p-0 ml-1"
                 aria-label="delete"
                 color="secondary"
                 onClick={() => this.triggerAction('delete')}>

@@ -6,8 +6,8 @@
   "editor.insertSpaces": true,
   "editor.detectIndentation": true,
   "workbench.colorCustomizations": {
-    "titleBar.activeBackground": "#009ce9",
-    "titleBar.inactiveBackground": "#009ce9",
+    "titleBar.activeBackground": "#FCFC62",
+    "titleBar.inactiveBackground": "#FCFC62",
     "titleBar.activeForeground": "#000"
   }
 }

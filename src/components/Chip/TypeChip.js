@@ -107,7 +107,7 @@ const TypeChip = (props) => {
       <Chip
         size={props.size}
         label={props.label}
-        color="primary"
+        color={props.slash ? 'primary' : 'primary'}
         className={'search-chip-' + props.size}
         onDelete={props.deletable ? (event) => handleDeleteClick(event, props.label) : null}
         avatar={
@@ -120,6 +120,9 @@ const TypeChip = (props) => {
         onMouseDown={(event) => handleSearch(event, props.to)}
         onMouseEnter={(event) => handlePopoverOpen(event, props.to)}
         onMouseLeave={handlePopoverClose}
+        style={
+          props.slash ? { backgroundColor: 'white', opacity: 0.5 } : { backgroundColor: 'white' }
+        }
       />
 
       <Popover

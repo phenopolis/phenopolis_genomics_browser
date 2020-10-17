@@ -1,15 +1,19 @@
 import React, { useState, useEffect } from 'react';
 import CssBaseline from '@material-ui/core/CssBaseline';
 import { useDispatch, useSelector } from 'react-redux';
+import { Link } from 'react-router-dom';
 import { getAllIndividual } from '../redux/actions/individuals';
 
-import { Container, Dialog } from '@material-ui/core';
+import { Container, Dialog, Button, Typography, Box } from '@material-ui/core';
+
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faPlusSquare } from '@fortawesome/pro-solid-svg-icons';
 
 import Loading from '../components/General/Loading';
 import UpdatePatient from '../components/UpdatePatient/UpdatePatient';
 const VirtualGrid = React.lazy(() => import('../components/Table/VirtualGrid'));
 
-const Dashboard = () => {
+const ManagePatient = () => {
   const dispatch = useDispatch();
   const [DataReady, setDataReady] = useState(false);
   const [PatientData, setPatientData] = useState(null);
@@ -133,10 +137,27 @@ const Dashboard = () => {
         {DataReady ? (
           <>
             <Container maxWidth="xl">
+              <Typography component="div">
+                <Box fontWeight="900" fontSize="h4.fontSize" mb={0}>
+                  Manage All Patient Here
+                </Box>
+                <Box fontWeight="fontWeightLight" mb={2}>
+                  Here you can create/update/delete patient.
+                </Box>
+              </Typography>
+              <Button
+                variant="contained"
+                color="primary"
+                startIcon={<FontAwesomeIcon icon={faPlusSquare} />}
+                style={{ backgroundColor: 'orange' }}
+                component={Link}
+                to="/create_patient">
+                Create New User
+              </Button>
               <VirtualGrid
                 tableData={PatientData}
-                title={'Manage Patients'}
-                subtitle={'Here you can Check/Delete/Modify/Create patients.'}
+                // title={'Manage Patients'}
+                // subtitle={'Here you can Check/Delete/Modify/Create patients.'}
                 handleActionClick={handleActionClick}
               />
             </Container>
@@ -168,4 +189,4 @@ const Dashboard = () => {
   );
 };
 
-export default Dashboard;
+export default ManagePatient;

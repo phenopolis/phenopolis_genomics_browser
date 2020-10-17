@@ -14,13 +14,6 @@ import {
 const AdminPanel = (props) => {
   const adminActions = [
     {
-      name: 'Create New Patient',
-      sub: 'You can create a new patient here.',
-      icon: faUsersMedical,
-      color: '#ffc107',
-      to: '/create_patient',
-    },
-    {
       name: 'Manage Patients',
       sub: 'View/Delete all Patients.',
       icon: faUsersClass,
@@ -28,25 +21,11 @@ const AdminPanel = (props) => {
       to: '/manage_patient',
     },
     {
-      name: 'Create New Acount',
-      sub: 'You may create a new user/account for this website.',
-      icon: faUserPlus,
-      color: '#ffc107',
-      to: '/dashboard',
-    },
-    {
       name: 'Manage Accounts',
       sub: 'View/Delete all User/Account.',
       icon: faUsers,
       color: '#43a047',
-      to: '/dashboard',
-    },
-    {
-      name: 'Assign User/Patient',
-      sub: 'Assign Patient to Users(Doctors)',
-      icon: faSitemap,
-      color: '#2E84CF',
-      to: '/dashboard',
+      to: '/manage_user',
     },
   ];
 

@@ -10,6 +10,8 @@ import HPO from './hpo';
 import Individuals from './individuals';
 import Individual from './individual';
 import Status from './status';
+import User from './user';
+import UserIndividual from './userIndividual';
 
 export default combineReducers({
   Auth,
@@ -23,4 +25,6 @@ export default combineReducers({
   Individuals,
   Individual,
   Status,
+  User,
+  UserIndividual,
 });

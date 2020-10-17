@@ -21,4 +21,15 @@ export default {
   FETCH_ALL_INDIVIDUAL: API_URL + '/individual?limit=100000',
   UPDATE_INDIVIDUAL: API_URL + '/update_patient_data/',
   DELETE_INDIVIDUAL: API_URL + '/individual/',
+  // Below 4 APIs related to User CRUD action
+  CREATE_USER: API_URL + '/user',
+  FETCH_ALL_USER: API_URL + '/user',
+  FETCH_ONE_USER: API_URL + '/user/',
+  FETCH_ALL_PATIENT: API_URL + '/user/Admin',
+  // Below 2 API related to user_individual insert and delete
+  ADD_USER_INDIVIDUAL: API_URL + '/user-individual',
+  DELETE_USER_INDIVIDUAL: API_URL + '/user-individual',
+  // Below API is related to enable/disable user
+  ENABLE_USER: API_URL + '/enable-user/',
+  CHANGE_PASSWORD: API_URL + '/change_password',
 };

@@ -103,6 +103,59 @@ function deleteOneIndividual(param) {
   });
 }
 
+function getAllUser() {
+  return axios.get(api.FETCH_ALL_USER, {
+    withCredentials: true,
+  });
+}
+
+function getOneUser(param) {
+  return axios.get(api.FETCH_ONE_USER + param, {
+    withCredentials: true,
+  });
+}
+
+function getAllPatients() {
+  return axios.get(api.FETCH_ALL_PATIENT, {
+    withCredentials: true,
+  });
+}
+
+function createUser(data) {
+  return axios.post(api.CREATE_USER, data, {
+    withCredentials: true,
+  });
+}
+
+function addUserIndividual(data) {
+  return axios.post(api.ADD_USER_INDIVIDUAL, data, {
+    withCredentials: true,
+  });
+}
+
+function deleteUserIndividual(mydata) {
+  console.log(mydata);
+  return axios.delete(
+    api.DELETE_USER_INDIVIDUAL,
+    { data: mydata },
+    {
+      withCredentials: true,
+    }
+  );
+}
+
+function enableUser(param) {
+  return axios.put(api.ENABLE_USER + param.id + '/' + param.status, {
+    withCredentials: true,
+  });
+}
+
+function changePassword(data) {
+  return axios.post(api.CHANGE_PASSWORD, data, {
+    withCredentials: true,
+  });
+}
+
 export default {
   getStatistics,
   getSearchAutocomplete,
@@ -120,4 +173,12 @@ export default {
   getAllIndividual,
   updateOneIndividual,
   deleteOneIndividual,
+  getAllUser,
+  getOneUser,
+  getAllPatients,
+  createUser,
+  addUserIndividual,
+  deleteUserIndividual,
+  enableUser,
+  changePassword,
 };

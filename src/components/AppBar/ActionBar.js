@@ -132,18 +132,6 @@ const ActionBar = (props) => {
                 classes={{ primary: 'actionbar-listItemText' }}
               />
             </ListItem>
-            <ListItem className={'actionbar-nested'} button component={Link} to="/create_patient">
-              <Tooltip disableHoverListener={props.expended} title="Add Patient" placement="right">
-                <ListItemIcon>
-                  <FontAwesomeIcon
-                    icon={faUserPlus}
-                    className={'actionbar-icon'}
-                    style={{ fontSize: '15' }}
-                  />
-                </ListItemIcon>
-              </Tooltip>
-              <ListItemText primary="Add Patient" classes={{ primary: 'actionbar-listItemText' }} />
-            </ListItem>
           </List>
         </Collapse>
         <ListItem className={'actionbar-listItem'} button component={Link} to="/publications">

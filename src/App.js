@@ -14,6 +14,7 @@ import Publication from './page/Publication';
 import NotFoundPage from './page/NotFoundPage';
 import CreatePatient from './page/CreatePatient';
 import ManagePatient from './page/ManagePatient';
+import ManageUser from './page/ManageUser';
 
 import CustomizedSnackbars from './components/CustomizedSnackbars/CustomizedSnackbars';
 import AuthCheck from './components/AuthCheck/AuthCheck';
@@ -57,6 +58,7 @@ function App() {
                 <Route path="/login" component={Login} />
                 <Route path="/create_patient" component={CreatePatient} />
                 <Route path="/manage_patient" component={ManagePatient} />
+                <Route path="/manage_user" component={ManageUser} />
                 <Route path="/publications" component={Publication} />
                 <Route path="/my_patients" component={MyPatient} />
                 <Route path="/gene/:geneId" component={Gene} />
