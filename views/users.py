@@ -19,7 +19,7 @@ def change_password():
         username = session[USER]
         data = _get_json_payload()
         password = data.get("current_password")
-        new_password_1 = data.get("new_password_1")
+        new_password = data.get("new_password")
         if is_demo_user():
             return (
                 jsonify(error="You do not have permission to change the password for username 'demo'."),
@@ -35,7 +35,7 @@ def change_password():
 
         db_session = get_db_session()
         user = db_session.query(User).filter(User.user == username).first()
-        user.argon_password = argon2.hash(new_password_1)
+        user.argon_password = argon2.hash(new_password)
         db_session.commit()
         msg = "Password for username '" + username + "' changed. You are logged in as '" + username + "'."
     except PhenopolisException as e:
