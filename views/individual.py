@@ -115,6 +115,7 @@ def create_individual():
     http_status = 200
     message = "Individuals were created"
     ids_new_individuals = []
+    transaction = db_session.begin_nested()
     try:
         # generate a new unique id for the individual
         for i in new_individuals:
@@ -126,13 +127,14 @@ def create_individual():
             # add entry to user_individual
             # TODO: enable access to more users than the creator
             db_session.add(UserIndividual(user=session[USER], internal_id=i.internal_id))
-        db_session.commit()
     except PhenopolisException as e:
-        db_session.rollback()
+        transaction.rollback()
         application.logger.exception(e)
         request_ok = False
         message = str(e)
         http_status = e.http_status
+    else:
+        transaction.commit()
 
     return jsonify(success=request_ok, message=message, id=",".join(ids_new_individuals)), http_status
 
@@ -149,6 +151,7 @@ def delete_individual(individual_id):
 
     if individual:
         db_session = get_db_session()
+        transaction = db_session.begin_nested()
         try:
             user_individuals = (
                 db_session.query(UserIndividual).filter(UserIndividual.internal_id == individual_id).all()
@@ -156,13 +159,14 @@ def delete_individual(individual_id):
             for ui in user_individuals:
                 db_session.delete(ui)
             db_session.delete(individual)
-            db_session.commit()
         except Exception as e:
-            db_session.rollback()
+            transaction.rollback()
             application.logger.exception(e)
             request_ok = False
             message = str(e)
             http_status = e.http_status
+        else:
+            transaction.commit()
     else:
         request_ok = False
         message = "Patient " + individual_id + " does not exist."
@@ -371,11 +375,12 @@ def _update_individual(consanguinity, gender, genes, hpos: List[HPO], individual
     individual.genes = ",".join([x for x in genes])
 
     db_session = get_db_session()
+    transaction = db_session.begin_nested()
     try:
-        db_session.commit()
+        transaction.commit()
     except (Exception, psycopg2.DatabaseError) as error:
         application.logger.exception(error)
-        db_session.rollback()
+        transaction.rollback()
 
 
 def _get_hpos(features: List[str]) -> List[HPO]:

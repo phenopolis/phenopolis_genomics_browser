@@ -79,18 +79,18 @@ def create_user():
     request_ok = True
     message = "Users were created"
     user_ids = ",".join([u.user for u in new_users])
+    transaction = db_session.begin_nested()
     try:
         # insert users
         db_session.add_all(new_users)
         _add_config_from_admin(db_session, new_users)
-        db_session.commit()
     except Exception as e:
-        db_session.rollback()
+        transaction.rollback()
         application.logger.exception(e)
         request_ok = False
         message = str(e)
-    finally:
-        db_session.close()
+    else:
+        transaction.commit()
 
     if not request_ok:
         return jsonify(success=False, message=message), 500

@@ -25,20 +25,20 @@ def create_user_individual():
     db_session = get_db_session()
     request_ok = True
     message = "User individuals were created"
+    transaction = db_session.begin_nested()
     try:
         # insert user individuals
         for u in new_user_individuals:
             # TODO: should not all these checks happen at the DB?
             _check_db_integrity_user_individual(db_session, u)
             db_session.add(u)
-        db_session.commit()
     except Exception as e:
-        db_session.rollback()
+        transaction.rollback()
         application.logger.exception(e)
         request_ok = False
         message = str(e)
-    finally:
-        db_session.close()
+    else:
+        transaction.commit()
 
     if not request_ok:
         return jsonify(success=False, message=message), 500
@@ -57,20 +57,20 @@ def delete_user_individual():
     db_session = get_db_session()
     request_ok = True
     message = "User individuals were deleted"
+    transaction = db_session.begin_nested()
     try:
         # insert user individuals
         for u in user_individuals_to_be_deleted:
             db_session.query(UserIndividual).filter(UserIndividual.user == u.user).filter(
                 UserIndividual.internal_id == u.internal_id
             ).delete()
-        db_session.commit()
     except Exception as e:
-        db_session.rollback()
+        transaction.rollback()
         application.logger.exception(e)
         request_ok = False
         message = str(e)
-    finally:
-        db_session.close()
+    else:
+        transaction.commit()
 
     if not request_ok:
         return jsonify(success=False, message=message), 500
