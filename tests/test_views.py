@@ -13,8 +13,6 @@ from views.hpo import hpo
 from views.general import check_health, after_request, exceptions
 from views.statistics import phenopolis_statistics
 from werkzeug.exceptions import BadHost
-from views.users import create_user, get_user, get_users, enable_user
-from views.user_individuals import create_user_individual, delete_user_individual
 
 
 def test_check_health(_demo):
