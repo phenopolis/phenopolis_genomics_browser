@@ -145,7 +145,7 @@ function deleteUserIndividual(mydata) {
 }
 
 function enableUser(param) {
-  return axios.put(api.ENABLE_USER + param.id + '/' + param.status, {
+  return axios.put(api.ENABLE_USER + param.id + '/enabled/' + param.status, {
     withCredentials: true,
   });
 }

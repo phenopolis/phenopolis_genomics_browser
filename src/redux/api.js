@@ -30,6 +30,6 @@ export default {
   ADD_USER_INDIVIDUAL: API_URL + '/user-individual',
   DELETE_USER_INDIVIDUAL: API_URL + '/user-individual',
   // Below API is related to enable/disable user
-  ENABLE_USER: API_URL + '/enable-user/',
+  ENABLE_USER: API_URL + '/user/',
   CHANGE_PASSWORD: API_URL + '/change_password',
 };

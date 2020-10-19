@@ -152,7 +152,7 @@ const ManagePatient = () => {
                 style={{ backgroundColor: 'orange' }}
                 component={Link}
                 to="/create_patient">
-                Create New User
+                Create New Patient
               </Button>
               <VirtualGrid
                 tableData={PatientData}
