@@ -22,6 +22,11 @@ export const getVariant = (param) => {
             type: SET_STATUS,
             payload: { code: 401, message: error.response.data.error, relink: '/variant/' + param },
           });
+        } else if (error.response.status === 404) {
+          dispatch({
+            type: SET_STATUS,
+            payload: { code: 404, message: error.response.data.message, relink: '/' },
+          });
         }
         dispatch({ type: GET_VARIANT_FAIL, payload: { error: error.response } });
       });
