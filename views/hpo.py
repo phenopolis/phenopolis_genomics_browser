@@ -7,7 +7,7 @@ from flask import session
 from db.helpers import cursor2dict
 from views import application
 from views.auth import requires_auth, USER
-from views.postgres import get_db_session, postgres_cursor, session_scope
+from views.postgres import postgres_cursor, session_scope
 from views.general import process_for_display
 from db.model import HPO
 

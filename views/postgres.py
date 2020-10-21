@@ -4,6 +4,7 @@ Postgres module
 import psycopg2
 from flask import g
 from sqlalchemy import create_engine
+from sqlalchemy.engine import Engine
 from sqlalchemy.orm import sessionmaker, Session
 from views import application, ENV_LOG_FLAG
 from contextlib import contextmanager
@@ -21,20 +22,6 @@ def get_db():
     return g.db
 
 
-def get_db_session() -> Session:
-    """
-    Opens a new database connection if there is none yet for the
-    current application context.
-    """
-    if not hasattr(g, "dbsession"):
-        engine = create_engine(application.config["SQLALCHEMY_DATABASE_URI"], echo=ENV_LOG_FLAG)
-        engine.connect()
-        DbSession = sessionmaker(bind=engine)
-        DbSession.configure(bind=engine)
-        g.dbsession = DbSession()
-    return g.dbsession
-
-
 def close_db():
     adb = g.pop("db", None)
     if adb is not None:
@@ -46,11 +33,23 @@ def postgres_cursor():
     return cursor
 
 
+def get_db_engine() -> Engine:
+    """
+    Opens a new database connection if there is none yet for the
+    current application context.
+    """
+    if not hasattr(g, "dbengine"):
+        engine = create_engine(application.config["SQLALCHEMY_DATABASE_URI"], echo=ENV_LOG_FLAG)
+        engine.connect()
+        g.dbengine = engine
+    return g.dbengine
+
+
 @contextmanager
 def session_scope() -> Session:
     """Provide a transactional scope around a series of operations."""
-    engine = create_engine(application.config["SQLALCHEMY_DATABASE_URI"], echo=ENV_LOG_FLAG)
-    engine.connect()
+    engine = get_db_engine()
+    # TODO: do we want to tweak the session pool config here?
     DbSession = sessionmaker(bind=engine)
     DbSession.configure(bind=engine)
     session = DbSession()

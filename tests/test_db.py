@@ -5,7 +5,7 @@ Using some reliable common ground
 Demo DB need to be updated?
 """
 
-from views.postgres import postgres_cursor, get_db_session, close_db, session_scope
+from views.postgres import postgres_cursor, close_db, session_scope
 from db.model import Gene
 
 

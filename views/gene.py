@@ -8,7 +8,7 @@ import ujson as json
 from flask import jsonify
 from views import application
 from views.auth import requires_auth, is_demo_user
-from views.postgres import get_db_session, session_scope
+from views.postgres import session_scope
 from views.general import process_for_display
 from db.model import Gene
 
