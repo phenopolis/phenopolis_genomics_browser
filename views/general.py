@@ -6,12 +6,12 @@ import ujson as json
 from time import strftime
 from flask import jsonify, request, Response, session
 from flask_mail import Message
+from sqlalchemy.orm import Session
 from werkzeug.exceptions import HTTPException
 from db.model import UserIndividual
 from views import application, mail
 from views.auth import USER
 from views.exceptions import PhenopolisException
-from views.postgres import get_db_session
 
 
 @application.route("/check_health")
@@ -85,9 +85,9 @@ def _send_error_mail(code):
 # this should not be done live but offline
 # need to figure out how to encode json data type in postgres import
 # rather do the conversion on the fly
-def process_for_display(data):
+def process_for_display(db_session: Session, data):
     my_patients = list(
-        get_db_session()
+        db_session
         .query(UserIndividual)
         .filter(UserIndividual.user == session[USER])
         .with_entities(UserIndividual.internal_id)

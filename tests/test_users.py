@@ -1,11 +1,12 @@
 import json
 
 from passlib.handlers.argon2 import argon2
+from sqlalchemy.orm import Session
 
 from db.model import User
 from tests.test_views import _check_only_available_to_admin
 from views.auth import NONDEMO_USER
-from views.postgres import get_db_session
+from views.postgres import session_scope
 from views.user_individuals import delete_user_individual, create_user_individual
 from views.users import enable_user, get_users, get_user, create_user
 
@@ -111,40 +112,43 @@ def test_bad_attempt_to_disable_user(_admin):
 
 def test_create_user(_admin_client):
     user_name = "test_user2"
-    try:
-        user = User()
-        user.user = user_name
-        user.argon_password = "blabla"
-        _assert_create_user(_admin_client, user, expected_enabled=True)
-    finally:
-        # cleans the database
-        _clean_test_users(user_name)
+    with session_scope() as db_session:
+        try:
+            user = User()
+            user.user = user_name
+            user.argon_password = "blabla"
+            _assert_create_user(db_session, _admin_client, user, expected_enabled=True)
+        finally:
+            # cleans the database
+            _clean_test_users(db_session, user_name)
 
 
 def test_create_user_with_explicit_enabled_flag(_admin_client):
     user_name = "test_user2"
-    try:
-        user = User()
-        user.user = user_name
-        user.argon_password = "blabla"
-        user.enabled = True
-        _assert_create_user(_admin_client, user, expected_enabled=True)
-    finally:
-        # cleans the database
-        _clean_test_users(user_name)
+    with session_scope() as db_session:
+        try:
+            user = User()
+            user.user = user_name
+            user.argon_password = "blabla"
+            user.enabled = True
+            _assert_create_user(db_session, _admin_client, user, expected_enabled=True)
+        finally:
+            # cleans the database
+            _clean_test_users(db_session, user_name)
 
 
 def test_create_user_with_explicit_disabled_flag(_admin_client):
     user_name = "test_user2"
-    try:
-        user = User()
-        user.user = user_name
-        user.argon_password = "blabla"
-        user.enabled = False
-        _assert_create_user(_admin_client, user, expected_enabled=False)
-    finally:
-        # cleans the database
-        _clean_test_users(user_name)
+    with session_scope() as db_session:
+        try:
+            user = User()
+            user.user = user_name
+            user.argon_password = "blabla"
+            user.enabled = False
+            _assert_create_user(db_session, _admin_client, user, expected_enabled=False)
+        finally:
+            # cleans the database
+            _clean_test_users(db_session, user_name)
 
 
 def test_change_password(_nondemo_client):
@@ -152,27 +156,26 @@ def test_change_password(_nondemo_client):
     old_password = "password"
 
     # verifies old password is what it should
-    db_session = get_db_session()
-    observed_user = db_session.query(User).filter(User.user == NONDEMO_USER).first()
-    assert argon2.verify(old_password, observed_user.argon_password)
+    with session_scope() as db_session:
+        observed_user = db_session.query(User).filter(User.user == NONDEMO_USER).first()
+        assert argon2.verify(old_password, observed_user.argon_password)
 
-    # changes the password
-    response = _nondemo_client.post(
-        "/user/change-password",
-        json={"current_password": old_password, "new_password": new_password},
-        content_type="application/json",
-    )
-    assert response.status_code == 200
+        # changes the password
+        response = _nondemo_client.post(
+            "/user/change-password",
+            json={"current_password": old_password, "new_password": new_password},
+            content_type="application/json",
+        )
+        assert response.status_code == 200
 
-    # checks that the password is changed
-    observed_user = db_session.query(User).filter(User.user == NONDEMO_USER).first()
-    assert argon2.verify(new_password, observed_user.argon_password)
+        # checks that the password is changed
+        observed_user = db_session.query(User).filter(User.user == NONDEMO_USER).first()
+        assert argon2.verify(new_password, observed_user.argon_password)
 
 
-def _assert_create_user(_admin_client, user, expected_enabled):
+def _assert_create_user(db_session: Session, _admin_client, user, expected_enabled):
     response = _admin_client.post("/user", json=user.as_dict(), content_type="application/json")
     assert response.status_code == 200
-    db_session = get_db_session()
     observed_user = db_session.query(User).filter(User.user == user.user).first()
     assert observed_user is not None, "Empty newly created user"
     assert observed_user.user is not None and observed_user.user != "", "Field user is empty"
@@ -180,7 +183,5 @@ def _assert_create_user(_admin_client, user, expected_enabled):
     assert observed_user.enabled == expected_enabled, "Enabled field is not the expected value"
 
 
-def _clean_test_users(user_name):
-    db_session = get_db_session()
+def _clean_test_users(db_session, user_name):
     db_session.query(User).filter(User.user == user_name).delete()
-    db_session.commit()

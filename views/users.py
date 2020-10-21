@@ -9,7 +9,7 @@ from views.auth import requires_auth, check_auth, requires_admin, is_demo_user, 
 from views.exceptions import PhenopolisException
 from views.general import _parse_boolean_parameter
 from views.helpers import _get_json_payload
-from views.postgres import get_db_session
+from views.postgres import session_scope
 
 
 @application.route("/user/change-password", methods=["POST"])
@@ -33,10 +33,9 @@ def change_password():
             )
         application.logger.info("Login success, changing password")
 
-        db_session = get_db_session()
-        user = db_session.query(User).filter(User.user == username).first()
-        user.argon_password = argon2.hash(new_password)
-        db_session.commit()
+        with session_scope() as db_session:
+            user = db_session.query(User).filter(User.user == username).first()
+            user.argon_password = argon2.hash(new_password)
         msg = "Password for username '" + username + "' changed. You are logged in as '" + username + "'."
     except PhenopolisException as e:
         application.logger.error(str(e))
@@ -48,16 +47,16 @@ def change_password():
 @application.route("/user/<user_id>/enabled/<status>", methods=["PUT"])
 @requires_admin
 def enable_user(user_id, status):
-    db_session = get_db_session()
-    try:
-        if user_id == ADMIN_USER:
-            raise PhenopolisException("Cannot change the status of Admin user!", 400)
-        user = _get_user_by_id(db_session, user_id)
-        user.enabled = _parse_boolean_parameter(status)
-        db_session.commit()
-    except PhenopolisException as e:
-        return jsonify(success=False, message=str(e)), e.http_status
-    return jsonify(success=True, message="User enabled flag set to {}".format(user.enabled)), 200
+    with session_scope() as db_session:
+        try:
+            if user_id == ADMIN_USER:
+                raise PhenopolisException("Cannot change the status of Admin user!", 400)
+            user = _get_user_by_id(db_session, user_id)
+            user.enabled = _parse_boolean_parameter(status)
+            enabled_flag = user.enabled
+        except PhenopolisException as e:
+            return jsonify(success=False, message=str(e)), e.http_status
+    return jsonify(success=True, message="User enabled flag set to {}".format(enabled_flag)), 200
 
 
 @application.route("/user", methods=["POST"])
@@ -75,22 +74,18 @@ def create_user():
     for u in new_users:
         u.argon_password = argon2.hash(u.argon_password)
 
-    db_session = get_db_session()
     request_ok = True
     message = "Users were created"
     user_ids = ",".join([u.user for u in new_users])
-    transaction = db_session.begin_nested()
     try:
-        # insert users
-        db_session.add_all(new_users)
-        _add_config_from_admin(db_session, new_users)
+        with session_scope() as db_session:
+            # insert users
+            db_session.add_all(new_users)
+            _add_config_from_admin(db_session, new_users)
     except Exception as e:
-        transaction.rollback()
         application.logger.exception(e)
         request_ok = False
         message = str(e)
-    else:
-        transaction.commit()
 
     if not request_ok:
         return jsonify(success=False, message=message), 500
@@ -101,14 +96,14 @@ def create_user():
 @application.route("/user/<user_id>")
 @requires_admin
 def get_user(user_id):
-    db_session = get_db_session()
     try:
-        user = _get_user_by_id(db_session, user_id)
-        user_individuals = db_session.query(UserIndividual).filter(UserIndividual.user == user.user).all()
-        user_dict = user.as_dict()
-        # removes the password hash from the endpoint we don't want/need this around
-        del user_dict["argon_password"]
-        user_dict["individuals"] = [ui.internal_id for ui in user_individuals]
+        with session_scope() as db_session:
+            user = _get_user_by_id(db_session, user_id)
+            user_individuals = db_session.query(UserIndividual).filter(UserIndividual.user == user.user).all()
+            user_dict = user.as_dict()
+            # removes the password hash from the endpoint we don't want/need this around
+            del user_dict["argon_password"]
+            user_dict["individuals"] = [ui.internal_id for ui in user_individuals]
     except PhenopolisException as e:
         return jsonify(success=False, message=str(e)), e.http_status
     return jsonify(user_dict), 200
@@ -117,9 +112,10 @@ def get_user(user_id):
 @application.route("/user")
 @requires_admin
 def get_users():
-    db_session = get_db_session()
-    users = db_session.query(User).all()
-    return jsonify([u.user for u in users]), 200
+    with session_scope() as db_session:
+        users = db_session.query(User).all()
+        user_names = [u.user for u in users]
+    return jsonify(user_names), 200
 
 
 def _check_user_valid(new_user: User):

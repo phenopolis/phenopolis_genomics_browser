@@ -6,10 +6,12 @@ from typing import List
 
 from flask import jsonify, session, request
 from sqlalchemy import and_, asc, func, or_, Text, cast
+from sqlalchemy.orm import Session
+
 from db.model import Individual, UserIndividual, HPO, Gene, Variant
 from views import application
 from views.auth import requires_auth, USER
-from views.postgres import get_db_session
+from views.postgres import session_scope
 
 CHROMOSOME_POS_REGEX = re.compile(r"^(\w+)[-:](\d+)$")
 CHROMOSOME_POS_REF_REGEX = re.compile(r"^(\w+)[-:](\d+)[-:]([ACGT\*]+)$", re.IGNORECASE)
@@ -51,45 +53,46 @@ def autocomplete(query):
         )
     application.logger.debug("Autocomplete query '%s' and query type '%s'", query, query_type)
 
-    if query_type == "gene":
-        suggestions = _search_genes(query, limit)
+    with session_scope() as db_session:
+        if query_type == "gene":
+            suggestions = _search_genes(db_session, query, limit)
 
-    elif query_type == "phenotype":
-        suggestions = _search_phenotypes(query, limit)
+        elif query_type == "phenotype":
+            suggestions = _search_phenotypes(db_session, query, limit)
 
-    elif query_type == "patient":
-        suggestions = _search_patients(query, limit)
+        elif query_type == "patient":
+            suggestions = _search_patients(db_session, query, limit)
 
-    elif query_type == "variant":
-        suggestions = _search_variants(query, limit)
+        elif query_type == "variant":
+            suggestions = _search_variants(db_session, query, limit)
 
-    elif query_type is None or query_type == "":
-        suggestions = (
-            _search_genes(query, limit)
-            + _search_phenotypes(query, limit)
-            + _search_patients(query, limit)
-            + _search_variants(query, limit)
-        )
-    else:
-        message = "Autocomplete request with unsupported query type '{}'".format(query_type)
-        application.logger.error(message)
-        # raise PhenopolisException(message)
-        return (
-            jsonify(success=False, message=message),
-            400,
-        )
+        elif query_type is None or query_type == "":
+            suggestions = (
+                _search_genes(db_session, query, limit)
+                + _search_phenotypes(db_session, query, limit)
+                + _search_patients(db_session, query, limit)
+                + _search_variants(db_session, query, limit)
+            )
+        else:
+            message = "Autocomplete request with unsupported query type '{}'".format(query_type)
+            application.logger.error(message)
+            # raise PhenopolisException(message)
+            return (
+                jsonify(success=False, message=message),
+                400,
+            )
 
     return jsonify(suggestions), 200
 
 
-def _search_patients(query, limit):
+def _search_patients(db_session: Session, query, limit):
     r"""'
     Patient (internal_id) format: PH (PH\d{8}) e.g. 'PH00005862' and are restricted to a particular user
     'demo', for example, can only access ['PH00008256', 'PH00008258', 'PH00008267', 'PH00008268']
     so, a search for 'PH000082', for user 'demo', should return only the 4 cases above
     """
     individuals = (
-        get_db_session()
+        db_session
         .query(Individual, UserIndividual)
         .filter(
             and_(
@@ -107,13 +110,13 @@ def _search_patients(query, limit):
     return ["individual::" + x.internal_id + "::" + x.internal_id for x in individuals]
 
 
-def _search_phenotypes(query, limit):
+def _search_phenotypes(db_session: Session, query, limit):
     r"""
     A user may search for things like 'Abnormality of body height' or for an HPO id as HP:1234567 (ie: HP:\d{7})
     """
     if HPO_REGEX.match(query) or NUMERIC_REGEX.match(query):
         phenotypes = (
-            get_db_session()
+            db_session
             .query(HPO)
             .filter(HPO.hpo_id.ilike("%{}%".format(query)))
             .order_by(HPO.hpo_id.asc())
@@ -125,7 +128,7 @@ def _search_phenotypes(query, limit):
         # TODO: return the distance so the frontend have greater flexibility
         # NOTE: order results by similarity and then by hpo_name (case insensitive)
         phenotypes_and_distances = (
-            get_db_session()
+            db_session
             .query(HPO, HPO.hpo_name.op("<->")(query).label("distance"))
             .filter(HPO.hpo_name.op("%%")(query))
             .order_by("distance", asc(func.lower(HPO.hpo_name)))
@@ -137,7 +140,7 @@ def _search_phenotypes(query, limit):
     return ["hpo::" + x.hpo_name + "::" + x.hpo_id for x in phenotypes]
 
 
-def _search_genes(query, limit):
+def _search_genes(db_session: Session, query, limit):
     """
     Either search for:
     - a gene id like 'ENSG000...'
@@ -157,7 +160,7 @@ def _search_genes(query, limit):
     if is_identifier_query:
         query_without_version = remove_version_from_id(query)
         genes = (
-            get_db_session()
+            db_session
             .query(Gene)
             .filter(
                 or_(
@@ -172,7 +175,7 @@ def _search_genes(query, limit):
     else:
         # NOTE: makes two queries by gene name and by other names and returns only the closest results
         genes_by_gene_name = (
-            get_db_session()
+            db_session
             .query(Gene, Gene.gene_name.op("<->")(query).label("distance"))
             .filter(Gene.gene_name.op("%%")(query))
             .order_by("distance", asc(func.lower(Gene.gene_name)))
@@ -180,7 +183,7 @@ def _search_genes(query, limit):
             .all()
         )
         genes_by_other_names = (
-            get_db_session()
+            db_session
             .query(Gene, Gene.other_names.op("<->")(query).label("distance"))
             .filter(Gene.other_names.op("%%")(query))
             .order_by("distance", asc(func.lower(Gene.gene_name)))
@@ -192,14 +195,14 @@ def _search_genes(query, limit):
     return ["gene::" + x.gene_name + "::" + x.gene_id for x in genes]
 
 
-def _search_variants(query, limit):
+def _search_variants(db_session: Session, query, limit):
     chrom, pos, ref, alt = _parse_variant_from_query(query.upper())
     hgvs_type, entity, hgvs = _parse_hgvs_from_query(query)
     variants = []
     if chrom is not None:
-        variants = _search_variants_by_coordinates(chrom, pos, ref, alt, limit)
+        variants = _search_variants_by_coordinates(db_session, chrom, pos, ref, alt, limit)
     elif hgvs_type is not None:
-        variants = _search_variants_by_hgvs(hgvs_type, entity, hgvs, limit)
+        variants = _search_variants_by_hgvs(db_session, hgvs_type, entity, hgvs, limit)
 
     return [
         "variant::"
@@ -208,7 +211,7 @@ def _search_variants(query, limit):
     ]
 
 
-def _search_variants_by_coordinates(chrom, pos, ref, alt, limit) -> List[Variant]:
+def _search_variants_by_coordinates(db_session: Session, chrom, pos, ref, alt, limit) -> List[Variant]:
     """
     Assuming a user is searching for 22-38212762-A-G or 22-16269829-T-*
     22-382
@@ -219,7 +222,7 @@ def _search_variants_by_coordinates(chrom, pos, ref, alt, limit) -> List[Variant
     """
     if chrom is not None and ref is not None and alt is not None:
         variants = (
-            get_db_session()
+            db_session
             .query(Variant)
             .filter(
                 and_(
@@ -235,7 +238,7 @@ def _search_variants_by_coordinates(chrom, pos, ref, alt, limit) -> List[Variant
         )
     elif chrom is not None and ref is not None and alt is None:
         variants = (
-            get_db_session()
+            db_session
             .query(Variant)
             .filter(and_(Variant.CHROM == chrom, cast(Variant.POS, Text).like("{}%".format(pos)), Variant.REF == ref))
             .order_by(Variant.CHROM.asc(), Variant.POS.asc())
@@ -244,7 +247,7 @@ def _search_variants_by_coordinates(chrom, pos, ref, alt, limit) -> List[Variant
         )
     elif chrom is not None and ref is None:
         variants = (
-            get_db_session()
+            db_session
             .query(Variant)
             .filter(and_(Variant.CHROM == chrom, cast(Variant.POS, Text).like("{}%".format(pos))))
             .order_by(Variant.CHROM.asc(), Variant.POS.asc())
@@ -258,7 +261,7 @@ def _search_variants_by_coordinates(chrom, pos, ref, alt, limit) -> List[Variant
     return variants
 
 
-def _search_variants_by_hgvs(hgvs_type, entity, hgvs, limit) -> List[Variant]:
+def _search_variants_by_hgvs(db_session: Session, hgvs_type, entity, hgvs, limit) -> List[Variant]:
     """
     Assuming a user is searching for ENSP00000451572.1:p.His383Tyr, ENST00000355467.4:c.30C>T or
     ENST00000505973.1:n.97C>T
@@ -272,7 +275,7 @@ def _search_variants_by_hgvs(hgvs_type, entity, hgvs, limit) -> List[Variant]:
             # NOTE: the % after transcript deals with missing transcript version, as a positive side effect this allow
             # for partial ids
             variants = (
-                get_db_session()
+                db_session
                 .query(Variant)
                 .filter(Variant.hgvsc.ilike("%{}%:{}%".format(entity, hgvs)))
                 .order_by(Variant.CHROM.asc(), Variant.POS.asc())
@@ -283,7 +286,7 @@ def _search_variants_by_hgvs(hgvs_type, entity, hgvs, limit) -> List[Variant]:
             # search for HGVS on the variants for the given gene id
             ensembl_gene_id_without_version = remove_version_from_id(entity)
             variants = (
-                get_db_session()
+                db_session
                 .query(Variant)
                 .filter(
                     and_(Variant.gene_id == ensembl_gene_id_without_version, Variant.hgvsc.ilike("%{}%".format(hgvs)))
@@ -295,7 +298,7 @@ def _search_variants_by_hgvs(hgvs_type, entity, hgvs, limit) -> List[Variant]:
         else:
             # search for HGVS on the variants for the given gene symbol
             variants = (
-                get_db_session()
+                db_session
                 .query(Variant)
                 .filter(and_(Variant.gene_symbol == entity, Variant.hgvsc.ilike("%{}%".format(hgvs))))
                 .order_by(Variant.CHROM.asc(), Variant.POS.asc())
@@ -309,7 +312,7 @@ def _search_variants_by_hgvs(hgvs_type, entity, hgvs, limit) -> List[Variant]:
             # NOTE: the % after transcript deals with missing transcript version, as a positive side effect this allow
             # for partial ids
             variants = (
-                get_db_session()
+                db_session
                 .query(Variant)
                 .filter(Variant.hgvsp.ilike("%{}%:{}%".format(entity, hgvs)))
                 .order_by(Variant.CHROM.asc(), Variant.POS.asc())
@@ -320,7 +323,7 @@ def _search_variants_by_hgvs(hgvs_type, entity, hgvs, limit) -> List[Variant]:
             # search for HGVS on the variants for the given gene id
             ensembl_protein_id_without_version = remove_version_from_id(entity)
             variants = (
-                get_db_session()
+                db_session
                 .query(Variant)
                 .filter(
                     and_(
@@ -334,7 +337,7 @@ def _search_variants_by_hgvs(hgvs_type, entity, hgvs, limit) -> List[Variant]:
         else:
             # search for HGVS on the variants for the given gene symbol
             variants = (
-                get_db_session()
+                db_session
                 .query(Variant)
                 .filter(and_(Variant.gene_symbol == entity, Variant.hgvsp.ilike("%{}%".format(hgvs))))
                 .order_by(Variant.CHROM.asc(), Variant.POS.asc())

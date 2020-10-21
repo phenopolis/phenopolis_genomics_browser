@@ -14,7 +14,7 @@ from views.postgres import postgres_cursor, get_db
 @application.route("/save_configuration/<pageType>/<pagePart>", methods=["POST"])
 @requires_auth
 def save_configuration(pageType, pagePart, language="en"):
-    config = db.helpers.query_user_config(language=language, entity=pageType)
+    config = db.helpers.legacy_query_user_config(language=language, entity=pageType)
     application.logger.debug(pageType)
     application.logger.debug(pagePart)
     if pageType == "my_patients":

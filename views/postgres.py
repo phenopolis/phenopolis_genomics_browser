@@ -6,6 +6,7 @@ from flask import g
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker, Session
 from views import application, ENV_LOG_FLAG
+from contextlib import contextmanager
 
 
 def get_db():
@@ -43,3 +44,21 @@ def close_db():
 def postgres_cursor():
     cursor = get_db().cursor()
     return cursor
+
+
+@contextmanager
+def session_scope() -> Session:
+    """Provide a transactional scope around a series of operations."""
+    engine = create_engine(application.config["SQLALCHEMY_DATABASE_URI"], echo=ENV_LOG_FLAG)
+    engine.connect()
+    DbSession = sessionmaker(bind=engine)
+    DbSession.configure(bind=engine)
+    session = DbSession()
+    try:
+        yield session
+        session.commit()
+    except:
+        session.rollback()
+        raise
+    finally:
+        session.close()
