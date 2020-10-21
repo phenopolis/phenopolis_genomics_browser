@@ -56,8 +56,8 @@ def session_scope() -> Session:
     try:
         yield session
         session.commit()
-    except:
+    except BaseException as e:
         session.rollback()
-        raise
+        raise e
     finally:
         session.close()
