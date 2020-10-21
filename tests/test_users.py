@@ -160,14 +160,15 @@ def test_change_password(_nondemo_client):
         observed_user = db_session.query(User).filter(User.user == NONDEMO_USER).first()
         assert argon2.verify(old_password, observed_user.argon_password)
 
-        # changes the password
-        response = _nondemo_client.post(
-            "/user/change-password",
-            json={"current_password": old_password, "new_password": new_password},
-            content_type="application/json",
-        )
-        assert response.status_code == 200
+    # changes the password
+    response = _nondemo_client.post(
+        "/user/change-password",
+        json={"current_password": old_password, "new_password": new_password},
+        content_type="application/json",
+    )
+    assert response.status_code == 200
 
+    with session_scope() as db_session:
         # checks that the password is changed
         observed_user = db_session.query(User).filter(User.user == NONDEMO_USER).first()
         assert argon2.verify(new_password, observed_user.argon_password)

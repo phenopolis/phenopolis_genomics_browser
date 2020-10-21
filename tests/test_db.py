@@ -24,7 +24,7 @@ def test_sqlalchemy_query(_demo):
     """res -> db.Gene"""
     with session_scope() as db_session:
         res = db_session.query(Gene).filter(Gene.gene_id == "ENSG00000119685").first()
-    assert res.gene_name == "TTLL5"
+        assert res.gene_name == "TTLL5"
 
 
 # Never used so far
