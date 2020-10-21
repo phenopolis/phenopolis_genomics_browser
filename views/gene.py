@@ -37,10 +37,14 @@ def gene(gene_id, subset="all", language="en"):
                 {"display": "GeneCards", "href": "http://www.genecards.org/cgi-bin/carddisp.pl?gene=" + gene_name},
             ]
             d["genome_browser"] = [
-                {"display": "Ensembl Browser", "href": "http://grch37.ensembl.org/Homo_sapiens/Gene/Summary?g=" + gene_id},
+                {
+                    "display": "Ensembl Browser",
+                    "href": "http://grch37.ensembl.org/Homo_sapiens/Gene/Summary?g=" + gene_id,
+                },
                 {
                     "display": "UCSC Browser",
-                    "href": "http://genome.ucsc.edu/cgi-bin/hgTracks?db=hg19&position=chr%s:%s-%s" % (chrom, start, stop,),
+                    "href": "http://genome.ucsc.edu/cgi-bin/hgTracks?db=hg19&position=chr%s:%s-%s"
+                    % (chrom, start, stop,),
                 },
             ]
             d["other"] = [

@@ -57,7 +57,9 @@ def get_individual_by_id(individual_id, subset="all", language="en"):
         # unauthorized access to individual
         if not individual:
             return (
-                jsonify(message="Sorry, either the patient does not exist or you are not permitted to see this patient"),
+                jsonify(
+                    message="Sorry, either the patient does not exist or you are not permitted to see this patient"
+                ),
                 404,
             )
         if subset == "preview":
@@ -183,9 +185,7 @@ def _check_individual_valid(db_session: Session, new_individual: Individual):
         raise PhenopolisException("Null individual", 400)
 
     exist_internal_id = (
-        db_session.query(Individual.external_id)
-        .filter(Individual.external_id == new_individual.external_id)
-        .all()
+        db_session.query(Individual.external_id).filter(Individual.external_id == new_individual.external_id).all()
     )
 
     if len(exist_internal_id) > 0:
@@ -212,8 +212,9 @@ def _individual_complete_view(db_session: Session, config, individual: Individua
     # hom variants
     config[0]["rare_homs"]["data"] = list(map(lambda x: x.as_dict(), _get_homozygous_variants(db_session, individual)))
     # rare variants
-    config[0]["rare_variants"]["data"] = list(map(lambda x: x.as_dict(),
-                                                  _get_heterozygous_variants(db_session, individual)))
+    config[0]["rare_variants"]["data"] = list(
+        map(lambda x: x.as_dict(), _get_heterozygous_variants(db_session, individual))
+    )
     # rare_comp_hets
     gene_counter = Counter([v["gene_symbol"] for v in config[0]["rare_variants"]["data"]])
     rare_comp_hets_variants = [v for v in config[0]["rare_variants"]["data"] if gene_counter[v["gene_symbol"]] > 1]
@@ -289,8 +290,7 @@ def _get_heterozygous_variants(db_session: Session, individual: Individual) -> L
 
 def _query_heterozygous_variants(db_session: Session, individual):
     return (
-        db_session
-        .query(HeterozygousVariant, Variant)
+        db_session.query(HeterozygousVariant, Variant)
         .filter(HeterozygousVariant.individual == individual.external_id)
         .join(
             Variant,
@@ -311,8 +311,7 @@ def _get_homozygous_variants(db_session: Session, individual: Individual) -> Lis
 
 def _query_homozygous_variants(db_session: Session, individual):
     return (
-        db_session
-        .query(HomozygousVariant, Variant)
+        db_session.query(HomozygousVariant, Variant)
         .filter(HomozygousVariant.individual == individual.external_id)
         .join(
             Variant,

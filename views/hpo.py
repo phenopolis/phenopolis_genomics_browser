@@ -89,7 +89,8 @@ def hpo(hpo_id="HP:0000001", subset="all", language="en"):
             ind["simplified_observed_features_names"] = [
                 {"display": i, "end_href": j}
                 for i, j, in zip(
-                    ind["simplified_observed_features_names"].split(";"), ind["simplified_observed_features"].split(","),
+                    ind["simplified_observed_features_names"].split(";"),
+                    ind["simplified_observed_features"].split(","),
                 )
             ]
             if ind["genes"]:

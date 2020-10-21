@@ -92,10 +92,8 @@ def variant(variant_id, subset="all", language="en"):
     config = db.helpers.legacy_query_user_config(language=language, entity="variant")
     # CHROM, POS, REF, ALT, = variant_id.split('-')
     with session_scope() as db_session:
-        data = (
-            db_session
-            .query(Variant)
-            .filter(and_(Variant.CHROM == chrom, Variant.POS == pos, Variant.REF == ref, Variant.ALT == alt))
+        data = db_session.query(Variant).filter(
+            and_(Variant.CHROM == chrom, Variant.POS == pos, Variant.REF == ref, Variant.ALT == alt)
         )
         var = [p.as_dict() for p in data]
         process_for_display(db_session, var)

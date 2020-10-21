@@ -7,10 +7,13 @@ from views.postgres import postgres_cursor
 
 def query_user_config(db_session: Session, language, entity):
 
-    user_config = db_session.query(UserConfig)\
-        .filter(and_(UserConfig.user_name == session["user"], UserConfig.language == language,
-                     UserConfig.page == entity))\
+    user_config = (
+        db_session.query(UserConfig)
+        .filter(
+            and_(UserConfig.user_name == session["user"], UserConfig.language == language, UserConfig.page == entity)
+        )
         .first()
+    )
     return user_config.config
 
 

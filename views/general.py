@@ -87,8 +87,7 @@ def _send_error_mail(code):
 # rather do the conversion on the fly
 def process_for_display(db_session: Session, data):
     my_patients = list(
-        db_session
-        .query(UserIndividual)
+        db_session.query(UserIndividual)
         .filter(UserIndividual.user == session[USER])
         .with_entities(UserIndividual.internal_id)
     )

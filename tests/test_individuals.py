@@ -211,7 +211,9 @@ def test_create_multiple_individuals(_admin_client):
         observed_individual = db_session.query(Individual).filter(Individual.external_id == test_individual_id).first()
         assert observed_individual is not None, "Empty newly created individual"
         assert observed_individual.pi == individual.pi, "Field pi from created individual is not what it should"
-        observed_individual2 = db_session.query(Individual).filter(Individual.external_id == test_individual_id2).first()
+        observed_individual2 = (
+            db_session.query(Individual).filter(Individual.external_id == test_individual_id2).first()
+        )
         assert observed_individual2 is not None, "Empty newly created individual"
         assert observed_individual2.pi == individual2.pi, "Field pi from created individual is not what it should"
 
