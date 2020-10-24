@@ -30,11 +30,11 @@ def test_after_request(_demo):
     resp -> tuple(flask.wrappers.Response)
     res -> flask.wrappers.Response
     """
-    resp = gene("fake_gene")
-    assert resp[0].status_code == 200
-    assert resp[0].data == b'{"message":"Gene not found"}\n'
-    res = after_request(resp[0])
-    assert res.status_code == 200
+    response = gene("fake_gene")
+    assert response.status_code == 404
+    assert response.data == b'{"message":"Gene not found"}\n'
+    res = after_request(response)
+    assert res.status_code == 404
     assert res.data == b'{"message":"Gene not found"}\n'
     assert res.headers["Cache-Control"] == "no-cache, no-store, must-revalidate"
 
@@ -52,9 +52,8 @@ def test_variant(_demo, query, subset, msg):
     tests both for subset and entry not in DB, the real one is 14-76127655-C-T
     res -> str
     """
-    res = variant(query, subset=subset)
-    assert isinstance(res, str)
-    assert msg in res
+    response = variant(query, subset=subset)
+    assert msg in str(response.data)
 
 
 def test_exceptions(_demo):
@@ -78,8 +77,8 @@ def test_exceptions(_demo):
 )
 def test_hpo(_demo, query, subset, msg):
     """res -> str"""
-    res = hpo(query, subset=subset)
-    assert msg in res
+    response = hpo(query, subset=subset)
+    assert msg in str(response.data)
 
 
 def test_statistics(_demo):

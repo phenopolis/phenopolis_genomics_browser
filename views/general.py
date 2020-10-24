@@ -28,9 +28,10 @@ def after_request(response):
             request.remote_addr, request.method, request.scheme, request.full_path, response.status,
         )
     )
-
-    response.headers["Cache-Control"] = "no-cache"
-    response.headers["Cache-Control"] = "no-cache, no-store, must-revalidate"
+    # avoids rewriting the cache config if it has been set previously
+    if "Cache-control" not in response.headers:
+        response.headers["Cache-Control"] = "no-cache"
+        response.headers["Cache-Control"] = "no-cache, no-store, must-revalidate"
     # prevent click-jacking vulnerability identified by BITs
     # response.headers["X-Frame-Options"] = "SAMEORIGIN"
     response.headers["Access-Control-Allow-Origin"] = "*"
