@@ -23,9 +23,12 @@ def test_get_authorised_individual_by_id(_demo, query, subset, msg):
     """
     res -> str
     """
-    response, status = get_individual_by_id(query, subset=subset)
-    assert status == 200
+    response = get_individual_by_id(query, subset=subset)
+    assert response.status_code == 200
     assert msg in str(response.data)
+    assert response.cache_control.max_age == 300
+    assert response.cache_control.public
+    assert response.expires is not None
 
 
 def test_get_unauthorised_individual_by_id(_demo):
@@ -33,8 +36,8 @@ def test_get_unauthorised_individual_by_id(_demo):
     "demo" user has no right to access PH00000001
     res -> tuple(flask.wrappers.Response)
     """
-    response, status = get_individual_by_id("PH00000001")
-    assert status == 404
+    response = get_individual_by_id("PH00000001")
+    assert response.status_code == 404
     assert (
         response.json.get("message")
         == "Sorry, either the patient does not exist or you are not permitted to see this patient"
@@ -82,8 +85,8 @@ def test_get_individual_preview_by_id(_admin):
 
 
 def _get_view_individual_by_id(identifier, subset="all"):
-    response, status = get_individual_by_id(identifier, subset=subset)
-    assert status == 200
+    response = get_individual_by_id(identifier, subset=subset)
+    assert response.status_code == 200
     data = response.json
     assert len(data) == 1, "Missing expected data"
     individual_complete_view = data[0]
