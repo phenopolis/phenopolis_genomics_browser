@@ -10,6 +10,7 @@ import pytest
 from views.variant import variant
 from views.gene import gene
 from views.hpo import hpo
+from views.individual import get_all_individuals
 from views.general import check_health, after_request, exceptions
 from views.statistics import phenopolis_statistics
 from werkzeug.exceptions import BadHost
@@ -30,12 +31,18 @@ def test_after_request(_demo):
     resp -> tuple(flask.wrappers.Response)
     res -> flask.wrappers.Response
     """
+    # tries an endpoint that allows caching
     response = gene("fake_gene")
     assert response.status_code == 404
     assert response.data == b'{"message":"Gene not found"}\n'
     res = after_request(response)
     assert res.status_code == 404
     assert res.data == b'{"message":"Gene not found"}\n'
+    assert res.headers["Cache-Control"] == "public,max-age=300"
+
+    # tries an endpoint that does not allow caching
+    response, status = get_all_individuals()
+    res = after_request(response)
     assert res.headers["Cache-Control"] == "no-cache, no-store, must-revalidate"
 
 
