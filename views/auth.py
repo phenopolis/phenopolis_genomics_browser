@@ -7,7 +7,7 @@ from flask import session, request, jsonify
 from passlib.handlers.argon2 import argon2
 from db.model import User
 from views import application
-from views.postgres import get_db_session
+from views.postgres import session_scope
 
 ADMIN_USER = "Admin"
 DEMO_USER = "demo"
@@ -24,10 +24,12 @@ def check_auth(username, password):
     """
     This function is called to check if a username / password combination is valid.
     """
-    user = get_db_session().query(User).filter(User.user == username).filter(User.enabled).first()
-    if not user:
-        return False
-    return argon2.verify(password, user.argon_password)
+    with session_scope() as db_session:
+        user = db_session.query(User).filter(User.user == username).filter(User.enabled).first()
+        if not user:
+            return False
+        hashed_password = user.argon_password
+    return argon2.verify(password, hashed_password)
 
 
 def requires_auth(f):

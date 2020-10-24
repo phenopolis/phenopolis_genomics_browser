@@ -11,7 +11,7 @@ from db.model import Variant
 from views import application
 from db.helpers import cursor2dict
 from views.auth import requires_auth
-from views.postgres import postgres_cursor, get_db_session
+from views.postgres import postgres_cursor, session_scope
 from views.general import process_for_display
 from sqlalchemy import and_
 from flask import jsonify
@@ -89,15 +89,14 @@ def variant(variant_id, subset="all", language="en"):
     #         variant_dict['filter'] = list(v.filter.keys())
     #         variant_dict['format'] = {(v.format[k].name, v.format[k].id,) for k in v.format.keys()}
     #         variant_dict['info'] = dict(v.info)
-    config = db.helpers.query_user_config(language=language, entity="variant")
+    config = db.helpers.legacy_query_user_config(language=language, entity="variant")
     # CHROM, POS, REF, ALT, = variant_id.split('-')
-    data = (
-        get_db_session()
-        .query(Variant)
-        .filter(and_(Variant.CHROM == chrom, Variant.POS == pos, Variant.REF == ref, Variant.ALT == alt))
-    )
-    var = [p.as_dict() for p in data]
-    process_for_display(var)
+    with session_scope() as db_session:
+        data = db_session.query(Variant).filter(
+            and_(Variant.CHROM == chrom, Variant.POS == pos, Variant.REF == ref, Variant.ALT == alt)
+        )
+        var = [p.as_dict() for p in data]
+        process_for_display(db_session, var)
     if len(var) == 0:
         var = {}
     else:

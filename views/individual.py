@@ -4,9 +4,10 @@ Individual view
 import re
 import itertools
 from typing import List, Tuple
-import psycopg2
 from sqlalchemy import func, literal_column, and_
 from sqlalchemy.dialects.postgresql import aggregate_order_by
+from sqlalchemy.orm import Session
+
 import db.helpers
 import ujson as json
 from collections import Counter
@@ -16,7 +17,7 @@ from views import application
 from views.auth import requires_auth, requires_admin, is_demo_user, USER, ADMIN_USER
 from views.exceptions import PhenopolisException
 from views.helpers import _get_json_payload
-from views.postgres import get_db_session
+from views.postgres import session_scope
 from views.general import process_for_display
 
 MAX_PAGE_SIZE = 100000
@@ -25,21 +26,22 @@ MAX_PAGE_SIZE = 100000
 @application.route("/individual")
 @requires_auth
 def get_all_individuals():
-    try:
-        limit, offset = _get_pagination_parameters()
-        if limit > MAX_PAGE_SIZE:
-            return (
-                jsonify(message="The maximum page size for individuals is {}".format(MAX_PAGE_SIZE)),
-                400,
-            )
-        individuals_and_users = _fetch_all_individuals(offset=offset, limit=limit)
-        results = []
-        for i, ui in individuals_and_users:
-            individual_dict = i.as_dict()
-            individual_dict["users"] = ui
-            results.append(individual_dict)
-    except PhenopolisException as e:
-        return jsonify(success=False, message=str(e)), e.http_status
+    with session_scope() as db_session:
+        try:
+            limit, offset = _get_pagination_parameters()
+            if limit > MAX_PAGE_SIZE:
+                return (
+                    jsonify(message="The maximum page size for individuals is {}".format(MAX_PAGE_SIZE)),
+                    400,
+                )
+            individuals_and_users = _fetch_all_individuals(db_session=db_session, offset=offset, limit=limit)
+            results = []
+            for i, ui in individuals_and_users:
+                individual_dict = i.as_dict()
+                individual_dict["users"] = ui
+                results.append(individual_dict)
+        except PhenopolisException as e:
+            return jsonify(success=False, message=str(e)), e.http_status
     return jsonify(results), 200
 
 
@@ -49,18 +51,21 @@ def get_all_individuals():
 @application.route("/individual/<individual_id>/<subset>")
 @requires_auth
 def get_individual_by_id(individual_id, subset="all", language="en"):
-    config = db.helpers.query_user_config(language=language, entity="individual")
-    individual = _fetch_authorized_individual(individual_id)
-    # unauthorized access to individual
-    if not individual:
-        return (
-            jsonify(message="Sorry, either the patient does not exist or you are not permitted to see this patient"),
-            404,
-        )
-    if subset == "preview":
-        individual_view = _individual_preview(config, individual)
-    else:
-        individual_view = _individual_complete_view(config, individual, subset)
+    with session_scope() as db_session:
+        config = db.helpers.query_user_config(db_session=db_session, language=language, entity="individual")
+        individual = _fetch_authorized_individual(db_session, individual_id)
+        # unauthorized access to individual
+        if not individual:
+            return (
+                jsonify(
+                    message="Sorry, either the patient does not exist or you are not permitted to see this patient"
+                ),
+                404,
+            )
+        if subset == "preview":
+            individual_view = _individual_preview(db_session, config, individual)
+        else:
+            individual_view = _individual_complete_view(db_session, config, individual, subset)
     return jsonify(individual_view), 200
 
 
@@ -70,27 +75,28 @@ def get_individual_by_id(individual_id, subset="all", language="en"):
 def update_patient_data(individual_id, language="en"):
     if is_demo_user():
         return jsonify(error="Demo user not authorised"), 405
-    config = db.helpers.query_user_config(language=language, entity="individual")
-    individual = _fetch_authorized_individual(individual_id)
-    # unauthorized access to individual
-    if not individual:
-        config[0]["preview"] = [["Sorry", "You are not permitted to edit this patient"]]
-        # TODO: change this output to the same structure as others
-        return json.dumps(config)
 
-    application.logger.debug(request.form)
-    consanguinity = request.form.get("consanguinity_edit[]")
-    gender = request.form.get("gender_edit[]")
-    genes = request.form.getlist("genes[]")
-    features = request.form.getlist("feature[]")
-    if not len(features):
-        features = ["All"]
+    with session_scope() as db_session:
+        config = db.helpers.query_user_config(db_session=db_session, language=language, entity="individual")
+        individual = _fetch_authorized_individual(db_session, individual_id)
+        # unauthorized access to individual
+        if not individual:
+            config[0]["preview"] = [["Sorry", "You are not permitted to edit this patient"]]
+            # TODO: change this output to the same structure as others
+            return json.dumps(config)
 
-    # TODO: simplfy this gender translation
-    gender = {"male": "M", "female": "F", "unknown": "U"}.get(gender, "unknown")
-    hpos = _get_hpos(features)
+        application.logger.debug(request.form)
+        consanguinity = request.form.get("consanguinity_edit[]")
+        gender = request.form.get("gender_edit[]")
+        genes = request.form.getlist("genes[]")
+        features = request.form.getlist("feature[]")
+        if not len(features):
+            features = ["All"]
 
-    _update_individual(consanguinity, gender, genes, hpos, individual)
+        # TODO: simplfy this gender translation
+        gender = {"male": "M", "female": "F", "unknown": "U"}.get(gender, "unknown")
+        hpos = _get_hpos(db_session, features)
+        _update_individual(consanguinity, gender, genes, hpos, individual)
     return jsonify({"success": True}), 200
 
 
@@ -101,40 +107,35 @@ def create_individual():
         return jsonify(error="Demo user not authorised"), 405
 
     # checks individuals validity
-    db_session = get_db_session()
+    with session_scope() as db_session:
+        try:
+            new_individuals = _get_json_payload(Individual)
+            for i in new_individuals:
+                _check_individual_valid(db_session, i)
+        except PhenopolisException as e:
+            application.logger.error(str(e))
+            return jsonify(success=False, error=str(e)), e.http_status
 
-    try:
-        new_individuals = _get_json_payload(Individual)
-        for i in new_individuals:
-            _check_individual_valid(i, db_session)
-    except PhenopolisException as e:
-        application.logger.error(str(e))
-        return jsonify(success=False, error=str(e)), e.http_status
-
-    request_ok = True
-    http_status = 200
-    message = "Individuals were created"
-    ids_new_individuals = []
-    transaction = db_session.begin_nested()
-    try:
-        # generate a new unique id for the individual
-        for i in new_individuals:
-            new_internal_id = _get_new_individual_id(db_session)
-            i.internal_id = new_internal_id
-            ids_new_individuals.append(new_internal_id)
-            # insert individual
-            db_session.add(i)
-            # add entry to user_individual
-            # TODO: enable access to more users than the creator
-            db_session.add(UserIndividual(user=session[USER], internal_id=i.internal_id))
-    except PhenopolisException as e:
-        transaction.rollback()
-        application.logger.exception(e)
-        request_ok = False
-        message = str(e)
-        http_status = e.http_status
-    else:
-        transaction.commit()
+        request_ok = True
+        http_status = 200
+        message = "Individuals were created"
+        ids_new_individuals = []
+        try:
+            # generate a new unique id for the individual
+            for i in new_individuals:
+                new_internal_id = _get_new_individual_id(db_session)
+                i.internal_id = new_internal_id
+                ids_new_individuals.append(new_internal_id)
+                # insert individual
+                db_session.add(i)
+                # add entry to user_individual
+                # TODO: enable access to more users than the creator
+                db_session.add(UserIndividual(user=session[USER], internal_id=i.internal_id))
+        except PhenopolisException as e:
+            application.logger.exception(e)
+            request_ok = False
+            message = str(e)
+            http_status = e.http_status
 
     return jsonify(success=request_ok, message=message, id=",".join(ids_new_individuals)), http_status
 
@@ -143,34 +144,29 @@ def create_individual():
 @requires_admin
 def delete_individual(individual_id):
 
-    individual = _fetch_authorized_individual(individual_id)
+    with session_scope() as db_session:
+        individual = _fetch_authorized_individual(db_session, individual_id)
+        request_ok = True
+        http_status = 200
+        message = "Patient " + individual_id + " has been deleted."
 
-    request_ok = True
-    http_status = 200
-    message = "Patient " + individual_id + " has been deleted."
-
-    if individual:
-        db_session = get_db_session()
-        transaction = db_session.begin_nested()
-        try:
-            user_individuals = (
-                db_session.query(UserIndividual).filter(UserIndividual.internal_id == individual_id).all()
-            )
-            for ui in user_individuals:
-                db_session.delete(ui)
-            db_session.delete(individual)
-        except Exception as e:
-            transaction.rollback()
-            application.logger.exception(e)
-            request_ok = False
-            message = str(e)
-            http_status = e.http_status
+        if individual:
+            try:
+                user_individuals = (
+                    db_session.query(UserIndividual).filter(UserIndividual.internal_id == individual_id).all()
+                )
+                for ui in user_individuals:
+                    db_session.delete(ui)
+                db_session.delete(individual)
+            except Exception as e:
+                application.logger.exception(e)
+                request_ok = False
+                message = str(e)
+                http_status = e.http_status
         else:
-            transaction.commit()
-    else:
-        request_ok = False
-        message = "Patient " + individual_id + " does not exist."
-        http_status = 404
+            request_ok = False
+            message = "Patient " + individual_id + " does not exist."
+            http_status = 404
 
     return jsonify(success=request_ok, message=message), http_status
 
@@ -184,14 +180,12 @@ def _get_pagination_parameters():
     return limit, offset
 
 
-def _check_individual_valid(new_individual: Individual, sqlalchemy_session):
+def _check_individual_valid(db_session: Session, new_individual: Individual):
     if new_individual is None:
         raise PhenopolisException("Null individual", 400)
 
     exist_internal_id = (
-        sqlalchemy_session.query(Individual.external_id)
-        .filter(Individual.external_id == new_individual.external_id)
-        .all()
+        db_session.query(Individual.external_id).filter(Individual.external_id == new_individual.external_id).all()
     )
 
     if len(exist_internal_id) > 0:
@@ -214,11 +208,13 @@ def _get_new_individual_id(sqlalchemy_session):
         raise PhenopolisException("Failed to fetch the latest internal id for an individual", 500)
 
 
-def _individual_complete_view(config, individual: Individual, subset):
+def _individual_complete_view(db_session: Session, config, individual: Individual, subset):
     # hom variants
-    config[0]["rare_homs"]["data"] = list(map(lambda x: x.as_dict(), _get_homozygous_variants(individual)))
+    config[0]["rare_homs"]["data"] = list(map(lambda x: x.as_dict(), _get_homozygous_variants(db_session, individual)))
     # rare variants
-    config[0]["rare_variants"]["data"] = list(map(lambda x: x.as_dict(), _get_heterozygous_variants(individual)))
+    config[0]["rare_variants"]["data"] = list(
+        map(lambda x: x.as_dict(), _get_heterozygous_variants(db_session, individual))
+    )
     # rare_comp_hets
     gene_counter = Counter([v["gene_symbol"] for v in config[0]["rare_variants"]["data"]])
     rare_comp_hets_variants = [v for v in config[0]["rare_variants"]["data"] if gene_counter[v["gene_symbol"]] > 1]
@@ -227,18 +223,18 @@ def _individual_complete_view(config, individual: Individual, subset):
     if not config[0]["metadata"]["data"]:
         config[0]["metadata"]["data"] = [dict()]
     config = _map_individual2output(config, individual)
-    process_for_display(config[0]["rare_homs"]["data"])
-    process_for_display(config[0]["rare_variants"]["data"])
+    process_for_display(db_session, config[0]["rare_homs"]["data"])
+    process_for_display(db_session, config[0]["rare_variants"]["data"])
     if subset == "all":
         return config
     else:
         return [{subset: y[subset]} for y in config]
 
 
-def _individual_preview(config, individual: Individual):
-    hom_count = _count_homozygous_variants(individual)
-    het_count = _count_heterozygous_variants(individual)
-    comp_het_count = _count_compound_heterozygous_variants(individual)
+def _individual_preview(db_session: Session, config, individual: Individual):
+    hom_count = _count_homozygous_variants(db_session, individual)
+    het_count = _count_heterozygous_variants(db_session, individual)
+    comp_het_count = _count_compound_heterozygous_variants(db_session, individual)
     # TODO: make a dict of this and not a list of lists
     config[0]["preview"] = [
         ["External_id", individual.external_id],
@@ -252,9 +248,9 @@ def _individual_preview(config, individual: Individual):
     return config
 
 
-def _count_compound_heterozygous_variants(individual: Individual):
+def _count_compound_heterozygous_variants(db_session: Session, individual: Individual):
     return (
-        _query_heterozygous_variants(individual)
+        _query_heterozygous_variants(db_session, individual)
         .with_entities(Variant.gene_symbol)
         .group_by(Variant.gene_symbol)
         .having(func.count(Variant.gene_symbol) > 1)
@@ -262,12 +258,12 @@ def _count_compound_heterozygous_variants(individual: Individual):
     )
 
 
-def _count_heterozygous_variants(individual: Individual) -> int:
-    return _query_heterozygous_variants(individual).count()
+def _count_heterozygous_variants(db_session: Session, individual: Individual) -> int:
+    return _query_heterozygous_variants(db_session, individual).count()
 
 
-def _count_homozygous_variants(individual: Individual) -> int:
-    return _query_homozygous_variants(individual).count()
+def _count_homozygous_variants(db_session: Session, individual: Individual) -> int:
+    return _query_homozygous_variants(db_session, individual).count()
 
 
 def _map_individual2output(config, individual: Individual):
@@ -288,14 +284,13 @@ def _map_individual2output(config, individual: Individual):
     return config
 
 
-def _get_heterozygous_variants(individual: Individual) -> List[Variant]:
-    return _query_heterozygous_variants(individual).all()
+def _get_heterozygous_variants(db_session: Session, individual: Individual) -> List[Variant]:
+    return _query_heterozygous_variants(db_session, individual).all()
 
 
-def _query_heterozygous_variants(individual):
+def _query_heterozygous_variants(db_session: Session, individual):
     return (
-        get_db_session()
-        .query(HeterozygousVariant, Variant)
+        db_session.query(HeterozygousVariant, Variant)
         .filter(HeterozygousVariant.individual == individual.external_id)
         .join(
             Variant,
@@ -310,14 +305,13 @@ def _query_heterozygous_variants(individual):
     )
 
 
-def _get_homozygous_variants(individual: Individual) -> List[Variant]:
-    return _query_homozygous_variants(individual).all()
+def _get_homozygous_variants(db_session: Session, individual: Individual) -> List[Variant]:
+    return _query_homozygous_variants(db_session, individual).all()
 
 
-def _query_homozygous_variants(individual):
+def _query_homozygous_variants(db_session: Session, individual):
     return (
-        get_db_session()
-        .query(HomozygousVariant, Variant)
+        db_session.query(HomozygousVariant, Variant)
         .filter(HomozygousVariant.individual == individual.external_id)
         .join(
             Variant,
@@ -332,13 +326,12 @@ def _query_homozygous_variants(individual):
     )
 
 
-def _fetch_all_individuals(offset, limit) -> List[Tuple[Individual, List[str]]]:
+def _fetch_all_individuals(db_session: Session, offset, limit) -> List[Tuple[Individual, List[str]]]:
     """
     For admin users it returns all individuals and all users having access to them.
     But for other than admin it returns only individuals which this user has access, other users having access are
     not returned
     """
-    db_session = get_db_session()
     user_id = session[USER]
     query = db_session.query(
         Individual, func.string_agg(UserIndividual.user, aggregate_order_by(literal_column("','"), UserIndividual.user))
@@ -350,8 +343,7 @@ def _fetch_all_individuals(offset, limit) -> List[Tuple[Individual, List[str]]]:
     return [(i, u.split(",")) for i, u in individuals]
 
 
-def _fetch_authorized_individual(individual_id) -> Individual:
-    db_session = get_db_session()
+def _fetch_authorized_individual(db_session: Session, individual_id) -> Individual:
     return (
         db_session.query(Individual)
         .join(UserIndividual)
@@ -374,14 +366,6 @@ def _update_individual(consanguinity, gender, genes, hpos: List[HPO], individual
     )
     individual.genes = ",".join([x for x in genes])
 
-    db_session = get_db_session()
-    transaction = db_session.begin_nested()
-    try:
-        transaction.commit()
-    except (Exception, psycopg2.DatabaseError) as error:
-        application.logger.exception(error)
-        transaction.rollback()
 
-
-def _get_hpos(features: List[str]) -> List[HPO]:
-    return get_db_session().query(HPO).filter(HPO.hpo_name.in_(features)).all()
+def _get_hpos(db_session: Session, features: List[str]) -> List[HPO]:
+    return db_session.query(HPO).filter(HPO.hpo_name.in_(features)).all()

@@ -5,7 +5,7 @@ Using some reliable common ground
 Demo DB need to be updated?
 """
 
-from views.postgres import postgres_cursor, get_db_session, close_db
+from views.postgres import postgres_cursor, close_db, session_scope
 from db.model import Gene
 
 
@@ -22,8 +22,9 @@ def test_db_sql_query(_demo):
 
 def test_sqlalchemy_query(_demo):
     """res -> db.Gene"""
-    res = get_db_session().query(Gene).filter(Gene.gene_id == "ENSG00000119685").first()
-    assert res.gene_name == "TTLL5"
+    with session_scope() as db_session:
+        res = db_session.query(Gene).filter(Gene.gene_id == "ENSG00000119685").first()
+        assert res.gene_name == "TTLL5"
 
 
 # Never used so far

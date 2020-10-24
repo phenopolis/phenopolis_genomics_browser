@@ -2,12 +2,14 @@
 Users Individuals view
 """
 from flask import jsonify
+from sqlalchemy.orm import Session
+
 from db.model import UserIndividual, User, Individual
 from views import application
 from views.auth import requires_admin
 from views.exceptions import PhenopolisException
 from views.helpers import _get_json_payload
-from views.postgres import get_db_session
+from views.postgres import session_scope
 
 
 @application.route("/user-individual", methods=["POST"])
@@ -22,23 +24,19 @@ def create_user_individual():
         application.logger.error(str(e))
         return jsonify(success=False, error=str(e)), e.http_status
 
-    db_session = get_db_session()
-    request_ok = True
-    message = "User individuals were created"
-    transaction = db_session.begin_nested()
-    try:
-        # insert user individuals
-        for u in new_user_individuals:
-            # TODO: should not all these checks happen at the DB?
-            _check_db_integrity_user_individual(db_session, u)
-            db_session.add(u)
-    except Exception as e:
-        transaction.rollback()
-        application.logger.exception(e)
-        request_ok = False
-        message = str(e)
-    else:
-        transaction.commit()
+    with session_scope() as db_session:
+        request_ok = True
+        message = "User individuals were created"
+        try:
+            # insert user individuals
+            for u in new_user_individuals:
+                # TODO: should not all these checks happen at the DB?
+                _check_db_integrity_user_individual(db_session, u)
+                db_session.add(u)
+        except Exception as e:
+            application.logger.exception(e)
+            request_ok = False
+            message = str(e)
 
     if not request_ok:
         return jsonify(success=False, message=message), 500
@@ -54,23 +52,19 @@ def delete_user_individual():
     except PhenopolisException as e:
         return jsonify(success=False, error=str(e)), e.http_status
 
-    db_session = get_db_session()
-    request_ok = True
-    message = "User individuals were deleted"
-    transaction = db_session.begin_nested()
-    try:
-        # insert user individuals
-        for u in user_individuals_to_be_deleted:
-            db_session.query(UserIndividual).filter(UserIndividual.user == u.user).filter(
-                UserIndividual.internal_id == u.internal_id
-            ).delete()
-    except Exception as e:
-        transaction.rollback()
-        application.logger.exception(e)
-        request_ok = False
-        message = str(e)
-    else:
-        transaction.commit()
+    with session_scope() as db_session:
+        request_ok = True
+        message = "User individuals were deleted"
+        try:
+            # insert user individuals
+            for u in user_individuals_to_be_deleted:
+                db_session.query(UserIndividual).filter(UserIndividual.user == u.user).filter(
+                    UserIndividual.internal_id == u.internal_id
+                ).delete()
+        except Exception as e:
+            application.logger.exception(e)
+            request_ok = False
+            message = str(e)
 
     if not request_ok:
         return jsonify(success=False, message=message), 500
@@ -78,7 +72,7 @@ def delete_user_individual():
         return jsonify(success=True, message=message), 200
 
 
-def _check_db_integrity_user_individual(db_session, user: UserIndividual):
+def _check_db_integrity_user_individual(db_session: Session, user: UserIndividual):
     # TODO: all these checks could happen in the DB
     if db_session.query(User.user).filter(User.user.match(user.user)).count() != 1:
         raise PhenopolisException("Trying to add an entry in user_individual to a non existing user", 500)
