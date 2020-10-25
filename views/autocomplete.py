@@ -16,6 +16,7 @@ from views.postgres import session_scope
 CHROMOSOME_POS_REGEX = re.compile(r"^(\w+)[-:](\d+)$")
 CHROMOSOME_POS_REF_REGEX = re.compile(r"^(\w+)[-:](\d+)[-:]([ACGT\*]+)$", re.IGNORECASE)
 CHROMOSOME_POS_REF_ALT_REGEX = re.compile(r"^(\w+)[-:](\d+)[-:]([ACGT\*]+)[-:>]([ACGT\*]+)$", re.IGNORECASE)
+GENOMIC_REGION_REGEX = re.compile(r"^(\w+)[-:](\d+)[-:](\d+)$", re.IGNORECASE)
 ENSEMBL_TRANSCRIPT_REGEX = re.compile(r"^ENST(\d{0,12})(\.\d{1,2})?", re.IGNORECASE)
 ENSEMBL_PROTEIN_REGEX = re.compile(r"^ENSP(\d{0,12})(\.\d{1,2})?", re.IGNORECASE)
 ENSEMBL_GENE_REGEX = re.compile(r"^^ENSG(\d{0,12})(\.\d{1,2})?", re.IGNORECASE)
@@ -190,11 +191,14 @@ def _search_genes(db_session: Session, query, limit):
 
 
 def _search_variants(db_session: Session, query, limit):
-    chrom, pos, ref, alt = _parse_variant_from_query(query.upper())
+    chromosome_from_region, start, end = _parse_genomic_region_from_query(query)
+    chromosome_from_variant, pos, ref, alt = _parse_variant_from_query(query.upper())
     hgvs_type, entity, hgvs = _parse_hgvs_from_query(query)
     variants = []
-    if chrom is not None:
-        variants = _search_variants_by_coordinates(db_session, chrom, pos, ref, alt, limit)
+    if chromosome_from_region is not None:
+        variants = _search_variants_by_region(db_session, chromosome_from_region, start, end, limit)
+    elif chromosome_from_variant is not None:
+        variants = _search_variants_by_coordinates(db_session, chromosome_from_variant, pos, ref, alt, limit)
     elif hgvs_type is not None:
         variants = _search_variants_by_hgvs(db_session, hgvs_type, entity, hgvs, limit)
 
@@ -249,6 +253,20 @@ def _search_variants_by_coordinates(db_session: Session, chrom, pos, ref, alt, l
         # no variant pattern, we perform no search
         variants = []
 
+    return variants
+
+
+def _search_variants_by_region(db_session: Session, chrom, start, end, limit) -> List[Variant]:
+    """
+    Assuming a user is searching for 22:10000-20000 it will return all variants within that region
+    """
+    variants = (
+        db_session.query(Variant)
+        .filter(and_(Variant.CHROM == chrom, Variant.POS >= start, Variant.POS <= end,))
+        .order_by(Variant.CHROM.asc(), Variant.POS.asc())
+        .limit(limit)
+        .all()
+    )
     return variants
 
 
@@ -375,3 +393,19 @@ def _parse_variant_from_query(query):
     if match:
         return match.group(1), match.group(2), None, None
     return None, None, None, None
+
+
+def _parse_genomic_region_from_query(query):
+    """
+    Extract chromosome, start position and end position
+    It expects fields to be separated by - or :
+    """
+    match = GENOMIC_REGION_REGEX.match(query)
+    chromosome = None
+    start = None
+    end = None
+    if match:
+        chromosome = match.group(1)
+        start = int(match.group(2))
+        end = int(match.group(3))
+    return chromosome, start, end

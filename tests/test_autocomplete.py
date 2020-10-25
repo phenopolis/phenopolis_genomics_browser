@@ -54,6 +54,12 @@ from views.autocomplete import HPO_REGEX, NUMERIC_REGEX
         ("1-11166", "variant", "variant::1-111660001-C-T::1-111660001-C-T"),
         ("25-11166", "variant", None),
         ("something_confusing", "variant", None),
+        ("14-76156300-76156500", "variant", "variant::14-76156402-C-T::14-76156402-C-T"),
+        ("14:76156300-76156500", "variant", "variant::14-76156402-C-T::14-76156402-C-T"),
+        ("14:76156300:76156500", "variant", "variant::14-76156402-C-T::14-76156402-C-T"),
+        ("not_a_chromosome:76156300:76156500", "variant", None),
+        ("14:-100:-200", "variant", None),
+        ("14:76156500:76156300", "variant", None),
     ),
 )
 def test_autocomplete(_demo_client, query, qt, msg):
