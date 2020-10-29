@@ -37,6 +37,7 @@ const MyPatient = () => {
                   ')'
                 }
                 subtitle=" "
+                genomePlot={false}
               />
             </Container>
           </div>

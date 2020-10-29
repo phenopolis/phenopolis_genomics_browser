@@ -1,4 +1,4 @@
-import React, { Fragment } from 'react';
+import React, { Fragment, forwardRef, useEffect } from 'react';
 import PropTypes from 'prop-types';
 import { withStyles } from '@material-ui/core/styles';
 import clsx from 'clsx';
@@ -21,12 +21,14 @@ import {
   faFilter,
   faEyeSlash,
   faChartBar,
+  faDna,
   faFileDownload,
 } from '@fortawesome/pro-duotone-svg-icons';
 
 const VirtualTableFilter = React.lazy(() => import('./VirtualTableFilter'));
 const HideColumn = React.lazy(() => import('./HideColumn'));
 const Plots = React.lazy(() => import('./Plots'));
+const GenomePlot = React.lazy(() => import('./GenomePlot'));
 const ExportExcel = React.lazy(() => import('./ExportExcel'));
 
 const getRenderedCursor = (children) =>
@@ -172,7 +174,7 @@ const innerGridElementType = React.forwardRef(({ children, ...rest }, ref) => (
 ));
 
 const createItemData = memoize(
-  (rows, columns, toggleItemActive, toggleAction, currentRow, currentColumn, highlightRow) => ({
+  (
     rows,
     columns,
     toggleItemActive,
@@ -180,8 +182,42 @@ const createItemData = memoize(
     currentRow,
     currentColumn,
     highlightRow,
+    rowStatus,
+    scrolling
+  ) => ({
+    rows,
+    columns,
+    toggleItemActive,
+    toggleAction,
+    currentRow,
+    currentColumn,
+    highlightRow,
+    rowStatus,
+    scrolling,
   })
 );
+
+const outerElementType = forwardRef((props, ref) => {
+  useEffect(() => {
+    handleOnWheel(
+      props.children.props.children[0].props.rowIndex,
+      props.children.props.children.slice(-1)[0].props.rowIndex,
+      props.children.props.children[0].props.data.rowStatus
+    );
+  }, [props.children.props.children.slice(-1)[0].props.data.scrolling]);
+
+  const handleOnWheel = (minRow, maxRow, rowStatus) => {
+    rowStatus(minRow, maxRow);
+  };
+
+  return (
+    <div
+      ref={ref}
+      // onWheel={() => handleOnWheel(props)}
+      {...props}
+    />
+  );
+});
 
 class StickyGrid extends React.Component {
   constructor(props) {
@@ -240,6 +276,8 @@ class StickyGrid extends React.Component {
       order,
       orderBy,
       onRequestSort,
+      rowStatus,
+      scrolling,
       ...rest
     } = this.props;
 
@@ -250,7 +288,9 @@ class StickyGrid extends React.Component {
       toggleAction,
       currentRow,
       currentColumn,
-      highlightRow
+      highlightRow,
+      rowStatus,
+      scrolling
     );
 
     return (
@@ -274,6 +314,7 @@ class StickyGrid extends React.Component {
           rowHeight={rowHeight}
           innerElementType={innerGridElementType}
           itemData={itemData}
+          outerElementType={outerElementType}
           {...rest}>
           {children}
         </Grid>
@@ -283,9 +324,9 @@ class StickyGrid extends React.Component {
 }
 
 // Cause a grid cell to blur when scrolling
-function handleScroll(event) {
-  document.activeElement.blur();
-}
+// function handleScroll(event) {
+//   document.activeElement.blur();
+// }
 
 function desc(a, b, orderBy) {
   let aString = '';
@@ -380,7 +421,7 @@ class VirtualGrid extends React.Component {
       currentColumn: null,
       anchorEl: null,
 
-      filterPopoverOpen: -1,
+      filterPopoverOpen: 3,
 
       colNames: [],
       tableFilter: [],
@@ -400,12 +441,14 @@ class VirtualGrid extends React.Component {
         { label: 'Filter Rows', icon: faFilter },
         { label: 'Hide Columns', icon: faEyeSlash },
         { label: 'Plots', icon: faChartBar },
-        // { label: 'Genome', icon: faDna },
+        { label: 'Genome', icon: faDna },
         { label: 'Export Excel', icon: faFileDownload },
       ],
 
       columnHide: [],
       highlightIndex: null,
+      visibleRows: [0, 10],
+      scrolling: false,
     };
   }
 
@@ -883,6 +926,19 @@ class VirtualGrid extends React.Component {
     this.setState({ highlightIndex: rowIndex });
   };
 
+  handleRowStatus = (minRow, maxRow) => {
+    this.setState({ visibleRows: [minRow, maxRow], scrolling: false });
+    // if (status) {
+    //   this.setState({ maxRowIndex: rowIndex });
+    // } else {
+    //   this.setState({ minRowIndex: rowIndex });
+    // }
+  };
+
+  handleScroll = (event) => {
+    this.setState({ scrolling: true });
+  };
+
   render() {
     const { classes } = this.props;
 
@@ -915,19 +971,23 @@ class VirtualGrid extends React.Component {
               elevation={0}
               className="card-box mb-0 d-flex flex-row flex-wrap justify-content-center">
               {this.state.toolButtons.map((button, buttonIndex) => {
-                return (
-                  <div
-                    className={clsx(classes.toolButton, 'py-4 px-5 d-flex align-items-center')}
-                    onClick={() => this.handleFilterPopoverOpen(buttonIndex)}
-                    style={
-                      buttonIndex === this.state.filterPopoverOpen ? { color: '#2E84CF' } : null
-                    }>
-                    <FontAwesomeIcon icon={button.icon} className="d-30 opacity-5 mr-3" />
-                    <div>
-                      <span className="d-block opacity-7"> {button.label} </span>
+                if ((button.label === 'Genome') & (this.props.genomePlot === false)) {
+                  return null;
+                } else {
+                  return (
+                    <div
+                      className={clsx(classes.toolButton, 'py-4 px-5 d-flex align-items-center')}
+                      onClick={() => this.handleFilterPopoverOpen(buttonIndex)}
+                      style={
+                        buttonIndex === this.state.filterPopoverOpen ? { color: '#2E84CF' } : null
+                      }>
+                      <FontAwesomeIcon icon={button.icon} className="d-30 opacity-5 mr-3" />
+                      <div>
+                        <span className="d-block opacity-7"> {button.label} </span>
+                      </div>
                     </div>
-                  </div>
-                );
+                  );
+                }
               })}
             </Card>
 
@@ -966,7 +1026,21 @@ class VirtualGrid extends React.Component {
               </Card>
             </Collapse>
 
-            <Collapse in={this.state.filterPopoverOpen === 3}>
+            {this.props.genomePlot ? (
+              <Collapse in={this.state.filterPopoverOpen === 3}>
+                <Card
+                  elevation={0}
+                  className="card-box mb-2 mt-2 d-flex flex-row flex-wrap justify-content-center">
+                  <GenomePlot
+                    data={this.state.filteredData}
+                    visibleRows={this.state.visibleRows}
+                    name={this.props.name}
+                  />
+                </Card>
+              </Collapse>
+            ) : null}
+
+            <Collapse in={this.state.filterPopoverOpen === 4}>
               <Card
                 elevation={0}
                 className="card-box mb-5 mt-5 d-flex flex-row flex-wrap justify-content-center">
@@ -990,7 +1064,7 @@ class VirtualGrid extends React.Component {
                     columnWidth={this.getColumnWidth}
                     stickyHeight={50}
                     stickyWidth={0}
-                    onScroll={handleScroll}
+                    onScroll={this.handleScroll}
                     myrows={this.state.filteredData}
                     mycolumns={this.state.filteredColumn}
                     toggleItemActive={this.toggleItemActive}
@@ -1002,7 +1076,9 @@ class VirtualGrid extends React.Component {
                     order={this.state.order}
                     orderBy={this.state.orderBy}
                     onRequestSort={this.handleRequestSort}
-                    onRecalculateWidth={this.handleRecalculateWidth}>
+                    onRecalculateWidth={this.handleRecalculateWidth}
+                    rowStatus={this.handleRowStatus}
+                    scrolling={this.state.scrolling}>
                     {GridColumn}
                   </StickyGrid>
                 )}

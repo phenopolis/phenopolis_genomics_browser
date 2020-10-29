@@ -100,6 +100,7 @@ const HPO = (props) => {
                   title={t('HPO.Individuals')}
                   subtitle={t('HPO.Individuals_subtitle')}
                   configureLink="hpo/individuals"
+                  genomePlot={false}
                 />
               </TabPanel>
               <TabPanel value={value} index={1} className="hpo-tabPannel">
@@ -108,6 +109,7 @@ const HPO = (props) => {
                   title={t('HPO.Literature_Genes')}
                   subtitle={t('HPO.Literature_Genes_subtitle')}
                   configureLink="hpo/literature_genes"
+                  genomePlot={false}
                 />
               </TabPanel>
 
@@ -149,6 +151,7 @@ const HPO = (props) => {
                         </Trans>,
                       ]}
                       configureLink="hpo/phenogenon_recessive"
+                      genomePlot={false}
                     />
                   </TabPanel>
                   <TabPanel className="hpo-tabPannel" value={phenogenonvalue} index={1}>
@@ -164,6 +167,7 @@ const HPO = (props) => {
                         </Trans>,
                       ]}
                       configureLink="hpo/phenogenon_dominant"
+                      genomePlot={false}
                     />
                   </TabPanel>
                 </SwipeableViews>
@@ -175,6 +179,7 @@ const HPO = (props) => {
                   title={t('HPO.SKAT')}
                   subtitle={t('HPO.SKAT_subtitle')}
                   configureLink="hpo/skat"
+                  genomePlot={false}
                 />
               </TabPanel>
             </SwipeableViews>

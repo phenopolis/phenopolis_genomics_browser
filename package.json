@@ -55,6 +55,7 @@
     "typeface-roboto": "0.0.75",
     "underscore": "^1.10.2",
     "universal-cookie": "^4.0.3",
+    "uplot": "^1.2.2",
     "use-state-with-callback": "^1.0.18"
   },
   "scripts": {

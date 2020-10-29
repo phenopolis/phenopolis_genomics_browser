@@ -47,6 +47,18 @@ const Gene = (props) => {
                 title={t('Gene.Variants_Analysis')}
                 subtitle={t('Gene.Variants Analysis_subtitle')}
                 configureLink="gene/variants"
+                name={
+                  geneInfo.metadata.data[0].gene_name +
+                  ':' +
+                  geneInfo.metadata.data[0].chrom +
+                  ':chr' +
+                  geneInfo.metadata.data[0].chrom +
+                  ':' +
+                  geneInfo.metadata.data[0].start +
+                  '-' +
+                  geneInfo.metadata.data[0].stop
+                }
+                genomePlot={true}
               />
             </Container>
           </div>

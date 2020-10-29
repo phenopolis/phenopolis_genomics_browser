@@ -18,6 +18,10 @@ class GridColumn extends React.Component {
     };
   }
   componentWillMount() {
+    // if (this.props.columnIndex == 0) {
+    //   this.props.data.rowStatus(this.props.rowIndex, true);
+    // }
+
     const mystyle = JSON.parse(JSON.stringify(this.props.style));
     mystyle['backgroundColor'] = 'white';
 
@@ -53,6 +57,12 @@ class GridColumn extends React.Component {
     }
 
     this.setState({ mystyle: mystyle });
+  }
+
+  componentWillUnmount() {
+    // if (this.props.columnIndex == 0) {
+    //   this.props.data.rowStatus(this.props.rowIndex, false);
+    // }
   }
 
   myfunction = () => {

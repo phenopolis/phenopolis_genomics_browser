@@ -125,6 +125,7 @@ const Individual = (props) => {
                     title={i18next.t('Individual.Rare_HOMs')}
                     subtitle={i18next.t('Individual.Rare_HOMs_subtitle')}
                     configureLink="individual/rare_homs"
+                    genomePlot={false}
                   />
                 </TabPanel>
                 <TabPanel value={value} index={1} className="individual-tabPannel">
@@ -133,6 +134,7 @@ const Individual = (props) => {
                     title={i18next.t('Individual.Rare_Comp_Hets')}
                     subtitle={i18next.t('Individual.Rare_Comp_Hets_subtitle')}
                     configureLink="individual/rare_comp_hets"
+                    genomePlot={false}
                   />
                 </TabPanel>
                 <TabPanel value={value} index={2} className="individual-tabPannel">
@@ -141,6 +143,7 @@ const Individual = (props) => {
                     title={i18next.t('Individual.Rare_Variants')}
                     subtitle={i18next.t('Individual.Rare_Variants_subtitle')}
                     configureLink="individual/rare_variants"
+                    genomePlot={false}
                   />
                 </TabPanel>
               </SwipeableViews>
