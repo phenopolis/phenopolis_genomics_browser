@@ -1,2 +1,2 @@
-/api/*	http://localhost:5000/:splat	200!
+/api/*	https://api-dev.phenopolis.org/:splat	200!
 /*	/index.html	200
