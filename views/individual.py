@@ -18,8 +18,8 @@ from views.auth import requires_auth, requires_admin, is_demo_user, USER, ADMIN_
 from views.exceptions import PhenopolisException
 from views.helpers import _get_json_payload
 from views.postgres import session_scope
-from views.general import process_for_display
 from bidict import bidict
+from views.general import process_for_display, cache_on_browser
 
 MAPPING_SEX_REPRESENTATIONS = bidict({"male": Sex.M, "female": Sex.F, "unknown": Sex.U})
 MAX_PAGE_SIZE = 100000
@@ -52,23 +52,24 @@ def get_all_individuals():
 @application.route("/individual/<individual_id>")
 @application.route("/individual/<individual_id>/<subset>")
 @requires_auth
+@cache_on_browser()
 def get_individual_by_id(individual_id, subset="all", language="en"):
     with session_scope() as db_session:
         config = db.helpers.query_user_config(db_session=db_session, language=language, entity="individual")
         individual = _fetch_authorized_individual(db_session, individual_id)
         # unauthorized access to individual
         if not individual:
-            return (
-                jsonify(
-                    message="Sorry, either the patient does not exist or you are not permitted to see this patient"
-                ),
-                404,
+            response = jsonify(
+                message="Sorry, either the patient does not exist or you are not permitted to see this patient"
             )
+            response.status_code = 404
+            return response
+
         if subset == "preview":
             individual_view = _individual_preview(db_session, config, individual)
         else:
             individual_view = _individual_complete_view(db_session, config, individual, subset)
-    return jsonify(individual_view), 200
+    return jsonify(individual_view)
 
 
 @application.route("/<language>/update_patient_data/<individual_id>", methods=["POST"])

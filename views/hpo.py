@@ -1,14 +1,13 @@
 """
 HPO view - Human Phenotype Ontology
 """
-import ujson as json
 import db.helpers
-from flask import session
+from flask import session, jsonify
 from db.helpers import cursor2dict
 from views import application
 from views.auth import requires_auth, USER
 from views.postgres import postgres_cursor, session_scope
-from views.general import process_for_display
+from views.general import process_for_display, cache_on_browser
 from db.model import HPO
 
 
@@ -17,6 +16,7 @@ from db.model import HPO
 @application.route("/hpo/<hpo_id>")
 @application.route("/hpo/<hpo_id>/<subset>")
 @requires_auth
+@cache_on_browser()
 def hpo(hpo_id="HP:0000001", subset="all", language="en"):
 
     with session_scope() as db_session:
@@ -83,7 +83,7 @@ def hpo(hpo_id="HP:0000001", subset="all", language="en"):
         application.logger.debug(len(individuals))
         config[0]["preview"] = [["Number of Individuals", len(individuals)]]
         if subset == "preview":
-            return json.dumps([{subset: y["preview"]} for y in config])
+            return jsonify([{subset: y["preview"]} for y in config])
         for ind in individuals:
             ind["internal_id"] = [{"display": ind["internal_id"]}]
             ind["simplified_observed_features_names"] = [
@@ -101,6 +101,6 @@ def hpo(hpo_id="HP:0000001", subset="all", language="en"):
         ]
         process_for_display(db_session, config[0]["metadata"]["data"])
     if subset == "all":
-        return json.dumps(config)
+        return jsonify(config)
     else:
-        return json.dumps([{subset: y[subset]} for y in config])
+        return jsonify([{subset: y[subset]} for y in config])

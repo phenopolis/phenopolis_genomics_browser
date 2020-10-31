@@ -4,12 +4,11 @@ Gene view
 from sqlalchemy.orm import Session
 
 import db.helpers
-import ujson as json
 from flask import jsonify
 from views import application
 from views.auth import requires_auth, is_demo_user
 from views.postgres import session_scope
-from views.general import process_for_display
+from views.general import process_for_display, cache_on_browser
 from db.model import Gene
 
 
@@ -18,12 +17,15 @@ from db.model import Gene
 @application.route("/gene/<gene_id>")
 @application.route("/gene/<gene_id>/<subset>")
 @requires_auth
+@cache_on_browser()
 def gene(gene_id, subset="all", language="en"):
     with session_scope() as db_session:
         config = db.helpers.query_user_config(db_session=db_session, language=language, entity="gene")
         data = query_gene(db_session, gene_id)
         if not data:
-            return jsonify(message="Gene not found"), 404
+            response = jsonify(message="Gene not found")
+            response.status_code = 404
+            return response
         config[0]["metadata"]["data"] = data
         chrom = config[0]["metadata"]["data"][0]["chrom"]
         start = config[0]["metadata"]["data"][0]["start"]
@@ -87,8 +89,8 @@ def gene(gene_id, subset="all", language="en"):
         if is_demo_user() and gene_name not in ["TTLL5", "DRAM2"]:
             config[0]["variants"]["data"] = []
         if subset == "all":
-            return json.dumps(config)
-    return json.dumps([{subset: y[subset]} for y in config])
+            return jsonify(config)
+    return jsonify([{subset: y[subset]} for y in config])
 
 
 def query_gene(db_session: Session, gene_id):

@@ -12,6 +12,8 @@ from db.model import UserIndividual
 from views import application, mail
 from views.auth import USER
 from views.exceptions import PhenopolisException
+from datetime import datetime, timedelta
+from functools import wraps
 
 
 @application.route("/check_health")
@@ -26,9 +28,10 @@ def after_request(response):
             request.remote_addr, request.method, request.scheme, request.full_path, response.status,
         )
     )
-
-    response.headers["Cache-Control"] = "no-cache"
-    response.headers["Cache-Control"] = "no-cache, no-store, must-revalidate"
+    # avoids rewriting the cache config if it has been set previously
+    if "Cache-control" not in response.headers:
+        response.headers["Cache-Control"] = "no-cache"
+        response.headers["Cache-Control"] = "no-cache, no-store, must-revalidate"
     # prevent click-jacking vulnerability identified by BITs
     # response.headers["X-Frame-Options"] = "SAMEORIGIN"
     response.headers["Access-Control-Allow-Origin"] = "*"
@@ -129,3 +132,20 @@ def _parse_boolean_parameter(val):
         return 0
     else:
         raise PhenopolisException("invalid truth value %r" % (val,), 400)
+
+
+def cache_on_browser(minutes=5):
+    """ Flask decorator that allow to set Expire and Cache headers. """
+
+    def fwrap(f):
+        @wraps(f)
+        def wrapped_f(*args, **kwargs):
+            response = f(*args, **kwargs)
+            then = datetime.now() + timedelta(minutes=minutes)
+            response.headers.add("Expires", then.strftime("%a, %d %b %Y %H:%M:%S GMT"))
+            response.headers.add("Cache-Control", "public,max-age=%d" % int(60 * minutes))
+            return response
+
+        return wrapped_f
+
+    return fwrap
