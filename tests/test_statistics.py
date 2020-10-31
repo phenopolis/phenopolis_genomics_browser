@@ -1,5 +1,3 @@
-
-
 def test_statistics(_admin_client):
     resp = _admin_client.get("/statistics")
     assert resp.status_code == 200
@@ -49,4 +47,3 @@ def test_statistics_with_nondemo_user(_nondemo_client):
     assert data.get("genes") == 1
     assert data.get("observed_features") == 3
     assert data.get("unobserved_features") == 1
-

@@ -5,7 +5,7 @@ import random
 
 from sqlalchemy.orm import Session
 
-from db.model import Individual, Sex
+from db.model import Individual
 from tests.test_views import _check_only_available_to_admin
 from views.individual import get_individual_by_id, delete_individual, get_all_individuals, MAPPING_SEX_REPRESENTATIONS
 from views.postgres import session_scope

@@ -18,8 +18,8 @@ class AsDictable(object):
     def as_dict(self):
         dictionary = self.__dict__
         if "_sa_instance_state" in dictionary:
-            del dictionary["_sa_instance_state"]    # removes SQLAlchemy internal field
-        for k, v in dictionary.items():         # ensures that Enum fields are represented as strings
+            del dictionary["_sa_instance_state"]  # removes SQLAlchemy internal field
+        for k, v in dictionary.items():  # ensures that Enum fields are represented as strings
             if isinstance(v, enum.Enum):
                 dictionary[k] = v.name
         return dictionary
