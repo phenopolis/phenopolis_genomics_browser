@@ -8,10 +8,11 @@ def test_statistics(_admin_client):
     assert data.get("females") == 2
     assert data.get("males") == 3
     assert data.get("unknowns") == 0
-    assert data.get("exac_variants") == 0
-    assert data.get("nonpass_variants") == 4
-    assert data.get("pass_variants") == 28
+    assert data.get("gnomad_common_variants") == 0
+    assert data.get("gnomad_low_frequency_variants") == 0
+    assert data.get("gnomad_rare_variants") == 32
     assert data.get("total_variants") == 32
+    assert data.get("genes") == 2
 
 
 def test_statistics_with_demo_user(_demo_client):
@@ -22,10 +23,11 @@ def test_statistics_with_demo_user(_demo_client):
     assert data.get("females") == 1
     assert data.get("males") == 3
     assert data.get("unknowns") == 0
-    assert data.get("exac_variants") == 0
-    assert data.get("nonpass_variants") == 4
-    assert data.get("pass_variants") == 28
+    assert data.get("gnomad_common_variants") == 0
+    assert data.get("gnomad_low_frequency_variants") == 0
+    assert data.get("gnomad_rare_variants") == 32
     assert data.get("total_variants") == 32
+    assert data.get("genes") == 2
 
 
 def test_statistics_with_nondemo_user(_nondemo_client):
@@ -36,8 +38,9 @@ def test_statistics_with_nondemo_user(_nondemo_client):
     assert data.get("females") == 0
     assert data.get("males") == 1
     assert data.get("unknowns") == 0
-    assert data.get("exac_variants") == 0
-    assert data.get("nonpass_variants") == 0
-    assert data.get("pass_variants") == 4
+    assert data.get("gnomad_common_variants") == 0
+    assert data.get("gnomad_low_frequency_variants") == 0
+    assert data.get("gnomad_rare_variants") == 4
     assert data.get("total_variants") == 4
+    assert data.get("genes") == 1
 
