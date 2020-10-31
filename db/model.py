@@ -2,7 +2,9 @@
 DB schema
 """
 # "postgres://admin:donotusethispassword@aws-us-east-1-portal.19.dblayer.com:15813/compose"
-from sqlalchemy import Column, String, Integer, Float, ForeignKey, JSON, Boolean
+import enum
+
+from sqlalchemy import Column, String, Integer, Float, ForeignKey, JSON, Boolean, Enum
 from sqlalchemy.orm import relationship
 from sqlalchemy.ext.declarative import declarative_base
 
@@ -14,7 +16,13 @@ Base = declarative_base()
 
 class AsDictable(object):
     def as_dict(self):
-        return {c.name: getattr(self, c.name) for c in self.__table__.columns}
+        dictionary = self.__dict__
+        if "_sa_instance_state" in dictionary:
+            del dictionary["_sa_instance_state"]    # removes SQLAlchemy internal field
+        for k, v in dictionary.items():         # ensures that Enum fields are represented as strings
+            if isinstance(v, enum.Enum):
+                dictionary[k] = v.name
+        return dictionary
 
 
 class Gene(Base, AsDictable):
@@ -77,7 +85,7 @@ class HeterozygousVariant(Base, AsDictable):
     POS = Column("POS", String(255), primary_key=True)
     REF = Column("REF", String(255), primary_key=True)
     ALT = Column("ALT", String(255), primary_key=True)
-    individual = Column("individual", String(255), ForeignKey("individuals.internal_id"), primary_key=True)
+    individual = Column("individual", String(255), ForeignKey("individuals.external_id"), primary_key=True)
 
 
 class HomozygousVariant(Base, AsDictable):
@@ -113,11 +121,20 @@ class UserConfig(Base, AsDictable):
     config = Column("config", JSON)
 
 
+class Sex(enum.Enum):
+    # male
+    M = 1
+    # female
+    F = 2
+    # unknown
+    U = 3
+
+
 class Individual(Base, AsDictable):
     __tablename__ = "individuals"
     external_id = Column("external_id", String(255), primary_key=True)
     internal_id = Column("internal_id", String(255), primary_key=True)
-    sex = Column("sex", String(1))
+    sex = Column("sex", Enum(Sex))
     observed_features = Column("observed_features", String(255))
     unobserved_features = Column("unobserved_features", String(255))
     genes = Column("genes", String(255))

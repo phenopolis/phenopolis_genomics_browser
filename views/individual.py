@@ -12,14 +12,16 @@ import db.helpers
 import ujson as json
 from collections import Counter
 from flask import session, jsonify, request
-from db.model import Individual, UserIndividual, Variant, HomozygousVariant, HeterozygousVariant, HPO
+from db.model import Individual, UserIndividual, Variant, HomozygousVariant, HeterozygousVariant, HPO, Sex
 from views import application
 from views.auth import requires_auth, requires_admin, is_demo_user, USER, ADMIN_USER
 from views.exceptions import PhenopolisException
 from views.helpers import _get_json_payload
 from views.postgres import session_scope
 from views.general import process_for_display
+from bidict import bidict
 
+MAPPING_SEX_REPRESENTATIONS = bidict({"male": Sex.M, "female": Sex.F, "unknown": Sex.U})
 MAX_PAGE_SIZE = 100000
 
 
@@ -94,7 +96,7 @@ def update_patient_data(individual_id, language="en"):
             features = ["All"]
 
         # TODO: simplfy this gender translation
-        gender = {"male": "M", "female": "F", "unknown": "U"}.get(gender, "unknown")
+        gender = MAPPING_SEX_REPRESENTATIONS.get(gender, "unknown")
         hpos = _get_hpos(db_session, features)
         _update_individual(consanguinity, gender, genes, hpos, individual)
     return jsonify({"success": True}), 200
@@ -238,7 +240,7 @@ def _individual_preview(db_session: Session, config, individual: Individual):
     # TODO: make a dict of this and not a list of lists
     config[0]["preview"] = [
         ["External_id", individual.external_id],
-        ["Sex", individual.sex],
+        ["Sex", individual.sex.name],
         ["Genes", [g for g in individual.genes.split(",") if g != ""]],
         ["Features", [f for f in individual.simplified_observed_features_names.split(",") if f != ""]],
         ["Number of hom variants", hom_count],
@@ -291,7 +293,7 @@ def _get_heterozygous_variants(db_session: Session, individual: Individual) -> L
 def _query_heterozygous_variants(db_session: Session, individual):
     return (
         db_session.query(HeterozygousVariant, Variant)
-        .filter(HeterozygousVariant.individual == individual.external_id)
+        .filter(HeterozygousVariant.individual == individual.internal_id)
         .join(
             Variant,
             and_(
@@ -312,7 +314,7 @@ def _get_homozygous_variants(db_session: Session, individual: Individual) -> Lis
 def _query_homozygous_variants(db_session: Session, individual):
     return (
         db_session.query(HomozygousVariant, Variant)
-        .filter(HomozygousVariant.individual == individual.external_id)
+        .filter(HomozygousVariant.individual == individual.internal_id)
         .join(
             Variant,
             and_(
@@ -332,15 +334,40 @@ def _fetch_all_individuals(db_session: Session, offset, limit) -> List[Tuple[Ind
     But for other than admin it returns only individuals which this user has access, other users having access are
     not returned
     """
+    query = _query_all_individuals(db_session)
+    individuals = query.offset(offset).limit(limit).all()
+    return [(i, u.split(",")) for i, u in individuals]
+
+
+def _count_all_individuals(db_session: Session) -> int:
+    """
+    For admin users it counts all individuals and all users having access to them.
+    But for other than admin it counts only individuals which this user has access, other users having access are
+    not counted
+    """
+    return _query_all_individuals(db_session).count()
+
+
+def _count_all_individuals_by_sex(db_session: Session, sex: Sex) -> int:
+    """
+    For admin users it counts all individuals and all users having access to them.
+    But for other than admin it counts only individuals which this user has access, other users having access are
+    not counted
+    """
+    return _query_all_individuals(db_session, Individual.sex == sex).count()
+
+
+def _query_all_individuals(db_session, additional_filter=None):
     user_id = session[USER]
     query = db_session.query(
         Individual, func.string_agg(UserIndividual.user, aggregate_order_by(literal_column("','"), UserIndividual.user))
     ).filter(Individual.internal_id == UserIndividual.internal_id)
+    if additional_filter is not None:
+        query = query.filter(additional_filter)
     if user_id != ADMIN_USER:
         query = query.filter(UserIndividual.user == user_id)
-    individuals = query.group_by(Individual).order_by(Individual.internal_id.desc()).offset(offset).limit(limit).all()
-
-    return [(i, u.split(",")) for i, u in individuals]
+    query = query.group_by(Individual).order_by(Individual.internal_id.desc())
+    return query
 
 
 def _fetch_authorized_individual(db_session: Session, individual_id) -> Individual:

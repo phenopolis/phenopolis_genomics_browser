@@ -5,9 +5,9 @@ import random
 
 from sqlalchemy.orm import Session
 
-from db.model import Individual
+from db.model import Individual, Sex
 from tests.test_views import _check_only_available_to_admin
-from views.individual import get_individual_by_id, delete_individual, get_all_individuals
+from views.individual import get_individual_by_id, delete_individual, get_all_individuals, MAPPING_SEX_REPRESENTATIONS
 from views.postgres import session_scope
 
 
@@ -98,8 +98,7 @@ def test_update_individual_with_demo_user_fails(_demo_client):
         sex = individual.sex
 
         # update sex
-        # TODO: make the API more coherent regarding this sex translation
-        new_sex, new_sex_for_api = ("F", "female") if sex == "M" else ("M", "male")
+        new_sex_for_api = MAPPING_SEX_REPRESENTATIONS.inverse.get(sex)
         response = _demo_client.post(
             "/update_patient_data/{}".format(individual_id),
             data="gender_edit[]={}".format(new_sex_for_api),
@@ -122,8 +121,7 @@ def test_update_individual_with_admin_user(_admin_client):
         sex = individual.sex
 
         # update sex
-        # TODO: make the API more coherent regarding this sex translation
-        new_sex, new_sex_for_api = ("F", "female") if sex == "M" else ("M", "male")
+        new_sex_for_api = MAPPING_SEX_REPRESENTATIONS.inverse.get(sex)
         response = _admin_client.post(
             "/update_patient_data/{}".format(individual_id),
             data="gender_edit[]={}&feature[]=Abnormality of body height"
@@ -136,7 +134,7 @@ def test_update_individual_with_admin_user(_admin_client):
         # confirm observed data
         db_session.refresh(individual)
         observed_sex = individual.sex
-        assert observed_sex == new_sex, "Update sex did not work"
+        assert observed_sex == sex, "Update sex did not work"
         observed_hpo_names = individual.observed_features_names
         assert len(observed_hpo_names.split(";")) == 3, "Update HPOs did not work"
         assert "Abnormality of body height" in observed_hpo_names, "Update HPOs did not work"
