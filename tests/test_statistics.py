@@ -11,7 +11,7 @@ def test_statistics(_admin_client):
     assert data.get("gnomad_rare_variants") == 32
     assert data.get("total_variants") == 32
     assert data.get("genes") == 2
-    assert data.get("observed_features") == 5
+    assert data.get("observed_features") == 8
     assert data.get("unobserved_features") == 19
 
 
@@ -28,7 +28,7 @@ def test_statistics_with_demo_user(_demo_client):
     assert data.get("gnomad_rare_variants") == 32
     assert data.get("total_variants") == 32
     assert data.get("genes") == 2
-    assert data.get("observed_features") == 4
+    assert data.get("observed_features") == 7
     assert data.get("unobserved_features") == 18
 
 
