@@ -28,10 +28,11 @@ def phenopolis_statistics():
         female_patients = _count_all_individuals_by_sex(db_session, Sex.F)
         unknown_patients = _count_all_individuals_by_sex(db_session, Sex.U)
 
-        # counts variants
         # TODO: the use of two queries instead of a join between authorized individuals and homoyzgous_variants is
         # TODO: temporary. The database needs to be changed so homozygous_variants is linked to internal_id
         individuals = get_authorized_individuals(db_session)
+
+        # counts variants
         total_variants = count_variants(db_session, individuals)
         # TODO: this cast to float on the AF is probably not efficient this needs changing in the DB
         gnomad_rare_variants = count_variants(
@@ -43,7 +44,7 @@ def phenopolis_statistics():
             db_session, individuals, cast(Variant.af_gnomad_genomes, Float) > COMMON_VARIANTS_THRESHOLD)
 
         # counts HPOs
-        # TODO
+        count_observed_features, count_unobserved_features = count_hpos(individuals)
 
         # counts genes
         genes = count_genes(db_session, individuals)
@@ -58,7 +59,8 @@ def phenopolis_statistics():
         gnomad_low_frequency_variants=gnomad_low_frequency_variants,
         gnomad_common_variants=gnomad_common_variants,
         genes=genes,
-        # image=image.decode('utf8'))
+        observed_features=count_observed_features,
+        unobserved_features=count_unobserved_features,
         version_number=0,
     )
 
@@ -69,6 +71,15 @@ def get_authorized_individuals(db_session: Session) -> List[Individual]:
     if user_id != ADMIN_USER:
         query = query.filter(and_(Individual.internal_id == UserIndividual.internal_id, UserIndividual.user == user_id))
     return query.with_entities(Individual).all()
+
+
+def count_hpos(individuals: List[Individual]):
+    observed_features = set()
+    unobserved_features = set()
+    for i in individuals:
+        observed_features.update(i.observed_features.split(","))
+        unobserved_features.update(i.unobserved_features.split(","))
+    return len(observed_features), len(unobserved_features)
 
 
 def count_genes(db_session, individuals):
