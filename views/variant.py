@@ -5,14 +5,13 @@ import os
 import boto3
 import pysam
 import requests
-import ujson as json
 import db.helpers
 from db.model import Variant
 from views import application
 from db.helpers import cursor2dict
 from views.auth import requires_auth
 from views.postgres import postgres_cursor, session_scope
-from views.general import process_for_display
+from views.general import process_for_display, cache_on_browser
 from sqlalchemy import and_
 from flask import jsonify
 
@@ -22,6 +21,7 @@ from flask import jsonify
 @application.route("/variant/<variant_id>")
 @application.route("/variant/<variant_id>/<subset>")
 @requires_auth
+@cache_on_browser()
 def variant(variant_id, subset="all", language="en"):
     c = postgres_cursor()
     c.execute("select external_id, internal_id from individuals")
@@ -31,9 +31,10 @@ def variant(variant_id, subset="all", language="en"):
     try:
         chrom, pos, ref, alt, = variant_id.split("-")
         pos = int(pos)
-    except Exception as e:
-        print(e)
-        return jsonify(message="Variant not found"), 404
+    except Exception:
+        response = jsonify(message="Variant not found")
+        response.status_code = 404
+        return response
     url = "https://myvariant.info/v1/variant/chr%s:g.%d%s>%s?fields=clinvar.rcv.clinical_significance&dotfield=true" % (
         chrom,
         pos,
@@ -108,5 +109,5 @@ def variant(variant_id, subset="all", language="en"):
     config[0]["genotypes"]["data"] = variant_dict["genotypes"]
     config[0]["preview"] = [["Clinvar", clinical_significance]]
     if subset == "all":
-        return json.dumps(config)
-    return json.dumps([{subset: y[subset]} for y in config])
+        return jsonify(config)
+    return jsonify([{subset: y[subset]} for y in config])
