@@ -128,7 +128,7 @@ def get_users():
 
 @application.route("/user/confirm/<token>")
 def confirm_user(token):
-    email = confirm_token(token)
+    email = confirm_token(token, application.config["TOKEN_EXPIRY_SECONDS"])
     with session_scope() as db_session:
         try:
             user = db_session.query(User).filter(User.email == email).first()
