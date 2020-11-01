@@ -235,6 +235,16 @@ def test_change_password(_nondemo_client):
         observed_user = db_session.query(User).filter(User.user == NONDEMO_USER).first()
         assert argon2.verify(new_password, observed_user.argon_password)
 
+    # revert passward for future tests
+    response = _nondemo_client.post(
+        "/user/change-password",
+        json = {"current_password": new_password, "new_password": old_password}, content_type = "application/json")
+    assert response.status_code == 200
+    with session_scope() as db_session:
+        # checks that the old_password is back
+        observed_user = db_session.query(User).filter(User.user == NONDEMO_USER).first()
+        assert argon2.verify(old_password, observed_user.argon_password)
+
 
 def _assert_create_user(db_session: Session, _client, user):
     response = _client.post("/user", json=user.as_dict(), content_type="application/json")
