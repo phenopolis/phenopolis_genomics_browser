@@ -27,8 +27,11 @@ def check_auth(username, password):
     """
     with session_scope() as db_session:
         # only enabled and confirmed users can login
-        user = db_session.query(User)\
-            .filter(and_(User.user == username, User.enabled == True, User.confirmed == True)).first()
+        user = (
+            db_session.query(User)
+            .filter(and_(User.user == username, User.enabled, User.confirmed))
+            .first()
+        )
         if not user:
             return False
         hashed_password = user.argon_password

@@ -47,6 +47,7 @@ def _nondemo_client():
             session[USER] = NONDEMO_USER
         yield client
 
+
 @pytest.fixture
 def _not_logged_in_client():
     with application.test_client() as client:

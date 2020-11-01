@@ -1,8 +1,6 @@
 """
 Users view
 """
-from operator import and_
-
 from flask import session, jsonify
 from flask_mail import Message
 from passlib.handlers.argon2 import argon2
@@ -179,10 +177,9 @@ def _get_user_by_id(db_session, user_id: str) -> User:
 def _send_confirmation_email(user: User):
     confirmation_token = generate_confirmation_token(user.email)
     msg = Message(
-        "Confirm your registration into Phenopolis",
-        sender="no-reply@phenopolis.org",
-        recipients=[user.email],
+        "Confirm your registration into Phenopolis", sender="no-reply@phenopolis.org", recipients=[user.email],
     )
     msg.body = "Welcome to Phenopolis {}, confirm your registration with the token {}".format(
-        user.email, confirmation_token)
+        user.email, confirmation_token
+    )
     mail.send(msg)

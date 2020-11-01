@@ -12,7 +12,6 @@ from views.user_individuals import delete_user_individual, create_user_individua
 from views.users import enable_user, get_users, get_user, create_user
 
 
-
 def test_create_user_individual_without_permissions(_demo):
     """res -> tuple(flask.wrappers.Response)"""
     res = create_user_individual()
@@ -137,8 +136,8 @@ def test_create_and_confirm_user(_not_logged_in_client):
             assert response.status_code == 200
             observed_user = db_session.query(User).filter(User.user == user.user).first()
             assert observed_user.user == user.user
-            assert observed_user.enabled == True, "Enabled field is not true"
-            assert observed_user.confirmed == True, "Confirmed field is not true"
+            assert observed_user.enabled, "Enabled field is not true"
+            assert observed_user.confirmed, "Confirmed field is not true"
             assert observed_user.confirmed_on is not None
         finally:
             # cleans the database
@@ -244,13 +243,13 @@ def _assert_create_user(db_session: Session, _client, user):
     assert observed_user is not None, "Empty newly created user"
     assert observed_user.user is not None and observed_user.user != "", "Field user is empty"
     assert observed_user.argon_password is not None and observed_user.argon_password != "", "Field password is empty"
-    assert observed_user.enabled == False, "Enabled field is not false"
-    assert observed_user.confirmed == False, "Confirmed field is not false"
+    assert not observed_user.enabled, "Enabled field is not false"
+    assert not observed_user.confirmed, "Confirmed field is not false"
 
 
 def _clean_test_users(db_session, user_name):
     try:
         db_session.query(User).filter(User.user == user_name).delete()
-    except:
+    except Exception:
         # could not remove users
         pass
