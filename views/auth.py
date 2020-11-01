@@ -5,13 +5,14 @@ Authentication modules
 from functools import wraps
 from flask import session, request, jsonify
 from passlib.handlers.argon2 import argon2
+from sqlalchemy import and_
+
 from db.model import User
 from views import application
 from views.postgres import session_scope
 
 ADMIN_USER = "Admin"
 DEMO_USER = "demo"
-NONDEMO_USER = "nondemo"
 PASSWORD = "password"
 USER = "user"
 
@@ -25,7 +26,9 @@ def check_auth(username, password):
     This function is called to check if a username / password combination is valid.
     """
     with session_scope() as db_session:
-        user = db_session.query(User).filter(User.user == username).filter(User.enabled).first()
+        # only enabled and confirmed users can login
+        user = db_session.query(User)\
+            .filter(and_(User.user == username, User.enabled == True, User.confirmed == True)).first()
         if not user:
             return False
         hashed_password = user.argon_password

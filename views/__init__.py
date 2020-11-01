@@ -67,6 +67,8 @@ def _load_config():
     application.config["DB_USER"] = os.getenv("PH_DB_USER", "phenopolis_api")
     application.config["DB_PASSWORD"] = os.getenv("PH_DB_PASSWORD", "phenopolis_api")
     application.config["DB_PORT"] = os.getenv("PH_DB_PORT", "5432")
+    application.config["SECRET_KEY"] = os.getenv("PH_SECRET_KEY", "my_precious")
+    application.config["SECURITY_PASSWORD_SALT"] = os.getenv("PH_SECURITY_PASSWORD_SALT", "p4$$w0rd")
     application.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = True
     db_uri = "postgresql+psycopg2://%s:%s@%s:%s/%s" % (
         application.config["DB_USER"],
