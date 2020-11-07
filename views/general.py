@@ -59,18 +59,17 @@ def exceptions(e):
 def _build_response_from_exception(response, exception):
     message = [str(x) for x in exception.args]
     success = False
-    response.data = json.dumps({
-        'success': success,
-        'error': {
-            'type': exception.__class__.__name__,
-            'message': message
-        },
-        "remote_addr": application.config["SERVED_URL"],
-        "full_path": request.full_path,
-        "method": request.method,
-        "scheme": request.scheme,
-        "timestamp": strftime("[%Y-%b-%d %H:%M]"),
-    })
+    response.data = json.dumps(
+        {
+            "success": success,
+            "error": {"type": exception.__class__.__name__, "message": message},
+            "remote_addr": application.config["SERVED_URL"],
+            "full_path": request.full_path,
+            "method": request.method,
+            "scheme": request.scheme,
+            "timestamp": strftime("[%Y-%b-%d %H:%M]"),
+        }
+    )
     response.content_type = "application/json"
     return response
 
