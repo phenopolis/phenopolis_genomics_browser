@@ -238,7 +238,9 @@ def test_change_password(_nondemo_client):
     # revert passward for future tests
     response = _nondemo_client.post(
         "/user/change-password",
-        json = {"current_password": new_password, "new_password": old_password}, content_type = "application/json")
+        json={"current_password": new_password, "new_password": old_password},
+        content_type="application/json",
+    )
     assert response.status_code == 200
     with session_scope() as db_session:
         # checks that the old_password is back
