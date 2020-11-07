@@ -24,7 +24,7 @@ jobs:
            python -m pip install --upgrade pip
            pip install docker-compose-wait
       -  name: Run docker-compose stack
-         run: docker-compose -f dc_4_test.yml up -d
+         run: docker-compose -f dc_4_test.yml up --detach --force-recreate
       -  name: Run docker-compose-wait
          run: |
            docker-compose-wait -f dc_4_test.yml
