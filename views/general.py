@@ -46,28 +46,31 @@ def exceptions(e):
         )
     )
     application.logger.exception(e)
-    code = 500
     response = Response()
+    response.status_code = 500  # this is the default
     if isinstance(e, HTTPException):
-        code = e.code
         # start with the correct headers and status code from the error
         response = e.get_response()
-    if code != 404:
-        _send_error_mail(code)
-    return _build_response_from_exception(response)
+    if response.status_code != 404:
+        _send_error_mail(response.status_code)
+    return _build_response_from_exception(response, e)
 
 
-def _build_response_from_exception(response):
-    # replace the body with JSON
-    response.data = json.dumps(
-        {
-            "remote_addr": application.config["SERVED_URL"],
-            "full_path": request.full_path,
-            "method": request.method,
-            "scheme": request.scheme,
-            "timestamp": strftime("[%Y-%b-%d %H:%M]"),
-        }
-    )
+def _build_response_from_exception(response, exception):
+    message = [str(x) for x in exception.args]
+    success = False
+    response.data = json.dumps({
+        'success': success,
+        'error': {
+            'type': exception.__class__.__name__,
+            'message': message
+        },
+        "remote_addr": application.config["SERVED_URL"],
+        "full_path": request.full_path,
+        "method": request.method,
+        "scheme": request.scheme,
+        "timestamp": strftime("[%Y-%b-%d %H:%M]"),
+    })
     response.content_type = "application/json"
     return response
 
