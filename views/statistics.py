@@ -10,7 +10,7 @@ from sqlalchemy.orm import Session
 
 from db.model import Variant, Sex, HeterozygousVariant, Individual, UserIndividual, HomozygousVariant
 from views import application
-from views.auth import USER, ADMIN_USER
+from views.auth import USER, ADMIN_USER, requires_auth
 from views.individual import _count_all_individuals, _count_all_individuals_by_sex
 from views.postgres import session_scope
 
@@ -19,6 +19,7 @@ RARE_VARIANTS_THRESHOLD = 0.01
 
 
 @application.route("/statistics")
+@requires_auth
 def phenopolis_statistics():
     with session_scope() as db_session:
 
