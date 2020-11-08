@@ -6,10 +6,12 @@ export const getStatistics = () => {
     dispatch({ type: GET_STATISTICS });
     Service.getStatistics()
       .then((res) => {
-        dispatch({ type: GET_STATISTICS_SUCCESS, payload: res });
+        console.log(res);
+        dispatch({ type: GET_STATISTICS_SUCCESS, payload: { data: res.data } });
       })
       .catch((error) => {
-        dispatch({ type: GET_STATISTICS_FAIL, payload: error.response });
+        console.log(error);
+        dispatch({ type: GET_STATISTICS_FAIL, payload: { error: error.response } });
       });
   };
 };

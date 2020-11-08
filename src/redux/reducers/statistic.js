@@ -1,18 +1,8 @@
 import { GET_STATISTICS, GET_STATISTICS_SUCCESS, GET_STATISTICS_FAIL } from '../types/statistic';
 
 const initialState = {
-  data: {
-    exac_variants: null,
-    exomes: null,
-    females: null,
-    males: null,
-    nonpass_variants: null,
-    pass_variants: null,
-    total_variants: null,
-    unknowns: null,
-    version_number: null,
-  },
-  loading: true,
+  data: null,
+  loaded: false,
   error: false,
 };
 
@@ -21,22 +11,23 @@ const Statistics = (state = initialState, action) => {
     case GET_STATISTICS: {
       return {
         ...state,
-        loading: true,
+        data: null,
+        loaded: false,
+        error: false,
       };
     }
     case GET_STATISTICS_SUCCESS: {
       return {
         ...state,
-        loading: false,
         data: action.payload.data,
+        loaded: true,
       };
     }
     case GET_STATISTICS_FAIL: {
       return {
         ...state,
-        loading: false,
-
-        error: 'Something Went Wrong',
+        loaded: false,
+        error: action.payload.error,
       };
     }
     default:

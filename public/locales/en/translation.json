@@ -22,7 +22,7 @@
       },
       "statistic": {
         "title": "Phenopolis Statistics",
-        "description": "Phenopolis includes data from {{ exomes }} exomes representing a total number of {{ variants }} variants."
+        "description": "Phenopolis includes data from over {{ exomes }} exomes representing over {{ variants }} variants."
       },
       "contact": {
         "title": "Contact Us",

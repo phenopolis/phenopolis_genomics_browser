@@ -12,7 +12,7 @@ export const getVariant = (param) => {
         } else {
           dispatch({
             type: SET_STATUS,
-            payload: { code: 404, message: 'HPO not exist.', relink: '/' },
+            payload: { code: 404, message: 'HPO not exist.', relink: '/dashboard' },
           });
         }
       })
@@ -22,10 +22,14 @@ export const getVariant = (param) => {
             type: SET_STATUS,
             payload: { code: 401, message: error.response.data.error, relink: '/variant/' + param },
           });
-        } else if (error.response.status === 404) {
+        } else if ((error.response.status === 404) | (error.response.status === 500)) {
           dispatch({
             type: SET_STATUS,
-            payload: { code: 404, message: error.response.data.message, relink: '/' },
+            payload: {
+              code: 404,
+              message: "Variant does not exist, or you don't have permission to view it.",
+              relink: '/dashboard',
+            },
           });
         }
         dispatch({ type: GET_VARIANT_FAIL, payload: { error: error.response } });

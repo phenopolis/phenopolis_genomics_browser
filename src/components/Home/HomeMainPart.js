@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Grid, Box, Typography, Paper } from '@material-ui/core';
 import {
   faTachometerAlt,
@@ -16,20 +16,23 @@ import { setSnack } from '../../redux/actions/snacks';
 
 const HomeMainPart = () => {
   const { t } = useTranslation();
-  const dispatch = useDispatch();
-  const { error, loading, exomes, variants } = useSelector((state) => ({
-    variants: state.Statistics.data.total_variants,
-    exomes: state.Statistics.data.exomes,
-    loading: state.Statistics.loading,
-    error: state.Statistics.error,
-  }));
-  useEffect(() => {
-    dispatch(getStatistics());
+  const exomes = '8,000';
+  const variants = '8,000,000';
 
-    if (error) {
-      dispatch(setSnack(error, 'error'));
-    }
-  }, [dispatch, error]);
+  // const dispatch = useDispatch();
+  // const { error, loading, exomes, variants } = useSelector((state) => ({
+  //   variants: state.Statistics.data.total_variants,
+  //   exomes: state.Statistics.data.exomes,
+  //   loading: state.Statistics.loading,
+  //   error: state.Statistics.error,
+  // }));
+  // useEffect(() => {
+  //   dispatch(getStatistics());
+
+  //   if (error) {
+  //     dispatch(setSnack(error, 'error'));
+  //   }
+  // }, [dispatch, error]);
 
   return (
     <div>
@@ -101,14 +104,10 @@ const HomeMainPart = () => {
                   {t('HomePage.HomeMainPart.statistic.title')}
                 </Box>
                 <Box fontWeight="fontWeightLight" fontSize="h6.fontSize" m={1}>
-                  {loading || error ? (
-                    <Skeleton />
-                  ) : (
-                    <Trans i18nKey="HomePage.HomeMainPart.statistic.description">
-                      Phenopolis includes data from {{ exomes }} exomes representing a total number
-                      of {{ variants }} variants.
-                    </Trans>
-                  )}
+                  <Trans i18nKey="HomePage.HomeMainPart.statistic.description">
+                    Phenopolis includes data from {{ exomes }} exomes representing a total number of{' '}
+                    {{ variants }} variants.
+                  </Trans>
                 </Box>
               </Typography>
             </Paper>

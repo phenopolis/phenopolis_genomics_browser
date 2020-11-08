@@ -1,5 +1,5 @@
-import React, { Fragment, useEffect } from 'react';
-
+import React, { Fragment, useEffect, useState } from 'react';
+import { Link } from 'react-router-dom';
 import { Grid, Card, Button, CardMedia } from '@material-ui/core';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import {
@@ -13,52 +13,61 @@ import CountUp from 'react-countup';
 
 import { useDispatch, useSelector } from 'react-redux';
 import { getStatistics } from '../../redux/actions/statistic';
-import { setSnack } from '../../redux/actions/snacks';
+
 const StatisticPanel = (props) => {
   const dispatch = useDispatch();
-  const { error, variants } = useSelector((state) => ({
-    variants: state.Statistics.data.total_variants,
-    error: state.Statistics.error,
+  const { loaded, statisticData } = useSelector((state) => ({
+    statisticData: state.Statistics.data,
+    loaded: state.Statistics.loaded,
   }));
+
+  const [ItemTypes, setItemTypes] = useState([]);
+
   useEffect(() => {
     dispatch(getStatistics());
+  }, []);
 
-    if (error) {
-      dispatch(setSnack(error, 'error'));
+  useEffect(() => {
+    if (loaded) {
+      setItemTypes([
+        {
+          backgroundColor: '#e07a5f',
+          icon: faDna,
+          name: 'Gene',
+          des:
+            'Checking genes page to see contains variants, related patents, and involved phenotype.',
+          count: statisticData.genes,
+          to: '/dashboard',
+        },
+        {
+          backgroundColor: '#81b29a',
+          icon: faChartNetwork,
+          name: 'Phenotype',
+          des:
+            'Check HPO for phenotypic abnormalities in human disease, and their related genes, involved patients.',
+          count: statisticData.observed_features,
+          to: '/dashboard',
+        },
+        {
+          backgroundColor: '#f2cc8f',
+          icon: faUser,
+          name: 'Patient',
+          des: 'Check Patients for homozygotes information, and their related variants.',
+          count: statisticData.females + statisticData.males + statisticData.unknowns,
+          to: '/my_patients',
+        },
+        {
+          backgroundColor: '#3d405b',
+          icon: faCut,
+          name: 'Variant',
+          des: 'Check Variant Page for frequency, genotype, and related patients.',
+          // count: variants ? parseFloat(variants.replace(/,/g, '')) : 0,
+          count: statisticData.total_variants,
+          to: '/dashboard',
+        },
+      ]);
     }
-  }, [dispatch, error]);
-
-  const ItemTypes = [
-    {
-      backgroundColor: '#e07a5f',
-      icon: faDna,
-      name: 'Gene',
-      des: 'Checking genes page to see contains variants, related patents, and involved phenotype.',
-      count: 1000,
-    },
-    {
-      backgroundColor: '#81b29a',
-      icon: faChartNetwork,
-      name: 'Phenotype',
-      des:
-        'Check HPO for phenotypic abnormalities in human disease, and their related genes, involved patients.',
-      count: 1000,
-    },
-    {
-      backgroundColor: '#f2cc8f',
-      icon: faUser,
-      name: 'Patient',
-      des: 'Check Patients for homozygotes information, and their related variants.',
-      count: 1000,
-    },
-    {
-      backgroundColor: '#3d405b',
-      icon: faCut,
-      name: 'Variant',
-      des: 'Check Variant Page for frequency, genotype, and related patients.',
-      count: variants ? parseFloat(variants.replace(/,/g, '')) : 0,
-    },
-  ];
+  }, [loaded]);
 
   return (
     <Fragment>
@@ -93,7 +102,11 @@ const StatisticPanel = (props) => {
                           </div>
                         </div>
                         <div className="font-size-sm  text-black-50 mb-2">{item.des}</div>
-                        <Button color="primary" className="text-first">
+                        <Button
+                          color="primary"
+                          className="text-first"
+                          component={Link}
+                          to={item.to}>
                           <span
                             className="btn-wrapper--label"
                             style={{ color: item.backgroundColor }}>
