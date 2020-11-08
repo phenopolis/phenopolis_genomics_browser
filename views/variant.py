@@ -24,20 +24,16 @@ from flask import jsonify
 @requires_auth
 @cache_on_browser()
 def variant(variant_id, subset="all", language="en"):
+
+    # parse variant id
+    chrom, pos, ref, alt = _parse_variant_id(variant_id)
+    if chrom is None:
+        response = jsonify(message="Wrong variant search, the variant id must follow the format "
+                                   "chromosome-position-reference-alternate")
+        response.status_code = 400
+        return response
+
     with session_scope() as db_session:
-
-        # get all individuals mapping
-        # TODO: avoid fetching all individuals from DB in every query
-        individuals = get_authorized_individuals(db_session)
-        individual_ids_mapping = {i.external_id: i.internal_id for i in individuals}
-
-        # parse variant id
-        chrom, pos, ref, alt = _parse_variant_id(variant_id)
-        if chrom is None:
-            response = jsonify(message="Wrong variant search, the variant id must follow the format "
-                                       "chromosome-position-reference-alternate")
-            response.status_code = 400
-            return response
 
         # queries for Clinvar clinical significance
         clinical_significance = _fetch_clinvar_clinical_significance(alt, chrom, pos, ref)
@@ -46,7 +42,7 @@ def variant(variant_id, subset="all", language="en"):
         variant_file = _get_variant_file()
 
         # get the genotype information for this variant from the VCF
-        genotypes = _get_genotypes(chrom, individual_ids_mapping, pos, variant_file)
+        genotypes = _get_genotypes(chrom, pos, variant_file)
 
         config = db.helpers.query_user_config(db_session=db_session, language=language, entity="variant")
         variants = db_session.query(Variant).filter(
@@ -69,7 +65,7 @@ def variant(variant_id, subset="all", language="en"):
         return jsonify([{subset: y[subset]} for y in config])
 
 
-def _get_genotypes(chrom, phenoid_mapping, pos, variant_file):
+def _get_genotypes(chrom, pos, variant_file):
     genotypes = []
     try:
         v = next(variant_file.fetch(chrom, pos - 1, pos))
@@ -77,7 +73,7 @@ def _get_genotypes(chrom, phenoid_mapping, pos, variant_file):
             {
                 # NOTE: samples didn't use to care about which samples were authorized to view, now variants
                 # belonging to non authorized are shown but the sample id is not
-                "sample": [{"display": phenoid_mapping.get(s)}],
+                "sample": [{"display": s}],
                 "GT": v.samples[s].get("GT", ""),
                 "AD": v.samples[s].get("AD", ""),
                 "DP": v.samples[s].get("DP", ""),
