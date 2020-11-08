@@ -3,10 +3,7 @@ from views.variant import variant, variant_preview
 
 
 @pytest.mark.parametrize(
-    ("query",   "msg"),
-    (
-        ("14-76156575-A-G", '"end_href":"14-76156575-A-G",')
-    ),
+    ("query", "msg"), (("14-76156575-A-G", '"end_href":"14-76156575-A-G",')),
 )
 def test_variant(_demo, query, msg):
     """

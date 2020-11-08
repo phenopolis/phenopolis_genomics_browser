@@ -24,8 +24,9 @@ def variant(variant_id, language="en") -> Response:
     # parse variant id
     chrom, pos, ref, alt = _parse_variant_id(variant_id)
     if chrom is None:
-        response = jsonify(message="Wrong variant id. The variant id must follow the format "
-                                   "chromosome-position-reference-alternate")
+        response = jsonify(
+            message="Wrong variant id. The variant id must follow the format " "chromosome-position-reference-alternate"
+        )
         response.status_code = 400
         return response
 
@@ -40,8 +41,9 @@ def variant_preview(variant_id) -> Response:
     # parse variant id
     chrom, pos, ref, alt = _parse_variant_id(variant_id)
     if chrom is None:
-        response = jsonify(message="Wrong variant id. The variant id must follow the format "
-                                   "chromosome-position-reference-alternate")
+        response = jsonify(
+            message="Wrong variant id. The variant id must follow the format " "chromosome-position-reference-alternate"
+        )
         response.status_code = 400
         return response
 
@@ -52,9 +54,11 @@ def _get_variant(chrom, pos, ref, alt, language):
 
     with session_scope() as db_session:
 
-        variant = db_session.query(Variant).filter(
-            and_(Variant.CHROM == chrom, Variant.POS == pos, Variant.REF == ref, Variant.ALT == alt)
-        ).first()
+        variant = (
+            db_session.query(Variant)
+            .filter(and_(Variant.CHROM == chrom, Variant.POS == pos, Variant.REF == ref, Variant.ALT == alt))
+            .first()
+        )
 
         if variant is None:
             response = jsonify(message="Missing variant")
@@ -124,7 +128,10 @@ def _fetch_clinvar_clinical_significance(chrom, pos, ref, alt):
     # TODO: replace this by a query to our database once we have this dataset loaded
     clinical_significance = None
     url = "https://myvariant.info/v1/variant/chr%s:g.%d%s>%s?fields=clinvar.rcv.clinical_significance&dotfield=true" % (
-        chrom, pos, ref, alt,
+        chrom,
+        pos,
+        ref,
+        alt,
     )
     x = requests.get(url).json()
     if x:
