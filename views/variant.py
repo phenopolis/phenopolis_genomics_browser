@@ -10,63 +10,79 @@ from db.model import Variant
 from views import application
 from views.auth import requires_auth
 from views.autocomplete import CHROMOSOME_POS_REF_ALT_REGEX
-from views.individual import get_authorized_individuals
 from views.postgres import session_scope
-from views.general import process_for_display, cache_on_browser
+from views.general import cache_on_browser
 from sqlalchemy import and_
-from flask import jsonify
+from flask import jsonify, Response
 
 
 @application.route("/<language>/variant/<variant_id>")
-@application.route("/<language>/variant/<variant_id>/<subset>")
 @application.route("/variant/<variant_id>")
-@application.route("/variant/<variant_id>/<subset>")
 @requires_auth
-@cache_on_browser()
-def variant(variant_id, subset="all", language="en"):
+def variant(variant_id, language="en") -> Response:
 
     # parse variant id
     chrom, pos, ref, alt = _parse_variant_id(variant_id)
     if chrom is None:
-        response = jsonify(message="Wrong variant search, the variant id must follow the format "
+        response = jsonify(message="Wrong variant id. The variant id must follow the format "
                                    "chromosome-position-reference-alternate")
         response.status_code = 400
         return response
 
+    return _get_variant(chrom, pos, ref, alt, language)
+
+
+@application.route("/variant/preview/<variant_id>")
+@requires_auth
+@cache_on_browser()
+def variant_preview(variant_id) -> Response:
+
+    # parse variant id
+    chrom, pos, ref, alt = _parse_variant_id(variant_id)
+    if chrom is None:
+        response = jsonify(message="Wrong variant id. The variant id must follow the format "
+                                   "chromosome-position-reference-alternate")
+        response.status_code = 400
+        return response
+
+    return _get_preview(chrom, pos, ref, alt)
+
+
+def _get_variant(chrom, pos, ref, alt, language):
+
     with session_scope() as db_session:
 
-        # queries for Clinvar clinical significance
-        clinical_significance = _fetch_clinvar_clinical_significance(alt, chrom, pos, ref)
+        variant = db_session.query(Variant).filter(
+            and_(Variant.CHROM == chrom, Variant.POS == pos, Variant.REF == ref, Variant.ALT == alt)
+        ).first()
 
-        # reads the variant file from S3
-        variant_file = _get_variant_file()
+        if variant is None:
+            response = jsonify(message="Missing variant")
+            response.status_code = 404
+            return response
 
         # get the genotype information for this variant from the VCF
-        genotypes = _get_genotypes(chrom, pos, variant_file)
+        genotypes = _get_genotypes(chrom, pos)
 
+        variant_dict = variant.as_dict()
         config = db.helpers.query_user_config(db_session=db_session, language=language, entity="variant")
-        variants = db_session.query(Variant).filter(
-            and_(Variant.CHROM == chrom, Variant.POS == pos, Variant.REF == ref, Variant.ALT == alt)
-        ).all()
-        variants_dict = [v.as_dict() for v in variants]
-        process_for_display(db_session, variants_dict)
-        if len(variants_dict) == 0:
-            variants_dict = {}
-        else:
-            variants_dict = variants_dict[0]
-        config[0]["metadata"]["data"] = [variants_dict]
-        config[0]["individuals"]["data"] = [variants_dict]
-        config[0]["frequency"]["data"] = [variants_dict]
-        config[0]["consequence"]["data"] = [variants_dict]
+        config[0]["metadata"]["data"] = [variant_dict]
         config[0]["genotypes"]["data"] = genotypes
-        config[0]["preview"] = [["Clinvar", clinical_significance]]
-        if subset == "all":
-            return jsonify(config)
-        return jsonify([{subset: y[subset]} for y in config])
+        return jsonify(config)
 
 
-def _get_genotypes(chrom, pos, variant_file):
+def _get_preview(chrom, pos, ref, alt):
+    # queries for Clinvar clinical significance
+    clinical_significance = _fetch_clinvar_clinical_significance(chrom, pos, ref, alt)
+    preview = {"Clinvar": clinical_significance}
+    # TODO: add more things here eg: GnomAD frequency, SO effect
+    return jsonify(preview)
+
+
+def _get_genotypes(chrom, pos):
     genotypes = []
+    # reads the variant file from S3
+    variant_file = _get_variant_file()
     try:
         v = next(variant_file.fetch(chrom, pos - 1, pos))
         genotypes = [
@@ -104,7 +120,7 @@ def _get_variant_file():
     return variant_file
 
 
-def _fetch_clinvar_clinical_significance(alt, chrom, pos, ref):
+def _fetch_clinvar_clinical_significance(chrom, pos, ref, alt):
     # TODO: replace this by a query to our database once we have this dataset loaded
     clinical_significance = None
     url = "https://myvariant.info/v1/variant/chr%s:g.%d%s>%s?fields=clinvar.rcv.clinical_significance&dotfield=true" % (
