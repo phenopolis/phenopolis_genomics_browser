@@ -2,17 +2,14 @@ import pytest
 from views.variant import variant, variant_preview
 
 
-@pytest.mark.parametrize(
-    ("query", "msg"), (("14-76156575-A-G", '"end_href":"14-76156575-A-G",')),
-)
-def test_variant(_demo, query, msg):
+def test_variant(_demo):
     """
     This tests S3 and VCF access via pysam
     tests both for subset and entry not in DB, the real one is 14-76127655-C-T
     res -> str
     """
-    response = variant(query)
-    assert msg in str(response.data)
+    response = variant("14-76156575-A-G")
+    assert '"end_href":"14-76156575-A-G",' in str(response.data)
 
 
 def test_missing_variant(_demo):
