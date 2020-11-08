@@ -1,4 +1,3 @@
-import pytest
 from views.variant import variant, variant_preview
 
 
