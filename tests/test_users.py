@@ -201,7 +201,9 @@ def test_create_user_with_used_email(_not_logged_in_client):
             user.user = user_name
             user.argon_password = "blabla"
             user.email = "admin@phenopolis.org"
-            response = _not_logged_in_client.post("/user", json=user.as_dict(), content_type="application/json")
+            payload = user.as_dict()
+            payload["confirmation_url"] = "http://phenopolis.org/confirm/"
+            response = _not_logged_in_client.post("/user", json=payload, content_type="application/json")
             assert response.status_code == 500
         finally:
             # cleans the database
@@ -214,14 +216,20 @@ def test_create_user_with_used_username(_not_logged_in_client):
     user.user = user_name
     user.argon_password = "blabla"
     user.email = "test_register@phenopolis.org"
-    response = _not_logged_in_client.post("/user", json=user.as_dict(), content_type="application/json")
+    payload = user.as_dict()
+    payload["confirmation_url"] = "http://phenopolis.org/confirm/"
+    response = _not_logged_in_client.post("/user", json=payload, content_type="application/json")
     assert response.status_code == 500
 
 
-def test_create_multiple_users(_not_logged_in_client):
-    user1 = User(user="test1", argon_password="sssshhhh", email="test1@test")
-    user2 = User(user="test2", argon_password="sssshhhh", email="test2@test")
-    response = _not_logged_in_client.post("/user", json=[user1.as_dict(), user2.as_dict()], content_type="application/json")
+def test_create_user_without_callbackurl(_not_logged_in_client):
+    user_name = "demo"
+    user = User()
+    user.user = user_name
+    user.argon_password = "blabla"
+    user.email = "test_register@phenopolis.org"
+    payload = user.as_dict()
+    response = _not_logged_in_client.post("/user", json=payload, content_type="application/json")
     assert response.status_code == 400
 
 
@@ -261,7 +269,9 @@ def test_change_password(_nondemo_client):
 
 
 def _assert_create_user(db_session: Session, _client, user):
-    response = _client.post("/user", json=user.as_dict(), content_type="application/json")
+    payload = user.as_dict()
+    payload["confirmation_url"] = "http://phenopolis.org/confirm/"
+    response = _client.post("/user", json=payload, content_type="application/json")
     assert response.status_code == 200
     observed_user = db_session.query(User).filter(User.user == user.user).first()
     assert observed_user is not None, "Empty newly created user"

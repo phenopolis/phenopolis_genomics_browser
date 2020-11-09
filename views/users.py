@@ -14,6 +14,8 @@ from views.helpers import _get_json_payload
 from views.postgres import session_scope
 from views.token import generate_confirmation_token, confirm_token
 
+CONFIRMATION_URL = "confirmation_url"
+
 
 @application.route("/user/change-password", methods=["POST"])
 @requires_auth
@@ -65,12 +67,12 @@ def enable_user(user_id, status):
 @application.route("/user", methods=["POST"])
 def create_user():
     try:
-        new_users = _get_json_payload(User)
-        if len(new_users) != 1:
-            # this is to simplify the code and to avoid misuses of the API
-            raise PhenopolisException("It is only allowed to register one user at a time", 400)
-
-        new_user = new_users[0]
+        payload = _get_json_payload()
+        if CONFIRMATION_URL not in payload:
+            raise PhenopolisException("Please, provide a confirmation URL", 400)
+        confirmation_url = payload.get(CONFIRMATION_URL)
+        del payload[CONFIRMATION_URL]
+        new_user = User(**payload)
         _check_user_valid(new_user)
         # encode password
         new_user.argon_password = argon2.hash(new_user.argon_password)
@@ -86,7 +88,7 @@ def create_user():
                 db_session.add(new_user)
                 _add_config_from_admin(db_session, new_user)
                 # sends confirmation email
-                _send_confirmation_email(new_user)
+                _send_confirmation_email(new_user, confirmation_url=confirmation_url)
             response = jsonify(success=True, message="User was created", id=user_id)
         except Exception as e:
             application.logger.exception(e)
@@ -176,12 +178,12 @@ def _get_user_by_id(db_session, user_id: str) -> User:
     return users[0]
 
 
-def _send_confirmation_email(user: User):
+def _send_confirmation_email(user: User, confirmation_url: str):
     confirmation_token = generate_confirmation_token(user.email)
     msg = Message(
         "Confirm your registration into Phenopolis", sender="no-reply@phenopolis.org", recipients=[user.email],
     )
-    msg.body = "Welcome to Phenopolis {}, confirm your registration with the token {}".format(
-        user.email, confirmation_token
+    msg.body = "Welcome to Phenopolis {user}, confirm your registration in the following link {url_base}{token}".format(
+        user=user.user, url_base=confirmation_url, token=confirmation_token
     )
     mail.send(msg)
