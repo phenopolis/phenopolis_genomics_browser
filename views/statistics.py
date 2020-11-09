@@ -3,12 +3,12 @@ Statistics view
 """
 from typing import List
 
-from flask import jsonify
+from flask import jsonify, session
 from sqlalchemy import and_, Float, cast
 
-from db.model import Variant, Sex, HeterozygousVariant, Individual, HomozygousVariant
+from db.model import Variant, Sex, HeterozygousVariant, Individual, HomozygousVariant, UserIndividual
 from views import application
-from views.auth import requires_auth
+from views.auth import requires_auth, USER
 from views.individual import _count_all_individuals, _count_all_individuals_by_sex, get_authorized_individuals
 from views.postgres import session_scope
 
