@@ -29,20 +29,6 @@ def phenopolis_statistics():
 
         # counts variants
         total_variants = count_variants(db_session)
-        # TODO: this cast to float on the AF is probably not efficient this needs changing in the DB
-        gnomad_rare_variants = count_variants(
-            db_session, cast(Variant.af_gnomad_genomes, Float) < RARE_VARIANTS_THRESHOLD
-        )
-        gnomad_low_frequency_variants = count_variants(
-            db_session,
-            and_(
-                cast(Variant.af_gnomad_genomes, Float) >= RARE_VARIANTS_THRESHOLD,
-                cast(Variant.af_gnomad_genomes, Float) <= COMMON_VARIANTS_THRESHOLD,
-            ),
-        )
-        gnomad_common_variants = count_variants(
-            db_session, cast(Variant.af_gnomad_genomes, Float) > COMMON_VARIANTS_THRESHOLD
-        )
 
         # counts HPOs
         individuals = get_authorized_individuals(db_session)
@@ -57,9 +43,6 @@ def phenopolis_statistics():
         females=female_patients,
         unknowns=unknown_patients,
         total_variants=total_variants,
-        gnomad_rare_variants=gnomad_rare_variants,
-        gnomad_low_frequency_variants=gnomad_low_frequency_variants,
-        gnomad_common_variants=gnomad_common_variants,
         genes=genes,
         observed_features=count_observed_features,
         unobserved_features=count_unobserved_features,
