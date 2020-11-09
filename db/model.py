@@ -85,7 +85,7 @@ class HeterozygousVariant(Base, AsDictable):
     POS = Column("POS", String(255), primary_key=True)
     REF = Column("REF", String(255), primary_key=True)
     ALT = Column("ALT", String(255), primary_key=True)
-    individual = Column("individual", String(255), ForeignKey("individuals.external_id"), primary_key=True)
+    individual = Column("individual", String(255), ForeignKey("individuals.internal_id"), primary_key=True)
 
 
 class HomozygousVariant(Base, AsDictable):
@@ -94,7 +94,7 @@ class HomozygousVariant(Base, AsDictable):
     POS = Column("POS", String(255), primary_key=True)
     REF = Column("REF", String(255), primary_key=True)
     ALT = Column("ALT", String(255), primary_key=True)
-    individual = Column("individual", String(255), ForeignKey("individuals.external_id"), primary_key=True)
+    individual = Column("individual", String(255), ForeignKey("individuals.internal_id"), primary_key=True)
 
 
 class HPO(Base, AsDictable):

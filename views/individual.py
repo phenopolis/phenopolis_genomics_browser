@@ -294,7 +294,7 @@ def _get_heterozygous_variants(db_session: Session, individual: Individual) -> L
 def _query_heterozygous_variants(db_session: Session, individual):
     return (
         db_session.query(HeterozygousVariant, Variant)
-        .filter(HeterozygousVariant.individual == individual.external_id)
+        .filter(HeterozygousVariant.individual == individual.internal_id)
         .join(
             Variant,
             and_(
@@ -315,7 +315,7 @@ def _get_homozygous_variants(db_session: Session, individual: Individual) -> Lis
 def _query_homozygous_variants(db_session: Session, individual):
     return (
         db_session.query(HomozygousVariant, Variant)
-        .filter(HomozygousVariant.individual == individual.external_id)
+        .filter(HomozygousVariant.individual == individual.internal_id)
         .join(
             Variant,
             and_(

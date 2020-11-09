@@ -1,7 +1,6 @@
 """
 Statistics view
 """
-# TODO: what exactly one wants with this?
 from typing import List
 
 from flask import jsonify, session
@@ -29,33 +28,29 @@ def phenopolis_statistics():
         female_patients = _count_all_individuals_by_sex(db_session, Sex.F)
         unknown_patients = _count_all_individuals_by_sex(db_session, Sex.U)
 
-        # TODO: the use of two queries instead of a join between authorized individuals and homoyzgous_variants is
-        # TODO: temporary. The database needs to be changed so homozygous_variants is linked to internal_id
-        individuals = get_authorized_individuals(db_session)
-
         # counts variants
-        total_variants = count_variants(db_session, individuals)
+        total_variants = count_variants(db_session)
         # TODO: this cast to float on the AF is probably not efficient this needs changing in the DB
         gnomad_rare_variants = count_variants(
-            db_session, individuals, cast(Variant.af_gnomad_genomes, Float) < RARE_VARIANTS_THRESHOLD
+            db_session, cast(Variant.af_gnomad_genomes, Float) < RARE_VARIANTS_THRESHOLD
         )
         gnomad_low_frequency_variants = count_variants(
             db_session,
-            individuals,
             and_(
                 cast(Variant.af_gnomad_genomes, Float) >= RARE_VARIANTS_THRESHOLD,
                 cast(Variant.af_gnomad_genomes, Float) <= COMMON_VARIANTS_THRESHOLD,
             ),
         )
         gnomad_common_variants = count_variants(
-            db_session, individuals, cast(Variant.af_gnomad_genomes, Float) > COMMON_VARIANTS_THRESHOLD
+            db_session, cast(Variant.af_gnomad_genomes, Float) > COMMON_VARIANTS_THRESHOLD
         )
 
         # counts HPOs
+        individuals = get_authorized_individuals(db_session)
         count_observed_features, count_unobserved_features = count_hpos(individuals)
 
         # counts genes
-        genes = count_genes(db_session, individuals)
+        genes = count_genes(db_session)
 
     return jsonify(
         exomes=total_patients,
@@ -90,32 +85,34 @@ def count_hpos(individuals: List[Individual]):
     return len(observed_features), len(unobserved_features)
 
 
-def count_genes(db_session, individuals):
+def count_genes(db_session):
     hom_genes = (
-        query_variants_by_zygosity(db_session, individuals, HomozygousVariant)
+        query_variants_by_zygosity(db_session, HomozygousVariant)
         .with_entities(Variant.gene_symbol)
         .group_by(Variant.gene_symbol)
     )
     het_genes = (
-        query_variants_by_zygosity(db_session, individuals, HeterozygousVariant)
+        query_variants_by_zygosity(db_session, HeterozygousVariant)
         .with_entities(Variant.gene_symbol)
         .group_by(Variant.gene_symbol)
     )
     return len(set([g[0] for g in hom_genes.all()] + [g[0] for g in het_genes.all()]))
 
 
-def count_variants(db_session, individuals, additional_filter=None):
-    query_hom_variants = query_variants_by_zygosity(db_session, individuals, HomozygousVariant, additional_filter)
-    query_het_variants = query_variants_by_zygosity(db_session, individuals, HeterozygousVariant, additional_filter)
+def count_variants(db_session, additional_filter=None):
+    query_hom_variants = query_variants_by_zygosity(db_session, HomozygousVariant, additional_filter)
+    query_het_variants = query_variants_by_zygosity(db_session, HeterozygousVariant, additional_filter)
     return query_hom_variants.count() + query_het_variants.count()
 
 
-def query_variants_by_zygosity(db_session, individuals, klass, additional_filter=None):
+def query_variants_by_zygosity(db_session, klass, additional_filter=None):
     """
     this method is used to query both HomozygousVariants and HeterozygousVariants which have an equivalent structure
     """
     query_hom_variants = (
-        db_session.query(klass, Variant)
+        db_session.query(klass, UserIndividual, Variant)
+        .join(UserIndividual, UserIndividual.internal_id == klass.individual)
+        .filter(UserIndividual.user == session[USER])
         .join(
             Variant,
             and_(
@@ -125,7 +122,6 @@ def query_variants_by_zygosity(db_session, individuals, klass, additional_filter
                 klass.ALT == Variant.ALT,
             ),
         )
-        .filter(klass.individual.in_([i.external_id for i in individuals]))
     )
     if additional_filter is not None:
         query_hom_variants = query_hom_variants.filter(additional_filter)
