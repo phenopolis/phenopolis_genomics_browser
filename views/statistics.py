@@ -4,7 +4,7 @@ Statistics view
 from typing import List
 
 from flask import jsonify, session
-from sqlalchemy import and_, Float, cast
+from sqlalchemy import and_
 
 from db.model import Variant, Sex, HeterozygousVariant, Individual, HomozygousVariant, UserIndividual
 from views import application
