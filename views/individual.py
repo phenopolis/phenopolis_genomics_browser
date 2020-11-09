@@ -397,3 +397,11 @@ def _update_individual(consanguinity, gender, genes, hpos: List[HPO], individual
 
 def _get_hpos(db_session: Session, features: List[str]) -> List[HPO]:
     return db_session.query(HPO).filter(HPO.hpo_name.in_(features)).all()
+
+
+def get_authorized_individuals(db_session: Session) -> List[Individual]:
+    user_id = session[USER]
+    query = db_session.query(Individual, UserIndividual)
+    if user_id != ADMIN_USER:
+        query = query.filter(and_(Individual.internal_id == UserIndividual.internal_id, UserIndividual.user == user_id))
+    return query.with_entities(Individual).all()

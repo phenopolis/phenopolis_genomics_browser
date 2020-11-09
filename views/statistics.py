@@ -3,14 +3,13 @@ Statistics view
 """
 from typing import List
 
-from flask import jsonify, session
+from flask import jsonify
 from sqlalchemy import and_, Float, cast
-from sqlalchemy.orm import Session
 
-from db.model import Variant, Sex, HeterozygousVariant, Individual, UserIndividual, HomozygousVariant
+from db.model import Variant, Sex, HeterozygousVariant, Individual, HomozygousVariant
 from views import application
-from views.auth import USER, ADMIN_USER, requires_auth
-from views.individual import _count_all_individuals, _count_all_individuals_by_sex
+from views.auth import requires_auth
+from views.individual import _count_all_individuals, _count_all_individuals_by_sex, get_authorized_individuals
 from views.postgres import session_scope
 
 COMMON_VARIANTS_THRESHOLD = 0.05
@@ -66,14 +65,6 @@ def phenopolis_statistics():
         unobserved_features=count_unobserved_features,
         version_number=0,
     )
-
-
-def get_authorized_individuals(db_session: Session) -> List[Individual]:
-    user_id = session[USER]
-    query = db_session.query(Individual, UserIndividual)
-    if user_id != ADMIN_USER:
-        query = query.filter(and_(Individual.internal_id == UserIndividual.internal_id, UserIndividual.user == user_id))
-    return query.with_entities(Individual).all()
 
 
 def count_hpos(individuals: List[Individual]):
