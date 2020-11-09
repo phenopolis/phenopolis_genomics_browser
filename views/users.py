@@ -129,6 +129,8 @@ def confirm_user(token):
     email = confirm_token(token, application.config["TOKEN_EXPIRY_SECONDS"])
     with session_scope() as db_session:
         try:
+            if email is None:
+                raise PhenopolisException("Invalid token or non existing user", 404)
             user = db_session.query(User).filter(User.email == email).first()
             if user is None:
                 raise PhenopolisException("Invalid token or non existing user", 404)

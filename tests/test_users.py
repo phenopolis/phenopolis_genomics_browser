@@ -144,10 +144,15 @@ def test_create_and_confirm_user(_not_logged_in_client):
             _clean_test_users(db_session, user_name)
 
 
-def test_confirm_user_with_bad_token(_not_logged_in_client):
+def test_confirm_user_with_token_with_unexisting_email(_not_logged_in_client):
     # tries to confirm an email not in the database
     confirmation_token = generate_confirmation_token("nottherightemail@phenopolis.org")
     response = _not_logged_in_client.get("/user/confirm/{}".format(confirmation_token))
+    assert response.status_code == 404
+
+
+def test_confirm_user_with_bad_token(_not_logged_in_client):
+    response = _not_logged_in_client.get("/user/confirm/a-bad-token")
     assert response.status_code == 404
 
 
@@ -211,6 +216,13 @@ def test_create_user_with_used_username(_not_logged_in_client):
     user.email = "test_register@phenopolis.org"
     response = _not_logged_in_client.post("/user", json=user.as_dict(), content_type="application/json")
     assert response.status_code == 500
+
+
+def test_create_multiple_users(_not_logged_in_client):
+    user1 = User(user="test1", argon_password="sssshhhh", email="test1@test")
+    user2 = User(user="test2", argon_password="sssshhhh", email="test2@test")
+    response = _not_logged_in_client.post("/user", json=[user1.as_dict(), user2.as_dict()], content_type="application/json")
+    assert response.status_code == 400
 
 
 def test_change_password(_nondemo_client):

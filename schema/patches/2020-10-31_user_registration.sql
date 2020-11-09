@@ -17,14 +17,12 @@ drop table users2;
 
 -- alter audit table
 alter table audit."public.users" alter column "user" set not null;
-alter table audit."public.users" add constraint users_unique_user unique("user");  -- fails due to permissions
 alter table audit."public.users" alter column enabled set default false;
 alter table audit."public.users" drop column password;
 alter table audit."public.users" add column registered_on timestamp with time zone;
 alter table audit."public.users" add column confirmed boolean default false;
 alter table audit."public.users" add column confirmed_on timestamp with time zone;
 alter table audit."public.users" add column email text;
-alter table audit."public.users" add constraint users_unique_email unique(email);
 alter table audit."public.users" add column full_name text;
 
 reset search_path;
