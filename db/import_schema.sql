@@ -383,27 +383,19 @@ ALTER SEQUENCE public.user_pagetable_colname_id_seq OWNED BY public.user_pagetab
 --
 
 CREATE TABLE public.users (
-    "user" text NOT NULL,
-    password text,
+    "user" text NOT NULL UNIQUE,
     argon_password text,
-    enabled boolean default true
+    enabled boolean default false,
+    registered_on timestamp with time zone,
+    confirmed boolean default false,
+    confirmed_on timestamp with time zone,
+    email text UNIQUE,     -- should be NOT NULL but in order to maintain legacy users we will add this constraint on the API only at user creation
+    full_name text
 );
 
 
 ALTER TABLE public.users OWNER TO phenopolis_api;
 
---
--- Name: users2; Type: TABLE; Schema: public; Owner: phenopolis_api
---
-
-CREATE TABLE public.users2 (
-    "user" text,
-    password text,
-    argon_password text
-);
-
-
-ALTER TABLE public.users2 OWNER TO phenopolis_api;
 
 --
 -- Name: users_individuals; Type: TABLE; Schema: public; Owner: phenopolis_api

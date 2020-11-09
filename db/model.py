@@ -2,9 +2,9 @@
 DB schema
 """
 # "postgres://admin:donotusethispassword@aws-us-east-1-portal.19.dblayer.com:15813/compose"
-import enum
 
-from sqlalchemy import Column, String, Integer, Float, ForeignKey, JSON, Boolean, Enum
+import enum
+from sqlalchemy import Column, String, Integer, Float, ForeignKey, JSON, Boolean, DateTime, Enum, func
 from sqlalchemy.orm import relationship
 from sqlalchemy.ext.declarative import declarative_base
 
@@ -107,10 +107,15 @@ class HPO(Base, AsDictable):
 
 class User(Base, AsDictable):
     __tablename__ = "users"
-    user = Column("user", primary_key=True)
+    user = Column("user", primary_key=True, unique=True)
     argon_password = Column("argon_password", String(255))
     individuals = relationship("UserIndividual", backref="users")
-    enabled = Column("enabled", Boolean(), default=True)
+    enabled = Column("enabled", Boolean(), default=False)
+    registered_on = Column("registered_on", DateTime(timezone=True), default=func.now())
+    confirmed = Column("confirmed", Boolean(), default=False)
+    confirmed_on = Column("confirmed_on", DateTime(timezone=True))
+    email = Column("email", unique=True)
+    full_name = Column("full_name")
 
 
 class UserConfig(Base, AsDictable):
