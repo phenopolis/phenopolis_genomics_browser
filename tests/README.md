@@ -54,7 +54,9 @@ and run with:
 ```bash
 tox --skip-pkg-install
 ```
-However, binary `pysam` (installed via `pip`) is not working, so some tests will fail.
+~~However, binary `pysam` (installed via `pip`) is not working, so some tests will fail.~~
+
+Using `cycvf2` now
 
 Yet, one can still test code format with:
 ```bash
