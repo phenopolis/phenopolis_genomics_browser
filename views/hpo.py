@@ -1,14 +1,13 @@
 """
 HPO view - Human Phenotype Ontology
 """
-import db.helpers
 from flask import session, jsonify
-from db.helpers import cursor2dict
 from views import application
 from views.auth import requires_auth, USER
 from views.postgres import postgres_cursor, session_scope
 from views.general import process_for_display, cache_on_browser
 from db.model import HPO
+from db.helpers import cursor2dict, query_user_config
 
 
 @application.route("/<language>/hpo/<hpo_id>")
@@ -20,7 +19,7 @@ from db.model import HPO
 def hpo(hpo_id="HP:0000001", subset="all", language="en"):
 
     with session_scope() as db_session:
-        config = db.helpers.query_user_config(db_session=db_session, language=language, entity="hpo")
+        config = query_user_config(db_session=db_session, language=language, entity="hpo")
         if not hpo_id.startswith("HP:"):
             # c.execute("select * from hpo where hpo_name='%s' limit 1"%hpo_id)
             data = db_session.query(HPO).filter(HPO.hpo_name == hpo_id)
