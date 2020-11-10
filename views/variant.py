@@ -1,6 +1,7 @@
 """
 variant view
 """
+import os
 import requests
 from cyvcf2 import VCF
 from db.model import Variant
@@ -17,6 +18,7 @@ from db.helpers import query_user_config
 @application.route("/<language>/variant/<variant_id>")
 @application.route("/variant/<variant_id>")
 @requires_auth
+@cache_on_browser()
 def variant(variant_id, language="en") -> Response:
 
     # parse variant id
@@ -69,6 +71,9 @@ def _get_variant(chrom, pos, ref, alt, language):
         variant_dict = variant.as_dict()
         config = query_user_config(db_session=db_session, language=language, entity="variant")
         config[0]["metadata"]["data"] = [variant_dict]
+        config[0]["individuals"]["data"] = [variant_dict]
+        config[0]["frequency"]["data"] = [variant_dict]
+        config[0]["consequence"]["data"] = [variant_dict]
         config[0]["genotypes"]["data"] = genotypes
         return jsonify(config)
 
@@ -110,7 +115,7 @@ def _get_genotypes(chrom, pos):
 
 def _get_variant_file():
     # TODO: initialise the client only once, or at least have a pool of them to reuse
-    variant_file = VCF("s3://phenopolis-vcf/August2019/merged2.vcf.gz")
+    variant_file = VCF(os.getenv("FILE_URL"))
     return variant_file
 
 
