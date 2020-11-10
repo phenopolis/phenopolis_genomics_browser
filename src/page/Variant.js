@@ -17,6 +17,7 @@ const Variant = (props) => {
   const dispatch = useDispatch();
 
   const [value, setValue] = useState(0);
+  const [variantName, setVariantName] = useState(null);
 
   const { variantInfo, loaded } = useSelector((state) => ({
     variantInfo: state.Variant.data[0],
@@ -24,10 +25,12 @@ const Variant = (props) => {
   }));
 
   useEffect(() => {
+    setVariantName(location.pathname.split('/')[2]);
     dispatch(getVariant(props.match.params.variantId));
   }, [location]);
 
   useEffect(() => {
+    setVariantName(location.pathname.split('/')[2]);
     dispatch(getVariant(props.match.params.variantId));
   }, []);
 
@@ -54,7 +57,8 @@ const Variant = (props) => {
           <div className="variant-container">
             <MetaData
               metadata={variantInfo.metadata}
-              name={variantInfo.metadata.data[0].variant_id[0].display}
+              name={variantInfo.metadata.data[0].variant_id + ' | ' + variantName}
+              // name={variantInfo.metadata.data[0].variant_id[0].display}
             />
 
             <Container maxWidth="xl">
