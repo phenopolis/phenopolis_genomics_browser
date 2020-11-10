@@ -3,7 +3,7 @@ Individual view
 """
 import re
 import itertools
-from typing import List, Tuple
+from typing import List, Optional, Tuple
 from sqlalchemy import func, literal_column, and_
 from sqlalchemy.dialects.postgresql import aggregate_order_by
 from sqlalchemy.orm import Session
@@ -340,26 +340,26 @@ def _fetch_all_individuals(db_session: Session, offset, limit) -> List[Tuple[Ind
     return [(i, u.split(",")) for i, u in individuals]
 
 
-def _count_all_individuals(db_session: Session) -> int:
+def _count_all_individuals(db_session: Session, user: Optional[str] = None) -> int:
     """
     For admin users it counts all individuals and all users having access to them.
     But for other than admin it counts only individuals which this user has access, other users having access are
     not counted
     """
-    return _query_all_individuals(db_session).count()
+    return _query_all_individuals(db_session, user=user).count()
 
 
-def _count_all_individuals_by_sex(db_session: Session, sex: Sex) -> int:
+def _count_all_individuals_by_sex(db_session: Session, sex: Sex, user: Optional[str] = None) -> int:
     """
     For admin users it counts all individuals and all users having access to them.
     But for other than admin it counts only individuals which this user has access, other users having access are
     not counted
     """
-    return _query_all_individuals(db_session, Individual.sex == sex).count()
+    return _query_all_individuals(db_session, Individual.sex == sex, user=user).count()
 
 
-def _query_all_individuals(db_session, additional_filter=None):
-    user_id = session[USER]
+def _query_all_individuals(db_session, additional_filter=None, user: Optional[str] = None):
+    user_id = user if user else session[USER]
     query = db_session.query(
         Individual, func.string_agg(UserIndividual.user, aggregate_order_by(literal_column("','"), UserIndividual.user))
     ).filter(Individual.internal_id == UserIndividual.internal_id)

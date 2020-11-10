@@ -23,3 +23,10 @@ create index on transcript_consequence (pos, chrom);
 create index on transcript_consequence (hgvs_c);
 create index on transcript_consequence (hgvs_p);
 create index on transcript_consequence (gene_id);
+
+
+create table user_stats (
+    user_id text primary key,
+    timestamp timestamptz not null,
+    stats jsonb not null
+);
