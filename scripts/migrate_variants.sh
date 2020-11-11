@@ -19,7 +19,7 @@ insert into phenopolis.variant (chrom, pos, ref, alt)
 select "CHROM", "POS", "REF", "ALT"
 from public.variants
 where (hgvsc, hgvsp) != ('', '')
-on conflict on constraint variant_pkey do nothing;
+on conflict on constraint variant_key do nothing;
 
 insert into phenopolis.transcript_consequence
     (chrom, pos, ref, alt, hgvs_c, hgvs_p, consequence, gene_id)

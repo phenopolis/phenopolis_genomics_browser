@@ -1,9 +1,10 @@
 create table variant (
+    id bigserial primary key,
     chrom text not null,
     pos int4 not null,
     ref text not null,
     alt text not null,
-    primary key (pos, chrom, ref, alt)
+    constraint variant_key unique (pos, chrom, ref, alt)
 );
 
 
