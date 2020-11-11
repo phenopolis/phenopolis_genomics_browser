@@ -74,7 +74,7 @@ def insert_variants(opt, conn):
             from {}
             where (hgvsc, hgvsp) != ('', '')
             group by 1, 2, 3, 4
-            on conflict on constraint variant_pkey do nothing
+            on conflict on constraint variant_key do nothing
             """
         ).format(IMPORT_TABLE)
     )
