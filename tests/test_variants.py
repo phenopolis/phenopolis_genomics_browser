@@ -3,12 +3,12 @@ from views.variant import variant, variant_preview
 
 def test_variant(_demo):
     """
-    This tests S3 and VCF access via pysam
+    This tests S3 and VCF access via cvycf2
     tests both for subset and entry not in DB, the real one is 14-76127655-C-T
     res -> str
     """
     response = variant("14-76156575-A-G")
-    assert '"end_href":"14-76156575-A-G",' in str(response.data)
+    assert '"gene_symbol":"TTLL5","hgvsc":"ENST00000298832.9:c.412A>G"' in str(response.data)
 
 
 def test_missing_variant(_demo):

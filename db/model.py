@@ -158,6 +158,8 @@ class Individual(Base, AsDictable):
 
 class UserIndividual(Base, AsDictable):
     __tablename__ = "users_individuals"
+    # remove pytest warning DELETE statement on table 'users_individuals' expected to delete 1 row(s); 4 were matched
+    __mapper_args__ = {"confirm_deleted_rows": False}
     user = Column("user", String(255), ForeignKey("users.user"))
     internal_id = Column("internal_id", String(255), ForeignKey("individuals.internal_id"), primary_key=True,)
 

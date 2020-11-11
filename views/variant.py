@@ -2,10 +2,8 @@
 variant view
 """
 import os
-import boto3
-import pysam
 import requests
-import db.helpers
+from cyvcf2 import VCF
 from db.model import Variant
 from views import application
 from views.auth import requires_auth
@@ -14,6 +12,7 @@ from views.postgres import session_scope
 from views.general import cache_on_browser
 from sqlalchemy import and_
 from flask import jsonify, Response
+from db.helpers import query_user_config
 
 
 @application.route("/<language>/variant/<variant_id>")
@@ -69,7 +68,7 @@ def _get_variant(chrom, pos, ref, alt, language):
         genotypes = _get_genotypes(chrom, pos)
 
         variant_dict = variant.as_dict()
-        config = db.helpers.query_user_config(db_session=db_session, language=language, entity="variant")
+        config = query_user_config(db_session=db_session, language=language, entity="variant")
         config[0]["metadata"]["data"] = [variant_dict]
         config[0]["genotypes"]["data"] = genotypes
         return jsonify(config)
@@ -88,17 +87,22 @@ def _get_genotypes(chrom, pos):
     # reads the variant file from S3
     variant_file = _get_variant_file()
     try:
-        v = next(variant_file.fetch(chrom, pos - 1, pos))
+        v = next(variant_file(f"{chrom}:{pos}-{pos}"))
+        lookup = {s: i for i, s in enumerate(variant_file.samples)}
+        gts = [tuple([item if item >= 0 else None for item in alist[:2]]) for alist in v.genotypes]
+        rds = [x.item() if x >= 0 else None for x in v.gt_ref_depths]
+        ads = [x.item() if x >= 0 else None for x in v.gt_alt_depths]
+        dps = [x.item() if x >= 0 else None for x in v.gt_depths]
         genotypes = [
             {
                 # NOTE: samples didn't use to care about which samples were authorized to view, now variants
                 # belonging to non authorized are shown but the sample id is not
                 "sample": [{"display": s}],
-                "GT": v.samples[s].get("GT", ""),
-                "AD": v.samples[s].get("AD", ""),
-                "DP": v.samples[s].get("DP", ""),
+                "GT": gts[lookup[s]][:2],
+                "AD": (rds[lookup[s]], ads[lookup[s]]),
+                "DP": dps[lookup[s]],
             }
-            for s in v.samples
+            for s in variant_file.samples
         ]
     except Exception as e:
         print(e)
@@ -107,20 +111,7 @@ def _get_genotypes(chrom, pos):
 
 def _get_variant_file():
     # TODO: initialise the client only once, or at least have a pool of them to reuse
-    s3 = boto3.client(
-        "s3",
-        aws_secret_access_key=os.environ["VCF_S3_SECRET"],
-        aws_access_key_id=os.environ["VCF_S3_KEY"],
-        region_name="eu-west-2",
-        config=boto3.session.Config(signature_version="s3v4"),
-    )
-    vcf_index = s3.generate_presigned_url(
-        "get_object", Params={"Bucket": "phenopolis-vcf", "Key": "August2019/merged2.vcf.gz.tbi"}, ExpiresIn=5000,
-    )
-    vcf_file = s3.generate_presigned_url(
-        "get_object", Params={"Bucket": "phenopolis-vcf", "Key": "August2019/merged2.vcf.gz"}, ExpiresIn=5000,
-    )
-    variant_file = pysam.VariantFile(vcf_file, index_filename=vcf_index)
+    variant_file = VCF(os.getenv("S3_VCF_FILE_URL"))
     return variant_file
 
 
