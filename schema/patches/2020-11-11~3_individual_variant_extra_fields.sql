@@ -15,7 +15,7 @@ alter table individual_variant add timestamp timestamptz;
 update individual_variant set timestamp = now();
 alter table individual_variant alter timestamp set not null;
 
-create function individual_variant_timestamp_update() returns trigger
+create function timestamp_update() returns trigger
 language plpgsql as $$
 begin
     new.timestamp = now();
@@ -23,8 +23,8 @@ begin
 end
 $$;
 
-create trigger individual_variant_timestamp_update
+create trigger timestamp_update
 before insert or update on individual_variant
-for each row execute procedure individual_variant_timestamp_update();
+for each row execute procedure timestamp_update();
 
 reset search_path;
