@@ -41,3 +41,19 @@ create table individual_variant (
 
 create index on individual_variant (individual_id);
 create index on individual_variant (pos);
+
+create table individual_variant_classification (
+    id bigserial primary key,
+    individual_id text not null,
+    variant_id bigint not null references variant(id),
+    "user" not null references public.users("user"),
+    classified_on timestamp with time zone,
+    -- this represents the ACMG classification
+    classification text not null check (classification in ('pathogenic', 'likely_pathogenic', 'benign', 'likely_benign', 'unknown_significance'))
+    pubmed_id text,
+    notes text
+);
+
+create index on individual_variant_classification("user");
+create index on individual_variant_classification(individual_id, variant_id);
+create index on individual_variant_classification(variant_id);
