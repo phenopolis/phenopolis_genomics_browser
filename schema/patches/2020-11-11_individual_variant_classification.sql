@@ -4,10 +4,10 @@ create table individual_variant_classification (
     id bigserial primary key,
     individual_id text not null,
     variant_id bigint not null references variant(id),
-    user_id not null,
+    user_id text not null,
     classified_on timestamp with time zone,
     -- this represents the ACMG classification
-    classification text not null check (classification in ('pathogenic', 'likely_pathogenic', 'benign', 'likely_benign', 'unknown_significance'))
+    classification text not null check (classification in ('pathogenic', 'likely_pathogenic', 'benign', 'likely_benign', 'unknown_significance')),
     pubmed_id text,
     notes text
 );
