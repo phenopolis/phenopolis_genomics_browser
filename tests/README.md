@@ -54,7 +54,6 @@ and run with:
 ```bash
 tox --skip-pkg-install
 ```
-~~However, binary `pysam` (installed via `pip`) is not working, so some tests will fail.~~
 
 Using `cycvf2` now
 

@@ -1,9 +1,6 @@
 #!/bin/bash
 
-yum install -y libcurl-devel bzip2-devel xz-devel zlib-devel
-
-# packages needed in Docker for cyvcf2, likely needed here
-yum install -y gcc python3-devel openssl-devel make python3-wheel
+yum install -y libcurl-devel bzip2-devel xz-devel zlib-devel openssl-devel
 
 amazon-linux-extras enable postgresql11
 

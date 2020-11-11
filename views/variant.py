@@ -111,7 +111,7 @@ def _get_genotypes(chrom, pos):
 
 def _get_variant_file():
     # TODO: initialise the client only once, or at least have a pool of them to reuse
-    variant_file = VCF(os.getenv("FILE_URL"))
+    variant_file = VCF(os.getenv("S3_VCF_FILE_URL"))
     return variant_file
 
 
