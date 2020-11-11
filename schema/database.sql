@@ -32,18 +32,6 @@ reset search_path;
 reset role;
 
 
-create schema phenopolis;
-grant usage on schema phenopolis to phenopolis_api;
-alter default privileges in schema phenopolis
-    grant select, insert, update, delete on tables to phenopolis_api;
-alter default privileges in schema phenopolis
-    grant all on sequences to phenopolis_api;
-
-set search_path to phenopolis, public;
-\i phenopolis.sql
-reset search_path;
-
-
 create schema hpo;
 grant usage on schema hpo to phenopolis_api;
 alter default privileges in schema hpo
@@ -100,4 +88,16 @@ alter default privileges in schema ensembl
 
 set search_path to ensembl, public;
 \i ensembl.sql
+reset search_path;
+
+
+create schema phenopolis;
+grant usage on schema phenopolis to phenopolis_api;
+alter default privileges in schema phenopolis
+    grant select, insert, update, delete on tables to phenopolis_api;
+alter default privileges in schema phenopolis
+    grant all on sequences to phenopolis_api;
+
+set search_path to phenopolis, public;
+\i phenopolis.sql
 reset search_path;
