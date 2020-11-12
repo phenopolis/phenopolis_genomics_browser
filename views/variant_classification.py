@@ -45,8 +45,28 @@ def create_classification():
     return jsonify(success=request_ok, message=message), http_status
 
 
+@application.route("/variant-classifications-by-individual/<individual_id>")
+@requires_auth
+def get_classifications_by_individual(individual_id):
+    with session_scope() as db_session:
+        individual = _fetch_authorized_individual(db_session, individual_id)
+        # unauthorized access to individual
+        if not individual:
+            response = jsonify(
+                message="Sorry, either the patient does not exist or you are not permitted to see this patient"
+            )
+            response.status_code = 401
+        else:
+            classifications = db_session.query(IndividualVariantClassification) \
+                .filter(IndividualVariantClassification.individual_id == individual_id) \
+                .order_by(IndividualVariantClassification.classified_on.desc()) \
+                .all()
+            response = jsonify([c.as_dict() for c in classifications])
+    return response
+
+
 def _check_classification_valid(db_session: Session, classification: IndividualVariantClassification):
     individual = _fetch_authorized_individual(db_session, classification.individual_id)
     if individual is None:
         raise PhenopolisException(
-            "User not authorized to classify variants for individual {}".format(classification.individual_id), 400)
+            "User not authorized to classify variants for individual {}".format(classification.individual_id), 401)

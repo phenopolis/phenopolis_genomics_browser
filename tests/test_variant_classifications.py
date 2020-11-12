@@ -56,7 +56,7 @@ def test_create_classification_with_non_existing_individual(_demo_client):
     classification.pubmed_id = str(random.randint(10, 1000000))
     response = _demo_client.post(
         "/variant-classification", json=classification.as_dict(), content_type="application/json")
-    assert response.status_code == 400
+    assert response.status_code == 401
 
 
 def test_create_classification_with_bad_value(_demo_client):
@@ -90,7 +90,7 @@ def test_create_classification_with_empty_individual(_demo_client):
     classification.pubmed_id = str(random.randint(10, 1000000))
     response = _demo_client.post(
         "/variant-classification", json=classification.as_dict(), content_type="application/json")
-    assert response.status_code == 400
+    assert response.status_code == 401
 
 
 def test_create_classification_with_empty_classification(_demo_client):
@@ -102,6 +102,67 @@ def test_create_classification_with_empty_classification(_demo_client):
     response = _demo_client.post(
         "/variant-classification", json=classification.as_dict(), content_type="application/json")
     assert response.status_code == 500
+
+
+def test_create_classification_unauthorised_variant(_nondemo_client):
+    classification = IndividualVariantClassification()
+    classification.variant_id = 2105
+    classification.individual_id = "PH00008258"
+    classification.classification = "pathogenic"
+    classification.notes = "".join(["bla" for _ in range(random.randint(10, 100))])
+    classification.pubmed_id = str(random.randint(10, 1000000))
+    response = _nondemo_client.post(
+        "/variant-classification", json=classification.as_dict(), content_type="application/json")
+    assert response.status_code == 401
+
+
+def test_get_classifications_by_individual(_admin_client):
+    # sets 3 variant classifications for a given individual
+    individual_id = "PH00008258"
+    classification1 = IndividualVariantClassification()
+    classification1.variant_id = 2105
+    classification1.individual_id = individual_id
+    classification1.classification = "pathogenic"
+    _assert_variant_classification(_admin_client, classification1, "Admin")
+    classification2 = IndividualVariantClassification()
+    classification2.variant_id = 2100
+    classification2.individual_id = individual_id
+    classification2.classification = "pathogenic"
+    _assert_variant_classification(_admin_client, classification2, "Admin")
+    classification3 = IndividualVariantClassification()
+    classification3.variant_id = 2101
+    classification3.individual_id = individual_id
+    classification3.classification = "pathogenic"
+    _assert_variant_classification(_admin_client, classification3, "Admin")
+    # creates this one just to check it does not come in the output
+    classification4 = IndividualVariantClassification()
+    classification4.variant_id = 2099
+    classification4.individual_id = "PH00008256"
+    classification4.classification = "pathogenic"
+    _assert_variant_classification(_admin_client, classification4, "Admin")
+
+    response = _admin_client.get("/variant-classifications-by-individual/" + individual_id)
+    assert response.status_code == 200
+    classifications = response.json
+    assert len(classifications) >= 3
+    observed_variant_ids = [c.get("variant_id") for c in classifications]
+    assert 2105 in observed_variant_ids
+    assert 2100 in observed_variant_ids
+    assert 2101 in observed_variant_ids
+    assert 2099 not in observed_variant_ids
+    observed_individual_ids = set([c.get("individual_id") for c in classifications])
+    assert individual_id in observed_individual_ids
+    assert len(observed_individual_ids) == 1
+
+
+def test_get_classification_unauthorised_individual(_nondemo_client):
+    response = _nondemo_client.get("/variant-classifications-by-individual/PH00008258")
+    assert response.status_code == 401
+
+
+def test_get_classification_non_existing_individual(_admin_client):
+    response = _admin_client.get("/variant-classifications-by-individual/PH123456789789665541222")
+    assert response.status_code == 401
 
 
 def _assert_variant_classification(client, classification, user_id):
