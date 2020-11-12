@@ -32,9 +32,9 @@ def create_classification():
             # generate a new unique id for the individual
             for c in classifications:
                 # insert individual
-                c.user_id = session[USER]       # whatever value comes here we ensure the actual user is stored
-                c.id = None                     # this one should be set by the database
-                c.classified_on = None          # this one should be set by the database
+                c.user_id = session[USER]  # whatever value comes here we ensure the actual user is stored
+                c.id = None  # this one should be set by the database
+                c.classified_on = None  # this one should be set by the database
                 db_session.add(c)
         except PhenopolisException as e:
             application.logger.exception(e)
@@ -57,10 +57,12 @@ def get_classifications_by_individual(individual_id):
             )
             response.status_code = 401
         else:
-            classifications = db_session.query(IndividualVariantClassification) \
-                .filter(IndividualVariantClassification.individual_id == individual_id) \
-                .order_by(IndividualVariantClassification.classified_on.desc()) \
+            classifications = (
+                db_session.query(IndividualVariantClassification)
+                .filter(IndividualVariantClassification.individual_id == individual_id)
+                .order_by(IndividualVariantClassification.classified_on.desc())
                 .all()
+            )
             response = jsonify([c.as_dict() for c in classifications])
     return response
 
@@ -69,4 +71,5 @@ def _check_classification_valid(db_session: Session, classification: IndividualV
     individual = _fetch_authorized_individual(db_session, classification.individual_id)
     if individual is None:
         raise PhenopolisException(
-            "User not authorized to classify variants for individual {}".format(classification.individual_id), 401)
+            "User not authorized to classify variants for individual {}".format(classification.individual_id), 401
+        )
