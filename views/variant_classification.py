@@ -34,6 +34,7 @@ def create_classification():
                 # insert individual
                 c.user_id = session[USER]       # whatever value comes here we ensure the actual user is stored
                 c.id = None                     # this one should be set by the database
+                c.classified_on = None          # this one should be set by the database
                 db_session.add(c)
         except PhenopolisException as e:
             application.logger.exception(e)

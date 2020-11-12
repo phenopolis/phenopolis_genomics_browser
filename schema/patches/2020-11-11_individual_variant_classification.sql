@@ -3,7 +3,8 @@ set search_path to phenopolis, public;
 create table individual_variant_classification (
     id bigserial primary key,
     individual_id text not null,
-    variant_id bigint not null references variant(id),
+    variant_id bigint not null,
+    FOREIGN KEY (variant_id, individual_id) REFERENCES individual_variant(variant_id, individual_id),
     user_id text not null,
     classified_on timestamp with time zone,
     -- this represents the ACMG classification

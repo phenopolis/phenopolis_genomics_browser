@@ -198,8 +198,8 @@ class IndividualVariant(Base, AsDictable):
 class IndividualVariantClassification(Base, AsDictable):
     __tablename__ = "individual_variant_classification"
     id = Column(BigInteger, primary_key=True)
-    individual_id = Column(String(255), nullable=False)
-    variant_id = Column(BigInteger, nullable=False)
+    individual_id = Column(String(255), ForeignKey("individual_variant.individual_id"), nullable=False)
+    variant_id = Column(BigInteger, ForeignKey("individual_variant.variant_id"), nullable=False)
     user_id = Column(String(255), nullable=False)
     classified_on = Column(DateTime(timezone=True), default=func.now())
     classification = Column(String(255), nullable=False)
