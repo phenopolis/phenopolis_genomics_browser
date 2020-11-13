@@ -1,3 +1,10 @@
+from views.postgres import session_scope
+from flask import session
+from views.auth import ADMIN_USER, USER
+from db.model import Sex, Individual
+from views.statistics import count_variants
+
+
 def test_statistics(_admin_client):
     resp = _admin_client.get("/statistics")
     assert resp.status_code == 200
@@ -35,3 +42,12 @@ def test_statistics_with_nondemo_user(_nondemo_client):
     assert data.get("total_variants") == 4
     assert data.get("observed_features") == 3
     assert data.get("unobserved_features") == 1
+
+
+def test_additional_filter(_admin):
+    # arg: additional_filter is not actively used so far in statistics
+    # it is here for completeness coverage
+    session[USER] = ADMIN_USER
+    with session_scope() as db_session:
+        tcvf = count_variants(db_session, additional_filter=Individual.sex == Sex.F)
+    assert tcvf == 64
