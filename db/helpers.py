@@ -35,7 +35,8 @@ def cursor2dict(cursor):
     return [dict(zip(headers, r)) for r in cursor.fetchall()]
 
 
-def cursor2one_dict(cursor):
-    headers = [h[0] for h in cursor.description]
-    result = cursor.fetchone()
-    return dict(zip(headers, result)) if result else None
+# Not used anywhwere anymore
+# def cursor2one_dict(cursor):
+#     headers = [h[0] for h in cursor.description]
+#     result = cursor.fetchone()
+#     return dict(zip(headers, result)) if result else None
