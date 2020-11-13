@@ -8,7 +8,7 @@ def _get_json_payload(clazz=None):
     if not request.is_json:
         raise PhenopolisException("Only mimetype application/json is accepted", 400)
     payload = request.get_json(silent=True)
-    if payload is None:
+    if not payload:
         raise PhenopolisException("Empty payload or wrong formatting", 400)
     application.logger.debug(payload)
     if clazz is not None:
