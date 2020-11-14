@@ -137,7 +137,7 @@ def confirm_user(token):
             if user is None:
                 raise PhenopolisException("Invalid token or non existing user", 404)
             if user.confirmed:
-                raise PhenopolisException("User has already been confirmed. Please, go to login", 400)
+                raise PhenopolisException("User has already been confirmed. Please, go to login", 200)
             user.confirmed = True
             user.confirmed_on = func.now()
             user.enabled = True
