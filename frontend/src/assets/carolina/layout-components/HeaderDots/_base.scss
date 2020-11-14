@@ -1,0 +1,23 @@
+//  Core
+
+body {
+  .badge-header {
+    position: absolute;
+    top: 1px;
+    right: 1px;
+    width: 20px;
+    height: 20px;
+    line-height: 20px;
+    padding: 0;
+    font-size: $font-size-sm;
+  }
+
+  .height-280 {
+    height: 280px;
+  }
+
+
+  .app-header-dots {
+    overflow: hidden;
+  }
+}

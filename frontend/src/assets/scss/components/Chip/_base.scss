@@ -1,0 +1,123 @@
+.search-chip-large {
+  margin: 8px !important;
+  padding: 10px 0px 10px 0px !important;
+  text-shadow: none;
+  font-size: 17px !important;
+  font-weight: 500;
+  // color: '#2E84CF',
+&:hover {
+  text-shadow: none;
+}
+}
+
+.search-chip-middle {
+  margin: 6.5px !important;
+  padding: 10px 0px 10px 0px !important;
+  text-shadow: none;
+  font-size: 15px !important;
+  font-weight: 500;
+  // color: '#2E84CF',
+&:hover {
+  text-shadow: none;
+}
+}
+
+.search-chip-xl {
+  margin: 8px !important;
+  padding: 10px 0px 10px 0px !important;
+  text-shadow: none;
+  font-size: 1em !important;
+  font-weight: 900;
+  // color: '#2E84CF',
+&:hover {
+  text-shadow: none;
+}
+}
+
+.search-chip-small {
+  margin: 5px !important;
+  padding: 10px 0px 10px 0px !important;
+  text-shadow: none;
+  font-size: 13px !important;
+  font-weight: 500;
+  &:hover {
+    text-shadow: none;
+  }
+}
+
+.chip-container {
+  background-color: white;
+  min-width: 25em;
+  border-bottom-left-radius: 0.1em;
+  border-bottom-right-radius: 0.1em;
+  padding-bottom: 1em;
+  padding-top: 1em;
+}
+
+.chip-title-unloaded {
+  border-bottom-left-radius: 0.1em;
+  border-bottom-right-radius: 0.1em;
+  border-top-left-radius: 0.1em;
+  border-top-right-radius: 0.1em;
+  padding: 0.5em
+}
+
+.chip-title-loaded {
+  border-bottom-left-radius: 0em;
+  border-bottom-right-radius: 0em;
+  border-top-left-radius: 0.1em;
+  border-top-right-radius: 0.1em;
+  padding: 0.5em
+}
+
+.chip-popover-namegrid {
+  border-right: 1px solid #e0e0e0;
+  border-bottom: 1px solid #e0e0e0;
+}
+
+.chip-popover-datagrid {
+  border-bottom: 1px solid #e0e0e0;
+}
+
+.white-fg {
+  color: white;
+}
+
+.chip-popover {
+  pointer-events: none;
+  margin: 0.3em;
+  margin-left: 0.5em;
+}
+
+.chip-paper {
+  background-color: transparent;
+  color: #424242;
+}
+
+.gene-bg {
+  background-color: #e07a5f !important;
+}
+
+.phenotype-bg {
+  background-color: #81b29a !important;
+}
+
+.patient-bg {
+  background-color: #f2cc8f !important;
+}
+
+.hpo-bg {
+  background-color: #81b29a !important;
+}
+
+.individual-bg {
+  background-color: #f2cc8f !important;
+}
+
+.variant-bg {
+  background-color: #3d405b !important;
+}
+
+.other-bg {
+  background-color: #5C95FF !important;
+}

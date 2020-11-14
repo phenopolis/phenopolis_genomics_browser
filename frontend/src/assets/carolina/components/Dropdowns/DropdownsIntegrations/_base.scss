@@ -1,0 +1,33 @@
+//  Core
+
+// Dropdown menu
+
+.dropdown-menu {
+
+  & > .bg-composed-wrapper {
+    margin: (-($dropdown-padding-y)) -1px -2px;
+    z-index: 5;
+    top: -1px;
+  }
+
+  & > .scroll-area {
+    height: 10rem;
+  }
+}
+
+.dropdown-menu-lg {
+  min-width: 15rem;
+}
+
+.dropdown-menu-xl {
+  min-width: 18rem;
+}
+
+.dropdown-menu-xxl {
+  min-width: 21rem;
+}
+
+.dropdown-toggle::after {
+  position: relative;
+  top: 2px;
+}

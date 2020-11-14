@@ -1,0 +1,219 @@
+{
+  "HomePage": {
+    "HomeBanner": {
+      "subtitle": "整合统一 & 测序分析 & 表型数据",
+      "button_no_login": "Demo用户登录",
+      "button_login": "搜索 Phenopolis",
+      "login_success": " 登录成功！",
+      "login_fail": "登录失败."
+    },
+    "HomeMainPart": {
+      "tab1": {
+        "title": "加速表型突变诊断",
+        "description": "根据患者的表型(使用人类表型本体论描述)推定考虑患者的遗传突变，加速您的诊断。"
+      },
+      "tab2": {
+        "title": "多样全能分析工具",
+        "description": "使用Exomiser, PubmedScore, Phenogenon, SimReg, Bevimed 以及 SKAT等工具或指标，给突变与表型评分。"
+      },
+      "tab3": {
+        "title": "基因-表型关系速查",
+        "description": "利用基因与表型列表，了解任意基因突变可能导致的表型。"
+      },
+      "statistic": {
+        "title": "Phenopolis 统计",
+        "description": "Phenopolis包括来自{{ exomes }}个外显子的数据，涵盖总共{{ variants }}个变异。"
+      },
+      "contact": {
+        "title": "联系我们",
+        "description": "请通过<1>这里</1>联系我们， 给我们提出建议、意见、或者任何问题。我们十分珍重您对我们的反馈。"
+      },
+      "message": "正在载入首页..."
+    }
+  },
+  "AppBar": {
+    "NoLoginBar": {
+      "Label_Explore": "探索更多",
+      "Label_Publication": "期刊论文",
+      "Label_About": "关于我们",
+      "Label_Product": "购买服务",
+      "Label_Language": "切换语言",
+      "Label_Login": "用户登录"
+    },
+    "LoginBar": {
+      "Label_Search": "搜索",
+      "Label_Explore": "探索更多",
+      "Label_About": "关于我们",
+      "Label_Product": "购买服务",
+      "Label_Publication": "期刊论文",
+      "Label_Patients": "我的患者",
+      "Label_Language": "切换语言",
+      "Label_Change_Password": "更换密码",
+      "Label_Logout": "退出",
+      "Logout_Success": "退出成功",
+      "Logout_Failed": "退出失败"
+    },
+    "LoginBox": {
+      "title": "登 录",
+      "Label_User_Name": "用户名",
+      "Label_Password": "密码",
+      "Button": "登 录",
+      "Hint": "点击<1>Demo登录</1>进行试用!",
+      "Login_Success": " 登录成功!",
+      "Login_Failed": " 登录失败!"
+    },
+    "NavSearch": {
+      "InputPlaceHolder": "搜索患者、基因、突变……",
+      "Searching": "正在自动匹配……",
+      "NoOption": "抱歉，我们无法自动匹配到任何数据……太遗憾了！",
+      "NoContent": "搜索内容为空。",
+      "Autocomplete_Failed": "自动补全失败",
+      "Best_Guess_Failed": "跳转失败"
+    },
+    "NoSideBar": {
+      "Label_Login": "登录",
+      "Label_Explore": "探索更多",
+      "Label_Publication": "期刊论文",
+      "Label_About": "关于我们",
+      "Label_Product": "购买服务",
+      "Label_Language": "切换语言"
+    },
+    "SideBar": {
+      "Label_Search": "搜索",
+      "Label_Patients": "我的患者",
+      "Label_Explore": "探索更多",
+      "Label_Publication": "期刊论文",
+      "Label_About": "关于我们",
+      "Label_Product": "购买服务",
+      "Label_Language": "切换语言",
+      "Label_Change_Password": "更换密码",
+      "Label_Logout": "退出"
+    }
+  },
+  "Login": {
+    "redirectionLink": "很遗憾, 看起来您尚没有权限访问 <1> {{ mylink}}  </1>, 登录以后试一试？",
+    "login": "您已经成功登录。",
+    "login_subtitle": "如果您想要退出登录，请点击右上角的账号名称，选择退出。"
+  },
+  "Footer": {
+    "About_Us": "关于我们",
+    "Description": "Phenopolis是一个整合分析测序和表型数据的平台。Phenopolis的发展得到了以下协会的支持：RP Fighting Blindness, NIHR (UCL-Moorfields Eyes Hospital Biomedical Research Center), the UK Medical Research Council, the British Heart Foundation 以及 the Japan Society for the Promotion of Science。",
+    "Useful_Links": "相关链接",
+    "Publications": "期刊论文",
+    "Contact": "联系我们",
+    "External_Links": "外部链接",
+    "Citation": "如果您使用了Phenopolis，请在您的论文中添加引用文献: <1>Pontikos, N. et al. (2017). Phenopolis: an open platform for harmonization and analysis of genetic and phenotypic data. Bioinformatics, 9, 7</1>"
+  },
+  "Search": {
+    "title": "搜索 Phenopolis",
+    "subtitle": "一个致力于整合测序数据，表型，变异以及基因信息的开放平台。",
+    "label": "搜索患者、基因、突变……",
+    "Searching": "正在自动匹配……",
+    "NoOption": "抱歉，我们无法自动匹配到任何数据……太遗憾了！",
+    "NoContent": "搜索内容为空。",
+    "Autocomplete_Failed": "自动补全失败",
+    "Best_Guess_Failed": "跳转失败",
+    "Example": "案例参考"
+  },
+  "Publication": {
+    "Title": "相关文献",
+    "Phenopolis_Publications": "Phenopolis文献",
+    "publication": "",
+    "Associated_Publications_using_Phenopolis": "使用了Phenopolis的文献",
+    "Primary_immune_deficiencies": "原发性免疫缺陷:",
+    "Dermatology": "皮肤病学:",
+    "Bone_marrow_failure": "骨髓衰竭:",
+    "Cardiovascular_disorders": "心血管疾病:",
+    "Neurology": "神经学:",
+    "Other_disease_fields": "其他疾病领域:"
+  },
+  "About": {
+    "Title": "关于我们",
+    "Mission_Title": "我们的目标",
+    "Mission_Content": "Phenopolis是一个在线端的平台，提供针对基因库与表型库的直观简洁的交互服务。其包含了一系列诸如突变筛查、基于表型的基因定位的分析工具。Phenopolis平台可以加速您的临床诊断，病变基因发现，以及协助您在研究罕见基因疾病的时候使用人类表型本体数据。",
+    "Core_Team": "核心团队",
+    "Contributor": "贡献者"
+  },
+  "Product": {
+    "Title": "购买分析服务",
+    "Exome_Analysis_Title": "外显子组分析",
+    "Exome_Analysis_Content": "我们为您完成外显字组分析, 并且将结果整合到Phenopolis中，加快您的实验室，以及您的合作伙伴的科研进程. 我们的服务包括:",
+    "Exome_Analysis_Description": "<0>突变分析。</0><1>整合表型、突变以及基因型。</1> <2>Phenopolis系统部署。</2><3> 未来三年的技术支持。</3>",
+    "Exome_Analysis_Close": "联系我们获取更多详细信息。",
+    "Exome_Price_Title": "外显字组学分析",
+    "Exome_Price_Subtitle": "最受欢迎",
+    "Exome_Price_Unit": "外显字组",
+    "Exome_Price_Feature": "<0>优点 1</0> <1>优点 2</1> <2>优点 3</2> <3>优点 4</3>",
+    "Exome_Price_Button": "联系我们"
+  },
+  "Individual": {
+    "entry": "cn",
+    "RARE_HOMS": "罕见纯合变异",
+    "RARE_COMP_HETS": "罕见复合杂合变异",
+    "RARE_VARIANTS": "罕见突变",
+    "Rare_HOMs": "罕见纯合变异",
+    "Rare_Comp_Hets": "罕见复合杂合变异",
+    "Rare_Variants": "罕见突变",
+    "Rare_HOMs_subtitle": "以下是该名患者所携带通过了阈值筛选的罕见纯合变异。",
+    "Rare_Comp_Hets_subtitle": "以下是该名患者所携带的罕见复合杂合变异（在同一个基因上存在一个以上突变），以及它们的等位基因频率阈值。",
+    "Rare_Variants_subtitle": "以下是该名患者所携带的罕见的杂合变体，以及它们的等位基因频率阈值。",
+    "message": "正在从服务器获取患者中文信息...",
+    "edit_message": "修改患者信息成功，正在重新载入数据..."
+  },
+  "Gene": {
+    "entry": "cn",
+    "Variants_Analysis": "突变分析",
+    "Variants Analysis_subtitle": "以下是与该基因相关的变异",
+    "message": "正在从服务器获取中文基因信息..."
+  },
+  "HPO": {
+    "entry": "cn",
+    "INDIVIDUALS": "相关患者",
+    "LITERATURE_GENES": "文献基因",
+    "PHENOGENON": "表型基因关联",
+    "SKAT": "序列核关联检验",
+    "RECESSIVE": "隐形",
+    "DOMINANT": "显性",
+    "Individuals": "相关患者",
+    "Literature_Genes": "文献基因",
+    "Phenogenon": "Phenogenon",
+    "Individuals_subtitle": "以下是与该表型有关的患者或者其后代。",
+    "Literature_Genes_subtitle": "以下是OMIM数据库中与该表型相关的文献基因。",
+    "Phenogenon_subtitle": "以下是Phenogenon分析显著的基因。",
+    "SKAT_subtitle": "以下是从序列核关联检验（Sequence Kernel Association Test, SKAT）。",
+    "RECESSIVE_subtitle": "<0>基因型</0> : 给定基因上至少有两个ExAC纯合计数不高于<2>2</2>,CADD phred评分不低于<4>15</4>的变异。",
+    "DOMINANT_subtitle": " <0>基因型</0> : 在一个给定的基因上至少有一个突变，外源性杂合计数不高于<2>0.0001</2>,CADD phred评分不低于<4>15</4>。",
+    "message": "正在从服务器获取中文人类表型本体信息..."
+  },
+  "Variant": {
+    "entry": "cn",
+    "FREQUENCY": "突变频率",
+    "CONSEQUENCES": "突变影响",
+    "QUALITY": "突变质量",
+    "INDIVIDUALS": "相关患者",
+    "GENOTYPES": "相关基因型",
+    "Frequency": "突变频率",
+    "Consequences": "突变影响",
+    "Quality": "突变质量",
+    "Individuals": "相关患者",
+    "Genotypes": "相关基因型",
+    "Frequency_subtitle": "外部数据库和内部数据库中变量的频率。",
+    "Consequences_subtitle": "转录本上该突变会带来的影响。",
+    "Quality_subtitle": "转录本上该突变的质量。",
+    "Individuals_subtitle": "与该突变相关的患者。",
+    "Genotypes_subtitle": "与该突变相关的基因型。",
+    "message": "正在从服务器获取中文突变信息..."
+  },
+  "MyPatient": {
+    "entry": "cn",
+    "My_Patients": "我的患者",
+    "Total": "总数",
+    "message": "正在从服务器获取所有患者信息..."
+  },
+  "Table": {
+    "Select_Button": "选择表格列项",
+    "Save Configuration": "保存表格列项设置",
+    "Save_Success": "保存列项设置成功！",
+    "Save_Fail": "保存列项设置失败。"
+  }
+}

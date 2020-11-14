@@ -1,0 +1,220 @@
+{
+  "About": {
+    "Title": "Über uns",
+    "Mission_Title": "Unsere Aufgabe",
+    "Mission_Content": "Phenopolis ist ein Webserver, der ein intuitives Interface zu genetischen\n und phänotypischen Datenbanken bietet. Es beinhaltet Analyse-Werkzeug wie\n Varianten-Filter und Gen-Priorisierung, anhand von Phänotypen. \nDie Phenopolis-Plattform wird klinische Diagnose und Gen-Entdeckung\n beschleunigen, sowie die flächendeckende Übernahme\n der Human Phenotype Ontology bei der Untersuchung\n seltener genetischer Krankheiten unterstützen\n",
+    "Core_Team": "Kern-Team",
+    "Contributor": "Mitgestalter"
+  },
+  "AppBar": {
+    "LoginBar": {
+      "Label_Search": "Suche",
+      "Label_Explore": "Erkunden",
+      "Label_Publication": "Veröffentlichungen",
+      "Label_About": "Über uns",
+      "Label_Product": "Einkauf-Service",
+      "Label_Patients": "Patienten",
+      "Label_Language": "Sprache",
+      "Label_Change_Password": "Passwort ändern",
+      "Label_Logout": "Abmelden",
+      "Logout_Success": "Abmelden erfolgt.",
+      "Logout_Failed": "Abmelden fehlgeschlagen."
+    },
+    "LoginBox": {
+      "title": "Registrieren",
+      "Label_User_Name": "Benutzername",
+      "Label_Password": "Passwort",
+      "Button": "Registrieren",
+      "Hint": "Klicken Sie auf <1> Als Demo-Nutzer anmelden </1>, um es zu auszuprobieren",
+      "Login_Success": "Anmelden erfolgreich!",
+      "Login_Failed": "Anmelden fehlgeschlagen!"
+    },
+    "NavSearch": {
+      "InputPlaceHolder": "Suche nach Patient, Gen, Variante...",
+      "Searching": "Suche mit automatischer Vervollständigung...",
+      "NoOption": "Entschuldigung, die automatische Vervollständigung ist fehlgeschlagen.",
+      "NoContent": "Kein Ergebnis für diese Suche.",
+      "Autocomplete_Failed": "Automatische Vervollständigung fehlgeschlagen",
+      "Best_Guess_Failed": "Bestmögliche Schätzung fehlgeschlagen"
+    },
+    "NoLoginBar": {
+      "Label_Explore": "Erkunden",
+      "Label_Publication": "Veröffentlichung",
+      "Label_About": "Über uns",
+      "Label_Product": "Einkauf-Service",
+      "Label_Language": "Sprache",
+      "Label_Login": "Anmelden"
+    },
+    "NoSideBar": {
+      "Label_Login": "Anmelden",
+      "Label_Explore": "Erkunden",
+      "Label_Publication": "Veröffentlichung",
+      "Label_About": "Über uns",
+      "Label_Product": "Einkauf-Service",
+      "Label_Language": "Sprache"
+    },
+    "SideBar": {
+      "Label_Search": "Suche",
+      "Label_Patients": "Patienten",
+      "Label_Explore": "Erkunden",
+      "Label_Publication": "Veröffentlichung",
+      "Label_About": "Über uns",
+      "Label_Product": "Einkauf-Service",
+      "Label_Language": "Sprache",
+      "Label_Change_Password": "Passwort ändern",
+      "Label_Logout": "Abmelden"
+    }
+  },
+  "Footer": {
+    "About_Us": "Über uns",
+    "Description": "Phenopolis ist eine Plattform zur Harmonisierung und Analyse von Sequenzierungs-\n und Phänotypdaten. Bei der Entwicklung wurde Phenopolis von RP Fighting\n Blindness (jetzt: RetinaUK),\n NIHR (UCL -Moorfields Eye Hospital Biomedical Research Center),\n dem UK Medical Research Council, der Japan Society for the Promotion\n of Science und der Saskawa Foundation unterstützt",
+    "Useful_Links": "Nützliche Links",
+    "Publications": "Veröffentlichungen",
+    "Contact": "Kontakt",
+    "External_Links": "Externe Links",
+    "Citation": "Wenn Sie Phenopolis benutzen, zitieren Sie uns bitte als: <1>Pontikos, N. et al. (2017) \nPhenopolis: eine offene Plattform zur Harmonisierung und Analyse von genetischen\n und phänotypischen Daten. Bioinformatik, 9, 7</1>\n"
+  },
+  "Gene": {
+    "entry": "de",
+    "Variants_Analysis": "Varianten-Analyse",
+    "Variants Analysis_subtitle": "Hier ist eine Liste von Varianten, die in diesem Gen gefunden werden.",
+    "message": "Gen-Information wird vom Server heruntergeladen"
+  },
+  "HomePage": {
+    "HomeBanner": {
+      "subtitle": "Harmonisierung & Analyse von Sequenzierungs- & Phänotypdaten",
+      "button_no_login": "Anmelden als Demo-Benutzer",
+      "button_login": "In Phenopolis suchen",
+      "login_success": "Anmelden erfolgreich!",
+      "login_fail": "Anmelden fehlgeschlagen."
+    },
+    "HomeMainPart": {
+      "contact": {
+        "title": "Kontakt",
+        "description": "Für Rückmeldungen bzw. etwaige Fehlermeldungen,\n können Sie uns gerne <1>hier</1> kontaktieren."
+      },
+      "statistic": {
+        "title": "Phenopolis-Statistiken",
+        "description": "Phenopolis beinhaltet Daten von {{ exomes }} Exomen,\n die eine Gesamtzahl an {{ variants }} Varianten darstellen."
+      },
+      "tab1": {
+        "title": "Diagnose beschleunigen",
+        "description": "Priorisiert genetische Mutationen in Patienten,\nanhand ihrer mithilfe der Human Phenotype Ontology\nbeschriebenen Phänotypen."
+      },
+      "tab2": {
+        "title": "Werkzeuge zur mehrfachen Analyse",
+        "description": "Exomiser, PubmedScore, Phenogenon, SimReg, Bevimed und SKAT benutzen, \num genetische Varianten und Phänotypen zu bewerten."
+      },
+      "tab3": {
+        "title": "Gen-Phänotyp-Beziehungen",
+        "description": "Verstehen Sie das Spektrum der Phänotypen, zu denen Genmutationen führen,\n indem Sie die Gen- oder Phänotyp-Ansicht benutzen"
+      },
+      "message": "Startseite wird geladen.."
+    }
+  },
+  "HPO": {
+    "entry": "de",
+    "INDIVIDUALS": "SUBJEKTE",
+    "LITERATURE_GENES": "Gene, von denen in wissenschaftlicher Literatur berichtet wird.",
+    "PHENOGENON": "PHENOGENON",
+    "SKAT": "SKAT",
+    "RECESSIVE": "REZESSIV",
+    "DOMINANT": "DOMINANT",
+    "Individuals": "Subjekte",
+    "Literature_Genes": "Gene, von denen in wissenschaftlicher Literatur berichtet wird.",
+    "Phenogenon": "Phenogenon",
+    "Individuals_subtitle": "Unten finden Sie eine Liste von Subjekten, die diesen Phänotyp oder\n einen Nachfahren davon besitzen.",
+    "Literature_Genes_subtitle": "Unten befindet sich eine Liste der in der wissenschaftlichen Literatur\nerwähnten Gene aus der OMIM-Datenbank, \nwelche mit diesem Phänotyp verbunden sind.",
+    "Phenogenon_subtitle": "Unten befindet eine Liste der wichtigen Phenogenon-Gene.",
+    "SKAT_subtitle": "Unten befindet sich eine Liste von Genen und ihren Varianten aus dem\nSequence Kernel Association Test (SKAT).",
+    "RECESSIVE_subtitle": "<0>Genotyp</0> : Mit mindestens zwei Varianten pro Gen, \nderen ExAC-Homozygotie-Ergebnis nicht höher als <2>2</2> ist\n und deren CADD-phred-Ergebnis nicht niedriger als <4>15</4> ist.",
+    "DOMINANT_subtitle": "<0>Genotyp</0> : Mit mindestens einer Variante pro Gen, \nderen ExAC-Heterozygotie-Ergebnis nicht höher als <2>0.0001</2> ist, \nund deren CADD-phred-Ergebnis nicht niedriger als <4>15</4> ist.",
+    "message": "HPO-Information wird vom Server heruntergeladen..."
+  },
+  "Individual": {
+    "entry": "de",
+    "RARE_HOMS": "Seltene Homozygote.",
+    "RARE_COMP_HETS": "Seltene Komplex-Heterozygote.",
+    "RARE_VARIANTS": "Seltene Varianten.",
+    "Rare_HOMs": "Seltene Homozygote",
+    "Rare_Comp_Hets": "Seltene Komplex-Heterozygote.",
+    "Rare_Variants": "Seltene Varianten.",
+    "Rare_HOMs_subtitle": "Dies ist die Liste der seltenen homozygotischen Varianten,die in diesem Subjekt\n mithilfe von Schwellen herausgefunden wurden.",
+    "Rare_Comp_Hets_subtitle": "Dies ist die Liste von seltenen komplex-heterozygotischen Varianten\n(mehr als eine Variante in einem bestimmten Gen), \ndie in diesem Subjekt mit Allelfrequenzschwellen ermittelt wurden.",
+    "Rare_Variants_subtitle": "Dies ist die Liste der seltenen heterozygotischen Varianten,\n die in diesem Subjekt mithilfe von Allelfrequenzschwellen ermittelt wurden.",
+    "message": "Patient-Information wird vom Server heruntergeladen...",
+    "edit_message": "Bearbeitung von Patient-Information erfolgt, wird erneut hochgeladen..."
+  },
+  "Login": {
+    "redirectionLink": "Entschuldigung, Sie haben anscheinend noch keinen Zugang zu <1> {{ mylink}} </1>, \nAnmelden versuchen?",
+    "redirectionLink_plural": "Entschuldigung, Sie haben anscheinend noch keinen Zugang zu <1> {{ mylink}} </1>,\n Anmelden versuchen?",
+    "login": "Sie haben sich angemeldet.",
+    "login_subtitle": "Wenn Sie sich abmelden wollen, klicken Sie auf das Konto-Symbol in\n der oberen rechten Ecke."
+  },
+  "MyPatient": {
+    "entry": "de",
+    "My_Patients": "Meine Patienten",
+    "Total": "Gesamt",
+    "message": "Alle Patient-Informationen werden vom Server heruntergeladen..."
+  },
+  "Product": {
+    "Title": "Einkaufs-Analysen-Service",
+    "Exome_Analysis_Title": "Exom-Analyse",
+    "Exome_Analysis_Content": "Wir helfen Ihnen dabei, ganze Exom-Analysen durchzuführen und\n bauen sie für Sie und Ihre Mannschaft in Phenopolis ein. Unser Service beinhaltet:",
+    "Exome_Analysis_Description": "<0>Genotypisierung.</0> <1> Aufnahme von und Suche nach Ihren phänotypischen\n und genetischen Daten.</1> <2> Variantenpriorisierung, anhand eines Phänotyps.\n</2> <3> Kostenlose Aufbewahrung Ihrer Daten für mindestens 3 Jahre. </3>",
+    "Exome_Analysis_Close": "Kontaktieren Sie uns für mehr Informationen.",
+    "Exome_Price_Title": "Exom-Analyse",
+    "Exome_Price_Subtitle": "Most popular service",
+    "Exome_Price_Unit": "Exom",
+    "Exome_Price_Feature": null,
+    "Exome_Price_Button": "Kontakt"
+  },
+  "Publication": {
+    "Title": "Veröffentlichung",
+    "Phenopolis_Publications": "Phenopolis-Veröffentlichungen",
+    "publication": null,
+    "Associated_Publications_using_Phenopolis": "Veröffentlichungen mithilfe von Phenopolis",
+    "Primary_immune_deficiencies": "Primäre Immunschwäche:",
+    "Dermatology": "Dermatologie:",
+    "Bone_marrow_failure": "Knochenmarkversagen:",
+    "Cardiovascular_disorders": "Herz-Kreislauf-Erkrankungen:",
+    "Neurology": "Neurologie:",
+    "Other_disease_fields": "Anderes Krankheitsbild:"
+  },
+  "Search": {
+    "title": "In Phenopolis suchen",
+    "subtitle": "Eine Plattform zur Harmonisierung und Analyse von Sequenzierungs-\n und Phänotypdaten",
+    "label": "Suche nach Phänotyp, Patient, Gen, Variante oder Region.",
+    "Searching": "Automatische Vervollständigung wird versucht...",
+    "NoOption": "Entschuldigung, die automatische Vervollständigung hat keine Treffer ergeben!",
+    "NoContent": "Nichts zu suchen.",
+    "Autocomplete_Failed": "Automatische Vervollständigung fehlgeschlagen",
+    "Best_Guess_Failed": "Bestmögliche Schätzung fehlgeschlagen",
+    "Example": "Beispiel"
+  },
+  "Table": {
+    "Select_Button": "Tabellenspalte auswählen",
+    "Save Configuration": "Spaltenkonfiguration speichern",
+    "Save_Success": "Speichern der Konfiguration erfolgt!",
+    "Save_Fail": "Speichern der Konfiguration fehlgeschlagen."
+  },
+  "Variant": {
+    "entry": "de",
+    "FREQUENCY": "Variantenfrequenz",
+    "CONSEQUENCES": "Folgen",
+    "QUALITY": "QUALITÄT",
+    "INDIVIDUALS": "SUBJEKTE",
+    "GENOTYPES": "GENOTYPEN",
+    "Frequency": "Frequenz",
+    "Consequences": "Folgen",
+    "Quality": "Qualität",
+    "Individuals": "Subjekte",
+    "Genotypes": "Genotypen",
+    "Frequency_subtitle": "Frequenz der Variante in externen Datenbanken, sowie intern.",
+    "Consequences_subtitle": "Folge der Variante auf der Transkription.",
+    "Quality_subtitle": "Qualität der Variante auf der Transkription",
+    "Individuals_subtitle": "Genotypen der Subjekte",
+    "Genotypes_subtitle": "Genotypen der Subjekte",
+    "message": "Varianteninformation wird vom Server heruntergeladen..."
+  }
+}

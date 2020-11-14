@@ -1,0 +1,25 @@
+.arrow_box {
+  position: relative;
+  background: #242424;
+  min-height: 3em;
+  min-width: 25em;
+  padding-top: 0.5em;
+  border-top-left-radius: 0.3em;
+  border-top-right-radius: 0.3em;
+  /* border-bottom-left-radius: 0.3em;
+	border-bottom-right-radius: 0.3em; */
+}
+/* .arrow_box:after {
+	right: 100%;
+	top: 50%;
+	border: solid transparent;
+	content: " ";
+	height: 0;
+	width: 0;
+	position: absolute;
+	pointer-events: none;
+	border-color: rgba(36, 36, 36, 0);
+	border-right-color: #242424;
+	border-width: 7px;
+	margin-top: -7px;
+} */

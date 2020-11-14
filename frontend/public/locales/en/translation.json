@@ -1,0 +1,220 @@
+{
+  "HomePage": {
+    "HomeBanner": {
+      "subtitle": "Harmonization & Analysis of Sequencing & Phenotype Data",
+      "button_no_login": "Login as Demo User",
+      "button_login": "Search Phenopolis",
+      "login_success": " Login Success!",
+      "login_fail": " Login Failed."
+    },
+    "HomeMainPart": {
+      "tab1": {
+        "title": "Speed Up Diagnosis",
+        "description": "Prioritises genetic mutations in patients based on their phenotypes described using the Human Phenotype Ontology."
+      },
+      "tab2": {
+        "title": "Multiple Analysis Tools",
+        "description": "Exomiser, PubmedScore, Phenogenon, SimReg, Bevimed and SKAT score genetic variants and phenotypes."
+      },
+      "tab3": {
+        "title": "Gene-Phenotype Relations",
+        "description": "Using the gene or phenotype view, understand the spectrum of phenotypes that gene mutations lead to."
+      },
+      "statistic": {
+        "title": "Phenopolis Statistics",
+        "description": "Phenopolis includes data from over {{ exomes }} exomes representing over {{ variants }} variants."
+      },
+      "contact": {
+        "title": "Contact Us",
+        "description": "Please feel free to contact us <1>here</1> to give us feedback or report any issues."
+      },
+      "message": "Loading Home Page..."
+    }
+  },
+  "AppBar": {
+    "NoLoginBar": {
+      "Label_Explore": "Explore",
+      "Label_Publication": "Publication",
+      "Label_About": "About us",
+      "Label_Product": "Purchase Service",
+      "Label_Language": "Language",
+      "Label_Login": "Login"
+    },
+    "LoginBar": {
+      "Label_Search": "Search",
+      "Label_Explore": "Explore",
+      "Label_Publication": "Publications",
+      "Label_About": "About us",
+      "Label_Product": "Purchase Service",
+      "Label_Patients": "Patients",
+      "Label_Language": "Language",
+      "Label_Change_Password": "Change Password",
+      "Label_Logout": "Log out",
+      "Logout_Success": "Logout Success.",
+      "Logout_Failed": "Logout Failed."
+    },
+    "LoginBox": {
+      "title": "Sign in",
+      "Label_User_Name": "User Name",
+      "Label_Password": "Password",
+      "Button": "Sign In",
+      "Hint": "Click <1> Demo Login</1> to have a try!",
+      "Login_Success": " Login Success!",
+      "Login_Failed": " Login Failed!"
+    },
+    "NavSearch": {
+      "InputPlaceHolder": "Search for patient, gene, variant…",
+      "Searching": "Searching for auto complete...",
+      "NoOption": "Sorry, we were unable to auto-complete, no match found.",
+      "NoContent": "Nothing for search.",
+      "Autocomplete_Failed": "Autocomplete failed",
+      "Best_Guess_Failed": "Best guess failed"
+    },
+    "NoSideBar": {
+      "Label_Login": "Login",
+      "Label_Explore": "Explore",
+      "Label_Publication": "Publication",
+      "Label_About": "About us",
+      "Label_Product": "Purchase Service",
+      "Label_Language": "Language"
+    },
+    "SideBar": {
+      "Label_Search": "Search",
+      "Label_Patients": "Patients",
+      "Label_Explore": "Explore",
+      "Label_Publication": "Publication",
+      "Label_About": "About us",
+      "Label_Product": "Purchase Service",
+      "Label_Language": "Language",
+      "Label_Change_Password": "Change Password",
+      "Label_Logout": "Log out"
+    }
+  },
+  "Login": {
+    "redirectionLink": "Sorry, seems you don't have access to <1> {{ mylink}}  </1> yet, try login?",
+    "redirectionLink_plural": "Sorry, seems you don't have access to <1> {{ mylink}}  </1> yet, try login?",
+    "login": "You are logged in.",
+    "login_subtitle": "If you want to log out, click Account Icon on the top right of the page."
+  },
+  "Footer": {
+    "About_Us": "About Us",
+    "Description": "Phenopolis is a platform for harmonization and analysis of sequencing and phenotype data. Development of Phenopolis was initially supported by RP Fighting Blindness, NIHR (UCL-Moorfields Eyes Hospital Biomedical Research Center), the UK Medical Research Council, the British Heart Foundation and the Japan Society for the Promotion of Science.",
+    "Useful_Links": "Useful Links",
+    "Publications": "Publications",
+    "Contact": "Contact",
+    "External_Links": "External Links",
+    "Citation": "If you use Phenopolis, please cite us as: <1>Pontikos, N. et al. (2017). Phenopolis: an open platform for harmonization and analysis of genetic and phenotypic data. Bioinformatics, 9, 7</1>"
+  },
+  "Search": {
+    "title": "Search Phenopolis",
+    "subtitle": "A platform for harmonization and analysis of sequencing and phenotype data.",
+    "label": "Search for a phenotype, patient, gene, variant or region.",
+    "Searching": "Searching for auto completing...",
+    "NoOption": "Sorry, we did not get any auto completing options...So sad.",
+    "NoContent": "Nothing for search.",
+    "Autocomplete_Failed": "Autocomplete failed",
+    "Best_Guess_Failed": "Best guess failed",
+    "Example": "Example"
+  },
+  "Publication": {
+    "Title": "Publication",
+    "Phenopolis_Publications": "Phenopolis Publications",
+    "publication": "",
+    "Associated_Publications_using_Phenopolis": "Associated Publications using Phenopolis",
+    "Primary_immune_deficiencies": "Primary immune deficiencies:",
+    "Dermatology": "Dermatology:",
+    "Bone_marrow_failure": "Bone marrow failure:",
+    "Cardiovascular_disorders": "Cardiovascular disorders:",
+    "Neurology": "Neurology:",
+    "Other_disease_fields": "Other disease fields:"
+  },
+  "About": {
+    "Title": "About Us",
+    "Mission_Title": "Our Mission",
+    "Mission_Content": "Phenopolis is a web server providing an intuitive interface to genetic and phenotypic databases. It integrates analysis tools such as variant filtering and gene prioritization based on phenotype. The Phenopolis platform will accelerate clinical diagnosis, gene discovery and encourage wider adoption of the Human Phenotype Ontology in the study of rare genetic diseases.",
+    "Core_Team": "Core Team",
+    "Contributor": "Contributor"
+  },
+  "Product": {
+    "Title": "Purchase Analysis Service",
+    "Exome_Analysis_Title": "Exome Analysis",
+    "Exome_Analysis_Content": "We help you to conduct whole exome analysis, and integrate it Phenopolis for all your lab members or collaborators. Our service contains:",
+    "Exome_Analysis_Description": "<0>Mutation Detection.</0> <1>Integrating between Phenotypes, mutation genes.</1> <2>Deployment of Phenopolis system.</2> <3> Long lasting service in 3 years. </3>",
+    "Exome_Analysis_Close": "Contact us for more information.",
+    "Exome_Price_Title": "Exome Analysis",
+    "Exome_Price_Subtitle": "Most popular",
+    "Exome_Price_Unit": "exome",
+    "Exome_Price_Feature": "<0>Feature 1</0> <1>Feature 2</1> <2>Feature 3</2> <3>Feature 4</3>",
+    "Exome_Price_Button": "Contact Us"
+  },
+  "Individual": {
+    "entry": "en",
+    "RARE_HOMS": "Rare homozygotes.",
+    "RARE_COMP_HETS": "Rare compound heterozygotes.",
+    "RARE_VARIANTS": "Rare variants.",
+    "Rare_HOMs": "Rare homozygotes",
+    "Rare_Comp_Hets": "Rare compound heteorygotes.",
+    "Rare_Variants": "Rare variants.",
+    "Rare_HOMs_subtitle": "This is the list of rare homozygous variants in this individual obtained with thresholds.",
+    "Rare_Comp_Hets_subtitle": "This is the list of rare compound heterozgote variants (more than one variant in a given gene) found in this individual obtained with allele frequency thresholds.",
+    "Rare_Variants_subtitle": "This is the list of rare heterozgote variants found in this individual obtained with allele frequency thresholds.",
+    "message": "Loading Patient Information from Server...",
+    "edit_message": "Edit Patient Information Success, Reloading..."
+  },
+  "Gene": {
+    "entry": "en",
+    "Variants_Analysis": "Variants Analysis",
+    "Variants Analysis_subtitle": "Here are a list of variants found within this gene.",
+    "message": "Loading Gene Information from Server..."
+  },
+  "HPO": {
+    "entry": "en",
+    "INDIVIDUALS": "INDIVIDUALS",
+    "LITERATURE_GENES": "Genes reported in the literature.",
+    "PHENOGENON": "PHENOGENON",
+    "SKAT": "SKAT",
+    "RECESSIVE": "RECESSIVE",
+    "DOMINANT": "DOMINANT",
+    "Individuals": "Individuals",
+    "Literature_Genes": "Genes reported in the literature.",
+    "Phenogenon": "Phenogenon",
+    "Individuals_subtitle": "Below is a list of individuals who have this phenotype or a descendant of it.",
+    "Literature_Genes_subtitle": "Below is a list of the literature genes from OMIM which are associated with this phenotype.",
+    "Phenogenon_subtitle": "Below is a list of the significant Phenogenon genes.",
+    "SKAT_subtitle": "Below is a list of genes and their variants from the Sequence Kernel Association Test (SKAT).",
+    "RECESSIVE_subtitle": "<0>Genotype</0> : With at least two variants on a given gene that have ExAC homozygous count not higher than <2>2</2> and CADD phred score not lower than <4>15</4>.",
+    "DOMINANT_subtitle": " <0>Genotype</0> : With at least one variant on a given gene that has an ExAC heterozygous count not higher than <2>0.0001</2>, and CADD phred score not lower than <4>15</4>.",
+    "message": "Loading HPO Information from Server..."
+  },
+  "Variant": {
+    "entry": "en",
+    "FREQUENCY": "FREQUENCY",
+    "CONSEQUENCES": "CONSEQUENCES",
+    "QUALITY": "QUALITY",
+    "INDIVIDUALS": "INDIVIDUALS",
+    "GENOTYPES": "GENOTYPES",
+    "Frequency": "Frequency",
+    "Consequences": "Consequences",
+    "Quality": "Quality",
+    "Individuals": "Individuals",
+    "Genotypes": "Genotypes",
+    "Frequency_subtitle": "Frequency of the variant in external databases and internally.",
+    "Consequences_subtitle": "Consequence of the variant on transcripts.",
+    "Quality_subtitle": "Quality of the variant on transcripts.",
+    "Individuals_subtitle": "Genotypes of individuals.",
+    "Genotypes_subtitle": "Genotypes of individuals.",
+    "message": "Loading Variant Information from Server..."
+  },
+  "MyPatient": {
+    "entry": "en",
+    "My_Patients": "My Patients",
+    "Total": "Total",
+    "message": "Loading All Patients Information from Server..."
+  },
+  "Table": {
+    "Select_Button": "Select Table Column",
+    "Save Configuration": "Save Column Configuration",
+    "Save_Success": "Save Configuration Success!",
+    "Save_Fail": "Save Configuration Failed."
+  }
+}

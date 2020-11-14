@@ -1,0 +1,30 @@
+//  Core
+
+.hero-wrapper {
+  flex-direction: column;
+  position: relative;
+
+  .header-nav-wrapper {
+    z-index: 9;
+  }
+
+  .bg-composed-wrapper--image {
+    background-repeat: no-repeat;
+    background-size: cover;
+    background-position: center center;
+  }
+
+  .hero-footer {
+    z-index: 7;
+  }
+
+  .hero-indicator {
+    position: absolute;
+    right: 0;
+    width: 40px;
+    text-align: center;
+    left: 50%;
+    margin-left: -20px;
+    bottom: ($spacer * 2);
+  }
+}

@@ -1,0 +1,79 @@
+//  Core
+
+.timeline-list-horizontal {
+  width: 100%;
+  position: relative;
+  padding: 0;
+  overflow-y: hidden;
+  overflow-x: auto;
+
+  &::before {
+    display: none;
+  }
+
+  ul {
+    @include list-unstyled;
+    margin: 0;
+
+    li {
+      display: table-cell;
+      float: none;
+      max-width: 400px;
+      min-width: 300px;
+    }
+
+    &::before {
+      content: '';
+      position: absolute;
+      top: 14px;
+      left: 0;
+      height: 4px;
+      width: 100%;
+      @include border-radius($border-radius);
+      background: $gray-500;
+    }
+
+    &::after {
+      content: '';
+      display: table;
+      clear: both
+    }
+  }
+
+  .timeline-item--icon {
+    background: $gray-500;
+  }
+
+  .timeline-item {
+    text-align: center;
+    padding: 0 $spacer;
+
+    .timeline-item--content {
+      text-align: center;
+      margin-top: 32px;
+    }
+
+    .timeline-item--icon {
+      top: -23px;
+      left: 50%;
+      margin-left: -7px;
+    }
+
+    .timeline-item--label {
+      font-size: $font-size-base;
+      display: block;
+    }
+  }
+
+  .timeline-item-icon {
+    .timeline-item--icon-wrapper {
+      top: -48px;
+      left: 50%;
+      margin-left: -17px;
+    }
+
+    .timeline-item--content {
+      margin-top: 48px;
+    }
+  }
+}

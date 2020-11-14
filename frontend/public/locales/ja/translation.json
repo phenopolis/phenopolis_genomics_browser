@@ -1,0 +1,220 @@
+{
+  "About": {
+    "Title": "Phenopolisについて",
+    "Mission_Title": "Phenopolisの理念",
+    "Mission_Content": "Phenopolisは、遺伝子または表現型のデータベースを検索するための使いやすいインターフェースを提供するウェブサーバーです。バリアントのフィルターや表現型に基づいた遺伝子の優先順位化などの解析ツールが内蔵されており、臨床診断や遺伝子発見のスピードアップを可能にするとともに、希少遺伝性疾患の研究におけるHuman Phenotype Ontologyのより幅広い適用用を促します。",
+    "Core_Team": "コアチーム",
+    "Contributor": "協力者\n"
+  },
+  "AppBar": {
+    "LoginBar": {
+      "Label_Search": "検索",
+      "Label_Explore": "閲覧\n",
+      "Label_Publication": "文献",
+      "Label_About": "Phenopolisについて",
+      "Label_Product": "サービスの購入",
+      "Label_Patients": "患者データ",
+      "Label_Language": "言語設定",
+      "Label_Change_Password": "パスワード変更",
+      "Label_Logout": "ログアウト",
+      "Logout_Success": "ログアウト完了。",
+      "Logout_Failed": "ログアウトできませんでした。"
+    },
+    "LoginBox": {
+      "title": "サインイン\n",
+      "Label_User_Name": "ユーザー名",
+      "Label_Password": "パスワード",
+      "Button": "サインイン",
+      "Hint": "<1>デモ版にログイン</1>をクリックしてお試しください！",
+      "Login_Success": "ログイン完了！",
+      "Login_Failed": "ログインに失敗しました。"
+    },
+    "NavSearch": {
+      "InputPlaceHolder": "患者名、遺伝子、バリアント等、好きなキーワードで検索できます。",
+      "Searching": "オートコンプリート検索中...",
+      "NoOption": "オートコンプリートが利用できませんでした。\n",
+      "NoContent": "キーワードがありません。\n",
+      "Autocomplete_Failed": "オートコンプリート失敗",
+      "Best_Guess_Failed": "該当する単語が見つかりませんでした\n"
+    },
+    "NoLoginBar": {
+      "Label_Explore": "閲覧\n",
+      "Label_Publication": "文献\n",
+      "Label_About": "Phenopolisについて",
+      "Label_Product": "サービスの購入",
+      "Label_Language": "言語設定",
+      "Label_Login": "ログイン"
+    },
+    "NoSideBar": {
+      "Label_Login": "ログイン",
+      "Label_Explore": "閲覧",
+      "Label_Publication": "文献\n",
+      "Label_About": "Phenopolisについて",
+      "Label_Product": "サービスの購入",
+      "Label_Language": "言語"
+    },
+    "SideBar": {
+      "Label_Search": "検索",
+      "Label_Patients": "患者データ",
+      "Label_Explore": "閲覧",
+      "Label_Publication": "文献\n",
+      "Label_About": "Phenopolisについて",
+      "Label_Product": "サービスの購入",
+      "Label_Language": "言語",
+      "Label_Change_Password": "パスワード変更",
+      "Label_Logout": "ログアウト"
+    }
+  },
+  "Footer": {
+    "About_Us": "Phenopolisについて",
+    "Description": "Phenopolisは、シーケンシングと表現型データのハーモナイゼーションおよび解析のためのプラットフォームです。Phenopolisの開発は、RP Fighting Blindness（現RetinaUK）、NIHR（UCL-Moorfields Eyes Hospital Biomedical Research Center）、UK Medical Research Council、日本学術振興会、および笹川財団の支援により実現しました。\n",
+    "Useful_Links": "便利なリンク",
+    "Publications": "文献",
+    "Contact": "お問い合わせ\n",
+    "External_Links": "外部リンク",
+    "Citation": "文献等でPhenopolisを引用する際には以下の表記を使用してください：<1>Pontikos, N. et al. (2017). Phenopolis: an open platform for harmonization and analysis of genetic and phenotypic data. Bioinformatics, 9, 7</1>"
+  },
+  "Gene": {
+    "entry": "ja\n",
+    "Variants_Analysis": "バリアント解析\n",
+    "Variants Analysis_subtitle": "この遺伝子から発見されたバリアントのリストです。\n",
+    "message": "遺伝子情報をサーバーからロード中..."
+  },
+  "HomePage": {
+    "HomeBanner": {
+      "subtitle": "シーケンシングと表現型のハーモナイゼーションおよび解析\n",
+      "button_no_login": "デモ版にログイン\n",
+      "button_login": "ウェブサイト検索",
+      "login_success": "ログイン成功！",
+      "login_fail": "ログインに失敗しました。"
+    },
+    "HomeMainPart": {
+      "contact": {
+        "title": "お問い合わせ\n",
+        "description": "ご意見、ご感想、問題の報告は、<1>こちら</1>までお気軽にご連絡ください。\n"
+      },
+      "statistic": {
+        "title": "Phenopolisの統計データ",
+        "description": "Phenopolisには{{ exomes }}件のエクソームの解析データがあり、そこに合計{{ variants }}のバリアントが含まれます。"
+      },
+      "tab1": {
+        "title": "よりスピーディーな診断\n",
+        "description": "Human Phenotype Ontologyによって定義された患者の表現型に基づき、遺伝子変異に優先順位をつけます。"
+      },
+      "tab2": {
+        "title": "複数の解析ツール\n",
+        "description": "Exomiser、PubmedScore、Phenogenon、SimReg、Bevimed、SKATを使用して、遺伝子のバリアントや表現型を調べます。"
+      },
+      "tab3": {
+        "title": "遺伝子と表現型の関係\n",
+        "description": "遺伝子または表現型のビューを使って、遺伝子変異が起因の表現型の分布を理解することができます。"
+      },
+      "message": "ホームページを読み込み中..."
+    }
+  },
+  "HPO": {
+    "entry": "ja",
+    "INDIVIDUALS": "患者",
+    "LITERATURE_GENES": "文献で報告されている遺伝子。",
+    "PHENOGENON": "PHENOGENON",
+    "SKAT": "SKAT",
+    "RECESSIVE": "潜性",
+    "DOMINANT": "顕性",
+    "Individuals": "患者",
+    "Literature_Genes": "文献で報告されている遺伝子。",
+    "Phenogenon": "Phenogenon",
+    "Individuals_subtitle": "この表現型を持つ患者、またはその子孫のリストです。\n",
+    "Literature_Genes_subtitle": "この表現型に関係し、OMIMの文献で報告されている遺伝子のリストです。\n",
+    "Phenogenon_subtitle": "Phenogenonから得られた顕著な遺伝子のリストです。",
+    "SKAT_subtitle": "Sequence Kernel Association Test（SKAT）から得られた遺伝子およびそのバリアントのリストです。",
+    "RECESSIVE_subtitle": "<0>遺伝子型</0>：\nExACのホモ接合カウントが<2>2</2>またはそれ以下で、CADD Phredスコアが<4>15</4>またはそれ以上である遺伝子に少なくとも2つのバリアントあるケースを指します。",
+    "DOMINANT_subtitle": "<0>遺伝子型</0>：\nExACのホモ接合カウントが<2>0.0001</2>またはそれ以下で、CADD Phredスコアが<4>15</4>またはそれ以上である遺伝子に少なくとも1つのバリアントがあるケースを指します。",
+    "message": "HPO情報をサーバーからロード中...\n"
+  },
+  "Individual": {
+    "entry": "ja",
+    "RARE_HOMS": "希少なホモ接合体",
+    "RARE_COMP_HETS": "希少な複合ヘテロ接合体",
+    "RARE_VARIANTS": "レアバリアント",
+    "Rare_HOMs": "希少なホモ接合体",
+    "Rare_Comp_Hets": "希少な複合ヘテロ接合体",
+    "Rare_Variants": "レアバリアント",
+    "Rare_HOMs_subtitle": "基準値に基づいて得られたホモ接合体のレアバリアントのリストです。",
+    "Rare_Comp_Hets_subtitle": "アレル頻度の基準値に基づいて得られた、複合ヘテロ接合体のレアバリアント（ひとつの遺伝子に複数のバリアントが見られること）のリストです。",
+    "Rare_Variants_subtitle": "アレル頻度の基準値に基づいて得られた、ヘテロ接合体のレアバリアントのリストです。",
+    "message": "患者情報をサーバーからロード中...",
+    "edit_message": "患者情報の編集が完了しました。再ロード中..."
+  },
+  "Login": {
+    "redirectionLink": "<1> {{ mylink}} </1>にアクセスすることができません。もう一度ログインを試しますか？",
+    "redirectionLink_plural": "<1> {{ mylink}} </1>にアクセスすることができません。もう一度ログインを試しますか？",
+    "login": "ログインが完了しました。\n",
+    "login_subtitle": "ログアウトする場合は、このページの右上に表示されているアカウントマークをクリックしてください。\n"
+  },
+  "MyPatient": {
+    "entry": "ja\n",
+    "My_Patients": "患者データ",
+    "Total": "合計件数",
+    "message": "すべての患者情報をサーバーからロード中..."
+  },
+  "Product": {
+    "Title": "解析サービスを購入",
+    "Exome_Analysis_Title": "エクソーム解析",
+    "Exome_Analysis_Content": "全エクソーム解析をお手伝いし、そのデータをPhenopolisに取り込むサービスです。含まれる内容：",
+    "Exome_Analysis_Description": "<0>ジェノタイピング</0> <1>表現型および遺伝子データの取り込みおよび検索</1> <2>表現型に基づいたバリアントの優先順位化</2> <3>無料でデータをホスティング（少なくとも3年間） </3>",
+    "Exome_Analysis_Close": "詳細はお問い合わせください。",
+    "Exome_Price_Title": "エクソーム解析",
+    "Exome_Price_Subtitle": "人気ナンバー1",
+    "Exome_Price_Unit": "エクソーム",
+    "Exome_Price_Feature": null,
+    "Exome_Price_Button": "お問い合わせ"
+  },
+  "Publication": {
+    "Title": "文献",
+    "Phenopolis_Publications": "Phenopolisの文献",
+    "publication": null,
+    "Associated_Publications_using_Phenopolis": "Phenopolisを使用した関連文献\n",
+    "Primary_immune_deficiencies": "原発性免疫不全障害：",
+    "Dermatology": "皮膚科学：",
+    "Bone_marrow_failure": "骨髄不全：",
+    "Cardiovascular_disorders": "心血管障害：",
+    "Neurology": "神経学：",
+    "Other_disease_fields": "その他の疾患分野："
+  },
+  "Search": {
+    "title": "Phenopolisで検索",
+    "subtitle": "シーケンシングと表現型データのハーモナイゼーションおよび解析のためのプラットフォーム。",
+    "label": "表現型、患者名、遺伝子、バリアント、地域等、好きなキーワードで検索できます。",
+    "Searching": "オートコンプリートを実行中...\n",
+    "NoOption": "一致する単語が見つかりませんでした。\n",
+    "NoContent": "キーワードがありません。\n",
+    "Autocomplete_Failed": "オートコンプリート失敗",
+    "Best_Guess_Failed": "該当する単語が見つかりませんでした\n",
+    "Example": "例"
+  },
+  "Table": {
+    "Select_Button": "表示する列を選択\n",
+    "Save Configuration": "列の設定を保存",
+    "Save_Success": "列の設定が保存されました！",
+    "Save_Fail": "列の設定を保存できませんでした。"
+  },
+  "Variant": {
+    "entry": "ja\n",
+    "FREQUENCY": "頻度",
+    "CONSEQUENCES": "コンシークエンス\n",
+    "QUALITY": "クオリティ",
+    "INDIVIDUALS": "患者",
+    "GENOTYPES": "遺伝子型",
+    "Frequency": "頻度",
+    "Consequences": "コンシークエンス\n",
+    "Quality": "クオリティ",
+    "Individuals": "患者",
+    "Genotypes": "遺伝子型",
+    "Frequency_subtitle": "外部および内部データベースにおけるバリアントの頻度。\n",
+    "Consequences_subtitle": "転写におけるバリアントの影響。",
+    "Quality_subtitle": "転写におけるバリアントのクオリティ。",
+    "Individuals_subtitle": "患者の遺伝子型。",
+    "Genotypes_subtitle": "患者の遺伝子型。",
+    "message": "サーバーからバリアント情報をロード中..."
+  }
+}

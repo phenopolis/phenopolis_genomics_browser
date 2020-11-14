@@ -1,0 +1,70 @@
+.hideColumn-root {
+   width: 1000px;
+   max-height: 600px;
+   overflow-y: auto;
+}
+.hideColumn-allSelectChip {
+   color: black !important;
+   font-weight: 800;
+   margin: 8px !important;
+}
+.hideColumn-chip {
+   margin: 8px !important;
+}
+.hideColumn-smallAvatar {
+   font-size: 12px !important;
+   width: 24px !important;
+   height: 24px !important;
+   margin: 8px;
+}
+.hideColumn-smallFilter {
+   font-size: 12px;
+   margin: 0;
+}
+
+.styledTableSortLabel {
+   color: white !important;
+   font-weight: 500;
+   font-size: 0.9em;
+   &:hover {
+      color: white !important;
+      font-weight: 900!important;
+   }
+   &:active {
+      color: white !important;
+      font-weight: 900 !important;
+   }
+   svg {
+      color: inherit !important;
+   }
+}
+
+.stickyGridHeader {
+   position: sticky;
+   top: 0;
+   left: 0;
+   display: flex;
+   flex-direction: column;
+   z-index: 3;
+}
+.stickyGridHeaderScrollableColumn {
+   position: absolute;
+   background-color: #2E84CF;
+   color: white;
+   font-size: 13px;
+   font-weight: 900;
+   text-align: center;
+   align-items: center;
+   padding: 20px 0;
+}
+.visuallyHidden {
+   border: 0;
+   clip: rect(0 0 0 0);
+   height: 1px;
+   margin: -1px;
+   overflow: hidden;
+   padding: 0;
+   position: absolute;
+   top: 20px;
+   width: 1px;
+}

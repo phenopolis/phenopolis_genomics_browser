@@ -1,0 +1,156 @@
+//  Core
+
+.wizard {
+  .steps-indicator {
+    padding: $card-spacer-y $card-spacer-x;
+    border-bottom: $card-border-color solid 1px;
+    background: $secondary;
+    display: flex;
+    list-style: none;
+    margin: 0;
+
+    li {
+      display: block;
+      width: auto;
+      position: relative;
+      padding: 0 ($spacer * 2) 0 0;
+
+      a {
+        justify-content: flex-start;
+        align-items: center;
+        display: flex;
+        flex-direction: row-reverse;
+        cursor: pointer;
+        position: relative;
+
+        .step-indicator {
+          width: 38px;
+          height: 38px;
+          background: transparent;
+          border: $gray-700 solid 2px;
+          color: $gray-700;
+          display: flex;
+          align-items: center;
+          font-weight: bold;
+          justify-content: center;
+          flex-shrink: 0;
+          @include border-radius(100%);
+          transition: $transition-base;
+          position: relative;
+        }
+
+        .label {
+          padding: 0 ($spacer / 1.5);
+          color: $gray-700;
+          transition: $transition-base;
+          font-size: $font-size-base;
+        }
+
+        &:hover {
+          .step-indicator {
+            color: $gray-800;
+            border-color: $gray-800;
+          }
+
+          .label {
+            color: $gray-800;
+          }
+        }
+      }
+
+      &:after {
+        font-family: "Pe-icon-7-stroke";
+        speak: none;
+        font-style: normal;
+        font-weight: normal;
+        font-variant: normal;
+        text-transform: none;
+        text-rendering: auto;
+        -webkit-font-smoothing: antialiased;
+        -moz-osx-font-smoothing: grayscale;
+        font-size: 2.3rem;
+        padding: 0;
+        text-align: center;
+        text-indent: initial;
+        display: block;
+        content: '\e684';
+        position: absolute;
+        right: 24px;
+        width: 16px;
+        top: 50%;
+        margin-top: -8px;
+        height: 16px;
+        line-height: 16px;
+      }
+
+      &.current {
+        a {
+          .step-indicator {
+            background: $primary;
+            border-color: $primary;
+            color: $white;
+          }
+
+          .label {
+            color: $primary;
+          }
+        }
+      }
+
+      &.done {
+        a {
+          .step-indicator {
+            background: $success;
+            color: $white;
+            border-color: $success;
+          }
+
+          .label {
+            color: $success;
+          }
+        }
+      }
+
+      &:last-child {
+        &:after {
+          display: none;
+        }
+      }
+    }
+  }
+
+  .wizard-steps {
+    padding: 0;
+  }
+
+  .actions {
+    display: flex;
+    justify-content: space-between;
+    border-top: $card-border-color solid 1px;
+  }
+
+}
+
+// Responsive
+
+@include media-breakpoint-down(sm) {
+  .wizard .steps ul {
+    display: block;
+
+    li {
+      padding: 0 0 ($spacer * 2) 0;
+
+      &:after {
+        transform: rotate(90deg);
+        right: auto;
+        left: 11px;
+        bottom: ($spacer / 1.1);
+        top: auto;
+      }
+
+      &:last-child {
+        padding-bottom: 0;
+      }
+    }
+  }
+}

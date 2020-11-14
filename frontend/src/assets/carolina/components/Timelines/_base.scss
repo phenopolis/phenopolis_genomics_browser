@@ -1,0 +1,139 @@
+//  Core
+
+.timeline-list {
+  width: 100%;
+  position: relative;
+  padding: ($spacer) 0 0;
+
+  &::after {
+    content: '';
+    display: table;
+    clear: both
+  }
+
+  &::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 14px;
+    height: 100%;
+    width: 4px;
+    @include border-radius($border-radius);
+  }
+
+  .timeline-item--icon,
+  &::before {
+    background: $gray-500;
+  }
+
+  .timeline-item {
+    position: relative;
+    padding: ($spacer / 3) 0 ($spacer / 3) 36px;
+    margin: 0 0 ($spacer);
+
+    p {
+      margin: 0;
+    }
+  }
+
+  .timeline-item-icon {
+    padding: ($spacer / 2) 0 ($spacer / 2) 46px;
+  }
+
+  .timeline-item--icon {
+    height: 14px;
+    width: 14px;
+    position: absolute;
+    left: -27px;
+    top: 1px;
+    display: block;
+    border-radius: 20px;
+
+    &::after {
+      content: '';
+      position: absolute;
+      background: $white;
+      left: 50%;
+      top: 50%;
+      margin: -4px 0 0 -4px;
+      display: block;
+      width: 8px;
+      height: 8px;
+      border-radius: 20px;
+    }
+
+    &.timeline-icon-alternate {
+      top: 12px;
+
+      & + .timeline-item--label {
+        margin-left: -6px;
+      }
+    }
+  }
+
+  .timeline-item--icon-wrapper {
+    @include border-radius($border-radius-lg);
+    width: 34px;
+    height: 34px;
+    line-height: 34px;
+    text-align: center;
+    display: block;
+    position: absolute;
+    left: -47px;
+    top: -9px;
+  }
+
+  .timeline-item--content {
+    font-size: $font-size-sm;
+    color: $gray-800;
+    position: relative;
+  }
+
+  .timeline-item--label {
+    font-size: $font-size-sm;
+    margin: 0;
+    color: $black;
+    display: flex;
+    align-content: center;
+    align-items: center;
+    line-height: 1.5;
+  }
+}
+
+.timeline-list-offset {
+
+  &:before {
+    left: 76px !important;
+  }
+
+  .timeline-item-offset {
+    position: absolute;
+    left: 0;
+    opacity: .5;
+    width: 50px;
+    text-align: right;
+  }
+
+  .timeline-item-icon {
+    padding-left: 108px !important;
+
+    .timeline-item-offset {
+      top: 6px !important;
+      font-weight: bold;
+    }
+  }
+
+  .timeline-item {
+    padding-left: 88px;
+
+    .timeline-item-offset {
+      top: 3px;
+    }
+  }
+
+  &.timeline-list-offset-dot {
+    &:before {
+      left: 66px !important;
+    }
+  }
+}

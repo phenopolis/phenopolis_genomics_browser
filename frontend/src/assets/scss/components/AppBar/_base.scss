@@ -1,0 +1,208 @@
+.appBar {
+  z-index: 1000 !important;
+  //transition: background-color 150ms cubic-bezier(0.4, 0, 0.2, 1) 0ms !important;
+}
+
+.loginBar-container {
+  display: flex;
+}
+
+.appBarShift {
+  margin-left: 240px !important;
+  width: calc(100% - 240px) !important;
+}
+
+.appBar-menuButton {
+  margin-right: 36px !important;
+}
+
+.appBar-hide {
+  display: none;
+}
+
+.drawer {
+  width: 240px;
+  flex-shrink: 0;
+  white-space: nowrap;
+  z-index: 2 !important;
+}
+
+.drawerOpen {
+  width: 240px;
+  transition: background-color 150ms cubic-bezier(0.4, 0, 0.2, 1) 0ms !important;
+  z-index: 2 !important;
+}
+
+.drawerClose {
+  overflow-x: hidden !important;
+  transition: background-color 150ms cubic-bezier(0.4, 0, 0.2, 1) 0ms !important;
+  width: 72px !important;
+  z-index: 2 !important;
+}
+
+.appBar-content {
+  flex-grow: 1 !important;
+  padding-top: 3em;
+}
+
+.appBar-contentShift {
+  margin-right: 36px !important;
+}
+
+.appBar-toolbar {
+  display: flex !important;
+  align-items: center !important;
+  justify-content: flex-end !important;
+  padding: 8px;
+}
+
+.appBar-menuicon {
+  color: white;
+}
+
+.appBar-HomeLabel {
+  text-decoration: none;
+  font-weight: 900;
+}
+
+.appBar-navigationbutton {
+  color: white !important;
+  max-width: max-content !important;
+}
+
+.appBar-grid {
+  text-align: center !important;
+}
+
+.appBar-listItemText {
+  font-size: 0.8em !important;
+}
+
+.imageIcon {
+  height: 1.2em;
+  width: 1.2em;
+  box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
+}
+
+.loginbox-paper {
+   margin: 24px;
+   display: flex;
+   flex-direction: column;
+   align-items: center;
+}
+
+.loginbox-avatar {
+  margin: 8px;
+  background-color: red;
+}
+
+.loginbox-form {
+  width: 100% !important;
+  margin-top: 8px !important;
+}
+
+.loginbox-submit {
+  margin: 24px 0 16px !important;
+}
+
+.loginbox-textfield {
+  color: #2E84CF;
+}
+
+.loginBox-demolink-try {
+  color: grey;
+  margin-top: 24px !important;
+}
+
+.loginBox-demolink {
+  color: grey;
+  cursor: pointer;
+  margin-top: 24px !important;
+
+  &:hover {
+    text-shadow: -0.06ex 0 grey, 0.06ex 0 grey;
+    text-decoration: none;
+  }
+}
+
+.actionbar-list {
+  width: 239px;
+  background-color: whitesmoke;
+}
+.actionbar-listItem {
+  color: black;
+  &:hover {
+    color: #2E84CF;
+    background-color: #f5f5f5;
+    .actionbar-icon {
+      color: #2E84CF;
+    }
+    .actionbar-listItemText {
+      color: #2E84CF;
+    }
+  }
+}
+.actionbar-icon {
+  font-size: 20px !important;
+  margin-left: 9px;
+}
+.actionbar-listItemText {
+  font-size: 1em;
+}
+.actionbar-nested {
+  margin-left: 3.5px !important;
+  font-size: 0.8em;
+  background-color: #f5f5f5;
+  &:hover {
+    color: #2E84CF;
+    background-color: #f5f5f5;
+    .actionbar-icon {
+      color: #2E84CF;
+    }
+    .actionbar-listItemText {
+      color: #2E84CF;
+    }
+  }
+}
+.actionbar-imageIcon {
+  margin-left: 9px;
+  height: 1.2em;
+  width: 1.2em;
+  box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
+}
+
+.noLoginBar-appbar {
+  background-color: #2E84CF;
+}
+.noLoginBar-menuicon {
+  color: white;
+}
+.noLoginBar-homelabel {
+  text-decoration: none;
+  font-weight: 900;
+}
+.noLoginBar-navigationbutton {
+  color: white !important;
+  max-width: max-content;
+}
+.noLoginBar-grid {
+  text-align: center;
+}
+.noLoginBar-listItemText {
+  font-size: 0.8em;
+}
+
+.noSideBar-list {
+  width: 250px;
+}
+.noSideBar-listItemText {
+  font-size: 0.97em !important;
+}
+.noSideBar-nested {
+  padding-left: 32px !important;
+}
+.appBar-imageIcon {
+  height: 1.2em;
+  width: 1.2em;
+  box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
+}
