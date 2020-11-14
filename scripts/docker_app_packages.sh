@@ -6,7 +6,7 @@ set -euo pipefail
 set -x
 
 yum update -y
-yum install -y --setopt install_weak_deps=false \ \
+yum install -y --setopt install_weak_deps=false \
     bzip2-devel-1.0.6-13.amzn2.0.2 \
     gcc-7.3.1-9.amzn2 \
     libcurl-devel-7.61.1-12.amzn2.0.2 \
