@@ -21,7 +21,11 @@ ENV_LOG_FLAG = True
 if APP_ENV in ["prod"]:
     ENV_LOG_FLAG = False
 
-variant_file = VCF(os.getenv("S3_VCF_FILE_URL"))
+# in GH Workflow tests, private.env is not available so skip variant tests
+try:
+    variant_file = VCF(os.getenv("S3_VCF_FILE_URL"))
+except OSError:
+    variant_file = None
 
 
 def _configure_logs():
