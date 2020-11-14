@@ -1,6 +1,8 @@
 [build]
+  base = "frontend/"
   publish = "build"
   command = "npm run build; cp _redirects_dev build/_redirects"
+  ignore = "git diff --quiet HEAD^ HEAD frontend/"
 
 [context.prod-live]
   command = "npm run build; cp _redirects_live build/_redirects"

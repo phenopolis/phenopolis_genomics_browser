@@ -79,3 +79,5 @@ private.env
 tests
 db/seed
 .git
+
+frontend
