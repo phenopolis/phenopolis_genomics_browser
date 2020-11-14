@@ -1,4 +1,15 @@
+import sys
+from io import StringIO
+from views.variant import _get_genotypes  # noqa: F401
 from views.variant import variant, variant_preview
+
+
+def test_get_genotypes_exception():
+    # if this happens, something is out of sync between S3 VCF file and variant table in DB
+    redirected_error = sys.stderr = StringIO()
+    exec('_get_genotypes("443", "10000")')
+    err = redirected_error.getvalue()
+    assert "no intervals found for" in err
 
 
 def test_variant(_demo):
