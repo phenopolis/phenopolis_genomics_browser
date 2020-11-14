@@ -25,8 +25,27 @@ import { setSnack } from '../../redux/actions/snacks';
 export default function CreateUser(props) {
   const dispatch = useDispatch();
 
-  const [username, setUsername] = useState('');
-  const [password, setPassword] = useState('');
+  const listItems = [
+    { name: 'User', key: 'user' },
+    { name: 'Password', key: 'argon_password' },
+    { name: 'Email', key: 'email' },
+    { name: 'Full Name', key: 'full_name' },
+  ];
+
+  const [values, setValues] = useState({
+    user: '',
+    argon_password: '',
+    email: '',
+    full_name: '',
+    confirmation_url: 'https://phenopolis.org/confirm',
+  });
+
+  const handleSetValue = (value, key) => {
+    var newValues = { ...values };
+    newValues[key] = value;
+    setValues(newValues);
+  };
+
   const [ConfirmOpen, setConfirmOpen] = useState(false);
 
   const { newUserInfo, createLoaded } = useSelector((state) => ({
@@ -38,14 +57,20 @@ export default function CreateUser(props) {
     if (createLoaded) {
       dispatch(setSnack('User Created!', 'success'));
       dispatch(ResetCreate());
-      setUsername('');
-      setPassword('');
       handleCloseDialog();
     }
   }, [createLoaded]);
 
   const handleOpenConfirm = () => {
-    setConfirmOpen(true);
+    if (
+      Object.keys(values).some((x) => {
+        return values[x] === '';
+      })
+    ) {
+      dispatch(setSnack('You have empty value to fill.', 'error'));
+    } else {
+      setConfirmOpen(true);
+    }
   };
 
   const handleCloseDialog = () => {
@@ -53,16 +78,7 @@ export default function CreateUser(props) {
   };
 
   const handleSubmitNewUser = () => {
-    if (username === '') {
-      dispatch(setSnack('User name can not be empty.', 'error'));
-      return;
-    }
-
-    if (password === '') {
-      dispatch(setSnack('Password can not be empty.', 'error'));
-      return;
-    }
-    dispatch(createNewUser([{ user: username, argon_password: password }]));
+    dispatch(createNewUser(values));
   };
 
   return (
@@ -71,7 +87,36 @@ export default function CreateUser(props) {
         <div className="font-size-xl font-weight-bold">New User</div>
         <Divider className="my-4" />
         <Container>
-          <Grid container direction="row" alignItems="center" justify="center" className="mb-2">
+          <Grid container direction="row" justify="center" alignItems="center">
+            <Grid item xs={8}>
+              <div className="font-size-md py-3 rounded-sm">
+                {listItems.map((item, index) => {
+                  return (
+                    <div className="d-flex justify-content-between py-2">
+                      <span className="font-weight-bold mt-2">{item.name}</span>
+                      <span className="text-black-50">
+                        <TextField
+                          fullWidth
+                          size="small"
+                          type={item.name === 'Password' ? 'password' : null}
+                          className="mt-0 mb-4 ml-4"
+                          id="standard-basic"
+                          value={values[item.key]}
+                          onChange={(event) => handleSetValue(event.target.value, item.key)}
+                          error={values[item.key] === ''}
+                          helperText={
+                            values[item.key] === '' ? item.name + ' can not be Empty!' : ' '
+                          }
+                        />
+                      </span>
+                    </div>
+                  );
+                })}
+              </div>
+            </Grid>
+          </Grid>
+
+          {/* <Grid container direction="row" alignItems="center" justify="center" className="mb-2">
             <Grid item xs={3}>
               <Typography component="div">
                 <Box fontWeight="fontWeightLight" fontSize="subtitle1.fontSize">
@@ -117,7 +162,7 @@ export default function CreateUser(props) {
                 helperText={password === '' ? 'Password can not be Empty!' : ' '}
               />
             </Grid>
-          </Grid>
+          </Grid> */}
         </Container>
         <DialogActions>
           <Button

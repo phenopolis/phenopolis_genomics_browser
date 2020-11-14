@@ -15,6 +15,7 @@ import NotFoundPage from './page/NotFoundPage';
 import CreatePatient from './page/CreatePatient';
 import ManagePatient from './page/ManagePatient';
 import ManageUser from './page/ManageUser';
+import ConfirmPage from './page/ConfirmPage';
 
 import CustomizedSnackbars from './components/CustomizedSnackbars/CustomizedSnackbars';
 import AuthCheck from './components/AuthCheck/AuthCheck';
@@ -65,6 +66,7 @@ function App() {
                 <Route path="/hpo/:hpoId" component={HPO} />
                 <Route path="/individual/:individualId" component={Individual} />
                 <Route path="/variant/:variantId" component={Variant} />
+                <Route path="/confirm" component={ConfirmPage} />
                 <Route component={NotFoundPage} />
               </Switch>
             </HomeAppBar>

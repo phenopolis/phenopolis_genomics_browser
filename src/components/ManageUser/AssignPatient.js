@@ -245,7 +245,7 @@ export default function TransferList(props) {
             <Grid container spacing={2} className="mb-2">
               {FilteredPatientList.slice((page - 1) * 18, page * 18).map((item, index) => {
                 return (
-                  <Grid key={index} item md={6} lg={4} className="m-0 p-0">
+                  <Grid key={index} item xs={4} lg={6} xl={4} className="m-0 p-0">
                     <TypeChip
                       size="small"
                       label={item}
@@ -338,7 +338,7 @@ export default function TransferList(props) {
               <Grid container spacing={2} className="mb-2">
                 {FilteredFullList.slice((page2 - 1) * 18, page2 * 18).map((item, index) => {
                   return (
-                    <Grid key={index} item md={6} lg={4} className="m-0 p-0">
+                    <Grid key={index} item xs={4} lg={6} xl={4} className="m-0 p-0">
                       <TypeChip
                         size="small"
                         label={item}

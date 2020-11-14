@@ -54,10 +54,12 @@ const AuthCheck = () => {
       if (notification) {
         dispatch(setSnack(i18next.t('AppBar.LoginBox.Login_Failed'), 'error'));
       }
+      console.log(window.location.pathname);
       if (
         window.location.pathname !== '/' &&
         window.location.pathname !== '/publications' &&
-        window.location.pathname !== '/login'
+        window.location.pathname !== '/login' &&
+        !/confirm/.test(window.location.pathname)
       ) {
         history.push(`/login?link=${window.location.pathname}`);
       }

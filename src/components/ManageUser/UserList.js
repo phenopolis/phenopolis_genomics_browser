@@ -107,10 +107,10 @@ export default function UserList(props) {
                               </span>
                             ) : null}
                           </div>
-                          <span className="opacity-4 font-size-sm">
+                          {/* <span className="opacity-4 font-size-sm">
                             <FontAwesomeIcon icon={faHospital} className="mr-1" />
                             <b className="pr-1">xxxx </b> Hospital
-                          </span>
+                          </span> */}
                         </div>
                         <div className="text-right">
                           <Tooltip arrow title="Assign Patients">

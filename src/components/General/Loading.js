@@ -8,7 +8,7 @@ const Loading = ({ message }) => {
       <CssBaseline />
       <div className={'loading-root'}>
         <Container maxWidth="md">
-          <Paper className={'loading-paper'}>
+          <Paper elevation={0} className={'loading-paper'}>
             <Grid
               container
               spacing={0}
