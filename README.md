@@ -1,4 +1,4 @@
-# Phenopolis API
+# Phenopolis Browser
 
 A description of the code setup is available [here](code_setup.md).
 
