@@ -143,7 +143,7 @@ tables use `scripts/migrate_variants.sh`.
 Ensembl import
 --------------
 
-You can import gene, transcript and exon annotations from Ensembl running 
+You can import gene, transcript and exon annotations from Ensembl running
 `scripts/import_ensembl.py`.
 
 Load the data as follows:
@@ -156,3 +156,94 @@ Load the data as follows:
 \copy ensembl.gene_synonym FROM 'gene_synonyms.csv' delimiter ',' CSV HEADER;
 \copy ensembl.transcript_uniprot FROM 'transcripts_uniprot.csv' delimiter ',' CSV HEADER;
 ```
+
+How to query
+============
+
+How to query HPO
+----------------
+
+> Q: I want to query it to obtain all child descendants of  HP:0000478 |
+> Abnormality of the eye
+
+The HPO terms are in the `hpo.term` table:
+
+```
+phenopolis_dev_db=> select id, hpo_id, name, description from hpo.term where hpo_id = 'HP:0000478';
+ id  |   hpo_id   |          name          |                                       description
+-----+------------+------------------------+-----------------------------------------------------------------------------------------
+ 478 | HP:0000478 | Abnormality of the eye | Any abnormality of the eye, including location, spacing, and intraocular abnormalities.
+(1 row)
+```
+
+HPO terms are in a graph. The edges of the graph are in the `hpo.is_a` table:
+
+```
+phenopolis_dev_db=> select * from hpo.is_a limit 3;
+ term_id | is_a_id
+---------+---------
+       2 |    1507
+       3 |     107
+       5 |       1
+(3 rows)
+```
+
+The `hpo.is_a_path` is a materialised view which has all the paths from the
+root to any term expanded, for instance these are all the paths _leading to_
+term 478:
+
+```
+phenopolis_dev_db=> select * from hpo.is_a_path where term_id = 478;
+ term_id |   path
+---------+-----------
+     478 | 1.118.478
+(1 row)
+```
+
+The `path` field of this table is an
+[ltree](https://www.postgresql.org/docs/current/ltree.html), which is a data
+type holding a path of labels. It allows for efficient querying of all the
+paths containing an element: if we are looking for `478` in any position we can
+query:
+
+```
+phenopolis_dev_db=> select * from hpo.is_a_path where path ~ '*.478.*' limit 3;
+ term_id |                 path
+---------+--------------------------------------
+   11496 | 1.118.478.12372.4328.481.11496
+   12155 | 1.118.478.12372.4328.481.12155
+   25349 | 1.118.478.12372.4328.481.25348.25349
+(3 rows)
+```
+
+Put together, the original question can be answered with:
+
+```
+select t.hpo_id, t.name
+from hpo.term t
+where exists (
+    select 1 from hpo.is_a_path p
+    where p.term_id = t.id
+    and p.path ~ (
+        select ('*.' || id || '.*')::lquery
+        from hpo.term t2
+        where t2.hpo_id = 'HP:0000478'
+    )
+)
+limit 10;
+   hpo_id   |                     name
+------------+----------------------------------------------
+ HP:0001489 | Posterior vitreous detachment
+ HP:0031766 | Convergence excess esotropia
+ HP:0009914 | Cyclopia
+ HP:0031789 | Against the rule astigmatism
+ HP:0000539 | Abnormality of refraction
+ HP:0008034 | Abnormal iris pigmentation
+ HP:0007970 | Congenital ptosis
+ HP:0007958 | Optic atrophy from cranial nerve compression
+ HP:0010545 | Downbeat nystagmus
+ HP:0031788 | With the rule astigmatism
+(10 rows)
+```
+
+(after removing the limit there are 1125 terms).
