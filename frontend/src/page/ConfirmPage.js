@@ -26,12 +26,12 @@ export default function ConfirmPage() {
 
   useEffect(() => {
     if (confirmError) {
-      setStatus('Failed')
-      setMessage(confirmError.message)
+      setStatus('Failed');
+      setMessage(confirmError.message);
     }
     if (confirmLoaded) {
-      setStatus('Success')
-      setMessage(confirmResult.message)
+      setStatus('Success');
+      setMessage(confirmResult.message);
     }
 
     dispatch(ResetConfirmRegistration());
@@ -39,25 +39,24 @@ export default function ConfirmPage() {
 
   return (
     <Fragment>
-      {
-        status !== null ? (
-          <div className={'login-root'}>
-            <Container maxWidth="md">
-              <Paper className={'login-paper2'}>
-                <Typography component="div">
-                  <Box fontWeight="900" fontSize="h4.fontSize" m={1}>
-                    Confirm Registration {status}
-                  </Box>
-                  <Box fontWeight="fontWeightLight" m={1}>
-                    {message}
-                  </Box>
-                </Typography>
-              </Paper>
-            </Container>
-          </div>
-        ) : (<Loading message={'Confirming User Registration'} />)
-      }
-
+      {status !== null ? (
+        <div className={'login-root'}>
+          <Container maxWidth="md">
+            <Paper className={'login-paper2'}>
+              <Typography component="div">
+                <Box fontWeight="900" fontSize="h4.fontSize" m={1}>
+                  Confirm Registration {status}
+                </Box>
+                <Box fontWeight="fontWeightLight" m={1}>
+                  {message}
+                </Box>
+              </Typography>
+            </Paper>
+          </Container>
+        </div>
+      ) : (
+        <Loading message={'Confirming User Registration'} />
+      )}
     </Fragment>
   );
 }
