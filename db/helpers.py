@@ -33,10 +33,3 @@ def legacy_query_user_config(language, entity):
 def cursor2dict(cursor):
     headers = [h[0] for h in cursor.description]
     return [dict(zip(headers, r)) for r in cursor.fetchall()]
-
-
-# Not used anywhwere anymore
-# def cursor2one_dict(cursor):
-#     headers = [h[0] for h in cursor.description]
-#     result = cursor.fetchone()
-#     return dict(zip(headers, result)) if result else None
