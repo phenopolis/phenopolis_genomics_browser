@@ -24,7 +24,15 @@ function getSearchBest(param) {
 }
 
 function getPreviewInformation(param) {
-  return axios.get(api.BASE_URL + param + api.FETCH_PREVIEW, {
+  // var previewURL = api.BASE_URL + param + api.FETCH_PREVIEW
+
+  if (/variant/.test(param)) {
+    var previewURL = api.BASE_URL + '/variant/preview/' + param.split('/').slice(-1)[0]
+  } else {
+    var previewURL = api.BASE_URL + param + api.FETCH_PREVIEW
+  }
+  console.log(previewURL)
+  return axios.get(previewURL, {
     withCredentials: true,
   });
 }

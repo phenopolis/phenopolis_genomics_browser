@@ -45,11 +45,9 @@ export const getAllUser = () => {
     dispatch({ type: FETCH_USER_REQUEST });
     Service.getAllUser()
       .then((res) => {
-        console.log(res);
         dispatch({ type: FETCH_USER_SUCCESS, payload: { data: res.data } });
       })
       .catch((error) => {
-        console.log(error);
         if (error.response.status === 401) {
           dispatch({
             type: SET_STATUS,
@@ -72,11 +70,9 @@ export const getOneUser = (param) => {
     dispatch({ type: FETCH_ONE_USER_REQUEST });
     Service.getOneUser(param)
       .then((res) => {
-        console.log(res);
         dispatch({ type: FETCH_ONE_USER_SUCCESS, payload: { data: res.data } });
       })
       .catch((error) => {
-        console.log(error);
         if (error.response.status === 401) {
           dispatch({
             type: SET_STATUS,
@@ -93,11 +89,9 @@ export const getAllPatients = () => {
     dispatch({ type: FETCH_ALL_PATIENT_REQUEST });
     Service.getAllPatients()
       .then((res) => {
-        console.log(res);
         dispatch({ type: FETCH_ALL_PATIENT_SUCCESS, payload: { data: res.data } });
       })
       .catch((error) => {
-        console.log(error);
         if (error.response.status === 401) {
           dispatch({
             type: SET_STATUS,
@@ -114,11 +108,9 @@ export const createNewUser = (data) => {
     dispatch({ type: CREATE_USER_REQUEST });
     Service.createUser(data)
       .then((res) => {
-        console.log(res);
         dispatch({ type: CREATE_USER_SUCCESS, payload: { data: res.data } });
       })
       .catch((error) => {
-        console.log(error);
         if (error.response.status === 401) {
           dispatch({
             type: SET_STATUS,
@@ -141,7 +133,6 @@ export const enableUser = (param) => {
     dispatch({ type: ENABLE_USER_REQUEST });
     Service.enableUser(param)
       .then((res) => {
-        console.log(res);
 
         if (param.status === true) {
           dispatch({
@@ -158,7 +149,6 @@ export const enableUser = (param) => {
         dispatch({ type: ENABLE_USER_SUCCESS, payload: { data: res.data } });
       })
       .catch((error) => {
-        console.log(error);
         if (error.response.status === 401) {
           dispatch({
             type: SET_STATUS,
@@ -181,7 +171,6 @@ export const changePassword = (data) => {
     dispatch({ type: CHANGE_PASSWORD_REQUEST });
     Service.changePassword(data)
       .then((res) => {
-        console.log(res);
 
         dispatch({
           type: SET_SNACK,
@@ -191,7 +180,6 @@ export const changePassword = (data) => {
         dispatch({ type: CHANGE_PASSWORD_SUCCESS, payload: { data: res.data } });
       })
       .catch((error) => {
-        console.log(error);
         if (error.response.status === 401) {
           dispatch({
             type: SET_STATUS,
