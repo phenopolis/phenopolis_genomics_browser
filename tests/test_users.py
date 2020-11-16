@@ -160,7 +160,7 @@ def test_confirm_user_already_confirmed(_not_logged_in_client):
     # tries to confirm an email not in the database
     confirmation_token = generate_confirmation_token("demo@phenopolis.org")
     response = _not_logged_in_client.get("/user/confirm/{}".format(confirmation_token))
-    assert response.status_code == 400
+    assert response.status_code == 200
 
 
 def test_create_user_with_explicit_enabled_and_confirmed_flags(_not_logged_in_client):
