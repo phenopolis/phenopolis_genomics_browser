@@ -29,7 +29,13 @@ import {
   CHANGE_PASSWORD_SUCCESS,
   CHANGE_PASSWORD_FAIL,
   CHANGE_PASSWORD_RESET,
+  // Below are 4 reducers for confirm user registration
+  CONFIRM_REGISTRATION_REQUEST,
+  CONFIRM_REGISTRATION_SUCCESS,
+  CONFIRM_REGISTRATION_FAIL,
+  CONFIRM_REGISTRATION_RESET,
 } from '../types/user';
+
 import { SET_STATUS } from '../types/status';
 import { SET_SNACK } from '../types/snacks';
 import Service from '../service';
@@ -200,5 +206,33 @@ export const changePassword = (data) => {
 export const ResetChangePassword = () => {
   return (dispatch) => {
     dispatch({ type: CHANGE_PASSWORD_RESET });
+  };
+};
+
+export const confirmRegistration = (token) => {
+  return (dispatch) => {
+    dispatch({ type: CONFIRM_REGISTRATION_REQUEST });
+    Service.confirmRegistration(token)
+      .then((res) => {
+        dispatch({ type: CONFIRM_REGISTRATION_SUCCESS, payload: { data: res.data } });
+      })
+      .catch((error) => {
+        if (error.response.status === 401) {
+          dispatch({
+            type: SET_STATUS,
+            payload: { code: 401, message: 'UnAuthorised', relink: '/manage_user' },
+          });
+        }
+        dispatch({
+          type: CONFIRM_REGISTRATION_FAIL,
+          payload: { error: error.response.data },
+        });
+      });
+  };
+};
+
+export const ResetConfirmRegistration = () => {
+  return (dispatch) => {
+    dispatch({ type: CONFIRM_REGISTRATION_RESET });
   };
 };
