@@ -156,6 +156,12 @@ function changePassword(data) {
   });
 }
 
+function confirmRegistration(token) {
+  return axios.get(api.CONFIRM_REGISTRATION + token, {
+    withCredentials: true,
+  });
+}
+
 export default {
   getStatistics,
   getSearchAutocomplete,
@@ -181,4 +187,5 @@ export default {
   deleteUserIndividual,
   enableUser,
   changePassword,
+  confirmRegistration
 };

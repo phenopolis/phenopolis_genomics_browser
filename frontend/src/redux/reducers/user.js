@@ -29,6 +29,11 @@ import {
   CHANGE_PASSWORD_SUCCESS,
   CHANGE_PASSWORD_FAIL,
   CHANGE_PASSWORD_RESET,
+  // Below are 4 reducers for confirm user registration
+  CONFIRM_REGISTRATION_REQUEST,
+  CONFIRM_REGISTRATION_SUCCESS,
+  CONFIRM_REGISTRATION_FAIL,
+  CONFIRM_REGISTRATION_RESET
 } from '../types/user';
 
 const initialState = {
@@ -56,6 +61,10 @@ const initialState = {
   changePasswordResult: null,
   changePasswordLoaded: false,
   changePasswordError: false,
+  // Below are status for confirming registration
+  confirmResult: null,
+  confirmLoaded: false,
+  confirmError: false
 };
 
 const UserInformation = (state = initialState, action) => {
@@ -244,6 +253,37 @@ const UserInformation = (state = initialState, action) => {
         changePasswordResult: null,
         changePasswordLoaded: false,
         changePasswordError: false,
+      };
+    }
+    // Below are reducers to confirm registration
+    case CONFIRM_REGISTRATION_REQUEST: {
+      return {
+        ...state,
+        confirmResult: null,
+        confirmLoaded: false,
+        confirmError: false
+      };
+    }
+    case CONFIRM_REGISTRATION_SUCCESS: {
+      return {
+        ...state,
+        confirmResult: action.payload.data,
+        confirmLoaded: true,
+      };
+    }
+    case CONFIRM_REGISTRATION_FAIL: {
+      return {
+        ...state,
+        confirmLoaded: false,
+        confirmError: action.payload,
+      };
+    }
+    case CONFIRM_REGISTRATION_RESET: {
+      return {
+        ...state,
+        confirmResult: null,
+        confirmLoaded: false,
+        confirmError: false
       };
     }
     default:
