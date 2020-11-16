@@ -5,7 +5,6 @@ from views.auth import ADMIN_USER, USER, DEMO_USER
 
 NONDEMO_USER = "nondemo"
 load_dotenv(dotenv_path="./private.env")
-pytest_plugins = ("tests.fix_api",)
 
 
 def pytest_report_header(config):
