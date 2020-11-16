@@ -133,7 +133,6 @@ export const enableUser = (param) => {
     dispatch({ type: ENABLE_USER_REQUEST });
     Service.enableUser(param)
       .then((res) => {
-
         if (param.status === true) {
           dispatch({
             type: SET_SNACK,
@@ -171,7 +170,6 @@ export const changePassword = (data) => {
     dispatch({ type: CHANGE_PASSWORD_REQUEST });
     Service.changePassword(data)
       .then((res) => {
-
         dispatch({
           type: SET_SNACK,
           payload: { newMessage: 'Change Password Success.', newVariant: 'success' },

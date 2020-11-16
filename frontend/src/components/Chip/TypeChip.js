@@ -162,28 +162,28 @@ const TypeChip = (props) => {
             {error ? (
               <span> Can not Fetch preview information </span>
             ) : (
-                previewInfo.map((item, index) => {
-                  return (
-                    <Grid container spacing={1} key={index}>
-                      <Grid item xs={4} className="chip-popover-namegrid">
-                        {item[0]}
-                      </Grid>
+              previewInfo.map((item, index) => {
+                return (
+                  <Grid container spacing={1} key={index}>
+                    <Grid item xs={4} className="chip-popover-namegrid">
+                      {item[0]}
+                    </Grid>
 
-                      <Grid item xs={8} className="chip-popover-datagrid">
-                        {typeof item[1] === 'object'
-                          ? item[1].map((subchip, subchipIndex) => {
+                    <Grid item xs={8} className="chip-popover-datagrid">
+                      {typeof item[1] === 'object'
+                        ? item[1].map((subchip, subchipIndex) => {
                             return (
                               <span key={subchipIndex}>
                                 {subchipIndex === 0 ? '' : ', '} {subchip}
                               </span>
                             );
                           })
-                          : item[1]}
-                      </Grid>
+                        : item[1]}
                     </Grid>
-                  );
-                })
-              )}
+                  </Grid>
+                );
+              })
+            )}
           </Container>
         ) : null}
       </Popover>

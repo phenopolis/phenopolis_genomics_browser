@@ -12,15 +12,14 @@ export const getPreviewInformation = (text) => {
     dispatch({ type: GET_PREVIEW });
     Service.getPreviewInformation(text)
       .then((res) => {
-
         if (/variant/.test(res.config.url)) {
-          var previewName = res.config.url.split('/')[4]
-          var result = Object.entries(res.data)
+          var previewName = res.config.url.split('/')[4];
+          var result = Object.entries(res.data);
         } else {
-          var previewName = res.config.url.split('/')[3]
-          var result = res.data[0].preview
+          var previewName = res.config.url.split('/')[3];
+          var result = res.data[0].preview;
         }
-        console.log(result)
+        console.log(result);
 
         dispatch({
           type: GET_PREVIEW_SUCCESS,
@@ -28,7 +27,6 @@ export const getPreviewInformation = (text) => {
         });
       })
       .catch((error) => {
-
         if (error.response.status === 401) {
           dispatch({
             type: SET_STATUS,
