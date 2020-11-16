@@ -275,7 +275,7 @@ const UserInformation = (state = initialState, action) => {
       return {
         ...state,
         confirmLoaded: false,
-        confirmError: action.payload,
+        confirmError: action.payload.error,
       };
     }
     case CONFIRM_REGISTRATION_RESET: {

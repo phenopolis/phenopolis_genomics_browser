@@ -214,15 +214,9 @@ export const confirmRegistration = (token) => {
     dispatch({ type: CONFIRM_REGISTRATION_REQUEST });
     Service.confirmRegistration(token)
       .then((res) => {
-        console.log(res);
-        // dispatch({
-        //   type: SET_SNACK,
-        //   payload: { newMessage: 'Change Password Success.', newVariant: 'success' },
-        // });
         dispatch({ type: CONFIRM_REGISTRATION_SUCCESS, payload: { data: res.data } });
       })
       .catch((error) => {
-        console.log(error);
         if (error.response.status === 401) {
           dispatch({
             type: SET_STATUS,
@@ -231,7 +225,7 @@ export const confirmRegistration = (token) => {
         }
         dispatch({
           type: CONFIRM_REGISTRATION_FAIL,
-          payload: { error: error.response.data.error },
+          payload: { error: error.response.data },
         });
       });
   };
