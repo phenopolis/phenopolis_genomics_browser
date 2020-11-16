@@ -12,9 +12,18 @@ export const getPreviewInformation = (text) => {
     dispatch({ type: GET_PREVIEW });
     Service.getPreviewInformation(text)
       .then((res) => {
+        if (/variant/.test(res.config.url)) {
+          var previewName = res.config.url.split('/')[4];
+          var result = Object.entries(res.data);
+        } else {
+          var previewName = res.config.url.split('/')[3];
+          var result = res.data[0].preview;
+        }
+        console.log(result);
+
         dispatch({
           type: GET_PREVIEW_SUCCESS,
-          payload: { data: res.data[0].preview, name: res.config.url.split('/')[3] },
+          payload: { data: result, name: previewName },
         });
       })
       .catch((error) => {
