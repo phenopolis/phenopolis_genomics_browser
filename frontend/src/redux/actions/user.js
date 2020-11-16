@@ -33,7 +33,7 @@ import {
   CONFIRM_REGISTRATION_REQUEST,
   CONFIRM_REGISTRATION_SUCCESS,
   CONFIRM_REGISTRATION_FAIL,
-  CONFIRM_REGISTRATION_RESET
+  CONFIRM_REGISTRATION_RESET,
 } from '../types/user';
 
 import { SET_STATUS } from '../types/status';
@@ -229,7 +229,10 @@ export const confirmRegistration = (token) => {
             payload: { code: 401, message: 'UnAuthorised', relink: '/manage_user' },
           });
         }
-        dispatch({ type: CONFIRM_REGISTRATION_FAIL, payload: { error: error.response.data.error } });
+        dispatch({
+          type: CONFIRM_REGISTRATION_FAIL,
+          payload: { error: error.response.data.error },
+        });
       });
   };
 };

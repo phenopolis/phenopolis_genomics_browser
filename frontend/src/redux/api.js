@@ -32,6 +32,6 @@ export default {
   // Below API is related to enable/disable user
   ENABLE_USER: API_URL + '/user/',
   CHANGE_PASSWORD: API_URL + '/change_password',
-  // Below API is for user registration 
-  CONFIRM_REGISTRATION: API_URL + '/user/confirm/'
+  // Below API is for user registration
+  CONFIRM_REGISTRATION: API_URL + '/user/confirm/',
 };

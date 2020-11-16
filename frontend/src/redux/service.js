@@ -187,5 +187,5 @@ export default {
   deleteUserIndividual,
   enableUser,
   changePassword,
-  confirmRegistration
+  confirmRegistration,
 };

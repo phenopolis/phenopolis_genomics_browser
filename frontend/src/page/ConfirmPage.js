@@ -8,11 +8,10 @@ import { Grid, IconButton, Button, Tooltip } from '@material-ui/core';
 import Loading from '../components/General/Loading';
 
 export default function ConfirmPage() {
-
   const dispatch = useDispatch();
 
   useEffect(() => {
-    let token = window.location.pathname.split('/').slice(-1)[0]
+    let token = window.location.pathname.split('/').slice(-1)[0];
     dispatch(confirmRegistration(token));
   }, []);
 

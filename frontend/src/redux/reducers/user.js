@@ -33,7 +33,7 @@ import {
   CONFIRM_REGISTRATION_REQUEST,
   CONFIRM_REGISTRATION_SUCCESS,
   CONFIRM_REGISTRATION_FAIL,
-  CONFIRM_REGISTRATION_RESET
+  CONFIRM_REGISTRATION_RESET,
 } from '../types/user';
 
 const initialState = {
@@ -64,7 +64,7 @@ const initialState = {
   // Below are status for confirming registration
   confirmResult: null,
   confirmLoaded: false,
-  confirmError: false
+  confirmError: false,
 };
 
 const UserInformation = (state = initialState, action) => {
@@ -261,7 +261,7 @@ const UserInformation = (state = initialState, action) => {
         ...state,
         confirmResult: null,
         confirmLoaded: false,
-        confirmError: false
+        confirmError: false,
       };
     }
     case CONFIRM_REGISTRATION_SUCCESS: {
@@ -283,7 +283,7 @@ const UserInformation = (state = initialState, action) => {
         ...state,
         confirmResult: null,
         confirmLoaded: false,
-        confirmError: false
+        confirmError: false,
       };
     }
     default:
