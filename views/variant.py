@@ -1,11 +1,9 @@
 """
 variant view
 """
-import os
 import requests
-from cyvcf2 import VCF
 from db.model import Variant
-from views import application
+from views import application, variant_file
 from views.auth import requires_auth
 from views.autocomplete import CHROMOSOME_POS_REF_ALT_REGEX
 from views.postgres import session_scope
@@ -89,7 +87,6 @@ def _get_preview(chrom, pos, ref, alt):
 def _get_genotypes(chrom, pos):
     genotypes = []
     # reads the variant file from S3
-    variant_file = _get_variant_file()
     try:
         v = next(variant_file(f"{chrom}:{pos}-{pos}"))
         lookup = {s: i for i, s in enumerate(variant_file.samples)}
@@ -111,12 +108,6 @@ def _get_genotypes(chrom, pos):
     except Exception as e:
         print(e)
     return genotypes
-
-
-def _get_variant_file():
-    # TODO: initialise the client only once, or at least have a pool of them to reuse
-    variant_file = VCF(os.getenv("S3_VCF_FILE_URL"))
-    return variant_file
 
 
 def _fetch_clinvar_clinical_significance(chrom, pos, ref, alt):

@@ -249,10 +249,6 @@ def _search_variants_by_coordinates(db_session: Session, chrom, pos, ref, alt, l
             .limit(limit)
             .all()
         )
-    else:
-        # no variant pattern, we perform no search
-        variants = []
-
     return variants
 
 
@@ -347,10 +343,6 @@ def _search_variants_by_hgvs(db_session: Session, hgvs_type, entity, hgvs, limit
                 .limit(limit)
                 .all()
             )
-    else:
-        # no variant pattern, we perform no search
-        variants = []
-
     return variants
 
 

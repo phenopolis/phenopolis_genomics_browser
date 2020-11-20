@@ -2,6 +2,7 @@ import string
 
 import pytest
 import random
+import views.individual  # to allow MAX_PAGE_SIZE redefinition
 
 from sqlalchemy.orm import Session
 
@@ -162,6 +163,12 @@ def test_create_individual_with_admin_user(_admin_client):
     test_individual_id = _get_random_individual_id()
     individual.external_id = test_individual_id
     individual.pi = "3.1416"
+    response = _admin_client.post("/individual", json={}, content_type="application/json")
+    assert response.status_code == 400
+    assert response.json == {"error": "Empty payload or wrong formatting", "success": False}
+    response = _admin_client.post("/individual", json="not_dict_nor_list", content_type="application/json")
+    assert response.status_code == 400
+    assert response.json == {"error": "Payload of unexpected type: <class 'str'>", "success": False}
     response = _admin_client.post("/individual", json=individual.as_dict(), content_type="application/json")
     assert response.status_code == 200
 
@@ -274,8 +281,12 @@ def test_get_all_individuals_default_page(_demo):
 
 
 def test_get_all_individuals_with_admin_default_page(_admin):
+    views.individual.MAX_PAGE_SIZE = 5
     response, status = get_all_individuals()
-    assert status == 200
+    assert status == 400
+    assert response.json == {"message": "The maximum page size for individuals is 5"}
+    views.individual.MAX_PAGE_SIZE = 100000
+    response, status = get_all_individuals()
     individuals = response.json
     assert len(individuals) <= 100, "Page is greater than the maximum size of 100"
     assert len(individuals) > 0, "There are no results"

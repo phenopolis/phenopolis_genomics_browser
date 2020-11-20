@@ -40,7 +40,7 @@ def test_after_request(_demo):
     assert res.headers["Cache-Control"] == "public,max-age=300"
 
     # tries an endpoint that does not allow caching
-    response, status = get_all_individuals()
+    response, _status = get_all_individuals()
     res = after_request(response)
     assert res.headers["Cache-Control"] == "no-cache, no-store, must-revalidate"
 
