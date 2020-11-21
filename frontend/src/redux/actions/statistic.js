@@ -6,11 +6,9 @@ export const getStatistics = () => {
     dispatch({ type: GET_STATISTICS });
     Service.getStatistics()
       .then((res) => {
-        console.log(res);
         dispatch({ type: GET_STATISTICS_SUCCESS, payload: { data: res.data } });
       })
       .catch((error) => {
-        console.log(error);
         dispatch({ type: GET_STATISTICS_FAIL, payload: { error: error.response } });
       });
   };
