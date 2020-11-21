@@ -966,7 +966,7 @@ class VirtualGrid extends React.Component {
         </Toolbar>
 
         <Fragment>
-          <Paper style={{ marginBottom: '3em' }}>
+          <Paper style={{ marginBottom: '3em', fontSize: '14px' }}>
             <Card
               elevation={0}
               className="card-box mb-0 d-flex flex-row flex-wrap justify-content-center">
@@ -1084,14 +1084,14 @@ class VirtualGrid extends React.Component {
                 )}
               </AutoSizer>
             ) : (
-              <Container>
-                <Box display="flex" justifyContent="center" alignItems="center" minHeight="50vh">
-                  <Typography variant="h4" gutterBottom style={{ color: 'grey' }}>
-                    Sorry, not even one record exist or passed your filter criteria...
+                <Container>
+                  <Box display="flex" justifyContent="center" alignItems="center" minHeight="50vh">
+                    <Typography variant="h4" gutterBottom style={{ color: 'grey' }}>
+                      Sorry, not even one record exist or passed your filter criteria...
                   </Typography>
-                </Box>
-              </Container>
-            )}
+                  </Box>
+                </Container>
+              )}
           </div>
         </Paper>
         <Toolbar className={classes.toolbar}>
