@@ -11,15 +11,28 @@ import {
   Popper,
   Paper,
   ClickAwayListener,
-  Tooltip
+  Tooltip,
 } from '@material-ui/core';
 
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faDna, faChartNetwork, faUser, faCut, faLink, faWindowClose, faExternalLinkAlt, faExternalLinkSquare } from '@fortawesome/pro-solid-svg-icons';
+import {
+  faDna,
+  faChartNetwork,
+  faUser,
+  faCut,
+  faLink,
+  faWindowClose,
+  faExternalLinkAlt,
+  faExternalLinkSquare,
+} from '@fortawesome/pro-solid-svg-icons';
 
 import { useDispatch, useSelector } from 'react-redux';
 import { getSearchBest, clearSearchBest } from '../../redux/actions/search';
-import { getPreviewInformation, clearPreviewInformation, setPopoverIndex } from '../../redux/actions/preview';
+import {
+  getPreviewInformation,
+  clearPreviewInformation,
+  setPopoverIndex,
+} from '../../redux/actions/preview';
 import { useHistory } from 'react-router-dom';
 
 const TypeChip = (props) => {
@@ -42,7 +55,7 @@ const TypeChip = (props) => {
     previewInfo: state.Preview.data,
     loaded: state.Preview.loaded,
     error: state.Preview.error,
-    indexTo: state.Preview.indexTo
+    indexTo: state.Preview.indexTo,
   }));
 
   const [randomIndex, setRandomIndex] = useState(Math.random().toString(36).substr(2, 5));
@@ -82,21 +95,21 @@ const TypeChip = (props) => {
       }
     } else if (event.button === 1) {
       if (props.action === 'forward') {
-        handleOpenNewTab(to)
+        handleOpenNewTab(to);
       } else if (props.action === 'externalforward') {
-        handleOpenNewTab(to)
+        handleOpenNewTab(to);
       }
     }
   };
 
   const handleTurnToPage = (to) => {
     history.push(to);
-  }
+  };
 
   const handleOpenNewTab = (to) => {
     let win = window.open(window.location.origin + to, '_blank');
     win.focus();
-  }
+  };
 
   const handlePopoverOpen = (event, to) => {
     if ((props.action !== 'guess') & (props.type !== 'other') & (props.popover === true)) {
@@ -117,7 +130,7 @@ const TypeChip = (props) => {
     props.onDeleteClick(label);
   };
 
-  const open = Boolean(anchorEl) & indexTo === randomIndex;
+  const open = Boolean(anchorEl) & (indexTo === randomIndex);
 
   return (
     <span>
@@ -149,53 +162,54 @@ const TypeChip = (props) => {
           open={open}
           anchorEl={anchorEl}
           placement="right"
-          onClose={handlePopoverClose}
-        >
+          onClose={handlePopoverClose}>
           <Paper elevation={8}>
             <Container
-              className={loaded ? `${type}-bg chip-title-loaded` : `${type}-bg chip-title-unloaded`}>
-
-              <Grid
-                container
-                direction="row"
-                justify="space-between"
-                alignItems="center"
-              >
-
+              className={
+                loaded ? `${type}-bg chip-title-loaded` : `${type}-bg chip-title-unloaded`
+              }>
+              <Grid container direction="row" justify="space-between" alignItems="center">
                 <Typography variant="subtitle1" style={{ 'font-weight': '900', color: 'white' }}>
                   {props.label}
 
                   {(loaded === false) | (props.to.split('/')[2] !== previewName) ? (
                     <small style={{ color: 'white' }}>
                       {' '}
-                &nbsp;&nbsp;
+                      &nbsp;&nbsp;
                       <CircularProgress size={12} color="white" />
                     </small>
                   ) : null}
-
                 </Typography>
 
                 <Grid item>
-                  <Tooltip title={"Go to " + previewName + ' page'} placement="top">
+                  <Tooltip title={'Go to ' + previewName + ' page'} placement="top">
                     <IconButton size="small" onClick={() => handleTurnToPage(props.to)}>
-                      <FontAwesomeIcon icon={faExternalLinkSquare} style={{ color: 'white', fontSize: '15' }} />
+                      <FontAwesomeIcon
+                        icon={faExternalLinkSquare}
+                        style={{ color: 'white', fontSize: '15' }}
+                      />
                     </IconButton>
                   </Tooltip>
 
                   <Tooltip title="Open in new Tab" placement="top">
                     <IconButton size="small" onClick={() => handleOpenNewTab(props.to)}>
-                      <FontAwesomeIcon icon={faExternalLinkAlt} style={{ color: 'white', fontSize: '13' }} />
+                      <FontAwesomeIcon
+                        icon={faExternalLinkAlt}
+                        style={{ color: 'white', fontSize: '13' }}
+                      />
                     </IconButton>
                   </Tooltip>
 
                   <Tooltip title="Close Preview Panel" placement="top">
                     <IconButton size="small" onClick={handlePopoverClose}>
-                      <FontAwesomeIcon icon={faWindowClose} style={{ color: 'white', fontSize: '15' }} />
+                      <FontAwesomeIcon
+                        icon={faWindowClose}
+                        style={{ color: 'white', fontSize: '15' }}
+                      />
                     </IconButton>
                   </Tooltip>
                 </Grid>
               </Grid>
-
             </Container>
 
             {(loaded === true) & (props.to.split('/')[2] === previewName) ? (
@@ -203,28 +217,28 @@ const TypeChip = (props) => {
                 {error ? (
                   <span> Can not Fetch preview information </span>
                 ) : (
-                    previewInfo.map((item, index) => {
-                      return (
-                        <Grid container spacing={1} key={index}>
-                          <Grid item xs={4} className="chip-popover-namegrid">
-                            {item[0]}
-                          </Grid>
+                  previewInfo.map((item, index) => {
+                    return (
+                      <Grid container spacing={1} key={index}>
+                        <Grid item xs={4} className="chip-popover-namegrid">
+                          {item[0]}
+                        </Grid>
 
-                          <Grid item xs={8} className="chip-popover-datagrid">
-                            {typeof item[1] === 'object'
-                              ? item[1].map((subchip, subchipIndex) => {
+                        <Grid item xs={8} className="chip-popover-datagrid">
+                          {typeof item[1] === 'object'
+                            ? item[1].map((subchip, subchipIndex) => {
                                 return (
                                   <span key={subchipIndex}>
                                     {subchipIndex === 0 ? '' : ', '} {subchip}
                                   </span>
                                 );
                               })
-                              : item[1]}
-                          </Grid>
+                            : item[1]}
                         </Grid>
-                      );
-                    })
-                  )}
+                      </Grid>
+                    );
+                  })
+                )}
               </Container>
             ) : null}
           </Paper>

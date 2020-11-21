@@ -3,7 +3,7 @@ import {
   GET_PREVIEW_SUCCESS,
   GET_PREVIEW_FAIL,
   CLEAR_PREVIEW,
-  SET_INDEX
+  SET_INDEX,
 } from '../types/preview';
 import { SET_STATUS } from '../types/status';
 import Service from '../service';

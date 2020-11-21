@@ -193,7 +193,7 @@ const DrawerSearch = (props) => {
             {t('Search.Example')}:
             {examples.map((item, index) => {
               return (
-                <span key={index} >
+                <span key={index}>
                   <TypeChip
                     size="small"
                     label={item.name}
@@ -290,15 +290,15 @@ const DrawerSearch = (props) => {
                           })}
                         </div>
                       ) : (
-                          <div className="text-warning font-weight-bold font-size-xl">
-                            {t('AppBar.NavSearch.NoOption')}
-                          </div>
-                        )
+                        <div className="text-warning font-weight-bold font-size-xl">
+                          {t('AppBar.NavSearch.NoOption')}
+                        </div>
+                      )
                     ) : (
-                          <div className="text-warning font-weight-bold font-size-xl">
-                            {t('AppBar.NavSearch.NoContent')}
-                          </div>
-                        )}
+                      <div className="text-warning font-weight-bold font-size-xl">
+                        {t('AppBar.NavSearch.NoContent')}
+                      </div>
+                    )}
                   </div>
                 </Grid>
               </Grid>
