@@ -966,7 +966,7 @@ class VirtualGrid extends React.Component {
         </Toolbar>
 
         <Fragment>
-          <Paper style={{ marginBottom: '3em' }}>
+          <Paper style={{ marginBottom: '3em', fontSize: '14px' }}>
             <Card
               elevation={0}
               className="card-box mb-0 d-flex flex-row flex-wrap justify-content-center">

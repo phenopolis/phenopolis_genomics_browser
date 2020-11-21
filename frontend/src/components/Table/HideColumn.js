@@ -93,12 +93,6 @@ const HideColumn = (props) => {
             <FontAwesomeIcon icon={faEllipsisH} />
           </Avatar>
           means this column contains a list;
-          <Avatar
-            className={'hideColumn-smallAvatar'}
-            style={{ backgroundColor: 'black', color: 'white' }}>
-            ?
-          </Avatar>
-          means this column's type is not any of above 3.
         </Grid>
       </CardContent>
     </Card>

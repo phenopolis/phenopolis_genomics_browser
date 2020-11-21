@@ -20,7 +20,6 @@ export const addUserIndividual = (data) => {
     dispatch({ type: ADD_USER_INIDIVIDUAL_REQUEST });
     Service.addUserIndividual(data)
       .then((res) => {
-        console.log(res);
         dispatch({
           type: SET_SNACK,
           payload: { newMessage: data.length + ' patients added.', newVariant: 'success' },
