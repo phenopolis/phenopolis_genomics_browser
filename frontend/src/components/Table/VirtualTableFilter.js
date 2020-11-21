@@ -75,18 +75,20 @@ class VirtualTableFilter extends React.Component {
   }
 
   componentDidMount() {
-    var tmpfilter = JSON.parse(JSON.stringify(this.props.tableFilter))
+    var tmpfilter = JSON.parse(JSON.stringify(this.props.tableFilter));
     if (tmpfilter.length > 0) {
       this.setState({ myfilter: tmpfilter });
     } else {
       this.setState({
-        myfilter: [{
-          inuse: true,
-          column: null,
-          operation: '=',
-          value: [],
-          andor: 'and',
-        },]
+        myfilter: [
+          {
+            inuse: true,
+            column: null,
+            operation: '=',
+            value: [],
+            andor: 'and',
+          },
+        ],
       });
     }
   }
@@ -374,29 +376,29 @@ class VirtualTableFilter extends React.Component {
                         </FormControl>
                       ) : item.operation === '∅' ? null : (item.column.type === 'object') &
                         (item.operation !== '=') ? (
-                          <Select
-                            closeMenuOnSelect={false}
-                            components={animatedComponents}
-                            isMulti
-                            getOptionValue={(option) => option}
-                            getOptionLabel={(option) => option}
-                            options={item.column.chips}
-                            menuPortalTarget={document.querySelector('body')}
+                        <Select
+                          closeMenuOnSelect={false}
+                          components={animatedComponents}
+                          isMulti
+                          getOptionValue={(option) => option}
+                          getOptionLabel={(option) => option}
+                          options={item.column.chips}
+                          menuPortalTarget={document.querySelector('body')}
+                        />
+                      ) : (
+                        <FormControl fullWidth variant="outlined">
+                          <TextField
+                            disabled={item.column === null}
+                            label="Value"
+                            variant="outlined"
+                            id="standard-size-small"
+                            size="small"
+                            value={item.value}
+                            onChange={(event) => this.handleValueChange(event, index)}
+                            className={classes.valueInput}
                           />
-                        ) : (
-                          <FormControl fullWidth variant="outlined">
-                            <TextField
-                              disabled={item.column === null}
-                              label="Value"
-                              variant="outlined"
-                              id="standard-size-small"
-                              size="small"
-                              value={item.value}
-                              onChange={(event) => this.handleValueChange(event, index)}
-                              className={classes.valueInput}
-                            />
-                          </FormControl>
-                        )}
+                        </FormControl>
+                      )}
                     </Grid>
                     <Grid item xs={1}>
                       <div className="d-flex align-items-center justify-content-center">
