@@ -13,6 +13,7 @@ import logging
 from logging.config import dictConfig
 from flask.logging import default_handler
 from cyvcf2 import VCF
+import psycopg2
 
 # Options are: prod, dev, debug (default)
 APP_ENV = os.getenv("APP_ENV", "debug")
@@ -20,12 +21,6 @@ APP_ENV = os.getenv("APP_ENV", "debug")
 ENV_LOG_FLAG = True
 if APP_ENV in ["prod"]:
     ENV_LOG_FLAG = False
-
-# in GH Workflow tests, private.env is not available so skip variant tests
-try:
-    variant_file = VCF(os.getenv("S3_VCF_FILE_URL"))
-except OSError:
-    variant_file = None
 
 
 def _configure_logs():
@@ -104,6 +99,27 @@ _init_sqlalchemy()
 Compress(application)
 cache = Cache(application, config={"CACHE_TYPE": "simple"})
 mail = Mail(application)
+
+# in GH Workflow tests, private.env is not available so skip variant tests
+try:
+    variant_file = VCF(os.getenv("S3_VCF_FILE_URL"))
+except OSError:
+    variant_file = None
+
+db = psycopg2.connect(
+    host=application.config["DB_HOST"],
+    database=application.config["DB_DATABASE"],
+    user=application.config["DB_USER"],
+    password=application.config["DB_PASSWORD"],
+    port=application.config["DB_PORT"],
+)
+c = db.cursor()
+c.execute("select external_id, internal_id from individuals")
+headers = [h[0] for h in c.description]
+
+pheno_ids = [dict(zip(headers, r)) for r in c.fetchall()]
+phenoid_mapping = {ind["external_id"]: ind["internal_id"] for ind in pheno_ids}
+
 
 # NOTE: These imports must be placed at the end of this file
 # flake8: noqa E402
