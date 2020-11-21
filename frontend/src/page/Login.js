@@ -23,34 +23,34 @@ const Login = (props) => {
                 <b style={{ color: '#2E84CF' }}> Token Expired </b>, please re-login.
               </span>
             ) : (
-              <Trans i18nKey="Login.redirectionLink">
-                <span>
-                  {' '}
+                <Trans i18nKey="Login.redirectionLink">
+                  <span>
+                    {' '}
                   Oops, seems you don't have access to{' '}
-                  <b style={{ color: '#2E84CF' }}> {{ mylink }} </b> yet, try login?
+                    <b style={{ color: '#2E84CF' }}> {{ mylink }} </b> yet, try login?
                 </span>
-              </Trans>
-            )
+                </Trans>
+              )
           ) : null}
 
-          <LoginBox onLoginSuccess={() => {}} redirectLink={mylink ? mylink : '/dashboard'} />
+          <LoginBox onClose={() => { }} redirectLink={mylink ? mylink : '/dashboard'} />
         </div>
       ) : (
-        <div className={'login-root'}>
-          <Container maxWidth="md">
-            <Paper className={'login-paper2'}>
-              <Typography component="div">
-                <Box fontWeight="900" fontSize="h4.fontSize" m={1}>
-                  {t('Login.login')}
-                </Box>
-                <Box fontWeight="fontWeightLight" m={1}>
-                  {t('Login.login_subtitle')}
-                </Box>
-              </Typography>
-            </Paper>
-          </Container>
-        </div>
-      )}
+          <div className={'login-root'}>
+            <Container maxWidth="md">
+              <Paper className={'login-paper2'}>
+                <Typography component="div">
+                  <Box fontWeight="900" fontSize="h4.fontSize" m={1}>
+                    {t('Login.login')}
+                  </Box>
+                  <Box fontWeight="fontWeightLight" m={1}>
+                    {t('Login.login_subtitle')}
+                  </Box>
+                </Typography>
+              </Paper>
+            </Container>
+          </div>
+        )}
     </>
   );
 };

@@ -16,7 +16,11 @@ import {
   DialogActions,
   Paper,
   Collapse,
+  CssBaseline,
+  Avatar
 } from '@material-ui/core';
+
+import AccountCircleIcon from '@material-ui/icons/AccountCircle';
 
 import { useDispatch, useSelector } from 'react-redux';
 import { createNewUser, ResetCreate } from '../../redux/actions/user';
@@ -82,101 +86,71 @@ export default function CreateUser(props) {
   };
 
   return (
-    <Fragment>
-      <Card className="p-4">
-        <div className="font-size-xl font-weight-bold">New User</div>
-        <Divider className="my-4" />
-        <Container>
-          <Grid container direction="row" justify="center" alignItems="center">
-            <Grid item xs={8}>
-              <div className="font-size-md py-3 rounded-sm">
-                {listItems.map((item, index) => {
-                  return (
-                    <div className="d-flex justify-content-between py-2">
-                      <span className="font-weight-bold mt-2">{item.name}</span>
-                      <span className="text-black-50">
-                        <TextField
-                          fullWidth
-                          size="small"
-                          type={item.name === 'Password' ? 'password' : null}
-                          className="mt-0 mb-4 ml-4"
-                          id="standard-basic"
-                          value={values[item.key]}
-                          onChange={(event) => handleSetValue(event.target.value, item.key)}
-                          error={values[item.key] === ''}
-                          helperText={
-                            values[item.key] === '' ? item.name + ' can not be Empty!' : ' '
-                          }
-                        />
-                      </span>
-                    </div>
-                  );
-                })}
-              </div>
-            </Grid>
-          </Grid>
 
-          {/* <Grid container direction="row" alignItems="center" justify="center" className="mb-2">
-            <Grid item xs={3}>
-              <Typography component="div">
-                <Box fontWeight="fontWeightLight" fontSize="subtitle1.fontSize">
-                  User Name
-                </Box>
-              </Typography>
-            </Grid>
-            <Grid item xs={6}>
-              <TextField
-                fullWidth
-                className="mt-0 mb-1 ml-4"
-                id="standard-basic"
-                value={username}
-                onChange={(event) => setUsername(event.target.value)}
-                error={username === ''}
-                helperText={username === '' ? 'User name can not be Empty!' : ' '}
-              />
-            </Grid>
-          </Grid>
+    <Container component="main" maxWidth="lg">
+      <CssBaseline />
+      <div className="loginbox-paper">
+        <Avatar className="loginbox-avatar" style={{ backgroundColor: '#fb8c00' }}>
+          <AccountCircleIcon />
+        </Avatar>
+        <Typography component="h1" variant="h6">
+          {'Register'}
+        </Typography>
 
-          <Grid
-            container
-            direction="row"
-            alignItems="center"
-            className="mt-4 mb-4"
-            justify="center">
-            <Grid item xs={3}>
-              <Typography component="div">
-                <Box fontWeight="fontWeightLight" fontSize="subtitle1.fontSize">
-                  Password
-                </Box>
-              </Typography>
-            </Grid>
-            <Grid item xs={6}>
-              <TextField
-                fullWidth
-                className="mt-0 mb-1 ml-4"
-                id="standard-basic"
-                type="password"
-                value={password}
-                onChange={(event) => setPassword(event.target.value)}
-                error={password === ''}
-                helperText={password === '' ? 'Password can not be Empty!' : ' '}
-              />
-            </Grid>
-          </Grid> */}
-        </Container>
-        <DialogActions>
-          <Button
-            size="small"
-            variant="contained"
-            color="secondary"
-            disabled={ConfirmOpen}
-            onClick={() => handleOpenConfirm()}>
-            Save
+
+        <Grid container direction="row" justify="center" alignItems="center">
+          <Grid item xs={12}>
+            <div className="font-size-md py-3 rounded-sm">
+              {listItems.map((item, index) => {
+                return (
+                  <TextField
+                    className="loginbox-textfield"
+                    value={values[item.key]}
+                    onChange={(event) => handleSetValue(event.target.value, item.key)}
+                    // error={values[item.key] === ''}
+                    // helperText={
+                    //   values[item.key] === '' ? item.name + ' can not be Empty!' : ' '
+                    // }
+                    variant="outlined"
+                    margin="normal"
+                    required
+                    fullWidth
+                    id="name"
+                    label={item.name}
+                    name="name"
+                    placeholder="demo"
+                    autoFocus
+                    size="small"
+                    type={item.name === 'Password' ? 'password' : null}
+                    style={{ marginTop: '10px', marginBottom: '10px' }}
+                  />
+
+                );
+              })}
+            </div>
+          </Grid>
+        </Grid>
+
+
+
+        <Grid container className="mt-4 mb-2">
+          <Grid item xs={6}>
+            <Button
+              variant="contained"
+              color="primary"
+              fullWidth
+              disabled={ConfirmOpen}
+              onClick={() => handleOpenConfirm()}>
+              Create
           </Button>
-          <Button color="primary" onClick={() => handleCloseDialog()}>
-            Cancel
+          </Grid>
+          <Grid item xs={6}>
+            <Button color="default" fullWidth onClick={() => handleCloseDialog()}>
+              Cancel
           </Button>
-        </DialogActions>
+          </Grid>
+        </Grid>
+
 
         <Collapse in={ConfirmOpen}>
           <Paper
@@ -188,29 +162,41 @@ export default function CreateUser(props) {
               margin: '0.5em 0em',
             }}>
             <Grid container direction="row" justify="space-around" alignItems="center">
-              <Grid item xs={6}>
-                This action will add a new user, are you sure you want to do this?
+              <Grid item xs={7}>
+                Thanks for joining Phenopolis. Please confirm your information.
               </Grid>
-              <Grid item xs={6}>
-                <Grid container direction="row" justify="flex-end" alignItems="center">
-                  <Button
-                    variant="outlined"
-                    style={{ color: 'white', border: '1px solid white', 'margin-right': '1em' }}
-                    onClick={() => setConfirmOpen(false)}>
-                    Give up
+              <Grid item xs={5}>
+                <Grid
+                  container
+                  direction="column"
+                  justify="center"
+                  alignItems="flex-end"
+                >
+                  <Grid item style={{ marginBottom: '1em' }}>
+                    <Button
+                      size="small"
+                      variant="contained"
+                      color='secondary'
+                      style={{ color: 'white', border: '1px solid white' }}
+                      onClick={() => handleSubmitNewUser()}>
+                      Confirm
                   </Button>
-                  <Button
-                    variant="outlined"
-                    style={{ color: 'white', border: '1px solid white' }}
-                    onClick={() => handleSubmitNewUser()}>
-                    Confirm
+                  </Grid>
+                  <Grid item>
+                    <Button
+                      size="small"
+                      color='secondary'
+                      style={{ color: 'white', 'margin-right': '0.5em' }}
+                      onClick={() => setConfirmOpen(false)}>
+                      Give up
                   </Button>
+                  </Grid>
                 </Grid>
               </Grid>
             </Grid>
           </Paper>
         </Collapse>
-      </Card>
-    </Fragment>
+      </div>
+    </Container>
   );
 }

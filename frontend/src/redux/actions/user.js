@@ -116,6 +116,11 @@ export const createNewUser = (data) => {
             type: SET_STATUS,
             payload: { code: 401, message: 'UnAuthorised', relink: '/manage_user' },
           });
+        } else if (error.response.status === 500) {
+          dispatch({
+            type: SET_SNACK,
+            payload: { newMessage: 'Register Failed, maybe user(email) has exist.', newVariant: 'error' },
+          });
         }
         dispatch({ type: CREATE_USER_FAIL, payload: { error: error.response.data.error } });
       });

@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useDispatch } from 'react-redux';
-import { Avatar, Button, CssBaseline, TextField, Typography, Container } from '@material-ui/core';
+import { Avatar, Button, CssBaseline, TextField, Typography, Container, Grid } from '@material-ui/core';
 import LockOutlinedIcon from '@material-ui/icons/LockOutlined';
 import { Trans } from 'react-i18next';
 import { userLogin } from '../../redux/actions/auth';
@@ -38,11 +38,15 @@ const LoginBox = (props) => {
     setPassword(event.target.value);
   };
 
+  const handleCloseDialog = () => {
+    props.onClose();
+  };
+
   return (
     <Container component="main" maxWidth="xs">
       <CssBaseline />
       <div className="loginbox-paper">
-        <Avatar className="loginbox-avatar">
+        <Avatar className="loginbox-avatar" style={{ backgroundColor: '#fb8c00' }}>
           <LockOutlinedIcon />
         </Avatar>
         <Typography component="h1" variant="h6">
@@ -78,14 +82,27 @@ const LoginBox = (props) => {
             type="password"
             id="password"
           />
-          <Button
-            type="submit"
-            fullWidth
-            variant="contained"
-            className="loginbox-submit"
-            style={{ backgroundColor: '#2E84CF', color: 'white' }}>
-            {t('AppBar.LoginBox.Button')}
+
+          <Grid container className="mt-4 mb-2">
+            <Grid item xs={6}>
+              <Button
+                type="submit"
+                variant="contained"
+                color="primary"
+                fullWidth
+              >
+                {t('AppBar.LoginBox.Button')}
+              </Button>
+            </Grid>
+            <Grid item xs={6}>
+              <Button color="default" fullWidth onClick={() => handleCloseDialog()}>
+                Cancel
           </Button>
+            </Grid>
+          </Grid>
+
+
+
           <div style={{ textAlign: 'center' }}>
             <span className="loginBox-demolink-try">
               <Trans i18nKey="AppBar.LoginBox.Hint">
@@ -99,7 +116,7 @@ const LoginBox = (props) => {
           </div>
         </form>
       </div>
-    </Container>
+    </Container >
   );
 };
 
