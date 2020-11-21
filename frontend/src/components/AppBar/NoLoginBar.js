@@ -16,7 +16,12 @@ import {
   ListItemText,
   AppBar,
   CssBaseline,
+  Tabs,
+  Tab,
+  Box,
 } from '@material-ui/core';
+import { makeStyles, useTheme } from '@material-ui/core/styles';
+import SwipeableViews from 'react-swipeable-views';
 import MenuIcon from '@material-ui/icons/Menu';
 import DescriptionIcon from '@material-ui/icons/Description';
 import AccountCircleIcon from '@material-ui/icons/AccountCircle';
@@ -25,6 +30,8 @@ import ShoppingCartIcon from '@material-ui/icons/ShoppingCart';
 import Footer from '../General/Footer';
 import NoSidebar from './NoSidebar';
 import LoginBox from './LoginBox';
+import CreateUser from '../ManageUser/CreatUser';
+
 import GB from '../../assets/svg/gb.svg';
 import CN from '../../assets/svg/cn.svg';
 import JP from '../../assets/svg/jp.svg';
@@ -33,13 +40,46 @@ import GR from '../../assets/svg/gr.svg';
 import ES from '../../assets/svg/es.svg';
 import { useTranslation } from 'react-i18next';
 
+function TabPanel(props) {
+  const { children, value, index, ...other } = props;
+
+  return (
+    <div
+      role="tabpanel"
+      hidden={value !== index}
+      id={`full-width-tabpanel-${index}`}
+      aria-labelledby={`full-width-tab-${index}`}
+      {...other}>
+      {value === index && <div>{children}</div>}
+    </div>
+  );
+}
+
+TabPanel.propTypes = {
+  children: PropTypes.node,
+  index: PropTypes.any.isRequired,
+  value: PropTypes.any.isRequired,
+};
+
+function a11yProps(index) {
+  return {
+    id: `full-width-tab-${index}`,
+    'aria-controls': `full-width-tabpanel-${index}`,
+  };
+}
+
 const NoLoginBar = (props) => {
+  const theme = useTheme();
   const [openLoginDialog, setOpenLoginDialog] = useState(false);
   const [openSideBar, setOpenSideBar] = useState(false);
   const [openLan, setOpenLan] = useState(false);
   const [anchorEl, setAnchorEl] = useState(null);
-  const [openExplore, setOpenExplore] = useState(false);
-  const [anchorExplore] = useState(null);
+
+  const [DialogTab, setDialogTab] = useState(0);
+
+  const handleDialogTabChange = (event, newValue) => {
+    setDialogTab(newValue);
+  };
 
   const handleLanClick = (event) => {
     setAnchorEl(event.currentTarget);
@@ -98,7 +138,7 @@ const NoLoginBar = (props) => {
                 />
                 <BottomNavigationAction
                   className={'noLoginBar-navigationbutton'}
-                  label={t('AppBar.NoLoginBar.Label_Login')}
+                  label={'Login/Register'}
                   showLabel
                   icon={<AccountCircleIcon />}
                   onClick={() => setOpenLoginDialog(!openLoginDialog)}
@@ -106,35 +146,6 @@ const NoLoginBar = (props) => {
               </div>
             </Hidden>
           </Grid>
-          <Menu
-            id="simple-menu"
-            anchorEl={anchorExplore}
-            keepMounted
-            open={Boolean(openExplore)}
-            style={{ top: '3em' }}
-            onClose={() => setOpenExplore(!openExplore)}>
-            <MenuItem
-              component={Link}
-              to="/publications"
-              onClick={() => setOpenExplore(!openExplore)}>
-              <ListItemIcon>
-                <DescriptionIcon />
-              </ListItemIcon>
-              <ListItemText
-                classes={{ primary: 'noLoginBar-listItemText' }}
-                primary={t('AppBar.NoLoginBar.Label_Publication')}
-              />
-            </MenuItem>
-            <MenuItem component={Link} to="/product" onClick={() => setOpenExplore(!openExplore)}>
-              <ListItemIcon>
-                <ShoppingCartIcon />
-              </ListItemIcon>
-              <ListItemText
-                classes={{ primary: 'noLoginBar-listItemText' }}
-                primary={t('AppBar.NoLoginBar.Label_Product')}
-              />
-            </MenuItem>
-          </Menu>
           <Menu
             id="simple-menu"
             anchorEl={anchorEl}
@@ -184,10 +195,30 @@ const NoLoginBar = (props) => {
             onClose={() => setOpenLoginDialog(!openLoginDialog)}
             aria-labelledby="alert-dialog-title"
             aria-describedby="alert-dialog-description">
-            <LoginBox
-              onLoginSuccess={() => setOpenLoginDialog(!openLoginDialog)}
-              redirectLink={'/dashboard'}
-            />
+            <AppBar position="static" color="default">
+              <Tabs
+                value={DialogTab}
+                onChange={handleDialogTabChange}
+                indicatorColor="primary"
+                textColor="primary"
+                variant="fullWidth"
+                aria-label="full width tabs example">
+                <Tab label="Log In" {...a11yProps(0)} />
+                <Tab label="Register" {...a11yProps(1)} />
+              </Tabs>
+            </AppBar>
+
+            <SwipeableViews axis={theme.direction === 'rtl' ? 'x-reverse' : 'x'} index={DialogTab}>
+              <TabPanel value={DialogTab} index={0} dir={theme.direction}>
+                <LoginBox
+                  onClose={() => setOpenLoginDialog(!openLoginDialog)}
+                  redirectLink={'/dashboard'}
+                />
+              </TabPanel>
+              <TabPanel value={DialogTab} index={1} dir={theme.direction}>
+                <CreateUser onClose={() => setOpenLoginDialog(!openLoginDialog)} />
+              </TabPanel>
+            </SwipeableViews>
           </Dialog>
           <Drawer open={openSideBar} onClose={() => setOpenSideBar(!openSideBar)}>
             <NoSidebar

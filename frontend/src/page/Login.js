@@ -33,7 +33,7 @@ const Login = (props) => {
             )
           ) : null}
 
-          <LoginBox onLoginSuccess={() => {}} redirectLink={mylink ? mylink : '/dashboard'} />
+          <LoginBox onClose={() => {}} redirectLink={mylink ? mylink : '/dashboard'} />
         </div>
       ) : (
         <div className={'login-root'}>
