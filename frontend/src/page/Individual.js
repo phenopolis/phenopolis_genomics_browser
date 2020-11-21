@@ -71,21 +71,21 @@ const Individual = (props) => {
                 <EditIcon />
               </Fab>
             ) : (
-                <Skeleton
-                  animation={'wave'}
-                  variant={'circle'}
-                  height={50}
-                  width={50}
-                  style={{ top: 125 }}
-                  className="individual-fab"
-                />
-              )}
+              <Skeleton
+                animation={'wave'}
+                variant={'circle'}
+                height={50}
+                width={50}
+                style={{ top: 125 }}
+                className="individual-fab"
+              />
+            )}
           </Container>
           {loaded ? (
             <MetaData metadata={individualInfo.metadata} name={props.match.params.individualId} />
           ) : (
-              <Skeleton height={145} />
-            )}
+            <Skeleton height={145} />
+          )}
           {loaded ? (
             <Container maxWidth="xl">
               <AppBar
@@ -114,8 +114,8 @@ const Individual = (props) => {
               </AppBar>
             </Container>
           ) : (
-              <Skeleton height={200} />
-            )}
+            <Skeleton height={200} />
+          )}
           {loaded ? (
             <>
               <SwipeableViews index={value} onChangeIndex={handleChangeIndex}>
@@ -163,8 +163,8 @@ const Individual = (props) => {
               </Dialog>
             </>
           ) : (
-              <Skeleton height={550} />
-            )}
+            <Skeleton height={550} />
+          )}
         </div>
       </React.Fragment>
     </>
