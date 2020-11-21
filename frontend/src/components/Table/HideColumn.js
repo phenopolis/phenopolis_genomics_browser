@@ -21,19 +21,19 @@ const HideColumn = (props) => {
             onClick={() => props.onHideColumn(-2)}
           />
         ) : (
-            <Chip
-              color="secondary"
-              variant="outlined"
-              avatar={
-                <Avatar>
-                  <FontAwesomeIcon icon={faCheck} />
-                </Avatar>
-              }
-              label={'Select All'}
-              className={'hideColumn-allSelectChip'}
-              onClick={() => props.onHideColumn(-1)}
-            />
-          )}
+          <Chip
+            color="secondary"
+            variant="outlined"
+            avatar={
+              <Avatar>
+                <FontAwesomeIcon icon={faCheck} />
+              </Avatar>
+            }
+            label={'Select All'}
+            className={'hideColumn-allSelectChip'}
+            onClick={() => props.onHideColumn(-1)}
+          />
+        )}
       </CardContent>
       <CardContent>
         {props.columnHide.map((item, index) => {
@@ -55,8 +55,8 @@ const HideColumn = (props) => {
                       <FontAwesomeIcon icon={faEllipsisH} />
                     </Avatar>
                   ) : (
-                          <Avatar style={{ backgroundColor: 'black', color: 'white' }}>?</Avatar>
-                        )
+                    <Avatar style={{ backgroundColor: 'black', color: 'white' }}>?</Avatar>
+                  )
                 }
                 className={'hideColumn-chip'}
                 style={
