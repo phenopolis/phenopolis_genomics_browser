@@ -2,3 +2,5 @@ export const GET_PREVIEW = 'GET_PREVIEW';
 export const GET_PREVIEW_SUCCESS = 'GET_PREVIEW_SUCCESS';
 export const GET_PREVIEW_FAIL = 'GET_PREVIEW_FAIL';
 export const CLEAR_PREVIEW = 'CLEAR_PREVIEW';
+
+export const SET_INDEX = 'SET_INDEX';

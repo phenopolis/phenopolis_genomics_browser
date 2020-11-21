@@ -7,11 +7,9 @@ export const getGene = (param) => {
     dispatch({ type: GET_GENE });
     Service.getGene(param)
       .then((res) => {
-        console.log(res);
         dispatch({ type: GET_GENE_SUCCESS, payload: { data: res.data } });
       })
       .catch((error) => {
-        console.log(error.response);
         if (error.response.status === 401) {
           dispatch({
             type: SET_STATUS,

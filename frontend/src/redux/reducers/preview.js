@@ -3,6 +3,7 @@ import {
   GET_PREVIEW_SUCCESS,
   GET_PREVIEW_FAIL,
   CLEAR_PREVIEW,
+  SET_INDEX
 } from '../types/preview';
 
 const initialState = {
@@ -10,6 +11,7 @@ const initialState = {
   data: [],
   loaded: false,
   error: false,
+  indexTo: false // a value control which tooltip should be opened
 };
 
 const Preview = (state = initialState, action) => {
@@ -46,6 +48,12 @@ const Preview = (state = initialState, action) => {
         data: [],
         loaded: false,
         error: false,
+      };
+    }
+    case SET_INDEX: {
+      return {
+        ...state,
+        indexTo: action.payload.index
       };
     }
     default:

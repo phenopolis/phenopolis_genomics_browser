@@ -3,6 +3,7 @@ import {
   GET_PREVIEW_SUCCESS,
   GET_PREVIEW_FAIL,
   CLEAR_PREVIEW,
+  SET_INDEX
 } from '../types/preview';
 import { SET_STATUS } from '../types/status';
 import Service from '../service';
@@ -19,7 +20,6 @@ export const getPreviewInformation = (text) => {
           var previewName = res.config.url.split('/')[3];
           var result = res.data[0].preview;
         }
-        console.log(result);
 
         dispatch({
           type: GET_PREVIEW_SUCCESS,
@@ -44,5 +44,11 @@ export const getPreviewInformation = (text) => {
 export const clearPreviewInformation = () => {
   return (dispatch) => {
     dispatch({ type: CLEAR_PREVIEW });
+  };
+};
+
+export const setPopoverIndex = (indexTo) => {
+  return (dispatch) => {
+    dispatch({ type: SET_INDEX, payload: { index: indexTo } });
   };
 };

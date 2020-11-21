@@ -193,14 +193,16 @@ const DrawerSearch = (props) => {
             {t('Search.Example')}:
             {examples.map((item, index) => {
               return (
-                <span key={index} onClick={handleClose}>
+                <span key={index} >
                   <TypeChip
                     size="small"
                     label={item.name}
                     type={item.type}
                     action="forward"
                     popover={true}
+                    emit={true}
                     to={item.to}
+                    onClick={handleClose}
                   />
                   &bull;
                 </span>
@@ -288,15 +290,15 @@ const DrawerSearch = (props) => {
                           })}
                         </div>
                       ) : (
-                        <div className="text-warning font-weight-bold font-size-xl">
-                          {t('AppBar.NavSearch.NoOption')}
-                        </div>
-                      )
+                          <div className="text-warning font-weight-bold font-size-xl">
+                            {t('AppBar.NavSearch.NoOption')}
+                          </div>
+                        )
                     ) : (
-                      <div className="text-warning font-weight-bold font-size-xl">
-                        {t('AppBar.NavSearch.NoContent')}
-                      </div>
-                    )}
+                          <div className="text-warning font-weight-bold font-size-xl">
+                            {t('AppBar.NavSearch.NoContent')}
+                          </div>
+                        )}
                   </div>
                 </Grid>
               </Grid>
