@@ -84,9 +84,10 @@
 }
 
 .chip-popover {
-  pointer-events: none;
+  // pointer-events: none;
   margin: 0.3em;
   margin-left: 0.5em;
+  z-index: 10000;
 }
 
 .chip-paper {

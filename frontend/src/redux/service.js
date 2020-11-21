@@ -31,7 +31,6 @@ function getPreviewInformation(param) {
   } else {
     var previewURL = api.BASE_URL + param + api.FETCH_PREVIEW;
   }
-  console.log(previewURL);
   return axios.get(previewURL, {
     withCredentials: true,
   });
@@ -98,14 +97,12 @@ function getAllIndividual(param) {
 }
 
 function updateOneIndividual(param) {
-  console.log(param);
   return axios.post(api.UPDATE_INDIVIDUAL + param.patient_id, param.data, {
     withCredentials: true,
   });
 }
 
 function deleteOneIndividual(param) {
-  console.log(param);
   return axios.delete(api.DELETE_INDIVIDUAL + param, {
     withCredentials: true,
   });
@@ -142,7 +139,6 @@ function addUserIndividual(data) {
 }
 
 function deleteUserIndividual(mydata) {
-  console.log(mydata);
   return axios.delete(
     api.DELETE_USER_INDIVIDUAL,
     { data: mydata },

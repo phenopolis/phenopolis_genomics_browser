@@ -81,13 +81,11 @@ export default function TransferList(props) {
 
   useEffect(() => {
     if (addUserIndividualLoaded) {
-      console.log(addUserInidividualInfo);
       dispatch(ResetAdd());
       setItemToAdd([]);
     }
 
     if (deleteUserIndividualLoaded) {
-      console.log(deleteUserInidividualInfo);
       dispatch(ResetDelete());
       setItemToRemove([]);
     }
@@ -136,7 +134,6 @@ export default function TransferList(props) {
         internal_id: x,
       };
     });
-    console.log(userIndividualData);
     dispatch(deleteUserIndividual(userIndividualData));
   };
 

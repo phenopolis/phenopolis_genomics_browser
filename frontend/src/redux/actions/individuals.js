@@ -42,11 +42,9 @@ export const getAllIndividual = () => {
     dispatch({ type: FETCH_INDIVIDUA_REQUEST });
     Service.getAllIndividual()
       .then((res) => {
-        console.log(res);
         dispatch({ type: FETCH_INDIVIDUA_SUCCESS, payload: { data: res.data } });
       })
       .catch((error) => {
-        console.log(error);
         if (error.response.status === 401) {
           dispatch({
             type: SET_STATUS,
@@ -63,8 +61,6 @@ export const updateOneIndividual = (data) => {
     dispatch({ type: UPDATE_INDIVIDUA_REQUEST });
     Service.updateOneIndividual(data)
       .then((res) => {
-        console.log(res);
-        console.log(data);
         dispatch({
           type: SET_SNACK,
           payload: { newMessage: data.patient_id + ' Updated Success.', newVariant: 'success' },
@@ -73,7 +69,6 @@ export const updateOneIndividual = (data) => {
         dispatch({ type: UPDATE_INDIVIDUA_SUCCESS, payload: { data: res.data } });
       })
       .catch((error) => {
-        console.log(error);
         if (error.response.status === 401) {
           dispatch({
             type: SET_STATUS,
@@ -105,7 +100,6 @@ export const deleteOneIndividual = (data) => {
         dispatch({ type: DELETE_INDIVIDUA_SUCCESS, payload: { data: res.data } });
       })
       .catch((error) => {
-        console.log(error);
         if (error.response.status === 401) {
           dispatch({
             type: SET_STATUS,

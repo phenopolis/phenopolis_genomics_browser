@@ -7,14 +7,32 @@ import {
   Typography,
   CircularProgress,
   Grid,
+  IconButton,
+  Popper,
+  Paper,
+  ClickAwayListener,
+  Tooltip,
 } from '@material-ui/core';
 
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faDna, faChartNetwork, faUser, faCut, faLink } from '@fortawesome/pro-solid-svg-icons';
+import {
+  faDna,
+  faChartNetwork,
+  faUser,
+  faCut,
+  faLink,
+  faWindowClose,
+  faExternalLinkAlt,
+  faExternalLinkSquare,
+} from '@fortawesome/pro-solid-svg-icons';
 
 import { useDispatch, useSelector } from 'react-redux';
 import { getSearchBest, clearSearchBest } from '../../redux/actions/search';
-import { getPreviewInformation, clearPreviewInformation } from '../../redux/actions/preview';
+import {
+  getPreviewInformation,
+  clearPreviewInformation,
+  setPopoverIndex,
+} from '../../redux/actions/preview';
 import { useHistory } from 'react-router-dom';
 
 const TypeChip = (props) => {
@@ -31,13 +49,16 @@ const TypeChip = (props) => {
   const dispatch = useDispatch();
   const history = useHistory();
 
-  const { best, previewName, previewInfo, loaded, error } = useSelector((state) => ({
+  const { best, previewName, previewInfo, loaded, error, indexTo } = useSelector((state) => ({
     best: state.Search.best.redirect,
     previewName: state.Preview.name,
     previewInfo: state.Preview.data,
     loaded: state.Preview.loaded,
     error: state.Preview.error,
+    indexTo: state.Preview.indexTo,
   }));
+
+  const [randomIndex, setRandomIndex] = useState(Math.random().toString(36).substr(2, 5));
 
   const [type, setType] = useState('other');
   const [anchorEl, setAnchorEl] = useState(null);
@@ -74,24 +95,33 @@ const TypeChip = (props) => {
       }
     } else if (event.button === 1) {
       if (props.action === 'forward') {
-        let win = window.open(window.location.origin + to, '_blank');
-        win.focus();
+        handleOpenNewTab(to);
       } else if (props.action === 'externalforward') {
-        let win = window.open(to, '_blank');
-        win.focus();
+        handleOpenNewTab(to);
       }
     }
+  };
+
+  const handleTurnToPage = (to) => {
+    history.push(to);
+  };
+
+  const handleOpenNewTab = (to) => {
+    let win = window.open(window.location.origin + to, '_blank');
+    win.focus();
   };
 
   const handlePopoverOpen = (event, to) => {
     if ((props.action !== 'guess') & (props.type !== 'other') & (props.popover === true)) {
       dispatch(getPreviewInformation(to));
+      dispatch(setPopoverIndex(randomIndex));
       setAnchorEl(event.currentTarget);
     }
   };
 
   const handlePopoverClose = () => {
     setAnchorEl(null);
+    dispatch(setPopoverIndex(false));
     dispatch(clearPreviewInformation());
   };
 
@@ -100,7 +130,7 @@ const TypeChip = (props) => {
     props.onDeleteClick(label);
   };
 
-  const open = Boolean(anchorEl);
+  const open = Boolean(anchorEl) & (indexTo === randomIndex);
 
   return (
     <span>
@@ -119,74 +149,101 @@ const TypeChip = (props) => {
         variant="outlined"
         onMouseDown={(event) => handleSearch(event, props.to)}
         onMouseEnter={(event) => handlePopoverOpen(event, props.to)}
-        onMouseLeave={handlePopoverClose}
+        // onMouseLeave={handlePopoverClose}
         style={
           props.slash ? { backgroundColor: 'white', opacity: 0.5 } : { backgroundColor: 'white' }
         }
       />
 
-      <Popover
-        id="mouse-over-popover"
-        className={'chip-popover'}
-        classes={{ paper: 'chip-paper' }}
-        open={open}
-        anchorEl={anchorEl}
-        anchorOrigin={{
-          vertical: 'center',
-          horizontal: 'right',
-        }}
-        transformOrigin={{
-          vertical: 'center',
-          horizontal: 'left',
-        }}
-        onClose={handlePopoverClose}
-        disableRestoreFocus
-        elevation={8}>
-        <Container
-          className={loaded ? `${type}-bg chip-title-loaded` : `${type}-bg chip-title-unloaded`}>
-          <Typography variant="subtitle1" style={{ 'font-weight': '900', color: 'white' }}>
-            {props.label}
+      <ClickAwayListener onClickAway={handlePopoverClose}>
+        <Popper
+          id="mouse-over-popover"
+          className={'chip-popover'}
+          open={open}
+          anchorEl={anchorEl}
+          placement="right"
+          onClose={handlePopoverClose}>
+          <Paper elevation={8}>
+            <Container
+              className={
+                loaded ? `${type}-bg chip-title-loaded` : `${type}-bg chip-title-unloaded`
+              }>
+              <Grid container direction="row" justify="space-between" alignItems="center">
+                <Typography variant="subtitle1" style={{ 'font-weight': '900', color: 'white' }}>
+                  {props.label}
 
-            {(loaded === false) | (props.to.split('/')[2] !== previewName) ? (
-              <small style={{ color: 'white' }}>
-                {' '}
-                &nbsp;&nbsp;
-                <CircularProgress size={12} color="white" />
-              </small>
+                  {(loaded === false) | (props.to.split('/')[2] !== previewName) ? (
+                    <small style={{ color: 'white' }}>
+                      {' '}
+                      &nbsp;&nbsp;
+                      <CircularProgress size={12} color="white" />
+                    </small>
+                  ) : null}
+                </Typography>
+
+                <Grid item>
+                  <Tooltip title={'Go to ' + previewName + ' page'} placement="top">
+                    <IconButton size="small" onClick={() => handleTurnToPage(props.to)}>
+                      <FontAwesomeIcon
+                        icon={faExternalLinkSquare}
+                        style={{ color: 'white', fontSize: '15' }}
+                      />
+                    </IconButton>
+                  </Tooltip>
+
+                  <Tooltip title="Open in new Tab" placement="top">
+                    <IconButton size="small" onClick={() => handleOpenNewTab(props.to)}>
+                      <FontAwesomeIcon
+                        icon={faExternalLinkAlt}
+                        style={{ color: 'white', fontSize: '13' }}
+                      />
+                    </IconButton>
+                  </Tooltip>
+
+                  <Tooltip title="Close Preview Panel" placement="top">
+                    <IconButton size="small" onClick={handlePopoverClose}>
+                      <FontAwesomeIcon
+                        icon={faWindowClose}
+                        style={{ color: 'white', fontSize: '15' }}
+                      />
+                    </IconButton>
+                  </Tooltip>
+                </Grid>
+              </Grid>
+            </Container>
+
+            {(loaded === true) & (props.to.split('/')[2] === previewName) ? (
+              <Container className="chip-container">
+                {error ? (
+                  <span> Can not Fetch preview information </span>
+                ) : (
+                  previewInfo.map((item, index) => {
+                    return (
+                      <Grid container spacing={1} key={index}>
+                        <Grid item xs={4} className="chip-popover-namegrid">
+                          {item[0]}
+                        </Grid>
+
+                        <Grid item xs={8} className="chip-popover-datagrid">
+                          {typeof item[1] === 'object'
+                            ? item[1].map((subchip, subchipIndex) => {
+                                return (
+                                  <span key={subchipIndex}>
+                                    {subchipIndex === 0 ? '' : ', '} {subchip}
+                                  </span>
+                                );
+                              })
+                            : item[1]}
+                        </Grid>
+                      </Grid>
+                    );
+                  })
+                )}
+              </Container>
             ) : null}
-          </Typography>
-        </Container>
-
-        {(loaded === true) & (props.to.split('/')[2] === previewName) ? (
-          <Container className="chip-container">
-            {error ? (
-              <span> Can not Fetch preview information </span>
-            ) : (
-              previewInfo.map((item, index) => {
-                return (
-                  <Grid container spacing={1} key={index}>
-                    <Grid item xs={4} className="chip-popover-namegrid">
-                      {item[0]}
-                    </Grid>
-
-                    <Grid item xs={8} className="chip-popover-datagrid">
-                      {typeof item[1] === 'object'
-                        ? item[1].map((subchip, subchipIndex) => {
-                            return (
-                              <span key={subchipIndex}>
-                                {subchipIndex === 0 ? '' : ', '} {subchip}
-                              </span>
-                            );
-                          })
-                        : item[1]}
-                    </Grid>
-                  </Grid>
-                );
-              })
-            )}
-          </Container>
-        ) : null}
-      </Popover>
+          </Paper>
+        </Popper>
+      </ClickAwayListener>
     </span>
   );
 };

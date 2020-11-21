@@ -41,7 +41,6 @@ export default function UserList(props) {
   const [open, setOpen] = useState(false);
 
   const handleClickAssignPatient = (id) => {
-    console.log(id);
     setUserID(id);
   };
 
