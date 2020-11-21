@@ -376,29 +376,29 @@ class VirtualTableFilter extends React.Component {
                         </FormControl>
                       ) : item.operation === '∅' ? null : (item.column.type === 'object') &
                         (item.operation !== '=') ? (
-                        <Select
-                          closeMenuOnSelect={false}
-                          components={animatedComponents}
-                          isMulti
-                          getOptionValue={(option) => option}
-                          getOptionLabel={(option) => option}
-                          options={item.column.chips}
-                          menuPortalTarget={document.querySelector('body')}
-                        />
-                      ) : (
-                        <FormControl fullWidth variant="outlined">
-                          <TextField
-                            disabled={item.column === null}
-                            label="Value"
-                            variant="outlined"
-                            id="standard-size-small"
-                            size="small"
-                            value={item.value}
-                            onChange={(event) => this.handleValueChange(event, index)}
-                            className={classes.valueInput}
+                          <Select
+                            closeMenuOnSelect={false}
+                            components={animatedComponents}
+                            isMulti
+                            getOptionValue={(option) => option}
+                            getOptionLabel={(option) => option}
+                            options={item.column.chips}
+                            menuPortalTarget={document.querySelector('body')}
                           />
-                        </FormControl>
-                      )}
+                        ) : (
+                          <FormControl fullWidth variant="outlined">
+                            <TextField
+                              disabled={item.column === null}
+                              label="Value"
+                              variant="outlined"
+                              id="standard-size-small"
+                              size="small"
+                              value={item.value}
+                              onChange={(event) => this.handleValueChange(event, index)}
+                              className={classes.valueInput}
+                            />
+                          </FormControl>
+                        )}
                     </Grid>
                     <Grid item xs={1}>
                       <div className="d-flex align-items-center justify-content-center">
@@ -449,14 +449,15 @@ class VirtualTableFilter extends React.Component {
             direction="row"
             justify="center"
             alignItems="center"
-            className="m-4"
+            className="m-2"
             style={{ paddingTop: '1em', color: 'darkgrey', 'white-space': 'pre-wrap' }}>
-            {`1. Firstly, please click Add New Filter button to create a new filter.
-              "2. After that, you must firstly select one variable (table column). Based on two types of varaible (vector or list), two different filter mode would be presented in following opration and value section.
-              "3. By click operation button, you may select one maths symbol to created a filtering operation for corresponding varaible.
-              "4. Input (or select) value to finish one filter, the result should be present promptly by filtering table below.
-              "5. If you have more than one filter, AND/OR button would show up, you may consider how to join your various filters.`}
+            {'1. Firstly, please click Add New Filter button to create a new filter.\n' +
+              '2. Then select one variable (table column). Based on variable types, different filter modes would be offered.\n' +
+              '3. By click operation button, you may select one maths symbol to created a filtering operation for corresponding varaible.\n' +
+              '4. Input (or select) value to finish one filter, the result should be present promptly by filtering table below.\n' +
+              '5. If you have more than one filter, AND/OR button would show up, you may consider how to join your various filters.\n'}
           </Grid>
+
         </CardContent>
       </Card>
     );
