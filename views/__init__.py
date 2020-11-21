@@ -12,13 +12,20 @@ from flask_sqlalchemy import SQLAlchemy
 import logging
 from logging.config import dictConfig
 from flask.logging import default_handler
+from cyvcf2 import VCF
 
-# Options are: prod, dev, debug (default), coverage
+# Options are: prod, dev, debug (default)
 APP_ENV = os.getenv("APP_ENV", "debug")
 
 ENV_LOG_FLAG = True
-if APP_ENV in ["coverage", "prod"]:
+if APP_ENV in ["prod"]:
     ENV_LOG_FLAG = False
+
+# in GH Workflow tests, private.env is not available so skip variant tests
+try:
+    variant_file = VCF(os.getenv("S3_VCF_FILE_URL"))
+except OSError:
+    variant_file = None
 
 
 def _configure_logs():

@@ -27,7 +27,7 @@ pytest --setup-show -v
 ```
 
 ### Using coverage
-- Install: `pip install process-tests gunicorn`
+- Install: `pip install gunicorn`
 - Create file `docker-compose.override.yml` containing:
 ```yaml
 version: '3.8'
@@ -42,7 +42,7 @@ docker-compose up -d db
 ```
 Then run:
 ```bash
-APP_ENV=coverage pytest --cov views --cov db --cov-report term-missing:skip-covered -sv
+APP_ENV=prod pytest --cov views --cov db --cov-report term-missing:skip-covered -sv
 ```
 which should show a coverage summary at the end.
 ### Using Tox

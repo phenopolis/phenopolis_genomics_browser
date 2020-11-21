@@ -70,7 +70,6 @@ def requires_admin(f):
     return decorated
 
 
-#
 @application.route("/<language>/login", methods=["POST"])
 @application.route("/login", methods=["POST"])
 def login():
@@ -84,7 +83,6 @@ def login():
     return jsonify(success="Authenticated", username=username), 200
 
 
-#
 @application.route("/<language>/logout", methods=["POST"])
 @application.route("/logout", methods=["POST"])
 @requires_auth
