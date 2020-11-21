@@ -18,7 +18,7 @@ import {
   CssBaseline,
   Tabs,
   Tab,
-  Box
+  Box,
 } from '@material-ui/core';
 import { makeStyles, useTheme } from '@material-ui/core/styles';
 import SwipeableViews from 'react-swipeable-views';
@@ -49,13 +49,8 @@ function TabPanel(props) {
       hidden={value !== index}
       id={`full-width-tabpanel-${index}`}
       aria-labelledby={`full-width-tab-${index}`}
-      {...other}
-    >
-      {value === index && (
-        <div>
-          {children}
-        </div>
-      )}
+      {...other}>
+      {value === index && <div>{children}</div>}
     </div>
   );
 }
@@ -83,8 +78,8 @@ const NoLoginBar = (props) => {
   const [DialogTab, setDialogTab] = useState(0);
 
   const handleDialogTabChange = (event, newValue) => {
-    setDialogTab(newValue)
-  }
+    setDialogTab(newValue);
+  };
 
   const handleLanClick = (event) => {
     setAnchorEl(event.currentTarget);
@@ -200,7 +195,6 @@ const NoLoginBar = (props) => {
             onClose={() => setOpenLoginDialog(!openLoginDialog)}
             aria-labelledby="alert-dialog-title"
             aria-describedby="alert-dialog-description">
-
             <AppBar position="static" color="default">
               <Tabs
                 value={DialogTab}
@@ -208,17 +202,13 @@ const NoLoginBar = (props) => {
                 indicatorColor="primary"
                 textColor="primary"
                 variant="fullWidth"
-                aria-label="full width tabs example"
-              >
+                aria-label="full width tabs example">
                 <Tab label="Log In" {...a11yProps(0)} />
                 <Tab label="Register" {...a11yProps(1)} />
               </Tabs>
             </AppBar>
 
-            <SwipeableViews
-              axis={theme.direction === 'rtl' ? 'x-reverse' : 'x'}
-              index={DialogTab}
-            >
+            <SwipeableViews axis={theme.direction === 'rtl' ? 'x-reverse' : 'x'} index={DialogTab}>
               <TabPanel value={DialogTab} index={0} dir={theme.direction}>
                 <LoginBox
                   onClose={() => setOpenLoginDialog(!openLoginDialog)}
@@ -229,8 +219,6 @@ const NoLoginBar = (props) => {
                 <CreateUser onClose={() => setOpenLoginDialog(!openLoginDialog)} />
               </TabPanel>
             </SwipeableViews>
-
-
           </Dialog>
           <Drawer open={openSideBar} onClose={() => setOpenSideBar(!openSideBar)}>
             <NoSidebar

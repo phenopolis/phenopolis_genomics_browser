@@ -1,7 +1,15 @@
 import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useDispatch } from 'react-redux';
-import { Avatar, Button, CssBaseline, TextField, Typography, Container, Grid } from '@material-ui/core';
+import {
+  Avatar,
+  Button,
+  CssBaseline,
+  TextField,
+  Typography,
+  Container,
+  Grid,
+} from '@material-ui/core';
 import LockOutlinedIcon from '@material-ui/icons/LockOutlined';
 import { Trans } from 'react-i18next';
 import { userLogin } from '../../redux/actions/auth';
@@ -85,23 +93,16 @@ const LoginBox = (props) => {
 
           <Grid container className="mt-4 mb-2">
             <Grid item xs={6}>
-              <Button
-                type="submit"
-                variant="contained"
-                color="primary"
-                fullWidth
-              >
+              <Button type="submit" variant="contained" color="primary" fullWidth>
                 {t('AppBar.LoginBox.Button')}
               </Button>
             </Grid>
             <Grid item xs={6}>
               <Button color="default" fullWidth onClick={() => handleCloseDialog()}>
                 Cancel
-          </Button>
+              </Button>
             </Grid>
           </Grid>
-
-
 
           <div style={{ textAlign: 'center' }}>
             <span className="loginBox-demolink-try">
@@ -116,7 +117,7 @@ const LoginBox = (props) => {
           </div>
         </form>
       </div>
-    </Container >
+    </Container>
   );
 };
 

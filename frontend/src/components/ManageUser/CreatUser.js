@@ -17,7 +17,7 @@ import {
   Paper,
   Collapse,
   CssBaseline,
-  Avatar
+  Avatar,
 } from '@material-ui/core';
 
 import AccountCircleIcon from '@material-ui/icons/AccountCircle';
@@ -86,7 +86,6 @@ export default function CreateUser(props) {
   };
 
   return (
-
     <Container component="main" maxWidth="lg">
       <CssBaseline />
       <div className="loginbox-paper">
@@ -96,7 +95,6 @@ export default function CreateUser(props) {
         <Typography component="h1" variant="h6">
           {'Register'}
         </Typography>
-
 
         <Grid container direction="row" justify="center" alignItems="center">
           <Grid item xs={12}>
@@ -124,14 +122,11 @@ export default function CreateUser(props) {
                     type={item.name === 'Password' ? 'password' : null}
                     style={{ marginTop: '10px', marginBottom: '10px' }}
                   />
-
                 );
               })}
             </div>
           </Grid>
         </Grid>
-
-
 
         <Grid container className="mt-4 mb-2">
           <Grid item xs={6}>
@@ -142,15 +137,14 @@ export default function CreateUser(props) {
               disabled={ConfirmOpen}
               onClick={() => handleOpenConfirm()}>
               Create
-          </Button>
+            </Button>
           </Grid>
           <Grid item xs={6}>
             <Button color="default" fullWidth onClick={() => handleCloseDialog()}>
               Cancel
-          </Button>
+            </Button>
           </Grid>
         </Grid>
-
 
         <Collapse in={ConfirmOpen}>
           <Paper
@@ -166,30 +160,25 @@ export default function CreateUser(props) {
                 Thanks for joining Phenopolis. Please confirm your information.
               </Grid>
               <Grid item xs={5}>
-                <Grid
-                  container
-                  direction="column"
-                  justify="center"
-                  alignItems="flex-end"
-                >
+                <Grid container direction="column" justify="center" alignItems="flex-end">
                   <Grid item style={{ marginBottom: '1em' }}>
                     <Button
                       size="small"
                       variant="contained"
-                      color='secondary'
+                      color="secondary"
                       style={{ color: 'white', border: '1px solid white' }}
                       onClick={() => handleSubmitNewUser()}>
                       Confirm
-                  </Button>
+                    </Button>
                   </Grid>
                   <Grid item>
                     <Button
                       size="small"
-                      color='secondary'
+                      color="secondary"
                       style={{ color: 'white', 'margin-right': '0.5em' }}
                       onClick={() => setConfirmOpen(false)}>
                       Give up
-                  </Button>
+                    </Button>
                   </Grid>
                 </Grid>
               </Grid>
