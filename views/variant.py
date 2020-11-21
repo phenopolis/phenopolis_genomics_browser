@@ -3,11 +3,11 @@ variant view
 """
 import requests
 from db.model import Variant
-from views import application, variant_file
+from views import application, variant_file, phenoid_mapping
 from views.auth import requires_auth
 from views.autocomplete import CHROMOSOME_POS_REF_ALT_REGEX
 from views.postgres import session_scope
-from views.general import cache_on_browser
+from views.general import cache_on_browser, process_for_display
 from sqlalchemy import and_
 from flask import jsonify, Response
 from db.helpers import query_user_config
@@ -67,6 +67,7 @@ def _get_variant(chrom, pos, ref, alt, language):
         genotypes = _get_genotypes(chrom, pos)
 
         variant_dict = variant.as_dict()
+        process_for_display(db_session, [variant_dict])
         config = query_user_config(db_session=db_session, language=language, entity="variant")
         config[0]["metadata"]["data"] = [variant_dict]
         config[0]["individuals"]["data"] = [variant_dict]
@@ -98,12 +99,13 @@ def _get_genotypes(chrom, pos):
             {
                 # NOTE: samples didn't use to care about which samples were authorized to view, now variants
                 # belonging to non authorized are shown but the sample id is not
-                "sample": [{"display": s}],
+                "sample": [{"display": phenoid_mapping.get(s)}],
                 "GT": gts[lookup[s]][:2],
                 "AD": (rds[lookup[s]], ads[lookup[s]]),
                 "DP": dps[lookup[s]],
             }
             for s in variant_file.samples
+            # if phenoid_mapping.get(s) is not None
         ]
     except Exception as e:
         print(e)
