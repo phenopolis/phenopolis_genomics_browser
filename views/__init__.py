@@ -106,20 +106,22 @@ Compress(application)
 cache = Cache(application, config={"CACHE_TYPE": "simple"})
 mail = Mail(application)
 
-db = psycopg2.connect(
-    host=application.config["DB_HOST"],
-    database=application.config["DB_DATABASE"],
-    user=application.config["DB_USER"],
-    password=application.config["DB_PASSWORD"],
-    port=application.config["DB_PORT"],
-)
-c = db.cursor()
-c.execute("select external_id, internal_id from individuals")
-headers = [h[0] for h in c.description]
+try:
+    db = psycopg2.connect(
+        host=application.config["DB_HOST"],
+        database=application.config["DB_DATABASE"],
+        user=application.config["DB_USER"],
+        password=application.config["DB_PASSWORD"],
+        port=application.config["DB_PORT"],
+    )
+    c = db.cursor()
+    c.execute("select external_id, internal_id from individuals")
+    headers = [h[0] for h in c.description]
 
-pheno_ids = [dict(zip(headers, r)) for r in c.fetchall()]
-phenoid_mapping = {ind["external_id"]: ind["internal_id"] for ind in pheno_ids}
-
+    pheno_ids = [dict(zip(headers, r)) for r in c.fetchall()]
+    phenoid_mapping = {ind["external_id"]: ind["internal_id"] for ind in pheno_ids}
+except Exception:
+    phenoid_mapping = {}
 
 # NOTE: These imports must be placed at the end of this file
 # flake8: noqa E402
