@@ -38,6 +38,7 @@ import {
 
 import { SET_STATUS } from '../types/status';
 import { SET_SNACK } from '../types/snacks';
+import { SET_DIALOG } from '../types/dialog';
 import Service from '../service';
 
 export const getAllUser = () => {
@@ -108,6 +109,7 @@ export const createNewUser = (data) => {
     dispatch({ type: CREATE_USER_REQUEST });
     Service.createUser(data)
       .then((res) => {
+        dispatch({ type: SET_DIALOG, payload: { dialogName: false } });
         dispatch({ type: CREATE_USER_SUCCESS, payload: { data: res.data } });
       })
       .catch((error) => {
@@ -182,14 +184,15 @@ export const changePassword = (data) => {
           type: SET_SNACK,
           payload: { newMessage: 'Change Password Success.', newVariant: 'success' },
         });
+        dispatch({ type: SET_DIALOG, payload: { dialogName: false } });
 
         dispatch({ type: CHANGE_PASSWORD_SUCCESS, payload: { data: res.data } });
       })
       .catch((error) => {
         if (error.response.status === 401) {
           dispatch({
-            type: SET_STATUS,
-            payload: { code: 401, message: 'UnAuthorised', relink: '/manage_user' },
+            type: SET_SNACK,
+            payload: { newMessage: 'Change Password Failed.', newVariant: 'error' },
           });
         }
         dispatch({ type: CHANGE_PASSWORD_FAIL, payload: { error: error.response.data.error } });

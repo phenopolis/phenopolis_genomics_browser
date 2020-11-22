@@ -4,6 +4,7 @@ import { Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { useDispatch, useSelector } from 'react-redux';
 import { userLogin } from '../../redux/actions/auth';
+import { setDialog } from '../../redux/actions/dialog';
 import Homebanner from '../../assets/image/Homebanner.jpg';
 
 const HomeBanner = (props) => {
@@ -13,12 +14,8 @@ const HomeBanner = (props) => {
     username: state.Auth.username,
   }));
 
-  const demoLogin = () => {
-    const loginForm = {
-      user: 'demo',
-      password: 'demo123',
-    };
-    dispatch(userLogin({ loginForm: loginForm, relink: '/dashboard' }));
+  const handleTriggerDialog = (dialogName) => {
+    dispatch(setDialog(dialogName));
   };
 
   return (
@@ -47,8 +44,8 @@ const HomeBanner = (props) => {
                     color="inherit"
                     size="large"
                     className="banner-button"
-                    onClick={demoLogin}>
-                    {t('HomePage.HomeBanner.button_no_login')}
+                    onClick={() => handleTriggerDialog('Login/Register')}>
+                    {'Login or Register'}
                   </Button>
                 ) : (
                   <Link style={{ textDecoration: 'none' }} to="/dashboard">

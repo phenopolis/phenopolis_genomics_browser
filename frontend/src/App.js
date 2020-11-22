@@ -19,6 +19,7 @@ import ConfirmPage from './page/ConfirmPage';
 
 import CustomizedSnackbars from './components/CustomizedSnackbars/CustomizedSnackbars';
 import AuthCheck from './components/AuthCheck/AuthCheck';
+import GlobalDialogs from './components/GlobalDialogs/GlobalDialogs';
 import ScrollToTop from './components/General/ScrollToTop';
 
 import Gene from './page/Gene';
@@ -48,10 +49,11 @@ function App() {
     <CookiesProvider>
       <Suspense fallback={<Loading message={'Loading Phenopolis...'} />}>
         <Router>
-          <AuthCheck />
-          <CustomizedSnackbars />
-          <ScrollToTop />
           <ThemeProvider theme={outerTheme}>
+            <AuthCheck />
+            <CustomizedSnackbars />
+            <GlobalDialogs />
+            <ScrollToTop />
             <HomeAppBar>
               <Switch>
                 <Route exact path="/" component={Home} />

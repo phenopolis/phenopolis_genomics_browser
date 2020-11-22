@@ -29,6 +29,9 @@ import MenuIcon from '@material-ui/icons/Menu';
 import TranslateIcon from '@material-ui/icons/Translate';
 import AccountCircleIcon from '@material-ui/icons/AccountCircle';
 
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faUserNurse } from '@fortawesome/pro-solid-svg-icons';
+
 import Footer from '../General/Footer';
 import DrawerSearch from './DrawerSearch';
 import { userLogout } from '../../redux/actions/auth';
@@ -254,8 +257,12 @@ const LoginBar = (props) => {
           })}
           style={{ paddingTop: '6em', backgroundColor: 'smokewhite' }}>
           <Link style={{ textDecoration: 'none' }} to="/dashboard">
-            <Avatar alt="Remy Sharp" className="app-sidebar-userbox-avatar">
-              <AccountCircleIcon style={{ height: '2.5em', width: '2.5em' }} />
+            <Avatar alt="User" className="app-sidebar-userbox-avatar">
+              <div className="bg-white text-center text-primary font-size-xl d-80 rounded-circle mt-3  mb-sm-0">
+                <FontAwesomeIcon icon={faUserNurse} style={{ fontSize: '36' }} />
+              </div>
+
+              {/* <AccountCircleIcon style={{ height: '2.5em', width: '2.5em' }} /> */}
             </Avatar>
           </Link>
 

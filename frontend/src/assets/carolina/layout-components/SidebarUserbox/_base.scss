@@ -12,12 +12,13 @@ body {
     white-space: nowrap;
 
     .app-sidebar-userbox-avatar {
-      width: 54px;
-      height: 54px;
+      width: 55px;
+      height: 55px;
       margin-left: auto;
       margin-right: auto;
       margin-bottom: $spacer / 2;
       transition: $transition-base;
+      background-color: white;
     }
 
     .app-sidebar-userbox-name {

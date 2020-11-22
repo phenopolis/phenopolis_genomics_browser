@@ -5,8 +5,23 @@ import { Card, CardMedia } from '@material-ui/core';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faKey } from '@fortawesome/pro-solid-svg-icons';
 
+import { useDispatch } from 'react-redux';
+import { setDialog } from '../../redux/actions/dialog';
+
 const AccountPanel = (props) => {
-  const actions = [{ name: 'Change Password', sub: '\t', icon: faKey }];
+  const dispatch = useDispatch();
+  const actions = [
+    {
+      name: 'Change Password',
+      sub: 'You need to input your current password',
+      icon: faKey,
+      dialogName: 'ChangePassword',
+    },
+  ];
+
+  const handleTriggerDialog = (dialogName) => {
+    dispatch(setDialog(dialogName));
+  };
 
   return (
     <Fragment>
@@ -24,7 +39,9 @@ const AccountPanel = (props) => {
           {actions.map((action, index) => {
             return (
               <div className="w-25 p-2">
-                <button className="btn card card-box d-flex align-items-center px-4 py-3 w-100 h-100 account-panel-button">
+                <button
+                  className="btn card card-box d-flex align-items-center px-4 py-3 w-100 h-100 account-panel-button"
+                  onClick={() => handleTriggerDialog(action.dialogName)}>
                   <div>
                     <FontAwesomeIcon
                       icon={action.icon}
