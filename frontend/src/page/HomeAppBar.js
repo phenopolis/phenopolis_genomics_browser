@@ -13,8 +13,8 @@ const HomeAppBar = (props) => {
       {username === '' ? (
         <NoLoginBar> {props.children} </NoLoginBar>
       ) : (
-          <LoginBar username={username}>{props.children}</LoginBar>
-        )}
+        <LoginBar username={username}>{props.children}</LoginBar>
+      )}
     </div>
   );
 };

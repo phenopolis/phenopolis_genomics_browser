@@ -64,8 +64,8 @@ const Gene = (props) => {
           </div>
         </React.Fragment>
       ) : (
-          <Loading message={t('Gene.message')} />
-        )}
+        <Loading message={t('Gene.message')} />
+      )}
     </>
   );
 };
