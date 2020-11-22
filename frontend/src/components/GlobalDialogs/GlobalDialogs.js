@@ -20,6 +20,7 @@ import { setDialog } from '../../redux/actions/dialog';
 
 import LoginBox from '../AppBar/LoginBox';
 import CreateUser from '../ManageUser/CreatUser';
+import ChangePassword from './ChangePassword'
 
 function TabPanel(props) {
   const { children, value, index, ...other } = props;
@@ -100,21 +101,7 @@ export default function GlobalDialogs() {
         onClose={handleClose}
         aria-labelledby="alert-dialog-title"
         aria-describedby="alert-dialog-description">
-        <DialogTitle id="alert-dialog-title">{"Use Google's location service?"}</DialogTitle>
-        <DialogContent>
-          <DialogContentText id="alert-dialog-description">
-            Let Google help apps determine location. This means sending anonymous location data to
-            Google, even when no apps are running.
-          </DialogContentText>
-        </DialogContent>
-        <DialogActions>
-          <Button onClick={handleClose} color="primary">
-            Disagree
-          </Button>
-          <Button onClick={handleClose} color="primary" autoFocus>
-            Agree
-          </Button>
-        </DialogActions>
+        <ChangePassword onClose={handleClose} />
       </Dialog>
     </div>
   );
