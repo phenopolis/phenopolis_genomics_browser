@@ -16,7 +16,7 @@ const HomeBanner = (props) => {
 
   const handleTriggerDialog = (dialogName) => {
     dispatch(setDialog(dialogName));
-  }
+  };
 
   return (
     <div className="hero-wrapper bg-composed-wrapper bg-white" style={{ height: '70vh' }}>
@@ -48,19 +48,19 @@ const HomeBanner = (props) => {
                     {'Login or Register'}
                   </Button>
                 ) : (
-                    <Link style={{ textDecoration: 'none' }} to="/dashboard">
-                      <Button
-                        variant="outlined"
-                        color="inherit"
-                        size="large"
-                        className="banner-button"
+                  <Link style={{ textDecoration: 'none' }} to="/dashboard">
+                    <Button
+                      variant="outlined"
+                      color="inherit"
+                      size="large"
+                      className="banner-button"
                       // component={Link}
                       // to='/search'
-                      >
-                        Dashboard
+                    >
+                      Dashboard
                     </Button>
-                    </Link>
-                  )}
+                  </Link>
+                )}
               </div>
             </Box>
           </Grid>

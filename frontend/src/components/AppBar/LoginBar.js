@@ -257,7 +257,6 @@ const LoginBar = (props) => {
           })}
           style={{ paddingTop: '6em', backgroundColor: 'smokewhite' }}>
           <Link style={{ textDecoration: 'none' }} to="/dashboard">
-
             <Avatar alt="User" className="app-sidebar-userbox-avatar">
               <div className="bg-white text-center text-primary font-size-xl d-80 rounded-circle mt-3  mb-sm-0">
                 <FontAwesomeIcon icon={faUserNurse} style={{ fontSize: '36' }} />

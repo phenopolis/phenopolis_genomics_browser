@@ -36,7 +36,6 @@ import { useTranslation } from 'react-i18next';
 import { useDispatch } from 'react-redux';
 import { setDialog } from '../../redux/actions/dialog';
 
-
 const NoLoginBar = (props) => {
   const theme = useTheme();
   const dispatch = useDispatch();
@@ -44,7 +43,6 @@ const NoLoginBar = (props) => {
   const [openSideBar, setOpenSideBar] = useState(false);
   const [openLan, setOpenLan] = useState(false);
   const [anchorEl, setAnchorEl] = useState(null);
-
 
   const handleLanClick = (event) => {
     setAnchorEl(event.currentTarget);
@@ -59,7 +57,7 @@ const NoLoginBar = (props) => {
 
   const handleTriggerDialog = (dialogName) => {
     dispatch(setDialog(dialogName));
-  }
+  };
 
   return (
     <div>

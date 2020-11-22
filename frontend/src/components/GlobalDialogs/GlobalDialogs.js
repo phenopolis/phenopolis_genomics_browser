@@ -12,7 +12,7 @@ import {
   DialogTitle,
   AppBar,
   Tabs,
-  Tab
+  Tab,
 } from '@material-ui/core';
 
 import { useDispatch, useSelector } from 'react-redux';
@@ -67,7 +67,6 @@ export default function GlobalDialogs() {
 
   return (
     <div>
-
       <Dialog
         open={dialogName === 'Login/Register'}
         onClose={handleClose}
@@ -88,17 +87,13 @@ export default function GlobalDialogs() {
 
         <SwipeableViews axis={theme.direction === 'rtl' ? 'x-reverse' : 'x'} index={DialogTab}>
           <TabPanel value={DialogTab} index={0} dir={theme.direction}>
-            <LoginBox
-              onClose={handleClose}
-              redirectLink={'/dashboard'}
-            />
+            <LoginBox onClose={handleClose} redirectLink={'/dashboard'} />
           </TabPanel>
           <TabPanel value={DialogTab} index={1} dir={theme.direction}>
             <CreateUser onClose={handleClose} />
           </TabPanel>
         </SwipeableViews>
       </Dialog>
-
 
       <Dialog
         open={dialogName === 'ChangePassword'}

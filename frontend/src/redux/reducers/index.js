@@ -12,7 +12,7 @@ import Individual from './individual';
 import Status from './status';
 import User from './user';
 import UserIndividual from './userIndividual';
-import Dialog from './dialog'
+import Dialog from './dialog';
 
 export default combineReducers({
   Auth,
@@ -28,5 +28,5 @@ export default combineReducers({
   Status,
   User,
   UserIndividual,
-  Dialog
+  Dialog,
 });

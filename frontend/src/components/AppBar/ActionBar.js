@@ -109,8 +109,8 @@ const ActionBar = (props) => {
           {patientOpen ? (
             <FontAwesomeIcon icon={faAngleUp} />
           ) : (
-              <FontAwesomeIcon icon={faAngleDown} />
-            )}
+            <FontAwesomeIcon icon={faAngleDown} />
+          )}
         </ListItem>
         <Collapse in={patientOpen} timeout="auto" unmountOnExit>
           <List component="div" disablePadding>
@@ -176,8 +176,8 @@ const ActionBar = (props) => {
           {languageOpen ? (
             <FontAwesomeIcon icon={faAngleUp} />
           ) : (
-              <FontAwesomeIcon icon={faAngleDown} />
-            )}
+            <FontAwesomeIcon icon={faAngleDown} />
+          )}
         </ListItem>
         <Collapse in={languageOpen} timeout="auto" unmountOnExit>
           <List component="div" disablePadding>
@@ -222,8 +222,8 @@ const ActionBar = (props) => {
           {accountOpen ? (
             <FontAwesomeIcon icon={faAngleUp} />
           ) : (
-              <FontAwesomeIcon icon={faAngleDown} />
-            )}
+            <FontAwesomeIcon icon={faAngleDown} />
+          )}
         </ListItem>
         <Collapse in={accountOpen} timeout="auto" unmountOnExit>
           <List component="div" disablePadding>

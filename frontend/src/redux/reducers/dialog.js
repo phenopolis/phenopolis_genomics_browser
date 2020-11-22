@@ -1,7 +1,7 @@
 import { SET_DIALOG } from '../types/dialog';
 
 const initialState = {
-  dialogName: false
+  dialogName: false,
 };
 
 export default function (state = initialState, action) {

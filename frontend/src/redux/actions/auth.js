@@ -5,7 +5,7 @@ import {
   ISLOGIN_SUCCESS,
   ISLOGIN_FAIL,
 } from '../types/auth';
-import { SET_DIALOG } from '../types/dialog'
+import { SET_DIALOG } from '../types/dialog';
 import Service from '../service';
 
 export const userLogin = (data) => {
