@@ -105,10 +105,6 @@ export default function CreateUser(props) {
                     className="loginbox-textfield"
                     value={values[item.key]}
                     onChange={(event) => handleSetValue(event.target.value, item.key)}
-                    // error={values[item.key] === ''}
-                    // helperText={
-                    //   values[item.key] === '' ? item.name + ' can not be Empty!' : ' '
-                    // }
                     variant="outlined"
                     margin="normal"
                     required

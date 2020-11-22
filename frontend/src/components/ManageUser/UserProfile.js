@@ -100,15 +100,15 @@ export default function UserProfile(props) {
                           </span>
                         </Tooltip>
                       ) : (
-                        <Tooltip title="Click to Enable this User">
-                          <span
-                            className="mt-2 text-danger font-size-md px-4 py-1 h-auto badge badge-neutral-danger"
-                            onClick={handleEnableUser}
-                            style={{ cursor: 'pointer' }}>
-                            &nbsp;Disabled&nbsp;
+                          <Tooltip title="Click to Enable this User">
+                            <span
+                              className="mt-2 text-danger font-size-md px-4 py-1 h-auto badge badge-neutral-danger"
+                              onClick={handleEnableUser}
+                              style={{ cursor: 'pointer' }}>
+                              &nbsp;Disabled&nbsp;
                           </span>
-                        </Tooltip>
-                      )}
+                          </Tooltip>
+                        )}
                     </div>
                     <div style={{ marginLeft: '10px' }}>
                       {oneUserInfo.confirmed ? (
@@ -116,10 +116,10 @@ export default function UserProfile(props) {
                           Confirmed
                         </span>
                       ) : (
-                        <span className="mt-2 text-danger font-size-md px-4 py-1 h-auto badge badge-neutral-danger">
-                          Unconfirmed
-                        </span>
-                      )}
+                          <span className="mt-2 text-danger font-size-md px-4 py-1 h-auto badge badge-neutral-danger">
+                            Unconfirmed
+                          </span>
+                        )}
                     </div>
                   </Grid>
                 </div>
@@ -135,8 +135,8 @@ export default function UserProfile(props) {
                         ) : oneUserInfo[item.key] === false ? (
                           <FontAwesomeIcon icon={faTimesCircle} style={{ color: 'red' }} />
                         ) : (
-                          <span className="text-black-50">{oneUserInfo[item.key]}</span>
-                        )}
+                              <span className="text-black-50">{oneUserInfo[item.key]}</span>
+                            )}
                       </div>
                     );
                   })}
@@ -173,17 +173,17 @@ export default function UserProfile(props) {
           )}
         </Card>
       ) : (
-        <Grid
-          container
-          spacing={0}
-          alignItems="center"
-          justify="center"
-          style={{ minHeight: '50vh' }}>
-          <span className="opacity-5 font-size-xxl font-weight-bold">
-            Loading {props.id} Information...{' '}
-          </span>
-        </Grid>
-      )}
+          <Grid
+            container
+            spacing={0}
+            alignItems="center"
+            justify="center"
+            style={{ minHeight: '50vh' }}>
+            <span className="opacity-5 font-size-xxl font-weight-bold">
+              Loading {props.id} Information...{' '}
+            </span>
+          </Grid>
+        )}
     </Fragment>
   );
 }

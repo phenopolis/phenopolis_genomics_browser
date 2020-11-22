@@ -5,6 +5,7 @@ import {
   ISLOGIN_SUCCESS,
   ISLOGIN_FAIL,
 } from '../types/auth';
+import { SET_DIALOG } from '../types/dialog'
 import Service from '../service';
 
 export const userLogin = (data) => {
@@ -12,6 +13,7 @@ export const userLogin = (data) => {
     dispatch({ type: LOGIN_REQUEST, payload: { relink: data.relink } });
     Service.login(data.loginForm)
       .then((res) => {
+        dispatch({ type: SET_DIALOG, payload: { dialogName: false } });
         dispatch({ type: LOGIN_REQUEST_SUCCESS, payload: { username: res.data.username } });
       })
       .catch((error) => {

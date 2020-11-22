@@ -1,4 +1,7 @@
-import React from 'react';
+import React, { useState } from 'react';
+import PropTypes from 'prop-types';
+import { makeStyles, useTheme } from '@material-ui/core/styles';
+import SwipeableViews from 'react-swipeable-views';
 
 import {
   Button,
@@ -7,26 +10,98 @@ import {
   DialogContent,
   DialogContentText,
   DialogTitle,
+  AppBar,
+  Tabs,
+  Tab
 } from '@material-ui/core';
 
-export default function GlobalDialogs() {
-  const [open, setOpen] = React.useState(false);
+import { useDispatch, useSelector } from 'react-redux';
+import { setDialog } from '../../redux/actions/dialog';
 
-  const handleClickOpen = () => {
-    setOpen(true);
+import LoginBox from '../AppBar/LoginBox';
+import CreateUser from '../ManageUser/CreatUser';
+
+function TabPanel(props) {
+  const { children, value, index, ...other } = props;
+
+  return (
+    <div
+      role="tabpanel"
+      hidden={value !== index}
+      id={`full-width-tabpanel-${index}`}
+      aria-labelledby={`full-width-tab-${index}`}
+      {...other}>
+      {value === index && <div>{children}</div>}
+    </div>
+  );
+}
+
+TabPanel.propTypes = {
+  children: PropTypes.node,
+  index: PropTypes.any.isRequired,
+  value: PropTypes.any.isRequired,
+};
+
+function a11yProps(index) {
+  return {
+    id: `full-width-tab-${index}`,
+    'aria-controls': `full-width-tabpanel-${index}`,
+  };
+}
+
+export default function GlobalDialogs() {
+  const theme = useTheme();
+  const dispatch = useDispatch();
+  const [DialogTab, setDialogTab] = useState(0);
+
+  const { dialogName } = useSelector((state) => ({
+    dialogName: state.Dialog.dialogName,
+  }));
+  const handleClose = () => {
+    dispatch(setDialog(false));
   };
 
-  const handleClose = () => {
-    setOpen(false);
+  const handleDialogTabChange = (event, newValue) => {
+    setDialogTab(newValue);
   };
 
   return (
     <div>
-      {/* <Button variant="outlined" color="primary" onClick={handleClickOpen}>
-        Open alert dialog
-      </Button> */}
+
       <Dialog
-        open={open}
+        open={dialogName === 'Login/Register'}
+        onClose={handleClose}
+        aria-labelledby="alert-dialog-title"
+        aria-describedby="alert-dialog-description">
+        <AppBar position="static" color="default">
+          <Tabs
+            value={DialogTab}
+            onChange={handleDialogTabChange}
+            indicatorColor="primary"
+            textColor="primary"
+            variant="fullWidth"
+            aria-label="full width tabs example">
+            <Tab label="Log In" {...a11yProps(0)} />
+            <Tab label="Register" {...a11yProps(1)} />
+          </Tabs>
+        </AppBar>
+
+        <SwipeableViews axis={theme.direction === 'rtl' ? 'x-reverse' : 'x'} index={DialogTab}>
+          <TabPanel value={DialogTab} index={0} dir={theme.direction}>
+            <LoginBox
+              onClose={handleClose}
+              redirectLink={'/dashboard'}
+            />
+          </TabPanel>
+          <TabPanel value={DialogTab} index={1} dir={theme.direction}>
+            <CreateUser onClose={handleClose} />
+          </TabPanel>
+        </SwipeableViews>
+      </Dialog>
+
+
+      <Dialog
+        open={dialogName === 'ChangePassword'}
         onClose={handleClose}
         aria-labelledby="alert-dialog-title"
         aria-describedby="alert-dialog-description">

@@ -49,11 +49,11 @@ function App() {
     <CookiesProvider>
       <Suspense fallback={<Loading message={'Loading Phenopolis...'} />}>
         <Router>
-          <AuthCheck />
-          <CustomizedSnackbars />
-          <GlobalDialogs />
-          <ScrollToTop />
           <ThemeProvider theme={outerTheme}>
+            <AuthCheck />
+            <CustomizedSnackbars />
+            <GlobalDialogs />
+            <ScrollToTop />
             <HomeAppBar>
               <Switch>
                 <Route exact path="/" component={Home} />
