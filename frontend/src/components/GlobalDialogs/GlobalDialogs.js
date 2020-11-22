@@ -20,7 +20,7 @@ import { setDialog } from '../../redux/actions/dialog';
 
 import LoginBox from '../AppBar/LoginBox';
 import CreateUser from '../ManageUser/CreatUser';
-import ChangePassword from './ChangePassword'
+import ChangePassword from './ChangePassword';
 
 function TabPanel(props) {
   const { children, value, index, ...other } = props;

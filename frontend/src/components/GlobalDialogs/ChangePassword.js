@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 
 import { useDispatch } from 'react-redux';
-import { changePassword } from '../../redux/actions/user'
+import { changePassword } from '../../redux/actions/user';
 
 import {
   Avatar,
@@ -16,7 +16,6 @@ import {
 import VpnKeyIcon from '@material-ui/icons/VpnKey';
 
 const ChangePassword = (props) => {
-
   const dispatch = useDispatch();
 
   const [currentPassword, setCurrentPassword] = useState(null);
@@ -25,8 +24,8 @@ const ChangePassword = (props) => {
   const handleSubmit = (event) => {
     event.preventDefault();
     const PasswordForm = {
-      'current_password': currentPassword,
-      'new_password': newPassword,
+      current_password: currentPassword,
+      new_password: newPassword,
     };
     dispatch(changePassword(PasswordForm));
   };
@@ -93,7 +92,6 @@ const ChangePassword = (props) => {
               </Button>
             </Grid>
           </Grid>
-
         </form>
       </div>
     </Container>

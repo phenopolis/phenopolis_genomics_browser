@@ -180,7 +180,6 @@ export const changePassword = (data) => {
     dispatch({ type: CHANGE_PASSWORD_REQUEST });
     Service.changePassword(data)
       .then((res) => {
-
         dispatch({
           type: SET_SNACK,
           payload: { newMessage: 'Change Password Success.', newVariant: 'success' },
