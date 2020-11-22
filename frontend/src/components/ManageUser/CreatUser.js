@@ -86,7 +86,7 @@ export default function CreateUser(props) {
   };
 
   return (
-    <Container component="main" maxWidth="lg">
+    <Container component="main" maxWidth="xs">
       <CssBaseline />
       <div className="loginbox-paper">
         <Avatar className="loginbox-avatar" style={{ backgroundColor: '#fb8c00' }}>
