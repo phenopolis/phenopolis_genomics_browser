@@ -180,10 +180,8 @@ def _get_user_by_id(db_session, user_id: str) -> User:
 
 def _send_confirmation_email(user: User, confirmation_url: str):
     confirmation_token = generate_confirmation_token(user.email)
-    msg = Message(
-        "Confirm your registration into Phenopolis", sender="no-reply@phenopolis.org", recipients=[user.email],
-    )
-    msg.body = "Welcome to Phenopolis {user}, confirm your registration in the following link {url_base}/{token}".format(
+    m = Message("Confirm your registration into Phenopolis", sender="no-reply@phenopolis.org", recipients=[user.email],)
+    m.body = "Welcome to Phenopolis {user}, confirm your registration in the following link {url_base}/{token}".format(
         user=user.user, url_base=confirmation_url, token=confirmation_token
     )
-    mail.send(msg)
+    mail.send(m)
