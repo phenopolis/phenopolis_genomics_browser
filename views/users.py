@@ -183,7 +183,7 @@ def _send_confirmation_email(user: User, confirmation_url: str):
     msg = Message(
         "Confirm your registration into Phenopolis", sender="no-reply@phenopolis.org", recipients=[user.email],
     )
-    msg.body = "Welcome to Phenopolis {user}, confirm your registration in the following link {url_base}{token}".format(
+    msg.body = "Welcome to Phenopolis {user}, confirm your registration in the following link {url_base}/{token}".format(
         user=user.user, url_base=confirmation_url, token=confirmation_token
     )
     mail.send(msg)
