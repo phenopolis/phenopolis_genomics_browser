@@ -9,7 +9,7 @@ from flask_mail import Message
 from sqlalchemy.orm import Session
 from werkzeug.exceptions import HTTPException
 from db.model import UserIndividual
-from views import application, mail
+from views import application, mail, APP_ENV
 from views.auth import USER
 from views.exceptions import PhenopolisException
 from datetime import datetime, timedelta
@@ -138,6 +138,8 @@ def _parse_boolean_parameter(val):
 
 def cache_on_browser(minutes=5):
     """ Flask decorator that allow to set Expire and Cache headers. """
+    if APP_ENV == "debug":
+        minutes = 0
 
     def fwrap(f):
         @wraps(f)
