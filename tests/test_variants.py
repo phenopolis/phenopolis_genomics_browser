@@ -20,9 +20,11 @@ def test_variant(_demo):
     """
     response = variant("14-76156575-A-G")
     assert '"gene_symbol":[{"display":"TTLL5"}],"hgvsc":"ENST00000298832.9:c.412A>G"' in str(response.data), "Critical"
-    assert len(str(response.json)) == 534850
+    assert len(str(response.json)) == 7713
     assert "'cadd_phred': '12.28'," in str(response.json), "Check col frequency data"
-    assert '"end_href":"14-76156575-A-G"' in str(response.data), "Critical"
+    assert "end_href': '14-76156575-A-G'" in str(response.json), "Critical, must be present"
+    assert "'gene_id': 'ENSG00000119685'," in str(response.json), "Critical, must be present"
+    assert "Variant Id" not in str(response.json), "Critical, must be present"
 
 
 def test_missing_variant(_demo):
