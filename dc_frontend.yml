@@ -1,0 +1,14 @@
+# Run it if running app api outside docker (e.g. python application.py or IDE debug)
+# docker-compose -f docker-compose.yml -f dc_frontend.yml up --remove-orphans
+# setup to use host.docker.internal in _redirects
+version: '3.8'
+services:
+   app:
+      command: echo "Skipped, Startind only frontend and db"
+   db:
+      ports:
+      - 5432:5432
+   frontend:
+      command: ./entrypoint.sh _redirects_mac
+      depends_on:
+      - db
