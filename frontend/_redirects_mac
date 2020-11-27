@@ -1,0 +1,2 @@
+/api/*    http://host.docker.internal:5000/:splat    200!
+/*    /index.html    200
