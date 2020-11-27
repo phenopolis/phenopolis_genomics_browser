@@ -105,7 +105,7 @@ def _get_genotypes(chrom, pos):
                 "DP": dps[lookup[s]],
             }
             for s in variant_file.samples
-            # if phenoid_mapping.get(s) is not None
+            if phenoid_mapping.get(s) is not None
         ]
     except Exception as e:
         print(e)
