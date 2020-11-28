@@ -134,12 +134,12 @@ const DrawerSearch = (props) => {
   }, [searchContent]);
 
   useEffect(() => {
-    if (keySearch & loaded & data !== null & data.length > 0) {
-      let itemInfo = data[0].split("::")
-      let turnURL = '/' + itemInfo[0] + '/' + itemInfo[2]
+    if (keySearch & loaded & (data !== null) & (data.length > 0)) {
+      let itemInfo = data[0].split('::');
+      let turnURL = '/' + itemInfo[0] + '/' + itemInfo[2];
       history.push(turnURL);
-      setKeySearch(false)
-      handleClose()
+      setKeySearch(false);
+      handleClose();
     }
   }, [data]);
 
@@ -161,11 +161,11 @@ const DrawerSearch = (props) => {
   const handleKeyDown = (event) => {
     if (event.key === 'Enter') {
       if (searchContent !== '') {
-        setKeySearch(true)
+        setKeySearch(true);
         autocomplete(searchContent);
       }
     }
-  }
+  };
 
   return (
     <Fragment>
@@ -314,15 +314,15 @@ const DrawerSearch = (props) => {
                           })}
                         </div>
                       ) : (
-                          <div className="text-warning font-weight-bold font-size-xl">
-                            {t('AppBar.NavSearch.NoOption')}
-                          </div>
-                        )
+                        <div className="text-warning font-weight-bold font-size-xl">
+                          {t('AppBar.NavSearch.NoOption')}
+                        </div>
+                      )
                     ) : (
-                          <div className="text-warning font-weight-bold font-size-xl">
-                            {t('AppBar.NavSearch.NoContent')}
-                          </div>
-                        )}
+                      <div className="text-warning font-weight-bold font-size-xl">
+                        {t('AppBar.NavSearch.NoContent')}
+                      </div>
+                    )}
                   </div>
                 </Grid>
               </Grid>
