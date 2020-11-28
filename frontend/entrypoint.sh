@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
-set -e
-#set -x
+
+set -euo pipefail
 
 cleanup() {
     if $remove; then
