@@ -26,6 +26,7 @@ import CloseTwoToneIcon from '@material-ui/icons/CloseTwoTone';
 
 import { useTranslation } from 'react-i18next';
 import { useDispatch, useSelector } from 'react-redux';
+import { useHistory } from 'react-router-dom';
 import clsx from 'clsx';
 import { getSearchAutocomplete } from '../../redux/actions/search';
 
@@ -76,9 +77,12 @@ const useStyles = makeStyles((theme) => ({
 const DrawerSearch = (props) => {
   const { t } = useTranslation();
   const dispatch = useDispatch();
+  const history = useHistory();
 
   const [searchContent, setSearchContent] = useState('');
   const [typing, setTyping] = useState(false);
+  const [keySearch, setKeySearch] = useState(false);
+
   const examples = [
     { name: 'TTLL5', type: 'gene', to: '/gene/ENSG00000119685' },
     { name: 'Abnormality of the eye', type: 'phenotype', to: '/hpo/HP:0000478' },
@@ -129,6 +133,16 @@ const DrawerSearch = (props) => {
     return () => clearTimeout(timeout);
   }, [searchContent]);
 
+  useEffect(() => {
+    if (keySearch & loaded & (data !== null) & (data.length > 0)) {
+      let itemInfo = data[0].split('::');
+      let turnURL = '/' + itemInfo[0] + '/' + itemInfo[2];
+      history.push(turnURL);
+      setKeySearch(false);
+      handleClose();
+    }
+  }, [data]);
+
   const autocomplete = (searchText) => {
     setTyping(false);
     setPage(1);
@@ -142,6 +156,15 @@ const DrawerSearch = (props) => {
   const [page, setPage] = React.useState(1);
   const handlePageChange = (event, page) => {
     setPage(page);
+  };
+
+  const handleKeyDown = (event) => {
+    if (event.key === 'Enter') {
+      if (searchContent !== '') {
+        setKeySearch(true);
+        autocomplete(searchContent);
+      }
+    }
   };
 
   return (
@@ -184,6 +207,7 @@ const DrawerSearch = (props) => {
                 </InputAdornment>
               ),
             }}
+            onKeyDown={(event) => handleKeyDown(event)}
           />
         </Container>
       </div>
