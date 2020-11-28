@@ -1,10 +1,15 @@
+# Used only in GitHub Workflow tests with "docker-compose -f dc_4_test.yml up -d"
+# Lint with flake8:       "docker-compose -f dc_4_test.yml exec -T app flake8 -v --count"
+# Check format with blac: "docker-compose -f dc_4_test.yml exec -T app black --diff --check ."
+# Test with PyTest:       "docker-compose -f dc_4_test.yml exec -T app pytest --color=yes -k 'not test_variant'"
+
 version: '3.8'
-x-common:
-   env_file: &id001
+x-common: &common
+   env_file:
    - public.env
 services:
    app:
-      env_file: *id001
+      <<: *common
       environment:
       - APP_ENV=test
       build:
@@ -19,7 +24,7 @@ services:
       depends_on:
       - db
    db:
-      env_file: *id001
+      <<: *common
       image: postgres:12-alpine
       volumes:
       - db:/var/lib/postgresql/data

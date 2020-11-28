@@ -1,11 +1,11 @@
 version: '3.8'
-x-common:
-   env_file: &id001
+x-common: &common
+   env_file:
    - public.env
    - private.env
 services:
    app:
-      env_file: *id001
+      <<: *common
       build:
          context: .
       image: phenopolis_api
@@ -18,14 +18,14 @@ services:
       depends_on:
       - db
    db:
-      env_file: *id001
+      <<: *common
       image: postgres:12-alpine
       volumes:
       - db:/var/lib/postgresql/data
       - ./:/app
       - ./schema/initdb.d/:/docker-entrypoint-initdb.d
    frontend:
-      env_file: *id001
+      <<: *common
       tty: true # give extra colours in term log
       build:
          context: frontend
