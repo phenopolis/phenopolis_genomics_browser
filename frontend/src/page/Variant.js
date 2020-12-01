@@ -57,8 +57,7 @@ const Variant = (props) => {
           <div className="variant-container">
             <MetaData
               metadata={variantInfo.metadata}
-              name={variantInfo.metadata.data[0].variant_id + ' | ' + variantName}
-              // name={variantInfo.metadata.data[0].variant_id[0].display}
+              name={variantInfo.metadata.data[0].variant_id[0].display}
             />
 
             <Container maxWidth="xl">

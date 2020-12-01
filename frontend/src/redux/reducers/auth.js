@@ -2,24 +2,36 @@ import {
   LOGIN_REQUEST,
   LOGIN_REQUEST_SUCCESS,
   LOGIN_REQUEST_FAIL,
+  ISLOGIN_REQUEST,
   ISLOGIN_SUCCESS,
   ISLOGIN_FAIL,
+  LOGOUT_REQUEST,
+  LOGOUT_REQUEST_SUCCESS,
+  LOGOUT_REQUEST_FAIL,
 } from '../types/auth';
 
 const initialState = {
   username: '',
-  error: false,
-  notification: false,
+  loginLoaded: false,
+  loginError: false,
   relink: '/',
+  // Below are 2 status for is_login
+  isLoginLoaded: false,
+  isLoginError: false,
+  // Below are states for Logout
+  logoutLoaded: false,
+  logoutError: false,
 };
 
 const Auth = (state = initialState, action) => {
   switch (action.type) {
+    // Below are 3 reducers for Login Action
     case LOGIN_REQUEST: {
       return {
         ...state,
-        error: false,
-        notification: false,
+        username: '',
+        loginLoaded: false,
+        loginError: false,
         relink: action.payload.relink,
       };
     }
@@ -27,30 +39,57 @@ const Auth = (state = initialState, action) => {
       return {
         ...state,
         username: action.payload.username,
-        error: false,
-        notification: true,
+        loginLoaded: true,
       };
     }
     case LOGIN_REQUEST_FAIL: {
       return {
         ...state,
-        error: action.payload.error,
-        notification: true,
+        loginError: action.payload.error,
+      };
+    }
+    // Below are 3 reducers for ISLOGIN
+    case ISLOGIN_REQUEST: {
+      return {
+        ...state,
+        username: '',
+        isLoginLoaded: false,
+        isLoginError: false,
       };
     }
     case ISLOGIN_SUCCESS: {
       return {
         ...state,
         username: action.payload.username,
-        error: false,
-        notification: false,
+        isLoginLoaded: true,
       };
     }
     case ISLOGIN_FAIL: {
       return {
         ...state,
-        error: action.payload.error,
-        notification: false,
+        isLoginError: action.payload.error,
+      };
+    }
+    // Below are 3 reducers for LOG_OUT
+    case LOGOUT_REQUEST: {
+      return {
+        ...state,
+        logoutLoaded: false,
+        logoutError: false,
+        relink: action.payload.relink,
+      };
+    }
+    case LOGOUT_REQUEST_SUCCESS: {
+      return {
+        ...state,
+        username: '',
+        logoutLoaded: true,
+      };
+    }
+    case LOGOUT_REQUEST_FAIL: {
+      return {
+        ...state,
+        logoutError: action.payload.error,
       };
     }
     default:

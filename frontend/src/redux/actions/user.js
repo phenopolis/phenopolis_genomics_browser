@@ -52,7 +52,7 @@ export const getAllUser = () => {
         if (error.response.status === 401) {
           dispatch({
             type: SET_STATUS,
-            payload: { code: 401, message: 'UnAuthorised', relink: '/manage_user' },
+            payload: { code: 401, message: 'UnAuthorised' },
           });
         }
         dispatch({ type: FETCH_USER_FAIL, payload: { error: error.response.data.error } });
@@ -77,7 +77,7 @@ export const getOneUser = (param) => {
         if (error.response.status === 401) {
           dispatch({
             type: SET_STATUS,
-            payload: { code: 401, message: 'UnAuthorised', relink: '/manage_user' },
+            payload: { code: 401, message: 'UnAuthorised' },
           });
         }
         dispatch({ type: FETCH_ONE_USER_FAIL, payload: { error: error.response.data.error } });
@@ -96,7 +96,7 @@ export const getAllPatients = () => {
         if (error.response.status === 401) {
           dispatch({
             type: SET_STATUS,
-            payload: { code: 401, message: 'UnAuthorised', relink: '/manage_user' },
+            payload: { code: 401, message: 'UnAuthorised' },
           });
         }
         dispatch({ type: FETCH_ALL_PATIENT_FAIL, payload: { error: error.response.data.error } });
@@ -116,7 +116,7 @@ export const createNewUser = (data) => {
         if (error.response.status === 401) {
           dispatch({
             type: SET_STATUS,
-            payload: { code: 401, message: 'UnAuthorised', relink: '/manage_user' },
+            payload: { code: 401, message: 'UnAuthorised' },
           });
         } else if (error.response.status === 500) {
           dispatch({
@@ -161,7 +161,7 @@ export const enableUser = (param) => {
         if (error.response.status === 401) {
           dispatch({
             type: SET_STATUS,
-            payload: { code: 401, message: 'UnAuthorised', relink: '/manage_user' },
+            payload: { code: 401, message: 'UnAuthorised' },
           });
         }
         dispatch({ type: ENABLE_USER_FAIL, payload: { error: error.response.data.error } });
@@ -217,7 +217,7 @@ export const confirmRegistration = (token) => {
         if (error.response.status === 401) {
           dispatch({
             type: SET_STATUS,
-            payload: { code: 401, message: 'UnAuthorised', relink: '/manage_user' },
+            payload: { code: 401, message: 'UnAuthorised' },
           });
         }
         dispatch({

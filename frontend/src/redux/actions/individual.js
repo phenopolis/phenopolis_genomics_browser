@@ -20,13 +20,12 @@ export const getIndividualInformation = (param) => {
             payload: {
               code: 401,
               message: error.response.data.error,
-              relink: '/individual/' + param,
             },
           });
         } else if (error.response.status === 404) {
           dispatch({
             type: SET_STATUS,
-            payload: { code: 404, message: error.response.data.message, relink: '/' },
+            payload: { code: 404, message: error.response.data.message },
           });
         }
         dispatch({ type: INDIVIDUAL_INFO_REQUEST_FAIL, payload: { error: error.response } });

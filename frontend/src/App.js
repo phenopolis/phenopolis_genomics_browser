@@ -30,6 +30,7 @@ import MyPatient from './page/MyPatient';
 
 import { BrowserRouter as Router, Route, Switch } from 'react-router-dom';
 import { CookiesProvider } from 'react-cookie';
+import { useSelector } from 'react-redux';
 
 import Loading from './components/General/Loading';
 
@@ -44,10 +45,26 @@ const outerTheme = createMuiTheme({
   },
 });
 
+const ProtectedRoute = ({ component: Component, ...rest }) => {
+  const { username } = useSelector((state) => ({
+    username: state.Auth.username,
+  }));
+
+  return (
+    <>
+      {username === '' ? (
+        <Loading message={'Waiting for Auth Validation'} />
+      ) : (
+        <Route {...rest} render={(props) => <Component {...rest} {...props} />} />
+      )}
+    </>
+  );
+};
+
 function App() {
   return (
     <CookiesProvider>
-      <Suspense fallback={<Loading message={'Loading Phenopolis...'} />}>
+      <Suspense fallback={<Loading message={'Loading Translation...'} />}>
         <Router>
           <ThemeProvider theme={outerTheme}>
             <AuthCheck />
@@ -57,18 +74,20 @@ function App() {
             <HomeAppBar>
               <Switch>
                 <Route exact path="/" component={Home} />
-                <Route path="/dashboard" component={Dashboard} />
                 <Route path="/login" component={Login} />
-                <Route path="/create_patient" component={CreatePatient} />
-                <Route path="/manage_patient" component={ManagePatient} />
-                <Route path="/manage_user" component={ManageUser} />
                 <Route path="/publications" component={Publication} />
-                <Route path="/my_patients" component={MyPatient} />
-                <Route path="/gene/:geneId" component={Gene} />
-                <Route path="/hpo/:hpoId" component={HPO} />
-                <Route path="/individual/:individualId" component={Individual} />
-                <Route path="/variant/:variantId" component={Variant} />
                 <Route path="/confirm" component={ConfirmPage} />
+
+                <ProtectedRoute path="/dashboard" component={Dashboard} />
+                <ProtectedRoute path="/create_patient" component={CreatePatient} />
+                <ProtectedRoute path="/manage_patient" component={ManagePatient} />
+                <ProtectedRoute path="/manage_user" component={ManageUser} />
+                <ProtectedRoute path="/my_patients" component={MyPatient} />
+                <ProtectedRoute path="/gene/:geneId" component={Gene} />
+                <ProtectedRoute path="/hpo/:hpoId" component={HPO} />
+                <ProtectedRoute path="/individual/:individualId" component={Individual} />
+                <ProtectedRoute path="/variant/:variantId" component={Variant} />
+
                 <Route component={NotFoundPage} />
               </Switch>
             </HomeAppBar>

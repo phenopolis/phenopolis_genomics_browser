@@ -30,7 +30,7 @@ export const getPreviewInformation = (text) => {
         if (error.response.status === 401) {
           dispatch({
             type: SET_STATUS,
-            payload: { code: 401, message: error.response.data.error, relink: '/' },
+            payload: { code: 401, message: error.response.data.error },
           });
         }
         dispatch({

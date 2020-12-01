@@ -29,7 +29,7 @@ export const createIndividual = (data) => {
         if (error.response.status === 401) {
           dispatch({
             type: SET_STATUS,
-            payload: { code: 401, message: 'UnAuthorised', relink: '/create_patient' },
+            payload: { code: 401, message: 'UnAuthorised' },
           });
         }
         dispatch({ type: CREATE_INDIVIDUA_FAIL, payload: { error: error.response.data.error } });
@@ -48,7 +48,7 @@ export const getAllIndividual = () => {
         if (error.response.status === 401) {
           dispatch({
             type: SET_STATUS,
-            payload: { code: 401, message: 'UnAuthorised', relink: '/manage_patient' },
+            payload: { code: 401, message: 'UnAuthorised' },
           });
         }
         dispatch({ type: FETCH_INDIVIDUA_FAIL, payload: { error: error.response.data.error } });
@@ -72,7 +72,7 @@ export const updateOneIndividual = (data) => {
         if (error.response.status === 401) {
           dispatch({
             type: SET_STATUS,
-            payload: { code: 401, message: 'UnAuthorised', relink: '/manage_patient' },
+            payload: { code: 401, message: 'UnAuthorised' },
           });
         }
         dispatch({ type: UPDATE_INDIVIDUA_FAIL, payload: { error: error.response.data.error } });
@@ -103,7 +103,7 @@ export const deleteOneIndividual = (data) => {
         if (error.response.status === 401) {
           dispatch({
             type: SET_STATUS,
-            payload: { code: 401, message: 'UnAuthorised', relink: '/manage_patient' },
+            payload: { code: 401, message: 'UnAuthorised' },
           });
         }
         dispatch({ type: DELETE_INDIVIDUA_FAIL, payload: { error: error.response.data.error } });

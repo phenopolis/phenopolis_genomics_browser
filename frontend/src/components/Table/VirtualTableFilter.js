@@ -423,10 +423,6 @@ class VirtualTableFilter extends React.Component {
                           onClick={() => this.handleDeleteFilter(index)}>
                           <FontAwesomeIcon icon={faTrashAlt} />
                         </IconButton>
-                        <FontAwesomeIcon
-                          icon={['fad', 'arrow-down']}
-                          className="font-size-sm opacity-5"
-                        />
                       </div>
                     </Grid>
                   </Grid>

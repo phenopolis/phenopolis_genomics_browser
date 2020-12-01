@@ -3,7 +3,6 @@ import { SET_STATUS, RESET_STATUS } from '../types/status';
 const initialState = {
   code: false,
   message: false,
-  relink: false,
 };
 
 const Status = (state = initialState, action) => {
@@ -13,7 +12,6 @@ const Status = (state = initialState, action) => {
         ...state,
         code: action.payload.code,
         message: action.payload.message,
-        relink: action.payload.relink,
       };
     }
     case RESET_STATUS: {
@@ -21,7 +19,6 @@ const Status = (state = initialState, action) => {
         ...state,
         code: false,
         message: false,
-        relink: false,
       };
     }
     default:
