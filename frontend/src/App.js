@@ -46,25 +46,20 @@ const outerTheme = createMuiTheme({
 });
 
 const ProtectedRoute = ({ component: Component, ...rest }) => {
-
   const { username } = useSelector((state) => ({
     username: state.Auth.username,
   }));
 
   return (
     <>
-      {
-        username === '' ? (
-          <Loading message={'Waiting for Auth Validation'} />
-        ) : (
-            <Route {...rest} render={
-              props => <Component {...rest} {...props} />
-            } />
-          )
-      }
+      {username === '' ? (
+        <Loading message={'Waiting for Auth Validation'} />
+      ) : (
+        <Route {...rest} render={(props) => <Component {...rest} {...props} />} />
+      )}
     </>
-  )
-}
+  );
+};
 
 function App() {
   return (
@@ -82,7 +77,6 @@ function App() {
                 <Route path="/login" component={Login} />
                 <Route path="/publications" component={Publication} />
                 <Route path="/confirm" component={ConfirmPage} />
-
 
                 <ProtectedRoute path="/dashboard" component={Dashboard} />
                 <ProtectedRoute path="/create_patient" component={CreatePatient} />

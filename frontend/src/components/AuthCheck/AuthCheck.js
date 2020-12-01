@@ -55,7 +55,8 @@ const AuthCheck = () => {
       if (username !== '') {
         dispatch(userLogout({ relink: `/login?link=${window.location.pathname}` }));
       }
-    } else if (code === 404) { // When API encounter 404 error, redirect to dashboard page.
+    } else if (code === 404) {
+      // When API encounter 404 error, redirect to dashboard page.
       dispatch(setSnack(message, 'warning'));
       history.push('/dashboard');
     }
@@ -82,7 +83,7 @@ const AuthCheck = () => {
       history.push(relink);
     }
 
-    // Send error message if logout failed, note if user had expired, the API would return 401 error. 
+    // Send error message if logout failed, note if user had expired, the API would return 401 error.
     // Here I will NOT triggeer the 401 error, but print message in redux
     if (logoutError) {
       dispatch(setSnack('Logout Failed', 'error'));
