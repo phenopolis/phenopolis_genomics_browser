@@ -11,13 +11,22 @@ const AuthCheck = () => {
   const dispatch = useDispatch();
   const history = useHistory();
 
-  const { username, error, notification, relink, code, message, statusRelink } = useSelector(
+  const { username, loginLoaded, loginError, relink, isLoginLoaded, isLoginError, logoutLoaded, logoutError, code, message, statusRelink } = useSelector(
     (state) => ({
       username: state.Auth.username,
-      error: state.Auth.error,
-      notification: state.Auth.notification,
+      loginLoaded: state.Auth.loginLoaded,
+      loginError: state.Auth.loginError,
       relink: state.Auth.relink,
 
+      // Below are 2 status for is_login
+      isLoginLoaded: state.Auth.isLoginLoaded,
+      isLoginError: state.Auth.isLoginError,
+
+      // Below are states for Logout
+      logoutLoaded: state.Auth.logoutLoaded,
+      logoutError: state.Auth.logoutError,
+
+      // Below are 3 status for Error Code judge
       code: state.Status.code,
       message: state.Status.message,
       statusRelink: state.Status.relink,
@@ -40,20 +49,29 @@ const AuthCheck = () => {
   }, [code, dispatch]);
 
   useEffect(() => {
-    if (username !== '' && notification) {
+    if (loginLoaded) {
       dispatch(setSnack(username + i18next.t('HomePage.HomeBanner.login_success'), 'success'));
       history.push(relink);
-    } else if (username === '' && notification) {
+    }
+
+    if (loginError) {
+      dispatch(setSnack(i18next.t('AppBar.LoginBox.Login_Failed'), 'error'));
+    }
+  }, [loginLoaded, loginError]);
+
+  useEffect(() => {
+    if (logoutLoaded) {
       dispatch(setSnack(i18next.t('AppBar.LoginBar.Logout_Success'), 'success'));
       history.push(relink);
     }
-  }, [dispatch, username, relink, dispatch]);
+
+    if (logoutError) {
+      dispatch(setSnack('Logout Failed', 'error'));
+    }
+  }, [logoutLoaded, logoutError]);
 
   useEffect(() => {
-    if (error) {
-      if (notification) {
-        dispatch(setSnack(i18next.t('AppBar.LoginBox.Login_Failed'), 'error'));
-      }
+    if (isLoginError) {
       if (
         window.location.pathname !== '/' &&
         window.location.pathname !== '/publications' &&
@@ -63,7 +81,7 @@ const AuthCheck = () => {
         history.push(`/login?link=${window.location.pathname}`);
       }
     }
-  }, [dispatch, error, history, notification]);
+  }, [isLoginError]);
 
   return <></>;
 };
