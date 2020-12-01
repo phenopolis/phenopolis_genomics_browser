@@ -13,12 +13,12 @@ export const getGene = (param) => {
         if (error.response.status === 401) {
           dispatch({
             type: SET_STATUS,
-            payload: { code: 401, message: error.response.data.error, relink: '/gene/' + param },
+            payload: { code: 401, message: error.response.data.error },
           });
         } else if (error.response.status === 404) {
           dispatch({
             type: SET_STATUS,
-            payload: { code: 404, message: error.response.data.message, relink: '/' },
+            payload: { code: 404, message: error.response.data.message },
           });
         }
         dispatch({ type: GET_GENE_FAIL, payload: { error: error.response } });

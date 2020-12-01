@@ -12,7 +12,7 @@ export const getHPO = (param) => {
         } else {
           dispatch({
             type: SET_STATUS,
-            payload: { code: 404, message: 'HPO not exist.', relink: '/dashboard' },
+            payload: { code: 404, message: 'HPO not exist.' },
           });
         }
       })
@@ -20,12 +20,12 @@ export const getHPO = (param) => {
         if (error.response.status === 401) {
           dispatch({
             type: SET_STATUS,
-            payload: { code: 401, message: error.response.data.message, relink: '/hpo/' + param },
+            payload: { code: 401, message: error.response.data.message },
           });
         } else if (error.response.status === 500) {
           dispatch({
             type: SET_STATUS,
-            payload: { code: 404, message: 'HPO not exist.', relink: '/dashboard' },
+            payload: { code: 404, message: 'HPO not exist.' },
           });
         }
 

@@ -22,7 +22,6 @@ const AuthCheck = () => {
     logoutError,
     code,
     message,
-    statusRelink,
   } = useSelector((state) => ({
     username: state.Auth.username,
     loginLoaded: state.Auth.loginLoaded,
@@ -40,7 +39,6 @@ const AuthCheck = () => {
     // Below are 3 status for Error Code judge
     code: state.Status.code,
     message: state.Status.message,
-    statusRelink: state.Status.relink,
   }));
 
   // Everytime website start, auto check if user has log in
@@ -91,6 +89,10 @@ const AuthCheck = () => {
   }, [logoutLoaded, logoutError]);
 
   useEffect(() => {
+    if (isLoginLoaded) {
+      dispatch(setSnack('Welcome Back ' + username + '!', 'success'));
+    }
+
     if (isLoginError) {
       if (
         window.location.pathname !== '/' &&
@@ -101,7 +103,7 @@ const AuthCheck = () => {
         history.push(`/login?link=${window.location.pathname}`);
       }
     }
-  }, [isLoginError]);
+  }, [isLoginError, isLoginLoaded]);
 
   return <></>;
 };

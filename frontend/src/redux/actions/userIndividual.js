@@ -30,7 +30,7 @@ export const addUserIndividual = (data) => {
         if (error.response.status === 401) {
           dispatch({
             type: SET_STATUS,
-            payload: { code: 401, message: error.response.data.error, relink: '/manage_user' },
+            payload: { code: 401, message: error.response.data.error },
           });
         }
         dispatch({ type: ADD_USER_INIDIVIDUAL_FAIL, payload: { error: error.response } });
@@ -59,7 +59,7 @@ export const deleteUserIndividual = (data) => {
         if (error.response.status === 401) {
           dispatch({
             type: SET_STATUS,
-            payload: { code: 401, message: error.response.data.error, relink: '/manage_user' },
+            payload: { code: 401, message: error.response.data.error },
           });
         }
         dispatch({ type: DELETE_USER_INIDIVIDUAL_FAIL, payload: { error: error.response } });

@@ -93,7 +93,7 @@ def _init_sqlalchemy():
     database = SQLAlchemy(application)
     database.init_app(application)
     application.session_interface = SqlAlchemySessionInterface(application, database, "test_sessions", "test_sess_")
-    application.permanent_session_lifetime = datetime.timedelta(seconds=10)
+    application.permanent_session_lifetime = datetime.timedelta(hours=10)
 
 
 _configure_logs()  # NOTE: this needs to happen before starting the application

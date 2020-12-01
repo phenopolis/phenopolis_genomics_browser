@@ -376,29 +376,29 @@ class VirtualTableFilter extends React.Component {
                         </FormControl>
                       ) : item.operation === '∅' ? null : (item.column.type === 'object') &
                         (item.operation !== '=') ? (
-                        <Select
-                          closeMenuOnSelect={false}
-                          components={animatedComponents}
-                          isMulti
-                          getOptionValue={(option) => option}
-                          getOptionLabel={(option) => option}
-                          options={item.column.chips}
-                          menuPortalTarget={document.querySelector('body')}
-                        />
-                      ) : (
-                        <FormControl fullWidth variant="outlined">
-                          <TextField
-                            disabled={item.column === null}
-                            label="Value"
-                            variant="outlined"
-                            id="standard-size-small"
-                            size="small"
-                            value={item.value}
-                            onChange={(event) => this.handleValueChange(event, index)}
-                            className={classes.valueInput}
+                          <Select
+                            closeMenuOnSelect={false}
+                            components={animatedComponents}
+                            isMulti
+                            getOptionValue={(option) => option}
+                            getOptionLabel={(option) => option}
+                            options={item.column.chips}
+                            menuPortalTarget={document.querySelector('body')}
                           />
-                        </FormControl>
-                      )}
+                        ) : (
+                          <FormControl fullWidth variant="outlined">
+                            <TextField
+                              disabled={item.column === null}
+                              label="Value"
+                              variant="outlined"
+                              id="standard-size-small"
+                              size="small"
+                              value={item.value}
+                              onChange={(event) => this.handleValueChange(event, index)}
+                              className={classes.valueInput}
+                            />
+                          </FormControl>
+                        )}
                     </Grid>
                     <Grid item xs={1}>
                       <div className="d-flex align-items-center justify-content-center">
@@ -423,10 +423,6 @@ class VirtualTableFilter extends React.Component {
                           onClick={() => this.handleDeleteFilter(index)}>
                           <FontAwesomeIcon icon={faTrashAlt} />
                         </IconButton>
-                        <FontAwesomeIcon
-                          icon={['fad', 'arrow-down']}
-                          className="font-size-sm opacity-5"
-                        />
                       </div>
                     </Grid>
                   </Grid>

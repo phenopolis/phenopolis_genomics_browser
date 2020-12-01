@@ -63,7 +63,7 @@ const CustomizedSnackbars = () => {
       style={{ zIndex: 100000000 }}
       anchorOrigin={{
         vertical: 'top',
-        horizontal: 'right',
+        horizontal: 'center',
       }}
       open={reduxSnackMessage !== ''}
       autoHideDuration={6000}
