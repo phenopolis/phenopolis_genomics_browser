@@ -38,7 +38,7 @@ export const userLogout = (data) => {
       .catch((error) => {
         console.log(error.response);
         if (error.response.status === 401) {
-          // dispatch({ type: LOGOUT_REQUEST_SUCCESS });
+          dispatch({ type: LOGOUT_REQUEST_SUCCESS });
           dispatch({
             type: SET_SNACK,
             payload: {

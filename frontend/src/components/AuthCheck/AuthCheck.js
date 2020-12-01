@@ -43,15 +43,19 @@ const AuthCheck = () => {
     statusRelink: state.Status.relink,
   }));
 
+  // Everytime website start, auto check if user has log in
   useEffect(() => {
     dispatch(isLoggedIn());
   }, [dispatch]);
 
   useEffect(() => {
+    // When API encounter 401 error, auto logout if use has not logout, happens when user left computer for too long.
     if (code === 401) {
       dispatch(setSnack(message, 'warning'));
-      dispatch(userLogout({ relink: statusRelink }));
-    } else if (code === 404) {
+      if (username !== '') {
+        dispatch(userLogout({ relink: `/login?link=${window.location.pathname}` }));
+      }
+    } else if (code === 404) { // When API encounter 404 error, redirect to dashboard page.
       dispatch(setSnack(message, 'warning'));
       history.push('/dashboard');
     }
@@ -59,22 +63,27 @@ const AuthCheck = () => {
   }, [code, dispatch]);
 
   useEffect(() => {
+    // Send sucess login message if login success.
     if (loginLoaded) {
       dispatch(setSnack(username + i18next.t('HomePage.HomeBanner.login_success'), 'success'));
       history.push(relink);
     }
 
+    // Send error message if login failed
     if (loginError) {
       dispatch(setSnack(i18next.t('AppBar.LoginBox.Login_Failed'), 'error'));
     }
   }, [loginLoaded, loginError]);
 
   useEffect(() => {
+    // Send success message if logout success
     if (logoutLoaded) {
       dispatch(setSnack(i18next.t('AppBar.LoginBar.Logout_Success'), 'success'));
       history.push(relink);
     }
 
+    // Send error message if logout failed, note if user had expired, the API would return 401 error. 
+    // Here I will NOT triggeer the 401 error, but print message in redux
     if (logoutError) {
       dispatch(setSnack('Logout Failed', 'error'));
     }
