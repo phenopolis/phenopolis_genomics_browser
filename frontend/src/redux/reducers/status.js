@@ -2,7 +2,7 @@ import { SET_STATUS, RESET_STATUS } from '../types/status';
 
 const initialState = {
   code: false,
-  message: false
+  message: false,
 };
 
 const Status = (state = initialState, action) => {
@@ -11,7 +11,7 @@ const Status = (state = initialState, action) => {
       return {
         ...state,
         code: action.payload.code,
-        message: action.payload.message
+        message: action.payload.message,
       };
     }
     case RESET_STATUS: {

@@ -19,7 +19,7 @@ export const getIndividualInformation = (param) => {
             type: SET_STATUS,
             payload: {
               code: 401,
-              message: error.response.data.error
+              message: error.response.data.error,
             },
           });
         } else if (error.response.status === 404) {

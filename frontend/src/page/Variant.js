@@ -138,8 +138,8 @@ const Variant = (props) => {
           </div>
         </React.Fragment>
       ) : (
-          <Loading message={t('Variant.message')} />
-        )}
+        <Loading message={t('Variant.message')} />
+      )}
     </>
   );
 };

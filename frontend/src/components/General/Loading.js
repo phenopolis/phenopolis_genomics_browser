@@ -6,11 +6,13 @@ const Loading = ({ message }) => {
   return (
     <React.Fragment>
       <CssBaseline />
-      <div className={'loading-root'} style={{
-        display: "flex",
-        flexDirection: "column",
-        justifyContent: "center"
-      }}>
+      <div
+        className={'loading-root'}
+        style={{
+          display: 'flex',
+          flexDirection: 'column',
+          justifyContent: 'center',
+        }}>
         <Container maxWidth="md">
           <Paper elevation={0} className={'loading-paper'} style={{ backgroundColor: '#eeeeee' }}>
             <Grid

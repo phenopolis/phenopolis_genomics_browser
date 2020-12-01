@@ -27,7 +27,7 @@ export const getVariant = (param) => {
             type: SET_STATUS,
             payload: {
               code: 404,
-              message: "Variant does not exist, or you don't have permission to view it."
+              message: "Variant does not exist, or you don't have permission to view it.",
             },
           });
         }
