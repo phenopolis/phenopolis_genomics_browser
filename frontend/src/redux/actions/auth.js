@@ -32,11 +32,11 @@ export const userLogout = (data) => {
     dispatch({ type: LOGOUT_REQUEST, payload: { relink: data.relink } });
     Service.logout()
       .then((res) => {
-        console.log(res)
+        console.log(res);
         dispatch({ type: LOGOUT_REQUEST_SUCCESS });
       })
       .catch((error) => {
-        console.log(error.response)
+        console.log(error.response);
         if (error.response.status === 401) {
           // dispatch({ type: LOGOUT_REQUEST_SUCCESS });
           dispatch({

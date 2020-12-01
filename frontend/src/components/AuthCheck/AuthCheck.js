@@ -11,27 +11,37 @@ const AuthCheck = () => {
   const dispatch = useDispatch();
   const history = useHistory();
 
-  const { username, loginLoaded, loginError, relink, isLoginLoaded, isLoginError, logoutLoaded, logoutError, code, message, statusRelink } = useSelector(
-    (state) => ({
-      username: state.Auth.username,
-      loginLoaded: state.Auth.loginLoaded,
-      loginError: state.Auth.loginError,
-      relink: state.Auth.relink,
+  const {
+    username,
+    loginLoaded,
+    loginError,
+    relink,
+    isLoginLoaded,
+    isLoginError,
+    logoutLoaded,
+    logoutError,
+    code,
+    message,
+    statusRelink,
+  } = useSelector((state) => ({
+    username: state.Auth.username,
+    loginLoaded: state.Auth.loginLoaded,
+    loginError: state.Auth.loginError,
+    relink: state.Auth.relink,
 
-      // Below are 2 status for is_login
-      isLoginLoaded: state.Auth.isLoginLoaded,
-      isLoginError: state.Auth.isLoginError,
+    // Below are 2 status for is_login
+    isLoginLoaded: state.Auth.isLoginLoaded,
+    isLoginError: state.Auth.isLoginError,
 
-      // Below are states for Logout
-      logoutLoaded: state.Auth.logoutLoaded,
-      logoutError: state.Auth.logoutError,
+    // Below are states for Logout
+    logoutLoaded: state.Auth.logoutLoaded,
+    logoutError: state.Auth.logoutError,
 
-      // Below are 3 status for Error Code judge
-      code: state.Status.code,
-      message: state.Status.message,
-      statusRelink: state.Status.relink,
-    })
-  );
+    // Below are 3 status for Error Code judge
+    code: state.Status.code,
+    message: state.Status.message,
+    statusRelink: state.Status.relink,
+  }));
 
   useEffect(() => {
     dispatch(isLoggedIn());

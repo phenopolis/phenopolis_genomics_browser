@@ -20,7 +20,7 @@ const initialState = {
   isLoginError: false,
   // Below are states for Logout
   logoutLoaded: false,
-  logoutError: false
+  logoutError: false,
 };
 
 const Auth = (state = initialState, action) => {
@@ -95,7 +95,6 @@ const Auth = (state = initialState, action) => {
     default:
       return state;
   }
-
 };
 
 export default Auth;
