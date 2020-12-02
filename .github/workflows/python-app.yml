@@ -1,6 +1,6 @@
 # This workflow will install Python dependencies, run tests and lint with a single version of Python
 # For more information see: https://help.github.com/actions/language-and-framework-guides/using-python-with-github-actions
-name: Python application
+name: check_app_api
 on:
    push:
       branches:
@@ -14,23 +14,35 @@ jobs:
    build:
       runs-on: ubuntu-latest
       steps:
+
       -  uses: actions/checkout@v2
+
+      -  name: Set empty Private ENV mockup
+         run: touch private.env
+
+      # https://github.com/marketplace/actions/docker-layer-caching
+      -  run: docker-compose pull app db
+
+      -  uses: satackey/action-docker-layer-caching@v0.0.8
+         # Ignore the failure of a step and avoid terminating the job.
+         continue-on-error: true
+
       -  name: Set up Python 3.8
          uses: actions/setup-python@v2
          with:
-           python-version: 3.8
-      -  name: Install docker-compose-wait
-         run: |
-           python -m pip install --upgrade pip
-           pip install docker-compose-wait
-      -  name: Run docker-compose stack
-         run: docker-compose -f dc_4_test.yml up -d
-      -  name: Run docker-compose-wait
-         run: |
-           docker-compose-wait -f dc_4_test.yml
+            python-version: 3.8
+
+      -  name: Build docker-compose stack
+         run: docker-compose build app
+
       -  name: Lint with flake8
-         run: docker-compose -f dc_4_test.yml exec -T app flake8 -v --count
+         run: docker-compose run app flake8 -v --count
+
       -  name: Check format with black
-         run: docker-compose -f dc_4_test.yml exec -T app black --diff --check .
+         run: docker-compose run app black --diff --check .
+
       -  name: Test with PyTest
-         run: docker-compose -f dc_4_test.yml exec -T app pytest --color=yes -k 'not test_variant'
+         env:
+            AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+            AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+         run: docker-compose run -e APP_ENV=prod -e AWS_SECRET_ACCESS_KEY -e AWS_ACCESS_KEY_ID app pytest --color=yes
