@@ -69,7 +69,7 @@ def test_get_individual_preview_by_id(_admin):
     # test individual with homozygous variants
     individual_view = _get_view_individual_by_id(identifier="PH00008256", subset="preview")
     assert individual_view.get("preview")[4][0] == "Number of hom variants"
-    assert individual_view.get("preview")[4][1] == 4, "Unexpected number of homozygous variants"
+    assert individual_view.get("preview")[4][1] == 2, "Unexpected number of homozygous variants"
     assert individual_view.get("preview")[5][0] == "Number of compound hets"
     assert individual_view.get("preview")[5][1] == 0, "Unexpected number of compound heterozygous variants"
     assert individual_view.get("preview")[6][0] == "Number of het variants"
@@ -82,7 +82,7 @@ def test_get_individual_preview_by_id(_admin):
     assert individual_view.get("preview")[5][0] == "Number of compound hets"
     assert individual_view.get("preview")[5][1] == 1, "Unexpected number of compound heterozygous variants"
     assert individual_view.get("preview")[6][0] == "Number of het variants"
-    assert individual_view.get("preview")[6][1] == 8, "Unexpected number of heterozygous variants"
+    assert individual_view.get("preview")[6][1] == 4, "Unexpected number of heterozygous variants"
 
 
 def _get_view_individual_by_id(identifier, subset="all"):
@@ -326,17 +326,18 @@ def test_get_individual_not_having_duplicated_keys(_admin):
     # test individual with homozygous variants
     individual_view = _get_view_individual_by_id(identifier="PH00008256")
     column_names = [c["key"] for c in individual_view.get("rare_homs").get("colNames")]
-    assert len(column_names) == len(set(column_names)), "There are duplicated column names in the rare variants"
+    assert len(column_names) == len(set(column_names)), "There are duplicated column names in the rare_homs"
     assert "#CHROM" not in column_names
 
     # test individuals with heterozygous and compound heterozygous
     individual_view = _get_view_individual_by_id(identifier="PH00008267")
     column_names = [c["key"] for c in individual_view.get("rare_comp_hets").get("colNames")]
-    assert len(column_names) == len(set(column_names)), "There are duplicated column names in the rare variants"
+    assert len(column_names) == len(set(column_names)), "There are duplicated column names in the rare_comp_hets"
     assert "#CHROM" not in column_names
     column_names = [c["key"] for c in individual_view.get("rare_variants").get("colNames")]
-    assert len(column_names) == len(set(column_names)), "There are duplicated column names in the rare variants"
+    assert len(column_names) == len(set(column_names)), "There are duplicated column names in the rare_variants"
     assert "#CHROM" not in column_names
+    assert "'key': 'variant_id', 'name': 'Variant Id'," in str(individual_view), "Critical, must be present"
 
 
 def _clean_test_individuals(db_session: Session, test_individual_id):
