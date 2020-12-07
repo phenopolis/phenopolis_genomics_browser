@@ -36,6 +36,7 @@
     "react-cookie": "^4.0.3",
     "react-countup": "^4.3.3",
     "react-dom": "^16.13.1",
+    "react-dropzone-uploader": "^2.11.0",
     "react-feather": "^2.0.8",
     "react-functional-select": "^2.5.1",
     "react-i18next": "^11.7.0",
