@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 import { withStyles } from '@material-ui/core/styles';
 import '../../assets/css/arrowbox.css';
 
-import { TableCell, Typography, ButtonGroup, Button, IconButton } from '@material-ui/core';
+import { TableCell, Typography, ButtonGroup, Button, IconButton, Tooltip } from '@material-ui/core';
 
 import TypeChip from '../Chip/TypeChip';
 
@@ -88,58 +88,65 @@ class GridColumn extends React.Component {
         onMouseEnter={this.myfunction}>
         {key === 'action' ? (
           <div>
-            <ButtonGroup variant="text" aria-label="text primary button group">
-              <IconButton
-                className="bg-white text-first d-40 rounded-circle p-0 ml-1"
-                aria-label="update"
-                onClick={() => this.triggerAction('update')}>
-                <FontAwesomeIcon icon={faPencil} style={{ fontSize: '15' }} />
-              </IconButton>
-              <IconButton
-                className="bg-white text-third d-40 rounded-circle p-0 ml-1"
-                aria-label="delete"
-                color="secondary"
-                onClick={() => this.triggerAction('delete')}>
-                <FontAwesomeIcon icon={faTrashAlt} style={{ fontSize: '15' }} />
-              </IconButton>
-            </ButtonGroup>
+            <span>
+              <Tooltip title="Update User Information/Files" placement="top">
+                <IconButton
+                  className="bg-white text-third ml-1"
+                  style={{ width: 30, height: 30, padding: 0, border: '0.5px solid #616161' }}
+                  aria-label="update"
+                  onClick={() => this.triggerAction('update')}>
+                  <FontAwesomeIcon icon={faPencil} style={{ fontSize: '12' }} />
+                </IconButton>
+              </Tooltip>
+
+              <Tooltip title="Delete This User" placement="top">
+                <IconButton
+                  className="bg-white text-third ml-1"
+                  style={{ width: 30, height: 30, padding: 0, border: '0.5px solid #f44336' }}
+                  aria-label="delete"
+                  color="secondary"
+                  onClick={() => this.triggerAction('delete')}>
+                  <FontAwesomeIcon icon={faTrashAlt} style={{ fontSize: '12' }} />
+                </IconButton>
+              </Tooltip>
+            </span>
           </div>
         ) : (
-          <div>
-            {(typeof cellData !== 'object') | (cellData === null) ? (
-              <Typography variant="body2" gutterBottom>
-                {cellData}
-              </Typography>
-            ) : (typeof cellData[0] === 'object') & (cellData[0] !== null) ? (
-              cellData.map((chip, j) => {
-                if (chip !== null) {
-                  if (h.base_href) {
-                    return (
-                      <TypeChip
-                        label={chip.display}
-                        type={h.base_href.replace(/[^a-zA-Z0-9_-]/g, '')}
-                        size="small"
-                        action="forward"
-                        popover={true}
-                        to={
-                          chip.end_href
-                            ? (h.base_href + '/' + chip.end_href).replace(/\/\//g, '/')
-                            : (h.base_href + '/' + chip.display).replace(/\/\//g, '/')
-                        }
-                      />
-                    );
+            <div>
+              {(typeof cellData !== 'object') | (cellData === null) ? (
+                <Typography variant="body2" gutterBottom>
+                  {cellData}
+                </Typography>
+              ) : (typeof cellData[0] === 'object') & (cellData[0] !== null) ? (
+                cellData.map((chip, j) => {
+                  if (chip !== null) {
+                    if (h.base_href) {
+                      return (
+                        <TypeChip
+                          label={chip.display}
+                          type={h.base_href.replace(/[^a-zA-Z0-9_-]/g, '')}
+                          size="small"
+                          action="forward"
+                          popover={true}
+                          to={
+                            chip.end_href
+                              ? (h.base_href + '/' + chip.end_href).replace(/\/\//g, '/')
+                              : (h.base_href + '/' + chip.display).replace(/\/\//g, '/')
+                          }
+                        />
+                      );
+                    } else {
+                      return chip.display;
+                    }
                   } else {
-                    return chip.display;
+                    return null;
                   }
-                } else {
-                  return null;
-                }
-              })
-            ) : (
-              <div>{cellData.join(', ')}</div>
-            )}
-          </div>
-        )}
+                })
+              ) : (
+                    <div>{cellData.join(', ')}</div>
+                  )}
+            </div>
+          )}
       </TableCell>
     );
   }
