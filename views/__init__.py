@@ -137,3 +137,4 @@ import views.users
 import views.user_individuals
 import views.autocomplete
 import views.save_configuration
+import views.variant_classification
