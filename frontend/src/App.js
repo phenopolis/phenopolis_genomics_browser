@@ -16,6 +16,7 @@ import CreatePatient from './page/CreatePatient';
 import ManagePatient from './page/ManagePatient';
 import ManageUser from './page/ManageUser';
 import ConfirmPage from './page/ConfirmPage';
+import Uploads from './page/Uploads'
 
 import CustomizedSnackbars from './components/CustomizedSnackbars/CustomizedSnackbars';
 import AuthCheck from './components/AuthCheck/AuthCheck';
@@ -55,8 +56,8 @@ const ProtectedRoute = ({ component: Component, ...rest }) => {
       {username === '' ? (
         <Loading message={'Waiting for Auth Validation'} />
       ) : (
-        <Route {...rest} render={(props) => <Component {...rest} {...props} />} />
-      )}
+          <Route {...rest} render={(props) => <Component {...rest} {...props} />} />
+        )}
     </>
   );
 };
@@ -87,6 +88,7 @@ function App() {
                 <ProtectedRoute path="/hpo/:hpoId" component={HPO} />
                 <ProtectedRoute path="/individual/:individualId" component={Individual} />
                 <ProtectedRoute path="/variant/:variantId" component={Variant} />
+                <ProtectedRoute path="/upload/" component={Uploads} />
 
                 <Route component={NotFoundPage} />
               </Switch>

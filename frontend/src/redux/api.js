@@ -34,4 +34,6 @@ export default {
   CHANGE_PASSWORD: API_URL + '/user/change-password',
   // Below API is for user registration
   CONFIRM_REGISTRATION: API_URL + '/user/confirm/',
+  // Below API is for file uploads
+  FILE_UPLOAD: API_URL + '/upload'
 };
