@@ -37,7 +37,7 @@ function getPreviewInformation(param) {
 }
 
 function login(data) {
-  console.log(api.LOGIN)
+  console.log(api.LOGIN);
   return axios.post(api.LOGIN, data, {
     withCredentials: true,
   });
