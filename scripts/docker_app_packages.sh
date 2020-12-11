@@ -22,7 +22,7 @@ pip3 --no-cache-dir install --upgrade pip
 pip --no-cache-dir install gunicorn==20.0.4
 pip --no-cache-dir install -r requirements.txt
 pip --no-cache-dir install cyvcf2==0.30.1
-#pip --no-cache-dir install cyvcf2==0.30.1 --force-reinstall
+pip --no-cache-dir install cyvcf2==0.30.1 --force-reinstall
 
 yum -y erase \
     bzip2-devel gcc libcurl-devel make openssl-devel perl python3-devel \
