@@ -1,6 +1,5 @@
 #!/usr/bin/env python
-"""Import a variants csv file into the database.
-"""
+"""Import an individual's VAR.tsv file"""
 
 import sys
 import logging
@@ -12,12 +11,11 @@ from psycopg2 import sql
 logger = logging.getLogger()
 logging.basicConfig(level=logging.DEBUG, format="%(asctime)s %(levelname)s %(message)s")
 
+IMPORT_TABLE = sql.Identifier("iv_csv")
+
 
 class ScriptError(Exception):
     """Controlled exception raised by the script."""
-
-
-IMPORT_TABLE = sql.Identifier("variant_csv")
 
 
 def main():
@@ -27,15 +25,16 @@ def main():
     with psycopg2.connect(opt.dsn) as conn:
         create_temp_table(opt, conn)
         import_temp_table(opt, conn)
-        insert_variants(opt, conn)
 
 
 def create_temp_table(opt, conn):
-    titles = get_csv_titles(opt)
+    temp = sql.SQL("temp " if not opt.keep_temp else "")
+    logger.info("creating %stable %s", temp.as_string(conn), IMPORT_TABLE.as_string(conn))
+
+    titles = get_tsv_titles(opt)
     parts = []
 
-    temp = sql.SQL("temp" if not opt.keep_temp else "")
-    parts.append(sql.SQL("create {} table {} (").format(temp, IMPORT_TABLE))
+    parts.append(sql.SQL("create {}table {} (").format(temp, IMPORT_TABLE))
 
     for title in titles:
         parts.append(sql.Identifier(title))
@@ -54,78 +53,24 @@ def create_temp_table(opt, conn):
 
 
 def import_temp_table(opt, conn):
+    logger.info("importing %s into %s", opt.file, IMPORT_TABLE.as_string(conn))
+
     cur = conn.cursor()
     with open(opt.file) as f:
-        stmt = sql.SQL("copy {} from stdin (format csv, header true)").format(IMPORT_TABLE)
+        stmt = sql.SQL("copy {} from stdin (format csv, header true, delimiter '\t')").format(IMPORT_TABLE)
         cur.copy_expert(stmt, f)
 
     cur.execute(sql.SQL("analyze {}").format(IMPORT_TABLE))
 
 
-def insert_variants(opt, conn):
-    cur = conn.cursor()
-
-    # use more memory, less disk
-    cur.execute("set local work_mem to '1 GB'")
-
-    cur.execute(
-        sql.SQL(
-            """
-            insert into phenopolis.variant (chrom, pos, ref, alt)
-            select chrom, pos::bigint, ref, alt
-            from {}
-            where (hgvsc, hgvsp) != ('', '')
-            group by 1, 2, 3, 4
-            on conflict on constraint variant_key do nothing
-            """
-        ).format(IMPORT_TABLE)
-    )
-    logger.info("imported %s new variant records", cur.rowcount)
-
-    # TODO: do we have to update existing values too?
-
-    cur.execute(
-        sql.SQL(
-            """
-            insert into phenopolis.transcript_consequence
-                (chrom, pos, ref, alt, hgvs_c, hgvs_p, consequence, gene_id)
-            select * from (
-                select
-                    chrom, pos::bigint, ref, alt,
-                    nullif(hgvsc, '') as hgvs_c,
-                    nullif(hgvsp, '') as hgvs_p,
-                    nullif(most_severe_consequence, '') as consequence,
-                    nullif(gene_id, '') as gene_id
-                from {}
-                where (hgvsc, hgvsp) != ('', '')
-            ) s
-            where not exists (
-                select 1 from phenopolis.transcript_consequence t
-                where (t.chrom, t.pos, t.ref, t.alt) = (s.chrom, s.pos, s.ref, s.alt)
-                and (t.hgvs_c, t.hgvs_p, t.consequence)
-                    is not distinct from (s.hgvs_c, s.hgvs_p, s.consequence)
-            )
-            """
-        ).format(IMPORT_TABLE)
-    )
-    logger.info("imported %s new transcript consequence records", cur.rowcount)
-
-    cur.execute("analyze phenopolis.variant, phenopolis.transcript_consequence")
-    logger.info("variants tables stats updated")
-
-
-def get_csv_titles(opt, __cache=[]):
+def get_tsv_titles(opt, __cache=[]):
     if __cache:
         return __cache[0]
 
     with open(opt.file) as f:
         line = f.readline()
 
-    titles = line.strip().replace('"', "").lower().split(",")
-    for t in "chrom pos ref alt hgvsc hgvsp most_severe_consequence gene_id".split():
-        if t not in titles:
-            raise ScriptError(f"column {t} not found in the csv (available: {', '.join(titles)})")
-
+    titles = line.split()
     __cache.append(titles)
     return titles
 
