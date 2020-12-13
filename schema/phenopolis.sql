@@ -1,11 +1,26 @@
 create table variant (
     id bigserial primary key,
+
     chrom text not null,
     pos int4 not null,
     ref text not null,
     alt text not null,
-    constraint variant_key unique (pos, chrom, ref, alt)
+    constraint variant_key unique (pos, chrom, ref, alt),
+
+    dbsnp text check (length(dbsnp) > 0),
+    variant_class text check (length(variant_class) > 0),
+    most_severe_consequence text check (length(most_severe_consequence) > 0),
+    hgvsc text check (length(hgvsc) > 0),
+    hgvsp text check (length(hgvsp) > 0),
+    impact text check (impact = any('{modifier,low,moderate,high}')),
+    dann float4,
+    cadd_phred float4,
+    revel float4,
+    fathmm_score float4[],
+    canonical bool
 );
+
+create index on variant (dbsnp);
 
 
 create table transcript_consequence (
@@ -75,6 +90,13 @@ create table individual_variant (
     status text,
     clinvar_id text,
     pubmed_id text,
+
+    dp smallint,
+    fs float4,
+    mq float4,
+    qd float4,
+    filter text check (length(filter) > 0),
+
     comment text,
     user_id text,
     timestamp timestamptz not null
@@ -119,3 +141,16 @@ create index on individual_gene (pubmed_id);
 create trigger timestamp_update
 before insert or update on individual_gene
 for each row execute procedure timestamp_update();
+
+
+create table variant_gene (
+    gene_id text,
+    variant_id bigint,
+    primary key (variant_id, gene_id),
+    transcript_id text check (length(transcript_id) > 0),
+    strand smallint check (strand = any('{-1,1}')),
+    exon text
+);
+
+create index on variant_gene (gene_id) include (variant_id);
+create index on variant_gene (transcript_id);
