@@ -6,16 +6,54 @@ import Uppy from '@uppy/core';
 // import Tus from '@uppy/tus';
 import XHRUpload from '@uppy/xhr-upload';
 import { DragDrop, Dashboard } from '@uppy/react';
+import AwsS3 from '@uppy/aws-s3'
+
+const ms = require('ms')
 
 export default function FileUpload() {
   const uppy = new Uppy({
     meta: { type: 'avatar' },
-    restrictions: { maxNumberOfFiles: 1 },
+    restrictions: { maxNumberOfFiles: 10, maxFileSize: 30000000000, },
     autoProceed: true,
   });
 
   // uppy.use(Tus, { endpoint: '/api/upload' });
-  uppy.use(XHRUpload, { endpoint: '/api/upload' });
+  // uppy.use(XHRUpload, { endpoint: '/api/upload' });
+
+  uppy.use(AwsS3, {
+    getUploadParameters(file) {
+      console.log(file)
+      // Send a request to our PHP signing endpoint.
+      return fetch('api/preSignS3URL', {
+        method: 'post',
+        // Send and receive JSON.
+        headers: {
+          accept: 'application/json',
+          'content-type': 'application/json'
+        },
+        body: JSON.stringify({
+          filename: file.name,
+          contentType: file.type
+        })
+      }).then((response) => {
+        // Parse the JSON response.
+        return response.json()
+      }).then((data) => {
+
+        console.log(data)
+        // Return an object in the correct shape.
+        // return {
+        //   method: data.method,
+        //   url: data.url,
+        //   fields: data.fields,
+        //   // Provide content type header required by S3
+        //   headers: {
+        //     'Content-Type': file.type
+        //   }
+        // }
+      })
+    }
+  })
 
   uppy.on('complete', (result) => {
     // window.alert('Test')
