@@ -1,4 +1,6 @@
-set search_path to phenopolis, public;
+begin;
+
+set local search_path to phenopolis, public;
 
 create table individual_variant (
     individual_id text not null,
@@ -16,4 +18,4 @@ create table individual_variant (
 create index on individual_variant (individual_id);
 create index on individual_variant (pos);
 
-reset search_path;
+commit;

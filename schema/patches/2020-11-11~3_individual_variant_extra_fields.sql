@@ -1,4 +1,6 @@
-set search_path to phenopolis, public;
+begin;
+
+set local search_path to phenopolis, public;
 
 alter table individual_variant add status text;
 
@@ -27,4 +29,4 @@ create trigger timestamp_update
 before insert or update on individual_variant
 for each row execute procedure timestamp_update();
 
-reset search_path;
+commit;

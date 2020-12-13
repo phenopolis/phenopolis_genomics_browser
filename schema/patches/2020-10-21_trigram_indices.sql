@@ -1,3 +1,5 @@
+begin;
+
 -- Extension for trigram search over text fields
 CREATE EXTENSION pg_trgm WITH SCHEMA PUBLIC;
 
@@ -12,3 +14,5 @@ ALTER TABLE ONLY public.hpo
 
 -- set default value for enabled field in users
 ALTER TABLE public.users ALTER COLUMN enabled SET DEFAULT true;
+
+commit;

@@ -1,4 +1,6 @@
-set search_path to phenopolis, public;
+begin;
+
+set local search_path to phenopolis, public;
 
 create table individual_gene (
     individual_id text not null,
@@ -21,4 +23,4 @@ create trigger timestamp_update
 before insert or update on individual_gene
 for each row execute procedure timestamp_update();
 
-reset search_path;
+commit;

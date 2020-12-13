@@ -1,4 +1,6 @@
-set search_path to phenopolis, public;
+begin;
+
+set local search_path to phenopolis, public;
 
 -- alters main users table
 alter table users alter column "user" set not null;
@@ -25,4 +27,4 @@ alter table audit."public.users" add column confirmed_on timestamp with time zon
 alter table audit."public.users" add column email text;
 alter table audit."public.users" add column full_name text;
 
-reset search_path;
+commit;
