@@ -4,8 +4,15 @@
 
 set -euo pipefail
 
-exec docker-compose run --rm --no-deps \
-  -e PGPASSWORD=postgres \
-  app /app/scripts/patch_db.py \
-  --dsn "host=db user=postgres dbname=phenopolis_db" \
+dir="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+
+container=$(docker-compose ps -q "db")
+dbhost=$(docker inspect \
+    --format '{{range .NetworkSettings.Networks}}{{.IPAddress}}{{end}}' \
+    "$container")
+
+export PGPASSWORD=postgres
+
+exec "$dir/patch_db.py" \
+  --dsn "host=$dbhost user=postgres dbname=phenopolis_db" \
   "$@"

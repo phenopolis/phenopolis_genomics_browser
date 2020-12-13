@@ -15,9 +15,12 @@ associated with NAME.pre.py and/or NAME.post.sh).
 """
 
 import os
+import re
 import sys
+import shutil
 import socket
 import psycopg2
+from psycopg2.extras import NamedTupleCursor
 from glob import glob
 import subprocess as sp
 
@@ -56,9 +59,9 @@ def main():
     finally:
         patches = remove_applied_patches(patches)
         if patches:
-            logger.info("The following patches remain unapplied:")
+            logger.warning("The following patches remain unapplied:")
             for patch in patches:
-                logger.info("* %s" % patch)
+                logger.warning("* %s" % patch)
 
 
 def parse_cmdline():
@@ -89,8 +92,13 @@ def parse_cmdline():
 def get_connection():
     # to be found in pg_stat_activity
     os.environ["PGAPPNAME"] = "patch_db on %s" % socket.gethostname()
+    if opt.dry_run:
+        # will work for both psql and psycopg
+        os.environ["PGOPTIONS"] = "-c default_transaction_read_only=on"
     try:
-        return psycopg2.connect(opt.dsn)
+        conn = psycopg2.connect(opt.dsn)
+        conn.autocommit = True
+        return conn
     except psycopg2.OperationalError as e:
         raise ScriptException(
             "failed to connect to dev database: "
@@ -109,7 +117,6 @@ def grab_lock(_cnn=[]):
     if _cnn:
         raise ValueError("attempted to grab the lock more than once")
     cnn = get_connection()
-    cnn.set_isolation_level(0)
 
     # keep this connection alive after return
     _cnn.append(cnn)
@@ -155,7 +162,7 @@ def with_connection(f):
         if opt.dry_run:
             cur = cnn.cursor()
             cur.execute("set default_transaction_read_only=on")
-            cnn.commit()
+            os.environ["PGOPTIONS"] = "-c default_transaction_read_only=on"
 
         try:
             return f(cnn, *args, **kwargs)
@@ -183,45 +190,87 @@ def find_patches():
 
 
 @with_connection
-def table_exists(cnn, name):
+def table_columns(cnn, name):
     cur = cnn.cursor()
-    cur.execute("select 1 from pg_class where relname = %s", (name,))
-    return bool(cur.fetchone())
+    cur.execute(
+        """
+        select array_agg(attname)
+        from (
+            select attname
+            from pg_attribute
+            where attrelid = %s::regclass
+            and not attisdropped
+            and attnum > 0
+            order by attnum
+        ) x
+        """,
+        (name,),
+    )
+    return cur.fetchone()[0]
 
 
 @with_connection
 def verify_patch_table(cnn, patches):
-    if table_exists(cnn, "schema_patch"):
+    cols = table_columns(cnn, "schema_patch")
+
+    if not cols:
+        version = 0
+    elif "stage" not in cols:
+        version = 1
+    else:
+        version = 2
+
+    if version == 2:
         return
 
-    cnn.rollback()
+    patches = {
+        1: """
+begin;
+alter table schema_patch add stage text check (stage = any('{pre,patch,post}'));
+alter table schema_patch drop constraint schema_patch_status_check;
+alter table schema_patch add check (status = any('{applying,applied,skipped,failed,assumed}'));
+commit;
+"""
+    }
 
-    logger.warning(
-        "Patches table not found at dsn '%s': " "assuming all the patches in input have already been applied.", opt.dsn,
-    )
-    confirm("Do you want to continue?")
+    if version == 0:
+        logger.warning(
+            "Patches table not found at dsn '%s': assuming all the patches in input have already been applied.",
+            opt.dsn,
+        )
+        confirm("Do you want to continue?")
+        if opt.dry_run:
+            return
 
-    cur = cnn.cursor()
-    if not opt.dry_run:
+        cur = cnn.cursor()
         cur.execute(
             """
             create table schema_patch (
                 name text primary key,
-                status text not null
-                    check (status in ('applied', 'skipped', 'failed')),
+                status text not null check (
+                    status = any('{applying,applied,skipped,failed,assumed}')),
+                stage text check (stage = any('{pre,patch,post}'))
                 status_date timestamp not null)
             """
         )
 
-    for patch in patches:
-        register_patch(cnn, patch)
+        for patch in patches:
+            register_patch(cnn, patch, status="assumed")
 
-    cnn.commit()
+    # Migrate from old schema of the table
+    else:
+        cur = cnn.cursor()
+        while version in patches:
+            confirm("Upgrade patch table from version %s to version %s?" % (version, version + 1))
+            logger.info("upgrading to patch version %s", version + 1)
+            if not opt.dry_run:
+                cur.execute(patches[version])
+            version += 1
 
 
 @with_connection
 def remove_applied_patches(cnn, patches):
-    if not table_exists(cnn, "schema_patch"):
+    if not table_columns(cnn, "schema_patch"):
         # assume --dry-run with non existing table
         return []
 
@@ -232,7 +281,6 @@ def remove_applied_patches(cnn, patches):
         where status in ('applied', 'skipped')"""
     )
     applied = set(r[0] for r in cur.fetchall())
-    cnn.rollback()
 
     rv = []
     for patch in patches:
@@ -247,33 +295,28 @@ def apply_patch(cnn, filename):
     ans = confirm_patch(filename)
     if ans is SKIP:
         register_patch(cnn, filename, status="skipped")
-        cnn.commit()
         return
 
     elif not ans:
         return
 
-    run_script(filename, "pre")
+    verify_transaction(filename)
 
-    # log the patch application now: if application fails it will be rolled
-    # back we can't log it later because the script will probably commit
+    run_script(cnn, filename, "pre")
+
+    if not opt.dry_run:
+        logger.info("applying patch '%s'", filename)
+        register_patch(cnn, filename, "applying", stage="patch")
+        run_psql(cnn, filename)
+    else:
+        logger.info("would apply patch '%s'", filename)
+
+    run_script(cnn, filename, "post")
     register_patch(cnn, filename)
 
-    with open(filename) as f:
-        script = f.read()
-    cur = cnn.cursor()
-    try:
-        if not opt.dry_run:
-            cur.execute(script)
-    except Exception as e:
-        raise ScriptException("patch '%s' failed:\n%s" % (filename, e))
-    else:
-        cnn.commit()
 
-    run_script(filename, "post")
-
-
-def run_script(filename, suffix):
+@with_connection
+def run_script(cnn, filename, suffix):
     """
     Execute a script associated to a db patch.
 
@@ -291,31 +334,101 @@ def run_script(filename, suffix):
     if not confirm_script(script):
         return
 
-    # propagate the db dsn to the environment
-    os.environ["PATCH_DSN"] = opt.dsn
+    if not opt.dry_run:
+        register_patch(cnn, filename, "applying", stage=suffix)
 
-    # execute the script
-    script = os.path.abspath(script)
-    path = os.path.split(script)[0]
-    try:
-        sp.check_call(script, cwd=path)
-    except sp.CalledProcessError as e:
-        raise ScriptException(e)
+        logger.info("running script '%s'", script)
+
+        # propagate the db dsn to the environment
+        os.environ["PATCH_DSN"] = opt.dsn
+
+        # execute the script
+        script = os.path.abspath(script)
+        path = os.path.split(script)[0]
+        try:
+            sp.check_call(script, cwd=path)
+        except sp.CalledProcessError as e:
+            raise ScriptException(e)
+    else:
+        logger.info("would run script '%s'", script)
 
 
 @with_connection
-def register_patch(cnn, filename, status="applied"):
-    logger.info("registering patch '%s' as %s", filename, status)
+def run_psql(cnn, filename):
+    psql = shutil.which("psql")
+    if not psql:
+        raise ScriptException("psql executable not found")
+    dirname, basename = os.path.split(filename)
+    cmdline = ["psql", "-X", "-e", "--set", "ON_ERROR_STOP=1", "-f", basename, opt.dsn]
+    try:
+        sp.check_call(cmdline, cwd=dirname)
+    except Exception:
+        raise ScriptException("patch failed to apply: %s" % basename)
+
+
+@with_connection
+def get_patch(cnn, filename):
+    name = os.path.basename(filename)
+    cur = cnn.cursor(cursor_factory=NamedTupleCursor)
+    cur.execute(
+        """
+        select name, status, stage, status_date
+        from schema_patch
+        where name = %s
+        """,
+        (name,),
+    )
+    rec = cur.fetchone()
+    return rec
+
+
+@with_connection
+def register_patch(cnn, filename, status="applied", stage=None):
+    logger.debug("registering patch '%s' as %s", filename, status + ("(%s)" % stage if stage else ""))
     if opt.dry_run:
         return
 
-    cur = cnn.cursor()
-    cur.execute(
-        """
-        insert into schema_patch (name, status, status_date)
-        values (%s, %s, now())""",
-        (os.path.basename(filename), status),
-    )
+    name = os.path.basename(filename)
+    patch = get_patch(cnn, filename)
+    if patch:
+        if patch.status in ("applied", "skipped"):
+            raise ScriptException("unexpected patch to apply in status %s" % patch.status)
+
+        cur = cnn.cursor()
+        cur.execute(
+            """
+            update schema_patch
+            set (status, stage, status_date) = (%s, %s, now())
+            where name = %s
+            """,
+            (status, stage, name),
+        )
+    else:
+        cur = cnn.cursor()
+        cur.execute(
+            """
+            insert into schema_patch (name, status, stage, status_date)
+            values (%s, %s, %s, now())""",
+            (name, status, stage),
+        )
+
+
+def verify_transaction(filename):
+    """Make sure that the script contains a BEGIN
+
+    We cannot run psql in single transaction mode or it becomes impossible to
+    run certain operations.
+
+    Make sure a BEGIN is used "for real", but the patch may span outside the
+    single transaction if needed.
+    """
+    with open(filename) as f:
+        script = f.read()
+
+    if not re.search(r"\bbegin\b", script, re.I):
+        raise ScriptException("'BEGIN' not found in the patch %s" % filename)
+    if not re.search(r"\bcommit\b", script, re.I):
+        raise ScriptException("'COMMIT' not found in the patch %s" % filename)
 
 
 def confirm(prompt):
@@ -323,9 +436,9 @@ def confirm(prompt):
         return
 
     while 1:
-        logger.info("%s [y/N]" % prompt)
+        logger.info("%s [Y/n]" % prompt)
         ans = input()
-        ans = (ans or "n")[0].lower()
+        ans = (ans or "y")[0].lower()
         if ans == "n":
             raise UserInterrupt
         if ans == "y":
