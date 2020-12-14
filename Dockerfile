@@ -4,7 +4,7 @@ FROM amazonlinux:latest
 WORKDIR /app
 
 # Avoid generating .pyc files
-ENV PYTHONUNBUFFERED 0
+ENV PYTHONDONTWRITEBYTECODE 1
 
 COPY ./requirements.txt /app/requirements.txt
 COPY ./scripts/docker_app_packages.sh ./scripts/
