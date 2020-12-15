@@ -38,7 +38,7 @@ export default function FileUpload() {
       })
         .then((response) => {
           // Parse the JSON response.
-          console.log(response)
+          console.log(response);
           return response.json();
         })
         .then((data) => {
@@ -50,9 +50,9 @@ export default function FileUpload() {
             fields: data.fields,
             // Provide content type header required by S3
             headers: {
-              'Content-Type': file.type
-            }
-          }
+              'Content-Type': file.type,
+            },
+          };
         });
     },
   });
