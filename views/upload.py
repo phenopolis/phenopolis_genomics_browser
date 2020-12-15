@@ -20,14 +20,38 @@ from werkzeug.utils import secure_filename
 
 UPLOAD_FOLDER = 'upload'
 
+S3_KEY = os.getenv('VCF_S3_KEY')
+SECRET_ACCESS_KEY = os.environ.get('VCF_S3_SECRET')
+
 
 @application.route("/preSignS3URL", methods=['GET', 'POST'])
 @requires_admin
 def presign_S3():
     print("- - - - - - -")
-    print("PreSigned S3 URL")
-    print(request)
-    return jsonify(success="PreSignS3URL Success!"), 200
+    print("PreSigned S3 URL Files")
+    # Generate a presigned URL for the S3 object
+    s3 = boto3.client(
+        's3',
+        aws_access_key_id=S3_KEY,
+        aws_secret_access_key=SECRET_ACCESS_KEY,
+        # aws_session_token=SESSION_TOKEN
+    )
+    # response = s3.list_buckets()
+    # Output the bucket names
+    # print('Existing buckets:')
+    # for bucket in response['Buckets']:
+    #     print(f'  {bucket["Name"]}')
+    try:
+        response = s3.generate_presigned_url('get_object',
+                                             Params={'Bucket': 'phenopolis-website-uploads',
+                                                     'Key': 'myTestFile'},
+                                             ExpiresIn=3600)
+    except ClientError as e:
+        logging.error(e)
+        return None
+
+    # The response contains the presigned URL
+    return jsonify(success=True, message='PreSignS3URL Success!', preSignURL=response), 200
 
 
 @application.route("/upload", methods=['GET', 'POST'])

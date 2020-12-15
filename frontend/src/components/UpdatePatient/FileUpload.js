@@ -31,27 +31,28 @@ export default function FileUpload() {
           accept: 'application/json',
           'content-type': 'application/json',
         },
-        body: JSON.stringify({
+        body: {
           filename: file.name,
           contentType: file.type,
-        }),
+        },
       })
         .then((response) => {
           // Parse the JSON response.
+          console.log(response)
           return response.json();
         })
         .then((data) => {
-          console.log(data);
+          console.log('PreSigned URL: ', data.preSignURL);
           // Return an object in the correct shape.
-          // return {
-          //   method: data.method,
-          //   url: data.url,
-          //   fields: data.fields,
-          //   // Provide content type header required by S3
-          //   headers: {
-          //     'Content-Type': file.type
-          //   }
-          // }
+          return {
+            method: data.method,
+            url: data.preSignURL,
+            fields: data.fields,
+            // Provide content type header required by S3
+            headers: {
+              'Content-Type': file.type
+            }
+          }
         });
     },
   });
