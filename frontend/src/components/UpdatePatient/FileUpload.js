@@ -42,10 +42,10 @@ export default function FileUpload() {
           return response.json();
         })
         .then((data) => {
-          console.log("- - - - - ")
+          console.log('- - - - - ');
           console.log(data);
-          console.log(file.data)
-          console.log(file.data.type)
+          console.log(file.data);
+          console.log(file.data.type);
           // Return an object in the correct shape.
           return {
             url: data.preSignURL,
