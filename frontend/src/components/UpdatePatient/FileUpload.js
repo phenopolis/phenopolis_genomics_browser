@@ -32,8 +32,8 @@ export default function FileUpload() {
           'content-type': 'application/json',
         },
         body: {
-          filename: file.name,
-          contentType: file.type,
+          filename: 'TestFile.idat',
+          contentType: '',
         },
       })
         .then((response) => {
@@ -42,13 +42,17 @@ export default function FileUpload() {
           return response.json();
         })
         .then((data) => {
-          console.log('PreSigned URL: ', data.preSignURL);
+          console.log("- - - - - ")
+          console.log(data);
+          console.log(file.data)
+          console.log(file.data.type)
           // Return an object in the correct shape.
           return {
-            method: data.method,
             url: data.preSignURL,
-            fields: data.fields,
-            // Provide content type header required by S3
+            type: 'PUT',
+            data: file.data,
+            processData: false,
+            contentType: file.data.type,
             headers: {
               'Content-Type': file.type,
             },
