@@ -29,8 +29,15 @@ SECRET_ACCESS_KEY = os.environ.get('VCF_S3_SECRET')
 @application.route("/preSignS3URL", methods=['GET', 'POST'])
 @requires_admin
 def presign_S3():
-    print("- - - - - - -")
+    print("\n\n- - - - - - -")
     print("PreSigned S3 URL Files")
+
+    # data = request.get_json()
+    # filename = data.get("filename")
+    # contentType = data.get("contentType")
+    # print(filename)
+    # print(contentType)
+
     # Generate a presigned URL for the S3 object
     s3_client = boto3.client(
         's3',
@@ -50,16 +57,22 @@ def presign_S3():
         #                                              Fields=None,
         #                                              Conditions=None,
         #                                              ExpiresIn=3600)
-        response = s3_client.generate_presigned_url('put_object', {'Bucket': 'phenopolis-website-uploads',
-                                                                   'Key': 'TestFile.idat',
-                                                                   'ContentType': ''}, 300)
+        # response = s3_client.generate_presigned_url('put_object', {'Bucket': 'phenopolis-website-uploads',
+        #                                                            'Key': 'TestFigure.jpg',
+        #                                                            'ContentType': 'image/jpeg'}, 300)
+        response = s3_client.generate_presigned_post(
+            Bucket='phenopolis-website-uploads',
+            Key='TestFigure.jpg',
+            ExpiresIn=3600,
+        )
+        print('\n = = = = = ')
         print(response)
     except ClientError as e:
         logging.error(e)
         return None
 
     # The response contains the presigned URL
-    return jsonify(success=True, message='PreSignS3URL Success!', preSignURL=response), 200
+    return jsonify(response), 200
 
 
 # @ application.route("/upload", methods=['GET', 'POST'])

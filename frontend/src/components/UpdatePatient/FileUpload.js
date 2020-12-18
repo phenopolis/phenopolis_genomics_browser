@@ -1,5 +1,6 @@
 import React, { Fragment } from 'react';
 import { Container, Card, Divider, Typography } from '@material-ui/core';
+import axios from 'axios';
 
 import 'uppy/dist/uppy.min.css';
 import Uppy from '@uppy/core';
@@ -22,40 +23,28 @@ export default function FileUpload() {
 
   uppy.use(AwsS3, {
     getUploadParameters(file) {
-      console.log(file);
+      console.log(file.name);
       // Send a request to our PHP signing endpoint.
-      return fetch('api/preSignS3URL', {
-        method: 'post',
-        // Send and receive JSON.
-        headers: {
-          accept: 'application/json',
-          'content-type': 'application/json',
-        },
-        body: {
-          filename: 'TestFile.idat',
-          contentType: '',
-        },
+      return axios.post('api/preSignS3URL', {
+        filename: file.name,
+        contentType: file.type,
       })
         .then((response) => {
           // Parse the JSON response.
           console.log(response);
-          return response.json();
+          return response.data;
         })
         .then((data) => {
           console.log('- - - - - ');
-          console.log(data);
-          console.log(file.data);
-          console.log(file.data.type);
+          // console.log(data.url);
+          // console.log(file.data);
+          // console.log(file.data.type);
           // Return an object in the correct shape.
           return {
-            url: data.preSignURL,
-            type: 'PUT',
-            data: file.data,
-            processData: false,
-            contentType: file.data.type,
-            headers: {
-              'Content-Type': file.type,
-            },
+            url: data.url,
+            method: data.method,
+            fields: data.fields
+            // processData: false,
           };
         });
     },
