@@ -25,10 +25,11 @@ export default function FileUpload() {
     getUploadParameters(file) {
       console.log(file.name);
       // Send a request to our PHP signing endpoint.
-      return axios.post('api/preSignS3URL', {
-        filename: file.name,
-        contentType: file.type,
-      })
+      return axios
+        .post('api/preSignS3URL', {
+          filename: file.name,
+          contentType: file.type,
+        })
         .then((response) => {
           // Parse the JSON response.
           console.log(response);
@@ -43,7 +44,7 @@ export default function FileUpload() {
           return {
             url: data.url,
             method: data.method,
-            fields: data.fields
+            fields: data.fields,
             // processData: false,
           };
         });
