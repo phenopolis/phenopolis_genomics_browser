@@ -2,8 +2,7 @@
 """
 Apply database patches.
 
-Database patches are found by default in the 'schema/patches' directory of the
-project. They are recorded in the schema_patch table of the database.
+Applied patches are recorded in the schema_patch table of the database.
 
 The dsn to connect to defaults to a local one (empty connection string). It can
 be chosen using the command line or an environment variable. Patches
@@ -19,15 +18,15 @@ import re
 import sys
 import shutil
 import socket
+import logging
+import subprocess as sp
+from glob import glob
+from argparse import ArgumentParser
+
 import psycopg2
 from psycopg2.extras import NamedTupleCursor
-from glob import glob
-import subprocess as sp
-
-import logging
 
 logging.basicConfig(level=logging.INFO, format="%(levelname)s %(message)s")
-
 logger = logging.getLogger()
 
 
@@ -65,27 +64,41 @@ def main():
 
 
 def parse_cmdline():
-    from optparse import OptionParser
-
-    parser = OptionParser(usage="%prog [options] [patch [...]]", description="Apply patches to a database.",)
-    parser.add_option(
+    parser = ArgumentParser(description="Apply patches to a database.",)
+    parser.add_argument("input", nargs="+", help="The files or directories where to look for patches")
+    parser.add_argument(
         "--dsn",
         metavar="STRING",
         default=os.environ.get("PATCH_DSN", ""),
-        help="the database to connect to. Read from env var PATCH_DSN if set" " [default: '%default']",
+        help="the database to connect to. Read from env var PATCH_DSN if set [default: '%(default)s']",
     )
-    patchdir = os.path.abspath(os.path.join(os.path.dirname(__file__), "../schema/patches"))
-    parser.add_option(
-        "--patches-dir", default=patchdir, help="directory containing the database patches [default: %default]",
-    )
-    parser.add_option(
+    parser.add_argument(
         "--yes", "-y", action="store_true", help="assume affermative answer to all the questions",
     )
-    parser.add_option("--dry-run", "-n", action="store_true", help="just pretend")
+    parser.add_argument("--dry-run", "-n", action="store_true", help="just pretend")
 
-    opt, args = parser.parse_args()
-    opt.patches = args
+    g = parser.add_mutually_exclusive_group()
+    g.add_argument(
+        "-q",
+        "--quiet",
+        help="Talk less",
+        dest="loglevel",
+        action="store_const",
+        const=logging.WARN,
+        default=logging.INFO,
+    )
+    g.add_argument(
+        "-v",
+        "--verbose",
+        help="Talk more",
+        dest="loglevel",
+        action="store_const",
+        const=logging.DEBUG,
+        default=logging.INFO,
+    )
 
+    opt = parser.parse_args()
+    logger.setLevel(opt.loglevel)
     return opt
 
 
@@ -173,19 +186,20 @@ def with_connection(f):
 
 
 def find_patches():
-    if opt.patches:
-        files = list(opt.patches)
-        for patch in files:
-            if not os.path.exists(patch):
-                raise ScriptException("file not found: '%s'" % patch)
+    files = []
+    for entry in opt.input:
+        if os.path.isdir(entry):
+            logger.debug("looking for patches in %s", entry)
+            files.extend(glob(os.path.join(entry, "*.sql")))
+        elif os.path.isfile(entry):
+            logger.debug("got patch %s", entry)
+            files.append(entry)
+        elif os.path.exists(entry):
+            raise ScriptException("not a valid file or dir: %s" % entry)
+        else:
+            raise ScriptException("input entry not found: %s" % entry)
 
-    else:
-        if not os.path.isdir(opt.patches_dir):
-            raise ScriptException("patch directory not found: '%s'" % opt.patches_dir)
-        pattern = os.path.join(opt.patches_dir, "*.sql")
-        files = glob(pattern)
-        files.sort(key=os.path.basename)
-
+    files.sort(key=os.path.basename)
     return files
 
 
@@ -197,10 +211,9 @@ def table_columns(cnn, name):
         select array_agg(attname)
         from (
             select attname
-            from pg_attribute
-            where attrelid = %s::regclass
-            and not attisdropped
-            and attnum > 0
+            from pg_attribute join pg_class r on r.oid = attrelid
+            where relname = %s
+            and not attisdropped and attnum > 0
             order by attnum
         ) x
         """,

@@ -12,7 +12,6 @@ dbhost=$(docker inspect \
     "$container")
 
 export PGPASSWORD=postgres
+export PATCH_DSN=${PATCH_DSN-"host=$dbhost user=postgres dbname=phenopolis_db"}
 
-exec "$dir/patch_db.py" \
-  --dsn "host=$dbhost user=postgres dbname=phenopolis_db" \
-  "$@"
+exec "$dir/patch_db.py" "$dir"/../schema/patches/ "$@"

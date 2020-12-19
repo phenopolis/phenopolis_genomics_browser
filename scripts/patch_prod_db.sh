@@ -12,4 +12,5 @@ set -euo pipefail
 export PGDATABASE=phenopolis_prod_db
 
 dir="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
-exec "${dir}/patch_dev_db.sh" "$@"
+exec "${dir}/patch_dev_db.sh" \
+    "$dir"/../schema/patches/ "$@"
