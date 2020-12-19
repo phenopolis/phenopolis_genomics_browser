@@ -334,36 +334,49 @@ def run_script(cnn, filename, suffix):
     if not confirm_script(script):
         return
 
-    if not opt.dry_run:
-        register_patch(cnn, filename, "applying", stage=suffix)
-
-        logger.info("running script '%s'", script)
-
-        # propagate the db dsn to the environment
-        os.environ["PATCH_DSN"] = opt.dsn
-
-        # execute the script
-        script = os.path.abspath(script)
-        path = os.path.split(script)[0]
-        try:
-            sp.check_call(script, cwd=path)
-        except sp.CalledProcessError as e:
-            raise ScriptException(e)
-    else:
+    if opt.dry_run:
         logger.info("would run script '%s'", script)
+        return
+
+    register_patch(cnn, filename, "applying", stage=suffix)
+
+    logger.info("running script '%s'", script)
+
+    # propagate the db dsn to the environment
+    os.environ["PATCH_DSN"] = opt.dsn
+
+    # execute the script
+    script = os.path.abspath(script)
+    path = os.path.split(script)[0]
+    try:
+        sp.check_call(script, cwd=path)
+    except sp.CalledProcessError as e:
+        try:
+            register_patch(cnn, filename, "failed", stage=suffix)
+        except Exception as e:
+            logger.error("failed to register the patch as failed: %s", e)
+        raise ScriptException(e)
 
 
 @with_connection
 def run_psql(cnn, filename):
     psql = shutil.which("psql")
-    if not psql:
-        raise ScriptException("psql executable not found")
     dirname, basename = os.path.split(filename)
     cmdline = ["psql", "-X", "-e", "--set", "ON_ERROR_STOP=1", "-f", basename, opt.dsn]
     try:
-        sp.check_call(cmdline, cwd=dirname)
+        if not psql:
+            raise ScriptException("psql executable not found")
+        try:
+            sp.check_call(cmdline, cwd=dirname)
+        except Exception:
+            raise ScriptException("patch failed to apply: %s" % basename)
     except Exception:
-        raise ScriptException("patch failed to apply: %s" % basename)
+        # try to record the failed state and reraise
+        try:
+            register_patch(cnn, filename, "failed", stage="patch")
+        except Exception as e:
+            logger.error("failed to register the patch as failed: %s", e)
+        raise
 
 
 @with_connection
