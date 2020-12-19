@@ -9,18 +9,31 @@ create table variant (
 
     dbsnp text check (length(dbsnp) > 0),
     variant_class text check (length(variant_class) > 0),
-    most_severe_consequence text check (length(most_severe_consequence) > 0),
-    hgvsc text check (length(hgvsc) > 0),
-    hgvsp text check (length(hgvsp) > 0),
-    impact text check (impact = any('{modifier,low,moderate,high}')),
     dann float4,
     cadd_phred float4,
     revel float4,
-    fathmm_score float4[],
-    canonical bool
+    fathmm_score float4[]
 );
 
 create index on variant (dbsnp);
+
+
+create table variant_gene (
+    gene_id text,
+    variant_id bigint,
+    primary key (variant_id, gene_id),
+    transcript_id text check (length(transcript_id) > 0),
+    strand smallint check (strand = any('{-1,1}')),
+    exon text,
+    most_severe_consequence text check (length(most_severe_consequence) > 0),
+    impact text check (impact = any('{modifier,low,moderate,high}')),
+    hgvs_c text check (length(hgvs_c) > 0),
+    hgvs_p text check (length(hgvs_p) > 0),
+    canonical bool
+);
+
+create index on variant_gene (gene_id) include (variant_id);
+create index on variant_gene (transcript_id);
 
 
 create table transcript_consequence (
@@ -141,16 +154,3 @@ create index on individual_gene (pubmed_id);
 create trigger timestamp_update
 before insert or update on individual_gene
 for each row execute procedure timestamp_update();
-
-
-create table variant_gene (
-    gene_id text,
-    variant_id bigint,
-    primary key (variant_id, gene_id),
-    transcript_id text check (length(transcript_id) > 0),
-    strand smallint check (strand = any('{-1,1}')),
-    exon text
-);
-
-create index on variant_gene (gene_id) include (variant_id);
-create index on variant_gene (transcript_id);

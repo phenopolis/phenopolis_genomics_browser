@@ -28,8 +28,8 @@ def main():
         import_temp_table(opt, conn)
         # upsert_individual(opt, conn)  # if we will need it
         import_variant(opt, conn)
-        import_individual_variant(opt, conn)
         import_variant_gene(opt, conn)
+        import_individual_variant(opt, conn)
 
 
 def create_temp_table(opt, conn):
@@ -109,13 +109,11 @@ def import_variant(opt, conn):
         sql.SQL(
             """
 insert into phenopolis.variant (
-    chrom, pos, ref, alt, dbsnp, variant_class, most_severe_consequence,
-    hgvsc, hgvsp, impact, dann, cadd_phred, revel,
-    fathmm_score, canonical)
+    chrom, pos, ref, alt, dbsnp, variant_class, dann, cadd_phred, revel, fathmm_score)
 select
-    iv.chrom, iv.pos, iv.ref, iv.alt, iv.dbsnp, iv.variant_class, iv.most_severe_consequence,
-    iv.hgvsc, iv.hgvsp, lower(iv.impact), iv.dann, iv.cadd_phred, iv.revel,
-    string_to_array(iv.fathmm_score, ',', '.')::float4[], iv.canonical != 0
+    iv.chrom, iv.pos, iv.ref, iv.alt, iv.dbsnp, iv.variant_class,
+    iv.dann, iv.cadd_phred, iv.revel,
+    string_to_array(iv.fathmm_score, ',', '.')::float4[]
 from {} iv
 on conflict on constraint variant_key do nothing
 """
@@ -157,9 +155,11 @@ def import_variant_gene(opt, conn):
         sql.SQL(
             """
 insert into phenopolis.variant_gene (
-    variant_id, gene_id, transcript_id, strand, exon)
+    variant_id, gene_id, transcript_id, strand, exon, most_severe_consequence,
+    impact, hgvs_c, hgvs_p, canonical)
 select
-    v.id, iv.gene_id, iv.transcript_id, iv.strand, iv.exon
+    v.id, iv.gene_id, iv.transcript_id, iv.strand, iv.exon, iv.most_severe_consequence,
+    lower(iv.impact), iv.hgvsc, iv.hgvsp, iv.canonical != 0
 from {} iv
 join phenopolis.variant v
     on (v.chrom, v.pos, v.ref, v.alt) = (iv.chrom, iv.pos, iv.ref, iv.alt)
