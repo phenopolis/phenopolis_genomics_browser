@@ -46,7 +46,7 @@ create table individual (
     phenopolis_id text not null unique check (phenopolis_id ~ '^PH\d+$'),
     constraint ids_match check (id = replace(phenopolis_id, 'PH', '')::int),
     external_id text unique,
-    sex text check (sex in ('M', 'F', 'N'))
+    sex text not null check (sex in ('M', 'F', 'N', 'U'))
 );
 
 create or replace function individual_phenopolis_id_update() returns trigger

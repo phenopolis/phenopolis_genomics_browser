@@ -16,7 +16,7 @@ psql -e1X "$@" <<HERE
 set work_mem = '1GB';
 
 insert into phenopolis.individual (id, sex)
-select replace(internal_id, 'PH', '')::int, nullif(sex, 'U')
+select replace(internal_id, 'PH', '')::int, sex
 from public.individuals
 on conflict on constraint individual_phenopolis_id_key do nothing;
 
