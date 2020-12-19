@@ -60,16 +60,6 @@ join (
 join hpo.term f on f.hpo_id = j.hpo_id
 on conflict on constraint individual_feature_pkey do nothing;
 
-insert into phenopolis.individual_feature (individual_id, feature_id, type)
-select i.id, f.id, 'ancestor'
-from phenopolis.individual i
-join (
-    select internal_id, unnest(string_to_array(ancestor_observed_features, ',')) as hpo_id
-    from public.individuals
-) as j on j.internal_id = i.phenopolis_id
-join hpo.term f on f.hpo_id = j.hpo_id
-on conflict on constraint individual_feature_pkey do nothing;
-
 
 analyze phenopolis.individual, phenopolis.individual_feature;
 HERE
