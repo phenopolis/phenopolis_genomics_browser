@@ -1,5 +1,6 @@
-set search_path to phenopolis, public;
+begin;
 
+set local search_path to phenopolis, public;
 
 create table variant (
     chrom text not null,
@@ -26,3 +27,5 @@ create index on transcript_consequence (pos, chrom);
 create index on transcript_consequence (hgvs_c);
 create index on transcript_consequence (hgvs_p);
 create index on transcript_consequence (gene_id);
+
+commit;

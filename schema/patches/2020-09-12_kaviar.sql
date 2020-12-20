@@ -1,3 +1,5 @@
+begin;
+
 create schema kaviar;
 grant usage on schema kaviar to phenopolis_api;
 alter default privileges in schema kaviar
@@ -5,7 +7,7 @@ alter default privileges in schema kaviar
 alter default privileges in schema kaviar
     grant all on sequences to phenopolis_api;
 
-set search_path to kaviar, public;
+set local search_path to kaviar, public;
 
 create table annotation_hg19 (
     id bigserial,
@@ -51,4 +53,4 @@ begin
 end
 $do$ language plpgsql;
 
-reset search_path;
+commit;
