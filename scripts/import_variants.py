@@ -49,7 +49,7 @@ def create_temp_table(opt, conn):
         cur.execute(sql.SQL(" ").join(parts))
     except psycopg2.errors.DuplicateTable:
         raise ScriptError(
-            f"table {IMPORT_TABLE.strings[0]} already exista: if you used '--keep-temp' you should remove it"
+            f"table {IMPORT_TABLE.strings[0]} already exists: if you used '--keep-temp' you should remove it"
         )
 
 
@@ -58,6 +58,8 @@ def import_temp_table(opt, conn):
     with open(opt.file) as f:
         stmt = sql.SQL("copy {} from stdin (format csv, header true)").format(IMPORT_TABLE)
         cur.copy_expert(stmt, f)
+
+    cur.execute(sql.SQL("analyze {}").format(IMPORT_TABLE))
 
 
 def insert_variants(opt, conn):
