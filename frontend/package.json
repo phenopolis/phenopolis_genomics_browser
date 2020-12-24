@@ -15,7 +15,7 @@
     "@material-ui/icons": "^4.9.1",
     "@material-ui/lab": "^4.0.0-alpha.56",
     "@uppy/core": "^1.14.1",
-    "@uppy/react": "^1.10.11",
+    "@uppy/react": "^1.11.0",
     "@uppy/tus": "^1.8.0",
     "axios": "^0.19.2",
     "calculate-size": "^1.1.1",

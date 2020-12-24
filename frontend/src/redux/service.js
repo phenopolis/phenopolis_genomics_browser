@@ -167,6 +167,12 @@ function confirmRegistration(token) {
   });
 }
 
+function getFiles(id) {
+  return axios.get(api.FILES + '/' + id, {
+    withCredentials: true,
+  });
+}
+
 export default {
   getStatistics,
   getSearchAutocomplete,
@@ -193,4 +199,5 @@ export default {
   enableUser,
   changePassword,
   confirmRegistration,
+  getFiles
 };
