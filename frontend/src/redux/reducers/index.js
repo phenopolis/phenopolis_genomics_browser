@@ -13,7 +13,7 @@ import Status from './status';
 import User from './user';
 import UserIndividual from './userIndividual';
 import Dialog from './dialog';
-import Files from './files'
+import Files from './files';
 
 export default combineReducers({
   Auth,

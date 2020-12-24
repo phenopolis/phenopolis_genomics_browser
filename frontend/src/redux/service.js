@@ -199,5 +199,5 @@ export default {
   enableUser,
   changePassword,
   confirmRegistration,
-  getFiles
+  getFiles,
 };

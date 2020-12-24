@@ -14,45 +14,46 @@ const ms = require('ms');
 
 export default function FileUpload() {
   const dispatch = useDispatch();
-  const patientID = "PH0000001"
+  const patientID = 'PH0000001';
 
   useEffect(() => {
-
     // dispatch(getFiles(patientID));
   }, []);
 
   const uppy = useUppy(() => {
     return new Uppy({
-      id: "phenopolis",
+      id: 'phenopolis',
       autoProceed: true,
       restrictions: {
-        allowedFileTypes: [".vcf"]
+        allowedFileTypes: ['.vcf'],
       },
-      allowMultipleUploads: true
-    }).use(AwsS3, {
-      limit: 2,
-      timeout: ms("1 minute"),
-      getUploadParameters(file) {
-        console.log(file.name);
-        return axios
-          .post('api/preSignS3URL', {
-            filename: patientID + "_" + file.name,
-            contentType: file.type,
-          })
-          .then((response) => {
-            console.log(response);
-            return response.data;
-          })
-          .then((data) => {
-            return {
-              url: data.url,
-              method: data.method,
-              fields: data.fields,
-            };
-          });
-      },
-    }).run();
-  })
+      allowMultipleUploads: true,
+    })
+      .use(AwsS3, {
+        limit: 2,
+        timeout: ms('1 minute'),
+        getUploadParameters(file) {
+          console.log(file.name);
+          return axios
+            .post('api/preSignS3URL', {
+              filename: patientID + '_' + file.name,
+              contentType: file.type,
+            })
+            .then((response) => {
+              console.log(response);
+              return response.data;
+            })
+            .then((data) => {
+              return {
+                url: data.url,
+                method: data.method,
+                fields: data.fields,
+              };
+            });
+        },
+      })
+      .run();
+  });
 
   uppy.on('complete', (result) => {
     console.log(result);
@@ -66,7 +67,6 @@ export default function FileUpload() {
           <Divider className="my-4" />
 
           <Container style={{ marginTop: '2em' }}>
-
             {/* <DragDrop
               uppy={uppy}
             /> */}
@@ -74,8 +74,8 @@ export default function FileUpload() {
             <Dashboard
               id="phenopolis"
               uppy={uppy}
-              width='100%'
-            // height='300px'
+              width="100%"
+              // height='300px'
             />
           </Container>
         </Card>
