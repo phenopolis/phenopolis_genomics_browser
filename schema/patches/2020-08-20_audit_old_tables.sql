@@ -1,5 +1,7 @@
+begin;
+
 set local role audit;
-set search_path to audit, public;
+set local search_path to audit, public;
 
 create or replace function _field_defs()
 returns setof audit_field
@@ -25,3 +27,5 @@ reset role;
 select audit.start('public.users', '{ts,appname,action}');
 select audit.start('public.users_individuals', '{ts,appname,action}');
 select audit.start('public.individuals', '{ts,appname,action}');
+
+commit;

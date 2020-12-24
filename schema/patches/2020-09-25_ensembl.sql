@@ -1,3 +1,5 @@
+begin;
+
 create schema ensembl;
 grant usage on schema ensembl to phenopolis_api;
 alter default privileges in schema ensembl
@@ -5,7 +7,7 @@ alter default privileges in schema ensembl
 alter default privileges in schema ensembl
     grant all on sequences to phenopolis_api;
 
-set search_path to ensembl, public;
+set local search_path to ensembl, public;
 
 create table gene (
     identifier integer primary key,
@@ -97,3 +99,5 @@ create table transcript_exon (
 );
 
 create index ON transcript_exon USING btree (exon);
+
+commit;

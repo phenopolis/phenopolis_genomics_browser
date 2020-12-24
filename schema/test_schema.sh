@@ -17,7 +17,7 @@ if ! psql -X -c "drop database if exists phenopolis_db_schema_test"; then
     echo "
 Maybe you wanted to type:
 
-    docker-compose exec -u postgres db schema/test_schema.sh
+    docker-compose exec -u postgres db /app/schema/test_schema.sh
 " >&2
     exit 1;
 fi

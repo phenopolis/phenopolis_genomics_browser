@@ -14,4 +14,5 @@ export PGUSER=phenopolis_root
 export PGDATABASE=${PGDATABASE:-phenopolis_dev_db}
 
 dir="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
-exec /home/ec2-user/phenopolis_api/.venv/bin/python3 "${dir}/patch_db.py" "$@"
+exec /home/ec2-user/phenopolis_api/.venv/bin/python3 "${dir}/patch_db.py" \
+    "$dir"/../schema/patches/ "$@"

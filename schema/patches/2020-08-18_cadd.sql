@@ -1,3 +1,5 @@
+begin;
+
 create schema cadd;
 grant usage on schema cadd to phenopolis_api;
 alter default privileges in schema cadd
@@ -5,7 +7,7 @@ alter default privileges in schema cadd
 alter default privileges in schema cadd
     grant all on sequences to phenopolis_api;
 
-set search_path to cadd, public;
+set local search_path to cadd, public;
 
 create table annotation (
     chrom text not null,
@@ -39,4 +41,4 @@ begin
 end
 $do$ language plpgsql;
 
-reset search_path;
+commit;

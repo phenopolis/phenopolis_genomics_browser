@@ -1,3 +1,5 @@
+begin;
+
 do $$
 begin
     perform 1 from pg_roles where rolname = 'audit';
@@ -16,7 +18,7 @@ alter default privileges in schema audit
 
 
 set local role audit;
-set search_path to audit, public;
+set local search_path to audit, public;
 
 
 -- Synthetic info about the audit status of a table
@@ -620,6 +622,4 @@ as $$
 	select _mangle_name($1, '_audit_trg');
 $$;
 
-
-reset search_path;
-reset role;
+commit;
