@@ -1,47 +1,37 @@
 """
-Recevied Uploaded Files
+Received Uploaded Files
 """
 import os
 import boto3
 from botocore.client import Config
-from botocore.exceptions import ClientError
 from flask import request, jsonify
-from sqlalchemy.orm import Session
 
 from views import application
 from views.auth import requires_admin
 from views.exceptions import PhenopolisException
-from views.helpers import _get_json_payload
-from views.postgres import session_scope
-
-from werkzeug.utils import secure_filename
 
 
-UPLOAD_FOLDER = 'upload'
+UPLOAD_FOLDER = "upload"
 
-S3_KEY = os.getenv('VCF_S3_KEY')
-SECRET_ACCESS_KEY = os.environ.get('VCF_S3_SECRET')
+S3_KEY = os.getenv("VCF_S3_KEY")
+SECRET_ACCESS_KEY = os.environ.get("VCF_S3_SECRET")
 
 
-@application.route("/preSignS3URL", methods=['GET', 'POST'])
+@application.route("/preSignS3URL", methods=["GET", "POST"])
 @requires_admin
 def presign_S3():
     data = request.get_json()
     filename = data.get("filename")
     s3_client = boto3.client(
-        's3',
+        "s3",
         aws_access_key_id=S3_KEY,
         aws_secret_access_key=SECRET_ACCESS_KEY,
-        config=Config(signature_version='s3v4', region_name='eu-west-2')
+        config=Config(signature_version="s3v4", region_name="eu-west-2"),
     )
     try:
-        response = s3_client.generate_presigned_post(
-            Bucket='phenopolis-website-uploads',
-            Key=filename,
-            ExpiresIn=3600,
-        )
-    except ClientError as e:
-        logging.error(e)
+        response = s3_client.generate_presigned_post(Bucket="phenopolis-website-uploads", Key=filename, ExpiresIn=3600,)
+    except PhenopolisException as e:
+        application.logger.error(str(e))
         return None
 
     return jsonify(response), 200
