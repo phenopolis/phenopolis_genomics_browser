@@ -26,6 +26,8 @@ SECRET_ACCESS_KEY = os.environ.get('VCF_S3_SECRET')
 @application.route("/preSignS3URL", methods=['GET', 'POST'])
 @requires_admin
 def presign_S3():
+    data = request.get_json()
+    filename = data.get("filename")
     s3_client = boto3.client(
         's3',
         aws_access_key_id=S3_KEY,
@@ -35,7 +37,7 @@ def presign_S3():
     try:
         response = s3_client.generate_presigned_post(
             Bucket='phenopolis-website-uploads',
-            Key='TestFigure.jpg',
+            Key=filename,
             ExpiresIn=3600,
         )
     except ClientError as e:

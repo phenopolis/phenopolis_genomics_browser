@@ -67,15 +67,12 @@ export default function FileUpload() {
           <Divider className="my-4" />
 
           <Container style={{ marginTop: '2em' }}>
-            {/* <DragDrop
-              uppy={uppy}
-            /> */}
 
             <Dashboard
               id="phenopolis"
               uppy={uppy}
               width="100%"
-              // height='300px'
+              height='300px'
             />
           </Container>
         </Card>
