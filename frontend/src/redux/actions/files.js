@@ -5,6 +5,9 @@ import {
   DELETE_FILES_REQUEST,
   DELETE_FILES_SUCCESS,
   DELETE_FILES_FAIL,
+  DOWNLOAD_FILES_REQUEST,
+  DOWNLOAD_FILES_SUCCESS,
+  DOWNLOAD_FILES_FAIL
 } from '../types/files';
 import { SET_STATUS } from '../types/status';
 import Service from '../service';
@@ -35,6 +38,21 @@ export const deleteFile = (param) => {
       .catch((error) => {
         console.log(error.response);
         dispatch({ type: DELETE_FILES_FAIL, payload: { error: error.response } });
+      });
+  };
+};
+
+export const downloadFile = (param) => {
+  return (dispatch) => {
+    dispatch({ type: DOWNLOAD_FILES_REQUEST });
+    Service.downloadFile(param)
+      .then((res) => {
+        console.log(res);
+        dispatch({ type: DOWNLOAD_FILES_SUCCESS, payload: { data: res.data } });
+      })
+      .catch((error) => {
+        console.log(error.response);
+        dispatch({ type: DOWNLOAD_FILES_FAIL, payload: { error: error.response } });
       });
   };
 };

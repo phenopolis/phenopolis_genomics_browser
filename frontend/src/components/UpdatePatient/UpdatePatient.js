@@ -62,7 +62,7 @@ export default function NewPatient(props) {
               )}
               {value === 1 && (
                 <TabContainer>
-                  <FileUpload />
+                  <FileUpload Patient_ID={props.userInfo.internal_id[0].display} />
                 </TabContainer>
               )}
               {value === 2 && (

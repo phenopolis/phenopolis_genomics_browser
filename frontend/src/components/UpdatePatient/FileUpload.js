@@ -1,6 +1,7 @@
 import React, { Fragment, useEffect } from 'react';
 import { Container, Card, Divider, Typography, Grid, IconButton, Box } from '@material-ui/core';
 import axios from 'axios';
+import fileDownload from 'js-file-download'
 
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faCloudDownload, faFileAlt, faTrashAlt } from '@fortawesome/pro-solid-svg-icons';
@@ -11,7 +12,7 @@ import { DragDrop, Dashboard, useUppy } from '@uppy/react';
 import AwsS3 from '@uppy/aws-s3';
 
 import { useDispatch, useSelector } from 'react-redux';
-import { getFiles, deleteFile } from '../../redux/actions/files';
+import { getFiles, deleteFile, downloadFile } from '../../redux/actions/files';
 
 const ms = require('ms');
 
@@ -25,25 +26,32 @@ const getDateFormatted = (inputdate) => {
   return yr + '-' + mn + '-' + dt.getDate() + ' ' + h + ':' + m;
 };
 
-export default function FileUpload() {
+export default function FileUpload(props) {
   const dispatch = useDispatch();
-  const patientID = 'PH0000001';
+  const patientID = props.Patient_ID;
 
   useEffect(() => {
+    console.log(props)
     dispatch(getFiles(patientID));
   }, []);
 
-  const { files, fetchFileLoaded, deleteFileLoaded } = useSelector((state) => ({
+  const { files, fetchFileLoaded, deleteFileLoaded, downloadURL, downloadFileLoaded } = useSelector((state) => ({
     files: state.Files.files,
     fetchFileLoaded: state.Files.fetchFileLoaded,
     deleteFileLoaded: state.Files.deleteFileLoaded,
+    downloadURL: state.Files.downloadURL,
+    downloadFileLoaded: state.Files.downloadFileLoaded,
   }));
 
   useEffect(() => {
     if (deleteFileLoaded) {
       dispatch(getFiles(patientID));
     }
-  }, [deleteFileLoaded]);
+    if(downloadFileLoaded) {
+      console.log(downloadURL)
+      fileDownload(downloadURL.response, downloadURL.filename.match(/_(.*)/)[1])
+    }
+  }, [deleteFileLoaded, downloadFileLoaded]);
 
   const uppy = useUppy(() => {
     return new Uppy({
@@ -90,6 +98,10 @@ export default function FileUpload() {
     dispatch(deleteFile(fileKey));
   };
 
+  const handleDownloadFile = (fileKey) => {
+    dispatch(downloadFile({fileKey: fileKey}));
+  };
+
   return (
     <Fragment>
       <Container className="mt-0 px-0 py-0">
@@ -122,8 +134,12 @@ export default function FileUpload() {
                             </p>
                           </div>
                         </div>
-                        <div className="d-flex justify-content-end">
-                          <IconButton color="default" aria-label="" component="span">
+                        <div className="d-flex justify-content-end" >
+                          <IconButton
+                            color="default"
+                            aria-label=""
+                            component="span"
+                            onClick={() => handleDownloadFile(item.Key)}>
                             <FontAwesomeIcon icon={faCloudDownload} style={{ fontSize: 15 }} />
                           </IconButton>
                           <IconButton
@@ -140,14 +156,14 @@ export default function FileUpload() {
                 })}
               </Grid>
             ) : (
-              <Container>
-                <Box display="flex" justifyContent="center" alignItems="center" minHeight="10vh">
-                  <Typography variant="h6" gutterBottom style={{ color: 'grey' }}>
-                    This patient have no VCF file uploaded yet.
+                <Container>
+                  <Box display="flex" justifyContent="center" alignItems="center" minHeight="10vh">
+                    <Typography variant="h6" gutterBottom style={{ color: 'grey' }}>
+                      Patient {patientID} have no VCF file uploaded yet.
                   </Typography>
-                </Box>
-              </Container>
-            )}
+                  </Box>
+                </Container>
+              )}
           </Container>
           <Divider className="my-4" />
           <div className="font-size-lg font-weight-bold">Upload VCF File</div>

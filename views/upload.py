@@ -49,8 +49,6 @@ def getUploadedFile(individual_id):
                 Bucket="phenopolis-website-uploads",
                 Prefix =individual_id,
                 MaxKeys=100 )
-        print('- - - - - ', flush=True)
-        print(response, flush=True)
 
         if response['KeyCount'] == 0:
             return jsonify(response), 404
@@ -70,3 +68,17 @@ def delete_file():
     response = s3_client.delete_object(Bucket='phenopolis-website-uploads', Key=fileKey)
     
     return jsonify(message="Delete File Success", response=response), 200
+
+
+@application.route("/file_download", methods=["POST"])
+@requires_admin
+def download_file():
+    data = request.get_json()
+    fileKey = data.get("fileKey")
+    response = s3_client.generate_presigned_url('get_object',
+                                                    Params={'Bucket': 'phenopolis-website-uploads',
+                                                            'Key': fileKey},
+                                                    ExpiresIn=3600)
+    print('- - - - - ', flush=True)
+    print(response, flush=True)
+    return jsonify(filename=fileKey, response=response), 200
