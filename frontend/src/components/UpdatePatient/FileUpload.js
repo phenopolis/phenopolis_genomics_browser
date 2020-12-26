@@ -1,7 +1,7 @@
 import React, { Fragment, useEffect } from 'react';
 import { Container, Card, Divider, Typography, Grid, IconButton, Box } from '@material-ui/core';
 import axios from 'axios';
-import fileDownload from 'js-file-download'
+import fileDownload from 'js-file-download';
 
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faCloudDownload, faFileAlt, faTrashAlt } from '@fortawesome/pro-solid-svg-icons';
@@ -31,25 +31,27 @@ export default function FileUpload(props) {
   const patientID = props.Patient_ID;
 
   useEffect(() => {
-    console.log(props)
+    console.log(props);
     dispatch(getFiles(patientID));
   }, []);
 
-  const { files, fetchFileLoaded, deleteFileLoaded, downloadURL, downloadFileLoaded } = useSelector((state) => ({
-    files: state.Files.files,
-    fetchFileLoaded: state.Files.fetchFileLoaded,
-    deleteFileLoaded: state.Files.deleteFileLoaded,
-    downloadURL: state.Files.downloadURL,
-    downloadFileLoaded: state.Files.downloadFileLoaded,
-  }));
+  const { files, fetchFileLoaded, deleteFileLoaded, downloadURL, downloadFileLoaded } = useSelector(
+    (state) => ({
+      files: state.Files.files,
+      fetchFileLoaded: state.Files.fetchFileLoaded,
+      deleteFileLoaded: state.Files.deleteFileLoaded,
+      downloadURL: state.Files.downloadURL,
+      downloadFileLoaded: state.Files.downloadFileLoaded,
+    })
+  );
 
   useEffect(() => {
     if (deleteFileLoaded) {
       dispatch(getFiles(patientID));
     }
-    if(downloadFileLoaded) {
-      console.log(downloadURL)
-      fileDownload(downloadURL.response, downloadURL.filename.match(/_(.*)/)[1])
+    if (downloadFileLoaded) {
+      console.log(downloadURL);
+      fileDownload(downloadURL.response, downloadURL.filename.match(/_(.*)/)[1]);
     }
   }, [deleteFileLoaded, downloadFileLoaded]);
 
@@ -99,7 +101,7 @@ export default function FileUpload(props) {
   };
 
   const handleDownloadFile = (fileKey) => {
-    dispatch(downloadFile({fileKey: fileKey}));
+    dispatch(downloadFile({ fileKey: fileKey }));
   };
 
   return (
@@ -134,7 +136,7 @@ export default function FileUpload(props) {
                             </p>
                           </div>
                         </div>
-                        <div className="d-flex justify-content-end" >
+                        <div className="d-flex justify-content-end">
                           <IconButton
                             color="default"
                             aria-label=""
@@ -156,14 +158,14 @@ export default function FileUpload(props) {
                 })}
               </Grid>
             ) : (
-                <Container>
-                  <Box display="flex" justifyContent="center" alignItems="center" minHeight="10vh">
-                    <Typography variant="h6" gutterBottom style={{ color: 'grey' }}>
-                      Patient {patientID} have no VCF file uploaded yet.
+              <Container>
+                <Box display="flex" justifyContent="center" alignItems="center" minHeight="10vh">
+                  <Typography variant="h6" gutterBottom style={{ color: 'grey' }}>
+                    Patient {patientID} have no VCF file uploaded yet.
                   </Typography>
-                  </Box>
-                </Container>
-              )}
+                </Box>
+              </Container>
+            )}
           </Container>
           <Divider className="my-4" />
           <div className="font-size-lg font-weight-bold">Upload VCF File</div>

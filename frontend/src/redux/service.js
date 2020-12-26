@@ -184,7 +184,7 @@ function deleteFile(fileKey) {
 }
 
 function downloadFile(data) {
-  console.log(data)
+  console.log(data);
   return axios.post(api.DOWNLOAD_FILE, data, {
     withCredentials: true,
   });
@@ -218,5 +218,5 @@ export default {
   confirmRegistration,
   getFiles,
   deleteFile,
-  downloadFile
+  downloadFile,
 };

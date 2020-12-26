@@ -37,5 +37,5 @@ export default {
   // Below API is for file uploads
   FILES: API_URL + '/files',
   DELETE_FILE: API_URL + '/files',
-  DOWNLOAD_FILE: API_URL + '/file_download'
+  DOWNLOAD_FILE: API_URL + '/file_download',
 };

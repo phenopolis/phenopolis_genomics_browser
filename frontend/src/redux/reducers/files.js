@@ -7,7 +7,7 @@ import {
   DELETE_FILES_FAIL,
   DOWNLOAD_FILES_REQUEST,
   DOWNLOAD_FILES_SUCCESS,
-  DOWNLOAD_FILES_FAIL
+  DOWNLOAD_FILES_FAIL,
 } from '../types/files';
 
 const initialState = {
