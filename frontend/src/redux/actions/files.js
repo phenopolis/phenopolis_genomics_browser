@@ -1,10 +1,10 @@
-import { 
-  FETCH_FILES_REQUEST, 
-  FETCH_FILES_SUCCESS, 
+import {
+  FETCH_FILES_REQUEST,
+  FETCH_FILES_SUCCESS,
   FETCH_FILES_FAIL,
   DELETE_FILES_REQUEST,
-DELETE_FILES_SUCCESS,
-DELETE_FILES_FAIL 
+  DELETE_FILES_SUCCESS,
+  DELETE_FILES_FAIL,
 } from '../types/files';
 import { SET_STATUS } from '../types/status';
 import Service from '../service';
@@ -23,7 +23,6 @@ export const getFiles = (param) => {
       });
   };
 };
-
 
 export const deleteFile = (param) => {
   return (dispatch) => {

@@ -174,11 +174,13 @@ function getFiles(id) {
 }
 
 function deleteFile(fileKey) {
-  return axios.delete(api.DELETE_FILE ,
-    { data: {fileKey : fileKey}},
+  return axios.delete(
+    api.DELETE_FILE,
+    { data: { fileKey: fileKey } },
     {
-    withCredentials: true,
-  });
+      withCredentials: true,
+    }
+  );
 }
 
 export default {
@@ -208,5 +210,5 @@ export default {
   changePassword,
   confirmRegistration,
   getFiles,
-  deleteFile
+  deleteFile,
 };

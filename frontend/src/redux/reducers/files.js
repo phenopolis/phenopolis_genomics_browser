@@ -1,10 +1,10 @@
-import { 
-  FETCH_FILES_REQUEST, 
-  FETCH_FILES_SUCCESS, 
+import {
+  FETCH_FILES_REQUEST,
+  FETCH_FILES_SUCCESS,
   FETCH_FILES_FAIL,
   DELETE_FILES_REQUEST,
-DELETE_FILES_SUCCESS,
-DELETE_FILES_FAIL 
+  DELETE_FILES_SUCCESS,
+  DELETE_FILES_FAIL,
 } from '../types/files';
 
 const initialState = {
@@ -13,7 +13,7 @@ const initialState = {
   fetchFileError: false,
   // Below are two status for file delete
   deleteFileLoaded: false,
-  deleteFileError: false
+  deleteFileError: false,
 };
 
 const Files = (state = initialState, action) => {
@@ -44,7 +44,7 @@ const Files = (state = initialState, action) => {
       return {
         ...state,
         deleteFileLoaded: false,
-        deleteFileError: false
+        deleteFileError: false,
       };
     }
     case DELETE_FILES_SUCCESS: {
