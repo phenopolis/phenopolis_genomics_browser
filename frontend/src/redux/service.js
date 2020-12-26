@@ -166,6 +166,28 @@ function confirmRegistration(token) {
   });
 }
 
+function getFiles(id) {
+  return axios.get(api.FILES + '/' + id, {
+    withCredentials: true,
+  });
+}
+
+function deleteFile(fileKey) {
+  return axios.delete(
+    api.DELETE_FILE,
+    { data: { fileKey: fileKey } },
+    {
+      withCredentials: true,
+    }
+  );
+}
+
+function downloadFile(data) {
+  return axios.post(api.DOWNLOAD_FILE, data, {
+    withCredentials: true,
+  });
+}
+
 export default {
   getStatistics,
   getSearchAutocomplete,
@@ -192,4 +214,7 @@ export default {
   enableUser,
   changePassword,
   confirmRegistration,
+  getFiles,
+  deleteFile,
+  downloadFile,
 };

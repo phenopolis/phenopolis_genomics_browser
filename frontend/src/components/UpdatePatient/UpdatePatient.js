@@ -4,6 +4,7 @@ import PropTypes from 'prop-types';
 import { Grid, Card, Typography, Tabs, Tab } from '@material-ui/core';
 
 import InformationUpdate from './InformationUpdate';
+import FileUpload from './FileUpload';
 import PatientDelete from './PatientDelete';
 
 function TabContainer(props) {
@@ -57,6 +58,11 @@ export default function NewPatient(props) {
                     userInfo={props.userInfo}
                     actionSuccess={(action) => props.actionSuccess(action)}
                   />
+                </TabContainer>
+              )}
+              {value === 1 && (
+                <TabContainer>
+                  <FileUpload Patient_ID={props.userInfo.internal_id[0].display} />
                 </TabContainer>
               )}
               {value === 2 && (

@@ -30,3 +30,4 @@ yarn.lock
 env.sh
 
 .setting*
+/.eslintcache

@@ -3,12 +3,12 @@ import PropTypes from 'prop-types';
 import { withStyles } from '@material-ui/core/styles';
 import '../../assets/css/arrowbox.css';
 
-import { TableCell, Typography, ButtonGroup, Button, IconButton } from '@material-ui/core';
+import { TableCell, Typography, ButtonGroup, Button, IconButton, Tooltip } from '@material-ui/core';
 
 import TypeChip from '../Chip/TypeChip';
 
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faPencil, faTrashAlt } from '@fortawesome/pro-solid-svg-icons';
+import { faPencil, faTrashAlt, faFileAlt } from '@fortawesome/pro-solid-svg-icons';
 
 class GridColumn extends React.Component {
   constructor(props) {
@@ -88,21 +88,38 @@ class GridColumn extends React.Component {
         onMouseEnter={this.myfunction}>
         {key === 'action' ? (
           <div>
-            <ButtonGroup variant="text" aria-label="text primary button group">
-              <IconButton
-                className="bg-white text-first d-40 rounded-circle p-0 ml-1"
-                aria-label="update"
-                onClick={() => this.triggerAction('update')}>
-                <FontAwesomeIcon icon={faPencil} style={{ fontSize: '15' }} />
-              </IconButton>
-              <IconButton
-                className="bg-white text-third d-40 rounded-circle p-0 ml-1"
-                aria-label="delete"
-                color="secondary"
-                onClick={() => this.triggerAction('delete')}>
-                <FontAwesomeIcon icon={faTrashAlt} style={{ fontSize: '15' }} />
-              </IconButton>
-            </ButtonGroup>
+            <span>
+              <Tooltip title="Update User Information/Files" placement="top">
+                <IconButton
+                  className="bg-white text-third ml-1"
+                  style={{ width: 30, height: 30, padding: 0, border: '0.5px solid #616161' }}
+                  aria-label="update"
+                  onClick={() => this.triggerAction('update')}>
+                  <FontAwesomeIcon icon={faPencil} style={{ fontSize: '12' }} />
+                </IconButton>
+              </Tooltip>
+
+              <Tooltip title="Manage VCF file for this patient" placement="top">
+                <IconButton
+                  className="bg-white text-third ml-1"
+                  style={{ width: 30, height: 30, padding: 0, border: '0.5px solid #616161' }}
+                  aria-label="file"
+                  onClick={() => this.triggerAction('file')}>
+                  <FontAwesomeIcon icon={faFileAlt} style={{ fontSize: '12' }} />
+                </IconButton>
+              </Tooltip>
+
+              <Tooltip title="Delete This User" placement="top">
+                <IconButton
+                  className="bg-white text-third ml-1"
+                  style={{ width: 30, height: 30, padding: 0, border: '0.5px solid #f44336' }}
+                  aria-label="delete"
+                  color="secondary"
+                  onClick={() => this.triggerAction('delete')}>
+                  <FontAwesomeIcon icon={faTrashAlt} style={{ fontSize: '12' }} />
+                </IconButton>
+              </Tooltip>
+            </span>
           </div>
         ) : (
           <div>

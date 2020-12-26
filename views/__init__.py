@@ -24,7 +24,7 @@ if APP_ENV in ["prod"]:
 
 # in GH Workflow tests, private.env is not available so skip variant tests
 try:
-    variant_file = VCF(os.getenv("S3_VCF_FILE_URL"))
+    variant_file = VCF(os.getenv("S3_VCF_FILE_URL", "s3://phenopolis-vcf/August2019/merged2.vcf.gz"))
 except OSError:
     variant_file = None
 
@@ -137,3 +137,4 @@ import views.users
 import views.user_individuals
 import views.autocomplete
 import views.save_configuration
+import views.upload

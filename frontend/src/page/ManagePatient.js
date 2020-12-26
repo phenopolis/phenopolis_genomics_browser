@@ -113,6 +113,8 @@ const ManagePatient = () => {
   const handleActionClick = (rowIndex, action) => {
     if (action === 'update') {
       setTabIndex(0);
+    } else if (action == 'file') {
+      setTabIndex(1);
     } else if (action == 'delete') {
       setTabIndex(2);
     }
