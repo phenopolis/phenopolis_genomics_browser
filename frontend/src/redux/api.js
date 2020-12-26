@@ -36,4 +36,5 @@ export default {
   CONFIRM_REGISTRATION: API_URL + '/user/confirm/',
   // Below API is for file uploads
   FILES: API_URL + '/files',
+  DELETE_FILE: API_URL + '/files'
 };

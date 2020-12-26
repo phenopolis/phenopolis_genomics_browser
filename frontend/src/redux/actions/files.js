@@ -1,4 +1,11 @@
-import { FETCH_FILES_REQUEST, FETCH_FILES_SUCCESS, FETCH_FILES_FAIL } from '../types/files';
+import { 
+  FETCH_FILES_REQUEST, 
+  FETCH_FILES_SUCCESS, 
+  FETCH_FILES_FAIL,
+  DELETE_FILES_REQUEST,
+DELETE_FILES_SUCCESS,
+DELETE_FILES_FAIL 
+} from '../types/files';
 import { SET_STATUS } from '../types/status';
 import Service from '../service';
 
@@ -13,6 +20,22 @@ export const getFiles = (param) => {
       .catch((error) => {
         console.log(error.response);
         dispatch({ type: FETCH_FILES_FAIL, payload: { error: error.response } });
+      });
+  };
+};
+
+
+export const deleteFile = (param) => {
+  return (dispatch) => {
+    dispatch({ type: DELETE_FILES_REQUEST });
+    Service.deleteFile(param)
+      .then((res) => {
+        console.log(res);
+        dispatch({ type: DELETE_FILES_SUCCESS });
+      })
+      .catch((error) => {
+        console.log(error.response);
+        dispatch({ type: DELETE_FILES_FAIL, payload: { error: error.response } });
       });
   };
 };

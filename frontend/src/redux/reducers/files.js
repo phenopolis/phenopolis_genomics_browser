@@ -1,9 +1,19 @@
-import { FETCH_FILES_REQUEST, FETCH_FILES_SUCCESS, FETCH_FILES_FAIL } from '../types/files';
+import { 
+  FETCH_FILES_REQUEST, 
+  FETCH_FILES_SUCCESS, 
+  FETCH_FILES_FAIL,
+  DELETE_FILES_REQUEST,
+DELETE_FILES_SUCCESS,
+DELETE_FILES_FAIL 
+} from '../types/files';
 
 const initialState = {
   files: [],
   fetchFileLoaded: false,
   fetchFileError: false,
+  // Below are two status for file delete
+  deleteFileLoaded: false,
+  deleteFileError: false
 };
 
 const Files = (state = initialState, action) => {
@@ -28,6 +38,25 @@ const Files = (state = initialState, action) => {
         ...state,
         fetchFileLoaded: false,
         fetchFileError: action.payload.error,
+      };
+    }
+    case DELETE_FILES_REQUEST: {
+      return {
+        ...state,
+        deleteFileLoaded: false,
+        deleteFileError: false
+      };
+    }
+    case DELETE_FILES_SUCCESS: {
+      return {
+        ...state,
+        deleteFileLoaded: true,
+      };
+    }
+    case DELETE_FILES_FAIL: {
+      return {
+        ...state,
+        deleteFileError: action.payload.error,
       };
     }
     default:

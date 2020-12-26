@@ -173,6 +173,14 @@ function getFiles(id) {
   });
 }
 
+function deleteFile(fileKey) {
+  return axios.delete(api.DELETE_FILE ,
+    { data: {fileKey : fileKey}},
+    {
+    withCredentials: true,
+  });
+}
+
 export default {
   getStatistics,
   getSearchAutocomplete,
@@ -200,4 +208,5 @@ export default {
   changePassword,
   confirmRegistration,
   getFiles,
+  deleteFile
 };
