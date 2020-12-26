@@ -8,6 +8,7 @@ import {
   DOWNLOAD_FILES_REQUEST,
   DOWNLOAD_FILES_SUCCESS,
   DOWNLOAD_FILES_FAIL,
+  RESET_FILES,
 } from '../types/files';
 import { SET_STATUS } from '../types/status';
 import Service from '../service';
@@ -17,11 +18,9 @@ export const getFiles = (param) => {
     dispatch({ type: FETCH_FILES_REQUEST });
     Service.getFiles(param)
       .then((res) => {
-        console.log(res);
         dispatch({ type: FETCH_FILES_SUCCESS, payload: { data: res.data } });
       })
       .catch((error) => {
-        console.log(error.response);
         dispatch({ type: FETCH_FILES_FAIL, payload: { error: error.response } });
       });
   };
@@ -32,11 +31,9 @@ export const deleteFile = (param) => {
     dispatch({ type: DELETE_FILES_REQUEST });
     Service.deleteFile(param)
       .then((res) => {
-        console.log(res);
         dispatch({ type: DELETE_FILES_SUCCESS });
       })
       .catch((error) => {
-        console.log(error.response);
         dispatch({ type: DELETE_FILES_FAIL, payload: { error: error.response } });
       });
   };
@@ -47,12 +44,16 @@ export const downloadFile = (param) => {
     dispatch({ type: DOWNLOAD_FILES_REQUEST });
     Service.downloadFile(param)
       .then((res) => {
-        console.log(res);
         dispatch({ type: DOWNLOAD_FILES_SUCCESS, payload: { data: res.data } });
       })
       .catch((error) => {
-        console.log(error.response);
         dispatch({ type: DOWNLOAD_FILES_FAIL, payload: { error: error.response } });
       });
+  };
+};
+
+export const resetFile = (param) => {
+  return (dispatch) => {
+    dispatch({ type: RESET_FILES });
   };
 };

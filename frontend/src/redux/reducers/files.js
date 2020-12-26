@@ -8,6 +8,7 @@ import {
   DOWNLOAD_FILES_REQUEST,
   DOWNLOAD_FILES_SUCCESS,
   DOWNLOAD_FILES_FAIL,
+  RESET_FILES,
 } from '../types/files';
 
 const initialState = {
@@ -87,6 +88,17 @@ const Files = (state = initialState, action) => {
       return {
         ...state,
         downloadFileError: action.payload.error,
+      };
+    }
+    case RESET_FILES: {
+      return {
+        ...state,
+        deleteFileLoaded: false,
+        deleteFileError: false,
+        // Below are 3 status for file delete
+        downloadURL: null,
+        downloadFileLoaded: false,
+        downloadFileError: false,
       };
     }
     default:

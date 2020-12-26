@@ -37,7 +37,6 @@ function getPreviewInformation(param) {
 }
 
 function login(data) {
-  console.log(api.LOGIN);
   return axios.post(api.LOGIN, data, {
     withCredentials: true,
   });
@@ -184,7 +183,6 @@ function deleteFile(fileKey) {
 }
 
 function downloadFile(data) {
-  console.log(data);
   return axios.post(api.DOWNLOAD_FILE, data, {
     withCredentials: true,
   });

@@ -12,7 +12,7 @@ import { DragDrop, Dashboard, useUppy } from '@uppy/react';
 import AwsS3 from '@uppy/aws-s3';
 
 import { useDispatch, useSelector } from 'react-redux';
-import { getFiles, deleteFile, downloadFile } from '../../redux/actions/files';
+import { getFiles, deleteFile, downloadFile, resetFile } from '../../redux/actions/files';
 
 const ms = require('ms');
 
@@ -31,7 +31,6 @@ export default function FileUpload(props) {
   const patientID = props.Patient_ID;
 
   useEffect(() => {
-    console.log(props);
     dispatch(getFiles(patientID));
   }, []);
 
@@ -50,9 +49,9 @@ export default function FileUpload(props) {
       dispatch(getFiles(patientID));
     }
     if (downloadFileLoaded) {
-      console.log(downloadURL);
       fileDownload(downloadURL.response, downloadURL.filename.match(/_(.*)/)[1]);
     }
+    dispatch(resetFile());
   }, [deleteFileLoaded, downloadFileLoaded]);
 
   const uppy = useUppy(() => {
@@ -68,7 +67,6 @@ export default function FileUpload(props) {
         limit: 2,
         timeout: ms('1 minute'),
         getUploadParameters(file) {
-          console.log(file.name);
           return axios
             .post('api/preSignS3URL', {
               prefix: patientID,
@@ -76,7 +74,6 @@ export default function FileUpload(props) {
               contentType: file.type,
             })
             .then((response) => {
-              console.log(response);
               return response.data;
             })
             .then((data) => {
@@ -92,7 +89,6 @@ export default function FileUpload(props) {
   });
 
   uppy.on('complete', (result) => {
-    console.log(result);
     dispatch(getFiles(patientID));
   });
 

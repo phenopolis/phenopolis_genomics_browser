@@ -8,7 +8,7 @@ import { TableCell, Typography, ButtonGroup, Button, IconButton, Tooltip } from 
 import TypeChip from '../Chip/TypeChip';
 
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faPencil, faTrashAlt } from '@fortawesome/pro-solid-svg-icons';
+import { faPencil, faTrashAlt, faFileAlt } from '@fortawesome/pro-solid-svg-icons';
 
 class GridColumn extends React.Component {
   constructor(props) {
@@ -96,6 +96,16 @@ class GridColumn extends React.Component {
                   aria-label="update"
                   onClick={() => this.triggerAction('update')}>
                   <FontAwesomeIcon icon={faPencil} style={{ fontSize: '12' }} />
+                </IconButton>
+              </Tooltip>
+
+              <Tooltip title="Manage VCF file for this patient" placement="top">
+                <IconButton
+                  className="bg-white text-third ml-1"
+                  style={{ width: 30, height: 30, padding: 0, border: '0.5px solid #616161' }}
+                  aria-label="file"
+                  onClick={() => this.triggerAction('file')}>
+                  <FontAwesomeIcon icon={faFileAlt} style={{ fontSize: '12' }} />
                 </IconButton>
               </Tooltip>
 
