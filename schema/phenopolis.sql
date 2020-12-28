@@ -103,7 +103,7 @@ create table individual_variant (
     clinvar_id text,
     pubmed_id text,
 
-    dp smallint,
+    dp int,
     fs float4,
     mq float4,
     qd float4,
