@@ -50,6 +50,21 @@ far to the database:
   `phenopolis_api` host).
 
 
+Importing individual variants
+-----------------------------
+
+Individual variants (`VAR.tsv`) files can be loaded from a local file or from
+AWS. In the latter case you should export aws credentials as env var.
+
+```
+export AWS_SECRET_ACCESS_KEY=bT...7z
+export AWS_ACCESS_KEY_ID=QB...4B
+./scripts/import_individual_variants.py \
+    --dsn "host=$(scripts/dchost db) user=phenopolis_api dbname=phenopolis_db" \
+    s3://phenopolis-individuals/PH00009704/VAR.tsv
+```
+
+
 CADD import
 -----------
 
