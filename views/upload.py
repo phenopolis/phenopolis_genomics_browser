@@ -33,7 +33,9 @@ def presign_S3():
     print(data)
 
     try:
-        response = s3_client.generate_presigned_post(Bucket="phenopolis-website-uploads", Key= prefix + '/' + filename, ExpiresIn=3600)
+        response = s3_client.generate_presigned_post(
+            Bucket="phenopolis-website-uploads", Key=prefix + "/" + filename, ExpiresIn=3600
+        )
     except PhenopolisException as e:
         application.logger.error(str(e))
         return None
@@ -45,18 +47,15 @@ def presign_S3():
 @requires_admin
 def getUploadedFile(individual_id):
     try:
-        response = s3_client.list_objects_v2(
-                Bucket="phenopolis-website-uploads",
-                Prefix =individual_id,
-                MaxKeys=100 )
+        response = s3_client.list_objects_v2(Bucket="phenopolis-website-uploads", Prefix=individual_id, MaxKeys=100)
 
-        if response['KeyCount'] == 0:
+        if response["KeyCount"] == 0:
             return jsonify(response), 404
     except PhenopolisException as e:
         application.logger.error(str(e))
         return None
     message = "get Uploaded File Success"
-    return jsonify(response), 200
+    return jsonify(message=message, response=response), 200
 
 
 @application.route("/files", methods=["DELETE"])
@@ -64,9 +63,9 @@ def getUploadedFile(individual_id):
 def delete_file():
     data = request.get_json()
     fileKey = data.get("fileKey")
-    print(data , flush=True)
-    response = s3_client.delete_object(Bucket='phenopolis-website-uploads', Key=fileKey)
-    
+    print(data, flush=True)
+    response = s3_client.delete_object(Bucket="phenopolis-website-uploads", Key=fileKey)
+
     return jsonify(message="Delete File Success", response=response), 200
 
 
@@ -75,10 +74,9 @@ def delete_file():
 def download_file():
     data = request.get_json()
     fileKey = data.get("fileKey")
-    response = s3_client.generate_presigned_url('get_object',
-                                                    Params={'Bucket': 'phenopolis-website-uploads',
-                                                            'Key': fileKey},
-                                                    ExpiresIn=3600)
-    print('- - - - - ', flush=True)
+    response = s3_client.generate_presigned_url(
+        "get_object", Params={"Bucket": "phenopolis-website-uploads", "Key": fileKey}, ExpiresIn=3600
+    )
+    print("- - - - - ", flush=True)
     print(response, flush=True)
     return jsonify(filename=fileKey, response=response), 200
