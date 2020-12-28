@@ -106,7 +106,7 @@ def create_temp_table(opt, conn):
         "revel": "float4",
         "fathmm_score": "text",
         "canonical": "int",
-        "dp": "smallint",
+        "dp": "int",
         "fs": "float4",
         "mq": "float4",
         "qd": "float4",
