@@ -13,6 +13,7 @@ from urllib.parse import urlparse
 import boto3
 import psycopg2  # type: ignore
 from psycopg2 import sql
+from botocore.exceptions import ClientError
 
 logger = logging.getLogger()
 logging.basicConfig(level=logging.DEBUG, format="%(asctime)s %(levelname)s %(message)s")
@@ -69,7 +70,10 @@ def download_from_aws(opt):
         opt.file = f.name
         atexit.register(drop_temp_file, f.name)
         logger.info("downloading %s into temp file %s", opt.resource, f.name)
-        bucket.download_fileobj(path, f)
+        try:
+            bucket.download_fileobj(path, f)
+        except ClientError as exc:
+            raise ScriptError(f"error downloading file: {exc}")
 
 
 def drop_temp_file(filename):
