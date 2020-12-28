@@ -1,11 +1,16 @@
 #!/usr/bin/env python
 """Import an individual's VAR.tsv file"""
 
+import os
 import re
 import sys
+import atexit
 import logging
+import tempfile
 from argparse import ArgumentParser, RawDescriptionHelpFormatter
+from urllib.parse import urlparse
 
+import boto3
 import psycopg2  # type: ignore
 from psycopg2 import sql
 
@@ -23,6 +28,11 @@ def main():
     opt = parse_cmdline()
     logger.setLevel(opt.loglevel)
 
+    if opt.resource.startswith("s3://"):
+        download_from_aws(opt)
+    else:
+        opt.file = opt.resource
+
     with psycopg2.connect(opt.dsn) as conn:
         create_temp_table(opt, conn)
         import_temp_table(opt, conn)
@@ -30,6 +40,51 @@ def main():
         import_variant(opt, conn)
         import_variant_gene(opt, conn)
         import_individual_variant(opt, conn)
+
+
+def download_from_aws(opt):
+    """
+    Download opt.resource from aws into a temp file.
+
+    After download store the file name in `opt.file`.
+    """
+    check_aws_config(opt)
+
+    # s3://phenopolis-individuals/PH00009704/VAR.tsv
+    #      ^                      ^
+    #      bucket                 filename
+
+    parts = urlparse(opt.resource)
+    path = parts.path.lstrip("/")
+    indid = path.split("/", 1)[0]
+    if not indid.startswith("PH"):
+        raise ScriptError(f"cannot see an individual id in the {opt.resource} url")
+    if not opt.individual:
+        opt.individual = indid
+
+    # Download the s3 file into the temporary file
+    s3 = boto3.resource("s3", endpoint_url="https://s3.eu-central-1.wasabisys.com")
+    bucket = s3.Bucket(parts.netloc)
+    with tempfile.NamedTemporaryFile(delete=False) as f:
+        opt.file = f.name
+        atexit.register(drop_temp_file, f.name)
+        logger.info("downloading %s into temp file %s", opt.resource, f.name)
+        bucket.download_fileobj(path, f)
+
+
+def drop_temp_file(filename):
+    if os.path.exists(filename):
+        logger.info("dropping temp file %s", filename)
+        os.remove(filename)
+    else:
+        logger.warn("file name %s not found", filename)
+
+
+def check_aws_config(opt):
+    """Bail out if there's something obviously broken in aws."""
+    for varname in ("AWS_SECRET_ACCESS_KEY", "AWS_ACCESS_KEY_ID"):
+        if not os.environ.get(varname):
+            raise ScriptError(f"env var {varname} not set: this is not gonna work")
 
 
 def create_temp_table(opt, conn):
@@ -187,19 +242,25 @@ def get_individual_id(opt, __cache=[]):
         return __cache[0]
 
     if opt.individual:
-        return opt.individual
+        rv = int(opt.individual.replace("PH", ""))
 
-    m = re.search(r"PH(\d+)", opt.file)
-    if m:
-        return int(m.group(1))
+    else:
+        m = re.search(r"PH(\d+)", opt.file)
+        if m:
+            rv = int(m.group(1))
 
-    raise ScriptError("no individual found in the filename or --individual")
+    if rv:
+        __cache.append(rv)
+        logger.info("importing data for individual %s", rv)
+        return rv
+    else:
+        raise ScriptError("no individual found in the resource or --individual")
 
 
 def parse_cmdline():
     parser = ArgumentParser(description=__doc__, formatter_class=RawDescriptionHelpFormatter)
 
-    parser.add_argument("file", metavar="FILE", help="the file to import")
+    parser.add_argument("resource", metavar="RES", help="the resource to import (file, s3:// url)")
     parser.add_argument("--dsn", default="", help="connection string to import into [default: %(default)r]")
     parser.add_argument("--keep-temp", action="store_true", help="keep the temp table after import (for debugging)")
     parser.add_argument("--individual", help="individual id to import (otherwise try from the filename)")
