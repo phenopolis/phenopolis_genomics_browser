@@ -53,6 +53,10 @@ def import_term(cur, k, node):
         """
 insert into hpo.term (id, hpo_id, name, description, comment)
 values (%s, %s, %s, %s, %s)
+on conflict on constraint term_pkey do update set
+    name = excluded.name,
+    description = excluded.description,
+    comment = excluded.comment
 """,
         args,
     )
@@ -70,6 +74,7 @@ def import_is_a(cur, k, node):
         cur.execute(
             """
 insert into hpo.is_a (term_id, is_a_id) values (%s, %s)
+on conflict on constraint is_a_pkey do nothing
 """,
             [id_to_int(k), id_to_int(isa)],
         )
@@ -90,6 +95,8 @@ def import_xref(cur, k, node):
         cur.execute(
             """
 insert into hpo.xref (term_id, xref, description) values (%s, %s, %s)
+on conflict on constraint xref_pkey do update
+    set description = excluded.description
 """,
             [id_to_int(k), xref, descr],
         )
@@ -106,6 +113,7 @@ def import_synonym(cur, k, node):
         cur.execute(
             """
 insert into hpo.synonym (term_id, description) values (%s, %s)
+on conflict on constraint synonym_term_id_description_key do nothing
 """,
             [id_to_int(k), syn],
         )
@@ -120,6 +128,7 @@ def import_alt(cur, k, node):
         cur.execute(
             """
 insert into hpo.alt (id, alt_id, term_id) values (%s, %s, %s)
+on conflict on constraint alt_pkey do nothing
 """,
             [id_to_int(alt), alt, id_to_int(k)],
         )

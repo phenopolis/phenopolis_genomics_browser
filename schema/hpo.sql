@@ -29,9 +29,8 @@ create table synonym (
     id serial primary key,
     term_id integer references term (id),
     description text
-        check (length(description) <= 1000 and trim(description) != ''));
-
-create index on synonym (term_id);
+        check (length(description) <= 1000 and trim(description) != ''),
+    unique (term_id, description));
 
 
 create table alt (
