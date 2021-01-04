@@ -4,7 +4,7 @@ DB schema
 # "postgres://admin:donotusethispassword@aws-us-east-1-portal.19.dblayer.com:15813/compose"
 
 import enum
-from sqlalchemy import Column, String, Integer, Float, ForeignKey, JSON, Boolean, DateTime, Enum, func
+from sqlalchemy import Column, String, Integer, Float, ForeignKey, JSON, Boolean, DateTime, Enum, func, BigInteger
 from sqlalchemy.orm import relationship
 from sqlalchemy.ext.declarative import declarative_base
 
@@ -162,6 +162,51 @@ class UserIndividual(Base, AsDictable):
     __mapper_args__ = {"confirm_deleted_rows": False}
     user = Column("user", String(255), ForeignKey("users.user"))
     internal_id = Column("internal_id", String(255), ForeignKey("individuals.internal_id"), primary_key=True,)
+
+
+class NewVariant(Base, AsDictable):
+    __tablename__ = "variant"
+    id = Column(BigInteger, primary_key=True)
+    chrom = Column(String(255), nullable=False)
+    pos = Column(Integer, nullable=False)
+    ref = Column(String(255), nullable=False)
+    alt = Column(String(255), nullable=False)
+
+
+class TranscriptConsequence(Base, AsDictable):
+    __tablename__ = "transcript_consequence"
+    id = Column(BigInteger, primary_key=True)
+    chrom = Column(String(255), nullable=False)
+    pos = Column(Integer, nullable=False)
+    ref = Column(String(255), nullable=False)
+    alt = Column(String(255), nullable=False)
+    hgvs_c = Column(String(255))
+    hgvs_p = Column(String(255))
+    consequence = Column(String(255))
+    gene_id = Column(String(255))
+
+
+class IndividualVariant(Base, AsDictable):
+    __tablename__ = "individual_variant"
+    individual_id = Column(String(255), nullable=False, primary_key=True)
+    variant_id = Column(BigInteger, nullable=False, primary_key=True)
+    chrom = Column(String(255), nullable=False)
+    pos = Column(Integer, nullable=False)
+    ref = Column(String(255), nullable=False)
+    alt = Column(String(255), nullable=False)
+    zygosity = Column(String(255), nullable=False)
+
+
+class IndividualVariantClassification(Base, AsDictable):
+    __tablename__ = "individual_variant_classification"
+    id = Column(BigInteger, primary_key=True)
+    individual_id = Column(String(255), ForeignKey("individual_variant.individual_id"), nullable=False)
+    variant_id = Column(BigInteger, ForeignKey("individual_variant.variant_id"), nullable=False)
+    user_id = Column(String(255), nullable=False)
+    classified_on = Column(DateTime(timezone=True), default=func.now())
+    classification = Column(String(255), nullable=False)
+    pubmed_id = Column(String(255))
+    notes = Column(String(255))
 
 
 # meta.create_all()
