@@ -1,4 +1,6 @@
-set search_path to phenopolis, public;
+begin;
+
+set local search_path to phenopolis, public;
 
 create table individual_variant_classification (
     id bigserial primary key,
@@ -18,4 +20,4 @@ create index on individual_variant_classification(individual_id, variant_id);
 create index on individual_variant_classification(variant_id);
 create index on individual_variant_classification(pubmed_id);
 
-reset search_path;
+commit;
