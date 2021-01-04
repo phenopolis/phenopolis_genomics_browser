@@ -69,7 +69,7 @@ def test_get_individual_preview_by_id(_admin):
     # test individual with homozygous variants
     individual_view = _get_view_individual_by_id(identifier="PH00008256", subset="preview")
     assert individual_view.get("preview")[4][0] == "Number of hom variants"
-    assert individual_view.get("preview")[4][1] == 2, "Unexpected number of homozygous variants"
+    assert individual_view.get("preview")[4][1] == 1, "Unexpected number of homozygous variants"
     assert individual_view.get("preview")[5][0] == "Number of compound hets"
     assert individual_view.get("preview")[5][1] == 0, "Unexpected number of compound heterozygous variants"
     assert individual_view.get("preview")[6][0] == "Number of het variants"
@@ -82,7 +82,7 @@ def test_get_individual_preview_by_id(_admin):
     assert individual_view.get("preview")[5][0] == "Number of compound hets"
     assert individual_view.get("preview")[5][1] == 1, "Unexpected number of compound heterozygous variants"
     assert individual_view.get("preview")[6][0] == "Number of het variants"
-    assert individual_view.get("preview")[6][1] == 4, "Unexpected number of heterozygous variants"
+    assert individual_view.get("preview")[6][1] == 2, "Unexpected number of heterozygous variants"
 
 
 def _get_view_individual_by_id(identifier, subset="all"):
