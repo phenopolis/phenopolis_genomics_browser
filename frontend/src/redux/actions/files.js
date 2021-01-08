@@ -18,6 +18,7 @@ export const getFiles = (param) => {
     dispatch({ type: FETCH_FILES_REQUEST });
     Service.getFiles(param)
       .then((res) => {
+        console.log(res);
         dispatch({ type: FETCH_FILES_SUCCESS, payload: { data: res.data } });
       })
       .catch((error) => {
