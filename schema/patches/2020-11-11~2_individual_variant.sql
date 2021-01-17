@@ -3,7 +3,7 @@ begin;
 set local search_path to phenopolis, public;
 
 create table individual_variant (
-    individual_id text not null,
+    individual_id int not null,
     variant_id bigint not null references variant (id),
     primary key (variant_id, individual_id),
 
