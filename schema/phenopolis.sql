@@ -59,7 +59,8 @@ create table individual (
     phenopolis_id text not null unique check (phenopolis_id ~ '^PH\d+$'),
     constraint ids_match check (id = replace(phenopolis_id, 'PH', '')::int),
     external_id text unique,
-    sex text not null check (sex in ('M', 'F', 'N', 'U'))
+    sex text not null check (sex in ('M', 'F', 'N', 'U')),
+    consanguinity text CHECK (consanguinity in ('yes','no','unknown'))
 );
 
 create or replace function individual_phenopolis_id_update() returns trigger
@@ -156,7 +157,7 @@ for each row execute procedure timestamp_update();
 
 create table individual_variant_classification (
     id bigserial primary key,
-    individual_id text not null,
+    individual_id int not null,
     variant_id bigint not null,
     FOREIGN KEY (variant_id, individual_id) REFERENCES individual_variant(variant_id, individual_id),
     user_id  text not null,

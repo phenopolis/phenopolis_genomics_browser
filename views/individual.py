@@ -103,7 +103,6 @@ def update_patient_data(phenopolis_id, language="en"):
 @application.route("/individual", methods=["POST"])
 @requires_auth
 def create_individual():
-    breakpoint()
     if is_demo_user():
         return jsonify(error="Demo user not authorised"), 405
     # checks individuals validity
