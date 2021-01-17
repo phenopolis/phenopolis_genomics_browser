@@ -135,7 +135,7 @@ class Sex(enum.Enum):
     U = 3
 
 
-class Individual(Base, AsDictable):
+class Individuals(Base, AsDictable):
     __tablename__ = "individuals"
     external_id = Column("external_id", String(255), primary_key=True)
     internal_id = Column("internal_id", String(255), primary_key=True)
@@ -154,6 +154,15 @@ class Individual(Base, AsDictable):
     het_variants = relationship("HeterozygousVariant", backref="individuals", lazy=True)
     hom_variants = relationship("HomozygousVariant", backref="individuals", lazy=True)
     user = relationship("UserIndividual", backref="individuals", lazy=True)
+
+
+class Individual(Base, AsDictable):
+    __tablename__ = "individual"
+    id = Column(Integer, nullable=False, primary_key=True)
+    phenopolis_id = Column(String(255), nullable=False)
+    external_id = Column(String(255))
+    sex = Column(Enum(Sex), nullable=False)
+    consanguinity = Column("consanguinity", String(255))
 
 
 class UserIndividual(Base, AsDictable):
@@ -188,7 +197,7 @@ class TranscriptConsequence(Base, AsDictable):
 
 class IndividualVariant(Base, AsDictable):
     __tablename__ = "individual_variant"
-    individual_id = Column(String(255), nullable=False, primary_key=True)
+    individual_id = Column(Integer, nullable=False, primary_key=True)
     variant_id = Column(BigInteger, nullable=False, primary_key=True)
     chrom = Column(String(255), nullable=False)
     pos = Column(Integer, nullable=False)
@@ -200,7 +209,7 @@ class IndividualVariant(Base, AsDictable):
 class IndividualVariantClassification(Base, AsDictable):
     __tablename__ = "individual_variant_classification"
     id = Column(BigInteger, primary_key=True)
-    individual_id = Column(String(255), ForeignKey("individual_variant.individual_id"), nullable=False)
+    individual_id = Column(Integer, ForeignKey("individual_variant.individual_id"), nullable=False)
     variant_id = Column(BigInteger, ForeignKey("individual_variant.variant_id"), nullable=False)
     user_id = Column(String(255), nullable=False)
     classified_on = Column(DateTime(timezone=True), default=func.now())
