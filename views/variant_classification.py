@@ -1,7 +1,7 @@
 from flask import jsonify, session
 from sqlalchemy.orm import Session
 
-from db.model import IndividualVariantClassification
+from db.model import IndividualVariantClassification, Individual
 from views import application
 from views.auth import requires_auth, USER
 from views.exceptions import PhenopolisException
@@ -45,11 +45,12 @@ def create_classification():
     return jsonify(success=request_ok, message=message), http_status
 
 
-@application.route("/variant-classifications-by-individual/<individual_id>")
+@application.route("/variant-classifications-by-individual/<phenopolis_id>")
 @requires_auth
-def get_classifications_by_individual(individual_id):
+def get_classifications_by_individual(phenopolis_id):
+
     with session_scope() as db_session:
-        individual = _fetch_authorized_individual(db_session, individual_id)
+        individual = _fetch_authorized_individual(db_session, phenopolis_id)
         # unauthorized access to individual
         if not individual:
             response = jsonify(
@@ -59,7 +60,8 @@ def get_classifications_by_individual(individual_id):
         else:
             classifications = (
                 db_session.query(IndividualVariantClassification)
-                .filter(IndividualVariantClassification.individual_id == individual_id)
+                .join(Individual, Individual.id == IndividualVariantClassification.individual_id)
+                .filter(Individual.phenopolis_id == phenopolis_id)
                 .order_by(IndividualVariantClassification.classified_on.desc())
                 .all()
             )
@@ -68,7 +70,13 @@ def get_classifications_by_individual(individual_id):
 
 
 def _check_classification_valid(db_session: Session, classification: IndividualVariantClassification):
-    individual = _fetch_authorized_individual(db_session, classification.individual_id)
+    try:
+        phenopolis_id = (
+            db_session.query(Individual).filter(Individual.id == classification.individual_id).first().phenopolis_id
+        )
+    except Exception:
+        phenopolis_id = None
+    individual = _fetch_authorized_individual(db_session, phenopolis_id)
     if individual is None:
         raise PhenopolisException(
             "User not authorized to classify variants for individual {}".format(classification.individual_id), 401

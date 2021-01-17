@@ -1,10 +1,8 @@
 """
 Individual view
 """
-import re
-import itertools
 from typing import List, Tuple
-from sqlalchemy import func, literal_column, and_
+from sqlalchemy import func, literal_column, and_, or_
 from sqlalchemy.dialects.postgresql import aggregate_order_by
 from sqlalchemy.orm import Session
 
@@ -12,12 +10,12 @@ import db.helpers
 import ujson as json
 from collections import Counter
 from flask import session, jsonify, request
-from db.model import Individual, UserIndividual, Variant, HomozygousVariant, HeterozygousVariant, HPO, Sex
+from db.model import Individual, UserIndividual, Variant, HomozygousVariant, HeterozygousVariant, Sex
 from views import application
 from views.auth import requires_auth, requires_admin, is_demo_user, USER, ADMIN_USER
 from views.exceptions import PhenopolisException
 from views.helpers import _get_json_payload
-from views.postgres import session_scope
+from views.postgres import session_scope, postgres_cursor, get_db
 from bidict import bidict
 from views.general import process_for_display, cache_on_browser
 
@@ -47,16 +45,16 @@ def get_all_individuals():
     return jsonify(results), 200
 
 
-@application.route("/<language>/individual/<individual_id>")
-@application.route("/<language>/individual/<individual_id>/<subset>")
-@application.route("/individual/<individual_id>")
-@application.route("/individual/<individual_id>/<subset>")
+@application.route("/<language>/individual/<phenopolis_id>")
+@application.route("/<language>/individual/<phenopolis_id>/<subset>")
+@application.route("/individual/<phenopolis_id>")
+@application.route("/individual/<phenopolis_id>/<subset>")
 @requires_auth
 @cache_on_browser()
-def get_individual_by_id(individual_id, subset="all", language="en"):
+def get_individual_by_id(phenopolis_id, subset="all", language="en"):
     with session_scope() as db_session:
         config = db.helpers.query_user_config(db_session=db_session, language=language, entity="individual")
-        individual = _fetch_authorized_individual(db_session, individual_id)
+        individual = _fetch_authorized_individual(db_session, phenopolis_id)
         # unauthorized access to individual
         if not individual:
             response = jsonify(
@@ -72,22 +70,21 @@ def get_individual_by_id(individual_id, subset="all", language="en"):
     return jsonify(individual_view)
 
 
-@application.route("/<language>/update_patient_data/<individual_id>", methods=["POST"])
-@application.route("/update_patient_data/<individual_id>", methods=["POST"])
+@application.route("/<language>/update_patient_data/<phenopolis_id>", methods=["POST"])
+@application.route("/update_patient_data/<phenopolis_id>", methods=["POST"])
 @requires_auth
-def update_patient_data(individual_id, language="en"):
+def update_patient_data(phenopolis_id, language="en"):
     if is_demo_user():
         return jsonify(error="Demo user not authorised"), 405
 
     with session_scope() as db_session:
         config = db.helpers.query_user_config(db_session=db_session, language=language, entity="individual")
-        individual = _fetch_authorized_individual(db_session, individual_id)
+        individual = _fetch_authorized_individual(db_session, phenopolis_id)
         # unauthorized access to individual
         if not individual:
             config[0]["preview"] = [["Sorry", "You are not permitted to edit this patient"]]
             # TODO: change this output to the same structure as others
             return json.dumps(config)
-
         application.logger.debug(request.form)
         consanguinity = request.form.get("consanguinity_edit[]")
         gender = request.form.get("gender_edit[]")
@@ -96,9 +93,9 @@ def update_patient_data(individual_id, language="en"):
         if not len(features):
             features = ["All"]
 
-        # TODO: simplfy this gender translation
+        # TODO: simplify this gender translation
         gender = MAPPING_SEX_REPRESENTATIONS.get(gender, "unknown")
-        hpos = _get_hpos(db_session, features)
+        hpos = _get_hpos(features)
         _update_individual(consanguinity, gender, genes, hpos, individual)
     return jsonify({"success": True}), 200
 
@@ -106,9 +103,9 @@ def update_patient_data(individual_id, language="en"):
 @application.route("/individual", methods=["POST"])
 @requires_auth
 def create_individual():
+    breakpoint()
     if is_demo_user():
         return jsonify(error="Demo user not authorised"), 405
-
     # checks individuals validity
     with session_scope() as db_session:
         try:
@@ -126,14 +123,14 @@ def create_individual():
         try:
             # generate a new unique id for the individual
             for i in new_individuals:
-                new_internal_id = _get_new_individual_id(db_session)
-                i.internal_id = new_internal_id
-                ids_new_individuals.append(new_internal_id)
                 # insert individual
                 db_session.add(i)
+                # to refresh i and with new id and phenopolis_id, both lines below needed (black magic)
+                db_session.query(Individual).count()
+                db_session.refresh(i)
                 # add entry to user_individual
                 # TODO: enable access to more users than the creator
-                db_session.add(UserIndividual(user=session[USER], internal_id=i.internal_id))
+                db_session.add(UserIndividual(user=session[USER], internal_id=i.phenopolis_id))
         except PhenopolisException as e:
             application.logger.exception(e)
             request_ok = False
@@ -143,20 +140,19 @@ def create_individual():
     return jsonify(success=request_ok, message=message, id=",".join(ids_new_individuals)), http_status
 
 
-@application.route("/individual/<individual_id>", methods=["DELETE"])
+@application.route("/individual/<phenopolis_id>", methods=["DELETE"])
 @requires_admin
-def delete_individual(individual_id):
-
+def delete_individual(phenopolis_id):
     with session_scope() as db_session:
-        individual = _fetch_authorized_individual(db_session, individual_id)
+        individual = _fetch_authorized_individual(db_session, phenopolis_id)
         request_ok = True
         http_status = 200
-        message = "Patient " + individual_id + " has been deleted."
+        message = f"Patient {phenopolis_id} has been deleted."
 
         if individual:
             try:
                 user_individuals = (
-                    db_session.query(UserIndividual).filter(UserIndividual.internal_id == individual_id).all()
+                    db_session.query(UserIndividual).filter(UserIndividual.internal_id == phenopolis_id).all()
                 )
                 for ui in user_individuals:
                     db_session.delete(ui)
@@ -168,7 +164,7 @@ def delete_individual(individual_id):
                 http_status = e.http_status
         else:
             request_ok = False
-            message = "Patient " + individual_id + " does not exist."
+            message = f"Patient {phenopolis_id} does not exist."
             http_status = 404
 
     return jsonify(success=request_ok, message=message), http_status
@@ -184,31 +180,24 @@ def _get_pagination_parameters():
 
 
 def _check_individual_valid(db_session: Session, new_individual: Individual):
+
     if new_individual is None:
         raise PhenopolisException("Null individual", 400)
 
     exist_internal_id = (
-        db_session.query(Individual.external_id).filter(Individual.external_id == new_individual.external_id).all()
+        db_session.query(Individual.phenopolis_id)
+        .filter(
+            or_(
+                Individual.phenopolis_id == new_individual.phenopolis_id,
+                Individual.external_id == new_individual.external_id,
+            )
+        )
+        .all()
     )
 
     if len(exist_internal_id) > 0:
-        raise PhenopolisException("Individual is already exist.", 400)
-    # TODOe: add more validations here
-
-
-def _get_new_individual_id(sqlalchemy_session):
-    # NOTE: this is not robust if the database contains ids other than PH + 8 digits
-    latest_internal_id = (
-        sqlalchemy_session.query(Individual.internal_id)
-        .filter(Individual.internal_id.like("PH%"))
-        .order_by(Individual.internal_id.desc())
-        .first()
-    )
-    matched_id = re.compile(r"^PH(\d{8})$").match(latest_internal_id[0])
-    if matched_id:
-        return "PH{}".format(str(int(matched_id.group(1)) + 1).zfill(8))  # pads with 0s
-    else:
-        raise PhenopolisException("Failed to fetch the latest internal id for an individual", 500)
+        raise PhenopolisException("Individual already exists.", 400)
+    # TODO: add more validations here
 
 
 def _individual_complete_view(db_session: Session, config, individual: Individual, subset):
@@ -242,8 +231,8 @@ def _individual_preview(db_session: Session, config, individual: Individual):
     config[0]["preview"] = [
         ["External_id", individual.external_id],
         ["Sex", individual.sex.name],
-        ["Genes", [g for g in individual.genes.split(",") if g != ""]],
-        ["Features", [f for f in individual.simplified_observed_features_names.split(",") if f != ""]],
+        ["Genes", [g[0] for g in _get_genes_for_individual(individual)]],
+        ["Features", [f[1] for f in _get_OF_for_individual(individual)]],
         ["Number of hom variants", hom_count],
         ["Number of compound hets", comp_het_count],
         ["Number of het variants", het_count],
@@ -271,20 +260,44 @@ def _count_homozygous_variants(db_session: Session, individual: Individual) -> i
 
 def _map_individual2output(config, individual: Individual):
     config[0]["metadata"]["data"][0].update(individual.as_dict())
-    config[0]["metadata"]["data"][0]["internal_id"] = [{"display": individual.internal_id}]
+    config[0]["metadata"]["data"][0]["internal_id"] = [{"display": individual.phenopolis_id}]
     config[0]["metadata"]["data"][0]["simplified_observed_features"] = [
-        {"display": i, "end_href": j}
-        for i, j, in zip(
-            individual.simplified_observed_features_names.split(";")
-            if individual.simplified_observed_features_names
-            else [],
-            individual.simplified_observed_features.split(",") if individual.simplified_observed_features else [],
-        )
-        if i != ""
+        {"display": x[0], "end_href": x[1]} for x in _get_OF_for_individual(individual)
     ]
-    genes = individual.genes.split(",") if individual.genes else []
-    config[0]["metadata"]["data"][0]["genes"] = [{"display": i} for i in genes if i != ""]
+    genes = _get_genes_for_individual(individual)
+    config[0]["metadata"]["data"][0]["genes"] = [{"display": i[0]} for i in genes]
     return config
+
+
+def _get_OF_for_individual(individual: Individual, atype="simplified"):
+    """
+    returns observed_features for a given individual
+    options are: simplified (default), observed, unobserved
+    e.g. [('HP:0000007', 'Autosomal recessive inheritance'), ('HP:0000505', 'Visual impairment')]
+    """
+    cur = postgres_cursor()
+    cur.execute(
+        """select t.hpo_id, t."name" from individual i join individual_feature if2 on (i.id = if2.individual_id)
+        join hpo.term t on (t.id = if2.feature_id) and if2."type" = %s
+        and i.id = %s""",
+        (atype, individual.id),
+    )
+    res = cur.fetchall()
+    return res
+
+
+def _get_genes_for_individual(individual: Individual):
+    """returns e.g. [('TTLL5',)]"""
+    cur = postgres_cursor()
+    cur.execute(
+        """select g.hgnc_symbol from phenopolis.individual i
+        join phenopolis.individual_gene ig on i.id = ig.individual_id
+        join ensembl.gene g on g.identifier = ig.gene_id
+        and i.id = %s""",
+        [individual.id],
+    )
+    genes = cur.fetchall()
+    return genes
 
 
 def _get_heterozygous_variants(db_session: Session, individual: Individual) -> List[Variant]:
@@ -294,7 +307,7 @@ def _get_heterozygous_variants(db_session: Session, individual: Individual) -> L
 def _query_heterozygous_variants(db_session: Session, individual):
     return (
         db_session.query(HeterozygousVariant, Variant)
-        .filter(HeterozygousVariant.individual == individual.internal_id)
+        .filter(HeterozygousVariant.individual == individual.phenopolis_id)
         .join(
             Variant,
             and_(
@@ -315,7 +328,7 @@ def _get_homozygous_variants(db_session: Session, individual: Individual) -> Lis
 def _query_homozygous_variants(db_session: Session, individual):
     return (
         db_session.query(HomozygousVariant, Variant)
-        .filter(HomozygousVariant.individual == individual.internal_id)
+        .filter(HomozygousVariant.individual == individual.phenopolis_id)
         .join(
             Variant,
             and_(
@@ -362,46 +375,62 @@ def _query_all_individuals(db_session, additional_filter=None):
     user_id = session[USER]
     query = db_session.query(
         Individual, func.string_agg(UserIndividual.user, aggregate_order_by(literal_column("','"), UserIndividual.user))
-    ).filter(Individual.internal_id == UserIndividual.internal_id)
+    ).filter(Individual.phenopolis_id == UserIndividual.internal_id)
     if additional_filter is not None:
         query = query.filter(additional_filter)
     if user_id != ADMIN_USER:
         query = query.filter(UserIndividual.user == user_id)
-    query = query.group_by(Individual).order_by(Individual.internal_id.desc())
+    query = query.group_by(Individual).order_by(Individual.phenopolis_id.desc())
     return query
 
 
-def _fetch_authorized_individual(db_session: Session, individual_id) -> Individual:
+def _fetch_authorized_individual(db_session: Session, phenopolis_id) -> Individual:
     return (
         db_session.query(Individual)
-        .join(UserIndividual)
+        .join(UserIndividual, UserIndividual.internal_id == Individual.phenopolis_id)
         .filter(UserIndividual.user == session[USER])
-        .filter(Individual.internal_id == individual_id)
+        .filter(Individual.phenopolis_id == phenopolis_id)
         .first()
     )
 
 
-def _update_individual(consanguinity, gender, genes, hpos: List[HPO], individual: Individual):
-
-    # update
-    # features to hpo ids
+def _update_individual(consanguinity, gender, genes, hpos: List[tuple], individual: Individual):
+    """
+    Updates tables:
+        phenopolis.individual:         col(gender)
+        phenopolis.individual_feature: col(feature_id) # hpo_ids
+        phenopolis.individual_gene:    col(gene_id) # maps hgnc_symbol -> gene.identifier
+            given hgnc_symbol MUST exactly match hgnc_symbols in ensembl.gene table otherwise returns []
+    """
     individual.sex = gender
     individual.consanguinity = consanguinity
-    individual.observed_features = ",".join([h.hpo_id for h in hpos])
-    individual.observed_features_names = ";".join([h.hpo_name for h in hpos])
-    individual.ancestor_observed_features = ";".join(
-        sorted(list(set(list(itertools.chain.from_iterable([h.hpo_ancestor_ids.split(";") for h in hpos])))))
-    )
-    individual.genes = ",".join([x for x in genes])
+    hpo_ids = [h[0] for h in hpos]
+    with get_db() as conn:
+        with conn.cursor() as cur:
+            cur.execute(
+                """
+            delete from phenopolis.individual_feature where individual_id = %(id)s and type = 'observed';
+            insert into phenopolis.individual_feature (individual_id, feature_id, type) select %(id)s as individual_id,
+            unnest(%(hpo_ids)s::int[]) as feature_id, 'observed' as type;
+            delete from phenopolis.individual_gene where individual_id = %(id)s;
+            insert into phenopolis.individual_gene (individual_id, gene_id) select %(id)s as individual_id,
+            identifier from ensembl.gene where hgnc_symbol = any(%(genes)s::text[]) and assembly = 'GRCh37';
+            """,
+                {"id": individual.id, "hpo_ids": hpo_ids, "genes": genes},
+            )
 
 
-def _get_hpos(db_session: Session, features: List[str]) -> List[HPO]:
-    return db_session.query(HPO).filter(HPO.hpo_name.in_(features)).all()
+def _get_hpos(features: List[str]):
+    cur = postgres_cursor()
+    cur.execute("select * from hpo.term t where t.name = any(%s);", [features])
+    return cur.fetchall()
 
 
 def get_authorized_individuals(db_session: Session) -> List[Individual]:
     user_id = session[USER]
     query = db_session.query(Individual, UserIndividual)
     if user_id != ADMIN_USER:
-        query = query.filter(and_(Individual.internal_id == UserIndividual.internal_id, UserIndividual.user == user_id))
+        query = query.filter(
+            and_(Individual.phenopolis_id == UserIndividual.internal_id, UserIndividual.user == user_id)
+        )
     return query.with_entities(Individual).all()

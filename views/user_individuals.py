@@ -15,7 +15,6 @@ from views.postgres import session_scope
 @application.route("/user-individual", methods=["POST"])
 @requires_admin
 def create_user_individual():
-
     try:
         new_user_individuals = _get_json_payload(UserIndividual)
         for u in new_user_individuals:
@@ -76,7 +75,7 @@ def _check_db_integrity_user_individual(db_session: Session, user: UserIndividua
     # TODO: all these checks could happen in the DB
     if db_session.query(User.user).filter(User.user.match(user.user)).count() != 1:
         raise PhenopolisException("Trying to add an entry in user_individual to a non existing user", 500)
-    if db_session.query(Individual.internal_id).filter(Individual.internal_id.match(user.internal_id)).count() != 1:
+    if db_session.query(Individual.phenopolis_id).filter(Individual.phenopolis_id.match(user.internal_id)).count() != 1:
         raise PhenopolisException("Trying to add an entry in user_individual to a non existing individual", 500)
     if (
         db_session.query(UserIndividual)
