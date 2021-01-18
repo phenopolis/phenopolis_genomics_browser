@@ -1,14 +1,13 @@
 import React, { Fragment, useEffect } from 'react';
 import { Container, Card, Divider, Typography, Grid, IconButton, Box } from '@material-ui/core';
 import axios from 'axios';
-import fileDownload from 'js-file-download';
 
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faCloudDownload, faFileAlt, faTrashAlt } from '@fortawesome/pro-solid-svg-icons';
 
 import 'uppy/dist/uppy.min.css';
 import Uppy from '@uppy/core';
-import { DragDrop, Dashboard, useUppy } from '@uppy/react';
+import { Dashboard, useUppy } from '@uppy/react';
 import AwsS3 from '@uppy/aws-s3';
 
 import { useDispatch, useSelector } from 'react-redux';
@@ -49,10 +48,15 @@ export default function FileUpload(props) {
       dispatch(getFiles(patientID));
     }
     if (downloadFileLoaded) {
-      fileDownload(downloadURL.response, downloadURL.filename.match(/_(.*)/)[1]);
+      window.location.href = downloadURL.response;
     }
     dispatch(resetFile());
   }, [deleteFileLoaded, downloadFileLoaded]);
+
+  useEffect(() => {
+    if (fetchFileLoaded) {
+    }
+  }, [fetchFileLoaded]);
 
   const uppy = useUppy(() => {
     return new Uppy({
@@ -108,9 +112,9 @@ export default function FileUpload(props) {
           <Container style={{ marginTop: '2em' }}>
             {fetchFileLoaded ? (
               <Grid container spacing={4}>
-                {files.Contents.map((item, index) => {
+                {files.response.Contents.map((item, index) => {
                   return (
-                    <Grid item xs={6} md={4}>
+                    <Grid key={index} item xs={6} md={4}>
                       <Card className="card-box text-black-50 bg-secondary mb-4 p-3">
                         <div className="d-flex align-items-center flex-column flex-sm-row">
                           <div>

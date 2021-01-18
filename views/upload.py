@@ -15,6 +15,7 @@ UPLOAD_FOLDER = "upload"
 
 S3_KEY = os.getenv("VCF_S3_KEY")
 SECRET_ACCESS_KEY = os.environ.get("VCF_S3_SECRET")
+DOWNLOAD_SIGNED_URL_TIME = 300
 
 s3_client = boto3.client(
     "s3",
@@ -30,7 +31,6 @@ def presign_S3():
     data = request.get_json()
     filename = data.get("filename")
     prefix = data.get("prefix")
-    print(data)
 
     try:
         response = s3_client.generate_presigned_post(
@@ -63,7 +63,6 @@ def getUploadedFile(individual_id):
 def delete_file():
     data = request.get_json()
     fileKey = data.get("fileKey")
-    print(data, flush=True)
     response = s3_client.delete_object(Bucket="phenopolis-website-uploads", Key=fileKey)
 
     return jsonify(message="Delete File Success", response=response), 200
@@ -75,8 +74,6 @@ def download_file():
     data = request.get_json()
     fileKey = data.get("fileKey")
     response = s3_client.generate_presigned_url(
-        "get_object", Params={"Bucket": "phenopolis-website-uploads", "Key": fileKey}, ExpiresIn=3600
+        "get_object", Params={"Bucket": "phenopolis-website-uploads", "Key": fileKey}, ExpiresIn=DOWNLOAD_SIGNED_URL_TIME
     )
-    print("- - - - - ", flush=True)
-    print(response, flush=True)
     return jsonify(filename=fileKey, response=response), 200
