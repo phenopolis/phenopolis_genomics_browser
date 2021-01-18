@@ -3,7 +3,7 @@ import json
 from passlib.handlers.argon2 import argon2
 from sqlalchemy.orm import Session
 
-from db.model import User
+from db.model import User, UserConfig
 from tests.conftest import NONDEMO_USER
 from tests.test_views import _check_only_available_to_admin
 from views.postgres import session_scope
@@ -106,7 +106,7 @@ def test_bad_attempt_to_disable_user(_admin):
 
 
 def test_create_user(_not_logged_in_client):
-    user_name = "test_register"
+    user_name = "test_register1"
     with session_scope() as db_session:
         try:
             user = User()
@@ -120,7 +120,7 @@ def test_create_user(_not_logged_in_client):
 
 
 def test_create_and_confirm_user(_not_logged_in_client):
-    user_name = "test_register"
+    user_name = "test_register2"
     email = "test_register@phenopolis.org"
     with session_scope() as db_session:
         try:
@@ -164,7 +164,7 @@ def test_confirm_user_already_confirmed(_not_logged_in_client):
 
 
 def test_create_user_with_explicit_enabled_and_confirmed_flags(_not_logged_in_client):
-    user_name = "test_register"
+    user_name = "test_register3"
     with session_scope() as db_session:
         try:
             user = User()
@@ -180,7 +180,7 @@ def test_create_user_with_explicit_enabled_and_confirmed_flags(_not_logged_in_cl
 
 
 def test_create_user_without_email(_not_logged_in_client):
-    user_name = "test_register"
+    user_name = "test_register4"
     with session_scope() as db_session:
         try:
             user = User()
@@ -194,7 +194,7 @@ def test_create_user_without_email(_not_logged_in_client):
 
 
 def test_create_user_with_used_email(_not_logged_in_client):
-    user_name = "test_register"
+    user_name = "test_register5"
     with session_scope() as db_session:
         try:
             user = User()
@@ -283,7 +283,9 @@ def _assert_create_user(db_session: Session, _client, user):
 
 def _clean_test_users(db_session, user_name):
     try:
+        # deletion in public.users should cascade to public.user_config
         db_session.query(User).filter(User.user == user_name).delete()
+        db_session.query(UserConfig).filter(UserConfig.user_name == user_name).delete()
     except Exception:
         # could not remove users
         pass
