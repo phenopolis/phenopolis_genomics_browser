@@ -261,7 +261,7 @@ def test_delete_individual(_admin_client):
 
 def test_delete_not_existing_individual(_admin_client):
     # deletes individual
-    response = _admin_client.delete(f"/individual/PH00000000", content_type="application/json")
+    response = _admin_client.delete("/individual/PH00000000", content_type="application/json")
     assert response.status_code == 404
 
 
