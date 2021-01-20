@@ -137,12 +137,12 @@ def test_update_individual_with_admin_user(_admin_client):
         db_session.refresh(individual)
         observed_sex = individual.sex
         assert observed_sex == sex, "Update sex did not work"
-        observed_hpo_names = [x[1] for x in vi._get_OF_for_individual(individual, atype="observed")]
+        observed_hpo_names = [x[1] for x in vi._get_feature_for_individual(individual, atype="observed")]
         assert len(observed_hpo_names) == 3, "Update HPOs did not work"
         assert "Abnormality of body height" in observed_hpo_names, "Update HPOs did not work"
         assert "Multicystic kidney dysplasia" in observed_hpo_names, "Update HPOs did not work"
         assert "Mode of inheritance" in observed_hpo_names, "Update HPOs did not work"
-        observed_hpos = [x[0] for x in vi._get_OF_for_individual(individual, atype="observed")]
+        observed_hpos = [x[0] for x in vi._get_feature_for_individual(individual, atype="observed")]
         assert len(observed_hpos) == 3, "Update HPOs did not work"
         assert "HP:0000002" in observed_hpos, "Update HPOs did not work"
         assert "HP:0000003" in observed_hpos, "Update HPOs did not work"
