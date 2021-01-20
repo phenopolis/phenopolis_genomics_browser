@@ -8,3 +8,4 @@
 \copy phenopolis.individual FROM '/app/schema/seed/phenopolis.individual.csv' delimiter ',' CSV HEADER;
 \copy phenopolis.individual_feature FROM '/app/schema/seed/phenopolis.individual_feature.csv' delimiter ',' CSV HEADER;
 \copy phenopolis.individual_gene FROM '/app/schema/seed/phenopolis.individual_gene.csv' delimiter ',' CSV HEADER;
+refresh materialized view hpo.is_a_path;
