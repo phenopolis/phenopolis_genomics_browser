@@ -2,7 +2,7 @@
 Individual view
 """
 from typing import List, Tuple
-from sqlalchemy import func, literal_column, and_, or_
+from sqlalchemy import func, and_, or_
 from sqlalchemy.dialects.postgresql import aggregate_order_by
 from sqlalchemy.orm import Session
 
@@ -10,12 +10,21 @@ import db.helpers
 import ujson as json
 from collections import Counter
 from flask import session, jsonify, request
-from db.model import Individual, UserIndividual, Variant, HomozygousVariant, HeterozygousVariant, Sex
+from db.model import (
+    Individual,
+    UserIndividual,
+    Variant,
+    HomozygousVariant,
+    HeterozygousVariant,
+    Sex,
+    IndividualGene,
+    NewGene,
+)
 from views import application
 from views.auth import requires_auth, requires_admin, is_demo_user, USER, ADMIN_USER
 from views.exceptions import PhenopolisException
 from views.helpers import _get_json_payload
-from views.postgres import session_scope, postgres_cursor, get_db
+from views.postgres import session_scope, get_db
 from bidict import bidict
 from views.general import process_for_display, cache_on_browser
 
@@ -36,9 +45,22 @@ def get_all_individuals():
                 )
             individuals_and_users = _fetch_all_individuals(db_session=db_session, offset=offset, limit=limit)
             results = []
-            for i, ui in individuals_and_users:
+            for i, g, ui in individuals_and_users:
                 individual_dict = i.as_dict()
                 individual_dict["users"] = ui
+                individual_dict["genes"] = ",".join(g)
+                individual_dict["internal_id"] = individual_dict["phenopolis_id"]
+                obf = _get_feature_for_individual(i, "observed")
+                sobf = _get_feature_for_individual(i)
+                uobf = _get_feature_for_individual(i, "unobserved")
+                aobf = _get_ancestors_for_individual(i)
+                individual_dict["ancestor_observed_features"] = ",".join([x[0] for x in aobf])
+                individual_dict["ancestor_observed_features_names"] = ",".join([x[1] for x in aobf])
+                individual_dict["observed_features"] = ",".join([x[0] for x in obf])
+                individual_dict["observed_features_names"] = ";".join([x[1] for x in obf])
+                individual_dict["simplified_observed_features"] = ",".join([x[0] for x in sobf])
+                individual_dict["simplified_observed_features_names"] = ";".join([x[1] for x in sobf])
+                individual_dict["unobserved_features"] = ",".join([x[0] for x in uobf])
                 results.append(individual_dict)
         except PhenopolisException as e:
             return jsonify(success=False, message=str(e)), e.http_status
@@ -231,7 +253,7 @@ def _individual_preview(db_session: Session, config, individual: Individual):
         ["External_id", individual.external_id],
         ["Sex", individual.sex.name],
         ["Genes", [g[0] for g in _get_genes_for_individual(individual)]],
-        ["Features", [f[1] for f in _get_OF_for_individual(individual)]],
+        ["Features", [f[1] for f in _get_feature_for_individual(individual)]],
         ["Number of hom variants", hom_count],
         ["Number of compound hets", comp_het_count],
         ["Number of het variants", het_count],
@@ -261,41 +283,67 @@ def _map_individual2output(config, individual: Individual):
     config[0]["metadata"]["data"][0].update(individual.as_dict())
     config[0]["metadata"]["data"][0]["internal_id"] = [{"display": individual.phenopolis_id}]
     config[0]["metadata"]["data"][0]["simplified_observed_features"] = [
-        {"display": x[0], "end_href": x[1]} for x in _get_OF_for_individual(individual)
+        {"display": x[0], "end_href": x[1]} for x in _get_feature_for_individual(individual)
     ]
     genes = _get_genes_for_individual(individual)
     config[0]["metadata"]["data"][0]["genes"] = [{"display": i[0]} for i in genes]
     return config
 
 
-def _get_OF_for_individual(individual: Individual, atype="simplified"):
+def _get_feature_for_individual(individual: Individual, atype="simplified"):
     """
     returns observed_features for a given individual
     options are: simplified (default), observed, unobserved
     e.g. [('HP:0000007', 'Autosomal recessive inheritance'), ('HP:0000505', 'Visual impairment')]
     """
-    cur = postgres_cursor()
-    cur.execute(
-        """select t.hpo_id, t."name" from individual i join individual_feature if2 on (i.id = if2.individual_id)
-        join hpo.term t on (t.id = if2.feature_id) and if2."type" = %s
-        and i.id = %s""",
-        (atype, individual.id),
-    )
-    res = cur.fetchall()
+    with get_db() as conn:
+        with conn.cursor() as cur:
+            cur.execute(
+                """
+                select t.hpo_id, t."name" from individual i join individual_feature if2 on (i.id = if2.individual_id)
+                join hpo.term t on (t.id = if2.feature_id) and if2."type" = %s
+                and i.id = %s""",
+                (atype, individual.id),
+            )
+            res = cur.fetchall()
+    return res
+
+
+def _get_ancestors_for_individual(individual: Individual):
+    """
+    returns tuple (ancestor_observed_features, ancestor_observed_features_name) for a given individual
+    e.g. [('HP:0000007', 'Autosomal recessive inheritance'), ('HP:0000505', 'Visual impairment')]
+    """
+    with get_db() as conn:
+        with conn.cursor() as cur:
+            cur.execute(
+                r"""
+            select t.hpo_id, name from hpo.term t where t.id in (
+                select distinct(regexp_split_to_table(path::text, '\.'))::int as ancestor
+                from phenopolis.individual_feature if1
+                join hpo.is_a_path tpath on if1.feature_id = tpath.term_id and if1.type = 'observed'
+                where  if1.individual_id = %s
+            )
+            order by t.id""",
+                [individual.id],
+            )
+            res = cur.fetchall()
     return res
 
 
 def _get_genes_for_individual(individual: Individual):
     """returns e.g. [('TTLL5',)]"""
-    cur = postgres_cursor()
-    cur.execute(
-        """select g.hgnc_symbol from phenopolis.individual i
-        join phenopolis.individual_gene ig on i.id = ig.individual_id
-        join ensembl.gene g on g.identifier = ig.gene_id
-        and i.id = %s""",
-        [individual.id],
-    )
-    genes = cur.fetchall()
+    with get_db() as conn:
+        with conn.cursor() as cur:
+            cur.execute(
+                """
+            select g.hgnc_symbol from phenopolis.individual i
+            join phenopolis.individual_gene ig on i.id = ig.individual_id
+            join ensembl.gene g on g.identifier = ig.gene_id
+            and i.id = %s""",
+                [individual.id],
+            )
+            genes = cur.fetchall()
     return genes
 
 
@@ -349,7 +397,7 @@ def _fetch_all_individuals(db_session: Session, offset, limit) -> List[Tuple[Ind
     """
     query = _query_all_individuals(db_session)
     individuals = query.offset(offset).limit(limit).all()
-    return [(i, u.split(",")) for i, u in individuals]
+    return [(i, g, u) for i, g, u in individuals]
 
 
 def _count_all_individuals(db_session: Session) -> int:
@@ -372,9 +420,20 @@ def _count_all_individuals_by_sex(db_session: Session, sex: Sex) -> int:
 
 def _query_all_individuals(db_session, additional_filter=None):
     user_id = session[USER]
-    query = db_session.query(
-        Individual, func.string_agg(UserIndividual.user, aggregate_order_by(literal_column("','"), UserIndividual.user))
-    ).filter(Individual.phenopolis_id == UserIndividual.internal_id)
+    query = (
+        (
+            db_session.query(
+                Individual,
+                func.array_agg(aggregate_order_by(NewGene.hgnc_symbol.distinct(), NewGene.hgnc_symbol)),
+                func.array_agg(aggregate_order_by(UserIndividual.user.distinct(), UserIndividual.user)),
+            )
+            .filter(Individual.phenopolis_id == UserIndividual.internal_id)
+            .filter(Individual.id == IndividualGene.individual_id)
+            .filter(IndividualGene.gene_id == NewGene.identifier)
+        )
+        .group_by(Individual)
+        .order_by(Individual.phenopolis_id.desc())
+    )
     if additional_filter is not None:
         query = query.filter(additional_filter)
     if user_id != ADMIN_USER:
@@ -420,9 +479,11 @@ def _update_individual(consanguinity, gender, genes, hpos: List[tuple], individu
 
 
 def _get_hpos(features: List[str]):
-    cur = postgres_cursor()
-    cur.execute("select * from hpo.term t where t.name = any(%s);", [features])
-    return cur.fetchall()
+    with get_db() as conn:
+        with conn.cursor() as cur:
+            cur.execute("select * from hpo.term t where t.name = any(%s);", [features])
+            res = cur.fetchall()
+    return res
 
 
 def get_authorized_individuals(db_session: Session) -> List[Individual]:
