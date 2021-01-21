@@ -80,7 +80,8 @@ create index on individual (external_id);
 
 
 create table individual_feature (
-    individual_id int references individual (id),
+    individual_id int references individual (id)
+        on update cascade on delete cascade,
     feature_id int not null references hpo.term (id),
     type text not null check (type = any('{observed,unobserved,simplified}')),
     primary key (individual_id, feature_id, type)
