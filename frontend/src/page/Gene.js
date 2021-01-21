@@ -8,6 +8,7 @@ import { getGene } from '../redux/actions/gene';
 
 const MetaData = React.lazy(() => import('../components/MetaData'));
 const VirtualGrid = React.lazy(() => import('../components/Table/VirtualGrid'));
+const VersatileTable = React.lazy(() => import('../components/BaseTable/VersatileTable'));
 
 const Gene = (props) => {
   const { t } = useTranslation();
@@ -42,7 +43,8 @@ const Gene = (props) => {
               }
             />
             <Container maxWidth="xl">
-              <VirtualGrid
+              <VersatileTable tableData={geneInfo.variants} />
+              {/* <VirtualGrid
                 tableData={geneInfo.variants}
                 title={t('Gene.Variants_Analysis')}
                 subtitle={t('Gene.Variants Analysis_subtitle')}
@@ -59,13 +61,13 @@ const Gene = (props) => {
                   geneInfo.metadata.data[0].stop
                 }
                 genomePlot={true}
-              />
+              /> */}
             </Container>
           </div>
         </React.Fragment>
       ) : (
-        <Loading message={t('Gene.message')} />
-      )}
+          <Loading message={t('Gene.message')} />
+        )}
     </>
   );
 };
