@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 // import CssBaseline from '@material-ui/core/CssBaseline';
-import BaseTable, { Column, AutoResizer } from 'react-base-table'
-import 'react-base-table/styles.css'
+import BaseTable, { Column, AutoResizer } from 'react-base-table';
+import 'react-base-table/styles.css';
 
 var faker = require('faker');
 
@@ -22,7 +22,7 @@ const dataGenerator = () => ({
     city: faker.address.city(),
     zipCode: faker.address.zipCode(),
   },
-})
+});
 
 // const GenderContainer = styled.div`
 //   background-color: ${props =>
@@ -37,11 +37,7 @@ const dataGenerator = () => ({
 //   text-align: center;
 // `
 
-const Gender = ({ gender }) => (
-  <div gender={gender}>
-    {gender === 'male' ? '♂' : '♀'}
-  </div>
-)
+const Gender = ({ gender }) => <div gender={gender}>{gender === 'male' ? '♂' : '♀'}</div>;
 
 // const Score = styled.span`
 //   color: ${props => (props.score >= 60 ? 'green' : 'red')};
@@ -60,9 +56,9 @@ const Gender = ({ gender }) => (
 const defaultData = new Array(5000)
   .fill(0)
   .map(dataGenerator)
-  .sort((a, b) => (a.name > b.name ? 1 : -1))
+  .sort((a, b) => (a.name > b.name ? 1 : -1));
 
-const defaultSort = { key: 'name', order: 'asc' }
+const defaultSort = { key: 'name', order: 'asc' };
 
 const columns = [
   {
@@ -95,8 +91,7 @@ const columns = [
     key: 'birthday',
     title: 'Birthday',
     dataKey: 'birthday',
-    dataGetter: ({ column, rowData }) =>
-      rowData[column.dataKey].toLocaleDateString(),
+    dataGetter: ({ column, rowData }) => rowData[column.dataKey].toLocaleDateString(),
     width: 100,
     align: Column.Alignment.RIGHT,
     sortable: true,
@@ -159,51 +154,49 @@ const columns = [
   //     </button>
   //   ),
   // },
-]
+];
 
 const VersatileTable = (props) => {
-  const [tableData, setTableData] = useState(defaultData)
-  const [sortBy, setSortBy] = useState(defaultSort)
-  const [tableColumn, setTableColumn] = useState(columns)
+  const [tableData, setTableData] = useState(defaultData);
+  const [sortBy, setSortBy] = useState(defaultSort);
+  const [tableColumn, setTableColumn] = useState(columns);
 
   useEffect(() => {
-    console.log(tableData)
+    console.log(tableData);
     if (props.tableData) {
-      console.log(props.tableData)
-      modifyData(props.tableData)
+      console.log(props.tableData);
+      modifyData(props.tableData);
     }
   }, [props.tableData]);
 
   const modifyData = (tableData) => {
-    console.log(tableData)
+    console.log(tableData);
     const tmpColumn = tableData.colNames.map((col) => {
-      return (
-        {
-          key: col.key,
-          title: col.name,
-          dataKey: col.key,
-          width: 150,
-          resizable: true,
-          align: Column.Alignment.CENTER,
-          sortable: true,
-        }
-      )
-    })
+      return {
+        key: col.key,
+        title: col.name,
+        dataKey: col.key,
+        width: 150,
+        resizable: true,
+        align: Column.Alignment.CENTER,
+        sortable: true,
+      };
+    });
 
-    setTableColumn(tmpColumn)
-    setTableData(tableData.data)
-    setSortBy({ key: 'CHROM', order: 'asc' })
-  }
+    setTableColumn(tmpColumn);
+    setTableData(tableData.data);
+    setSortBy({ key: 'CHROM', order: 'asc' });
+  };
 
-  const onColumnSort = sortBy => {
-    console.log(sortBy)
-    console.log(tableData)
-    const order = sortBy.order === 'asc' ? 1 : -1
-    const tmpdata = [...tableData]
-    tmpdata.sort((a, b) => (a[sortBy.key] > b[sortBy.key] ? order : -order))
-    setTableData(tmpdata)
-    setSortBy(sortBy)
-  }
+  const onColumnSort = (sortBy) => {
+    console.log(sortBy);
+    console.log(tableData);
+    const order = sortBy.order === 'asc' ? 1 : -1;
+    const tmpdata = [...tableData];
+    tmpdata.sort((a, b) => (a[sortBy.key] > b[sortBy.key] ? order : -order));
+    setTableData(tmpdata);
+    setSortBy(sortBy);
+  };
 
   return (
     <div style={{ width: '100%', height: '50vh', marginTop: '2em' }}>
@@ -221,7 +214,7 @@ const VersatileTable = (props) => {
         )}
       </AutoResizer>
     </div>
-  )
-}
+  );
+};
 
-export default VersatileTable
+export default VersatileTable;
