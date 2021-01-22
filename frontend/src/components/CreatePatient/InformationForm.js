@@ -133,7 +133,6 @@ export default function InformationForm() {
         sex: gender,
         observed_features: featureArray.map((x) => x.feature).join(','),
         unobserved_features: '',
-        pi: username,
         consanguinity: consanguinity,
         simplified_observed_features_names: featureArray.map((x) => x.name).join(';'),
         simplified_observed_features: featureArray.map((x) => x.feature).join(','),
@@ -227,7 +226,7 @@ export default function InformationForm() {
                       <FormControlLabel
                         value="unknown"
                         control={<Radio color="primary" />}
-                        label="Unknow"
+                        label="Unknown"
                         labelPlacement="Unknown"
                       />
                     </Grid>
