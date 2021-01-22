@@ -63,17 +63,17 @@ class NewGene(Ensembl, AsDictable):
     # schema = "ensembl"
     identifier = Column(Integer, nullable=False, primary_key=True)
     ensembl_gene_id = Column(String(255), nullable=False)
-    #     version = Column(SmallInteger)
+    # version = Column(SmallInteger)
     start = Column(Integer, nullable=False)
     end = Column(Integer, nullable=False)
-    #     description = Column(String(255))
+    # description = Column(String(255))
     chromosome = Column(String(255), nullable=False)
     strand = Column(SmallInteger, nullable=False)
-    #     band = Column(String(255))
-    #     biotype = Column(String(255))
+    # band = Column(String(255))
+    # biotype = Column(String(255))
     hgnc_id = Column(String(255))
     hgnc_symbol = Column(String(255))
-    #     percentage_gene_gc_content = Column(Float)
+    # percentage_gene_gc_content = Column(Float)
     assembly = Column(String(255))
 
 
