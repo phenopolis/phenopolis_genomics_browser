@@ -3,7 +3,7 @@ import React, { useEffect, useState } from 'react';
 import BaseTable, { Column, AutoResizer } from 'react-base-table';
 import 'react-base-table/styles.css';
 
-import ChipList from './ChipList'
+import ChipList from './ChipList';
 
 const VersatileTable = (props) => {
   const [tableData, setTableData] = useState([]);
@@ -22,7 +22,7 @@ const VersatileTable = (props) => {
   const modifyData = (tableData) => {
     // console.log(tableData);
     const tmpColumn = tableData.colNames.map((col) => {
-      if (col.type == "links") {
+      if (col.type == 'links') {
         return {
           key: col.key,
           title: col.name,
@@ -48,20 +48,18 @@ const VersatileTable = (props) => {
     });
 
     const tmpData = tableData.data.map((row, rowIndex) => {
-      return (
-        {
-          ...row,
-          id: rowIndex
-        }
-      )
-    })
+      return {
+        ...row,
+        id: rowIndex,
+      };
+    });
 
-    console.log(tmpData)
+    console.log(tmpData);
 
     setTableColumn(tmpColumn);
     setTableData(tmpData);
     setSortBy({ key: 'CHROM', order: 'asc' });
-    setReady(true)
+    setReady(true);
   };
 
   const onColumnSort = (sortBy) => {
@@ -76,39 +74,36 @@ const VersatileTable = (props) => {
 
   const estRowHight = (rowData, rowIndex) => {
     if (rowIndex % 3 === 1) {
-      return 50
+      return 50;
     } else {
-      return 200
+      return 200;
     }
-  }
+  };
 
   return (
     <div style={{ width: '100%', height: '50vh', marginTop: '2em' }}>
-      {
-        ready ? (
-          <AutoResizer>
-            {({ width, height }) => (
-              <BaseTable
-                width={width}
-                height={height}
-                fixed
-                rowKey="id"
-                // estimatedRowHeight={({ rowData, rowIndex }) => estRowHight(rowData, rowIndex)}
-                estimatedRowHeight={61}
-                columns={tableColumn}
-                data={tableData}
-                sortBy={sortBy}
-                onColumnSort={onColumnSort}
-              />
-            )}
-          </AutoResizer>
-        ) : (
-            <div>
-              <h2> Loading Data... </h2>
-            </div>
-          )
-      }
-
+      {ready ? (
+        <AutoResizer>
+          {({ width, height }) => (
+            <BaseTable
+              width={width}
+              height={height}
+              fixed
+              rowKey="id"
+              // estimatedRowHeight={({ rowData, rowIndex }) => estRowHight(rowData, rowIndex)}
+              estimatedRowHeight={61}
+              columns={tableColumn}
+              data={tableData}
+              sortBy={sortBy}
+              onColumnSort={onColumnSort}
+            />
+          )}
+        </AutoResizer>
+      ) : (
+        <div>
+          <h2> Loading Data... </h2>
+        </div>
+      )}
     </div>
   );
 };

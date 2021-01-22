@@ -1,6 +1,5 @@
 var faker = require('faker');
 
-
 const dataGenerator = () => ({
   id: faker.random.uuid(),
   name: faker.name.findName(),
