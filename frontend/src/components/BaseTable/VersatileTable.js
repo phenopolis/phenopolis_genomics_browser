@@ -2,8 +2,9 @@ import React, { useEffect, useState } from 'react';
 // import CssBaseline from '@material-ui/core/CssBaseline';
 import BaseTable, { Column, AutoResizer } from 'react-base-table';
 import 'react-base-table/styles.css';
+import './tableStyle.css';
 
-import ChipList from './ChipList';
+import { CreateColumns } from './CreateColumns';
 
 const VersatileTable = (props) => {
   const [tableData, setTableData] = useState([]);
@@ -12,40 +13,13 @@ const VersatileTable = (props) => {
   const [ready, setReady] = useState(false);
 
   useEffect(() => {
-    // console.log(props.tableData);
     if (props.tableData) {
-      // console.log(props.tableData);
       modifyData(props.tableData);
     }
   }, [props.tableData]);
 
   const modifyData = (tableData) => {
-    // console.log(tableData);
-    const tmpColumn = tableData.colNames.map((col) => {
-      if (col.type == 'links') {
-        return {
-          key: col.key,
-          title: col.name,
-          dataKey: col.key,
-          base_href: col.base_href,
-          width: 600,
-          resizable: true,
-          align: Column.Alignment.CENTER,
-          sortable: true,
-          cellRenderer: ({ cellData, column }) => <ChipList chips={cellData} colName={column} />,
-        };
-      } else {
-        return {
-          key: col.key,
-          title: col.name,
-          dataKey: col.key,
-          width: 200,
-          resizable: true,
-          align: Column.Alignment.CENTER,
-          sortable: true,
-        };
-      }
-    });
+    console.log(tableData);
 
     const tmpData = tableData.data.map((row, rowIndex) => {
       return {
@@ -54,9 +28,9 @@ const VersatileTable = (props) => {
       };
     });
 
-    console.log(tmpData);
+    const tmpColnames = CreateColumns(tableData.colNames, tableData.data);
 
-    setTableColumn(tmpColumn);
+    setTableColumn(tmpColnames);
     setTableData(tmpData);
     setSortBy({ key: 'CHROM', order: 'asc' });
     setReady(true);
