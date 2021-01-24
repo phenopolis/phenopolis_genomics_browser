@@ -60,32 +60,25 @@ class Gene(Public, AsDictable):
 
 class NewGene(Ensembl, AsDictable):
     __tablename__ = "gene"
-    # schema = "ensembl"
     identifier = Column(Integer, nullable=False, primary_key=True)
     ensembl_gene_id = Column(String(255), nullable=False)
-    # version = Column(SmallInteger)
     start = Column(Integer, nullable=False)
     end = Column(Integer, nullable=False)
-    # description = Column(String(255))
     chromosome = Column(String(255), nullable=False)
     strand = Column(SmallInteger, nullable=False)
-    # band = Column(String(255))
-    # biotype = Column(String(255))
     hgnc_id = Column(String(255))
     hgnc_symbol = Column(String(255))
-    # percentage_gene_gc_content = Column(Float)
     assembly = Column(String(255))
 
 
 class IndividualGene(Phenopolis, AsDictable):
     __tablename__ = "individual_gene"
-    individual_id = Column(Integer, nullable=False, primary_key=True)
-    gene_id = Column(BigInteger, ForeignKey("gene.identifier"), nullable=False, primary_key=True)
-    # status = Column(String(255))
-    # clinvar_id = Column(String(255))
-    # pubmed_id = Column(String(255))
-    # comment = Column(String(255))
-    # user_id = Column(String(255))
+    individual_id = Column(Integer, ForeignKey("phenopolis.individual.id"), nullable=False, primary_key=True)
+    gene_id = Column(BigInteger, nullable=False, primary_key=True)
+    # SQLAlchemy seems really annoying when dealing with ForeignKey between schemas
+    # We're not needing this below, though it's working fine in postgres
+    # ForeignKey bellow will cause Individual to fail
+    # gene_id = Column(BigInteger, ForeignKey("ensembl.gene.identifier"), nullable=False, primary_key=True)
 
 
 class Variant(Public, AsDictable):
@@ -156,14 +149,12 @@ class HpoTerm(Hpo, AsDictable):
     id = Column(Integer, primary_key=True, nullable=False)
     hpo_id = Column(String(255), primary_key=True, nullable=False)
     name = Column(String(255), nullable=False)
-    # description
-    # comment
 
 
 class IndividualFeature(Phenopolis, AsDictable):
     __tablename__ = "individual_feature"
-    individual_id = Column(Integer, ForeignKey("individual.id"), primary_key=True, nullable=False)
-    feature_id = Column(Integer, ForeignKey("term.id"), primary_key=True, nullable=False)
+    individual_id = Column(Integer, ForeignKey("phenopolis.individual.id"), primary_key=True, nullable=False)
+    feature_id = Column(Integer, ForeignKey("hpo.term.id"), primary_key=True, nullable=False)
     type = Column(String(255), primary_key=True, nullable=False)
 
 
@@ -225,6 +216,11 @@ class Individual(Phenopolis, AsDictable):
     external_id = Column(String(255))
     sex = Column(Enum(Sex), nullable=False)
     consanguinity = Column("consanguinity", String(255))
+    # These relationships are not used, but if used they're braking delete_individual()
+    # sqlalchemy.exc.NoReferencedTableError: Foreign key associated with column 'individual_gene.gene_id'
+    # could not find table 'ensembl.gene' with which to generate a foreign key to target column 'identifier'
+    # to_feat = relationship("IndividualFeature", backref="individual_feature", lazy=True, cascade="all, delete-orphan")
+    # to_gene = relationship("IndividualGene", backref="individual_gene", lazy=True, cascade="all, delete-orphan")
 
 
 class UserIndividual(Public, AsDictable):
