@@ -162,13 +162,15 @@ def test_create_individual_with_admin_user(_admin_client):
     individual.external_id = test_external_id
     individual.sex = "F"
     individual.consanguinity = "unknown"
+    individual.genes = "DRAM2"
+    individual.observed_features = "HP:0000001"
     response = _admin_client.post("/individual", json={}, content_type="application/json")
     assert response.status_code == 400
     assert response.json == {"error": "Empty payload or wrong formatting", "success": False}
     response = _admin_client.post("/individual", json="not_dict_nor_list", content_type="application/json")
     assert response.status_code == 400
     assert response.json == {"error": "Payload of unexpected type: <class 'str'>", "success": False}
-    response = _admin_client.post("/individual", json=individual.as_dict(), content_type="application/json")
+    response = _admin_client.post("/individual", json=[individual.as_dict()], content_type="application/json")
     assert response.status_code == 200
 
     with session_scope() as db_session:
@@ -186,7 +188,9 @@ def test_create_individual_existing_individual_fails(_admin_client):
     test_external_id = "for_test_Sample"
     individual.external_id = test_external_id
     individual.sex = "M"
-    response = _admin_client.post("/individual", json=individual.as_dict(), content_type="application/json")
+    individual.genes = "DRAM2,TTLL5"
+    individual.observed_features = "HP:0000001,HP:0000618"
+    response = _admin_client.post("/individual", json=[individual.as_dict()], content_type="application/json")
     assert response.status_code == 200
 
     with session_scope() as db_session:
@@ -194,7 +198,7 @@ def test_create_individual_existing_individual_fails(_admin_client):
         assert observed_individual is not None, "Empty newly created individual"
 
         # try to create the same individual again
-        response = _admin_client.post("/individual", json=individual.as_dict(), content_type="application/json")
+        response = _admin_client.post("/individual", json=[individual.as_dict()], content_type="application/json")
         assert response.status_code == 400
 
         # cleans the database
@@ -206,6 +210,8 @@ def test_create_multiple_individuals(_admin_client):
     test_external_id = "for_test_Sample"
     individual.external_id = test_external_id
     individual.sex = "M"
+    individual.genes = "DRAM2"
+    individual.observed_features = "HP:0000001"
     individual2 = Individual()
     test_external_id2 = "for_test_Sample2"
     individual2.external_id = test_external_id2

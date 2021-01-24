@@ -40,7 +40,6 @@ const ManagePatient = () => {
         'consanguinity',
         'genes',
         'users',
-        'pi',
         'ancestor_observed_features',
         'ancestor_observed_features_names',
         'observed_features',
