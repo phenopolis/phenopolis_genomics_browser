@@ -1,7 +1,7 @@
 import React from 'react';
 import BaseTable, { Column, AutoResizer } from 'react-base-table';
 import calculateSize from 'calculate-size';
-import ChipList from './ChipList';
+import ChipList from '../ChipList';
 
 export const CreateColumns = (mycolumns, myrows) => {
   let minColumn = 60;

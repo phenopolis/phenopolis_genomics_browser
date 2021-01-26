@@ -1,3 +1,27 @@
 .BaseTable__row-cell {
   border-right: 0.1px solid #eeeeee;
 }
+
+.BaseTable__header-cell {
+  background-color: #2e84cf;
+  color: white;
+}
+
+.BaseTable__header-cell:hover {
+  background-color: #2e84cf;
+  color: white;
+}
+.BaseTable__sort-indicator {
+  color: white;
+}
+
+.BaseTable__header-row--resizing .BaseTable__header-cell {
+  background-color: #2e84cf;
+  cursor: col-resize;
+}
+
+.BaseTable__header-cell--sortable:not(.BaseTable__header-cell--sorting):hover
+  .BaseTable__sort-indicator {
+  display: block;
+  color: whitesmoke;
+}

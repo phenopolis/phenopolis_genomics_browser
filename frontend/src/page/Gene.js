@@ -43,7 +43,11 @@ const Gene = (props) => {
               }
             />
             <Container maxWidth="xl">
-              <VersatileTable tableData={geneInfo.variants} />
+              <VersatileTable
+                title={t('Gene.Variants_Analysis')}
+                subtitle={t('Gene.Variants Analysis_subtitle')}
+                tableData={geneInfo.variants}
+              />
               {/* <VirtualGrid
                 tableData={geneInfo.variants}
                 title={t('Gene.Variants_Analysis')}
