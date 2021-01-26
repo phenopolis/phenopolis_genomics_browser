@@ -10,7 +10,7 @@ from db.model import Variant, Sex, HeterozygousVariant, Individual, HomozygousVa
 from views import application
 from views.auth import requires_auth, USER
 from views.individual import _count_all_individuals, _count_all_individuals_by_sex, get_authorized_individuals
-from views.postgres import session_scope, postgres_cursor
+from views.postgres import session_scope, get_db
 
 COMMON_VARIANTS_THRESHOLD = 0.05
 RARE_VARIANTS_THRESHOLD = 0.01
@@ -47,13 +47,14 @@ def phenopolis_statistics():
 
 
 def count_hpos(individuals: List[Individual]):
-    cur = postgres_cursor()
-    cur.execute(
-        """select ife.type, count(distinct ife.feature_id) from individual_feature ife where
+    with get_db() as conn:
+        with conn.cursor() as cur:
+            cur.execute(
+                """select ife.type, count(distinct ife.feature_id) from individual_feature ife where
         ife.individual_id = any(%s) and ife.type in ('observed','unobserved') group by ife.type""",
-        [[x.id for x in individuals]],
-    )
-    res = dict(cur.fetchall())
+                [[x.id for x in individuals]],
+            )
+            res = dict(cur.fetchall())
     return res.get("observed", 0), res.get("unobserved", 0)
 
 
