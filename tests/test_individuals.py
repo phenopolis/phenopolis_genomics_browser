@@ -102,8 +102,8 @@ def test_update_individual_with_demo_user_fails(_demo_client):
         # update sex
         new_sex_for_api = MAPPING_SEX_REPRESENTATIONS.inverse.get(sex)
         response = _demo_client.post(
-            "/update_patient_data/{}".format(individual_id),
-            data="gender_edit[]={}".format(new_sex_for_api),
+            f"/update_patient_data/{individual_id}",
+            data=f"gender_edit[]={new_sex_for_api}",
             content_type="application/x-www-form-urlencoded",
         )
         assert response.status_code == 405
@@ -148,6 +148,14 @@ def test_update_individual_with_admin_user(_admin_client):
         assert "HP:0000003" in observed_hpos, "Update HPOs did not work"
         assert "HP:0000005" in observed_hpos, "Update HPOs did not work"
 
+        individual_id = "PH00009999"
+        response = _admin_client.post(
+            f"/update_patient_data/{individual_id}",
+            data=f"genes[]=DRAM2",
+            content_type="application/x-www-form-urlencoded",
+        )
+        assert response.status_code == 404, "Patient does not exist"
+
 
 def test_create_individual_with_demo_user_fails(_demo_client):
     individual = Individual()
@@ -175,10 +183,20 @@ def test_create_individual_with_admin_user(_admin_client):
 
     with session_scope() as db_session:
         observed_individual = db_session.query(Individual).filter(Individual.external_id == test_external_id).first()
+        phenopolis_id = observed_individual.phenopolis_id
         assert observed_individual is not None, "Empty newly created individual"
         assert observed_individual.external_id == test_external_id
         assert observed_individual.sex.name == individual.sex
         assert observed_individual.consanguinity == individual.consanguinity
+
+        response = _admin_client.post(
+            f"/update_patient_data/{phenopolis_id}",
+            data="genes[]=TTLL5",
+            content_type="application/x-www-form-urlencoded",
+        )
+
+        assert response.status_code == 200, "Test empty features"
+
         # cleans the database
         _clean_test_individuals(_admin_client, db_session, test_external_id)
 

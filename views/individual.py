@@ -7,7 +7,6 @@ from sqlalchemy.dialects.postgresql import aggregate_order_by
 from sqlalchemy.orm import Session
 
 import db.helpers
-import ujson as json
 from collections import Counter
 from flask import session, jsonify, request
 from db.model import (
@@ -96,21 +95,22 @@ def get_individual_by_id(phenopolis_id, subset="all", language="en"):
 @application.route("/<language>/update_patient_data/<phenopolis_id>", methods=["POST"])
 @application.route("/update_patient_data/<phenopolis_id>", methods=["POST"])
 @requires_auth
-def update_patient_data(phenopolis_id, language="en"):
+def update_patient_data(phenopolis_id):
     if is_demo_user():
         return jsonify(error="Demo user not authorised"), 405
 
     with session_scope() as db_session:
-        config = db.helpers.query_user_config(db_session=db_session, language=language, entity="individual")
         individual = _fetch_authorized_individual(db_session, phenopolis_id)
         # unauthorized access to individual
         if not individual:
-            config[0]["preview"] = [["Sorry", "You are not permitted to edit this patient"]]
-            # TODO: change this output to the same structure as others
-            return json.dumps(config)
+            response = jsonify(
+                message="Sorry, either the patient does not exist or you are not permitted to see this patient"
+            )
+            response.status_code = 404
+            return response
         application.logger.debug(request.form)
-        consanguinity = request.form.get("consanguinity_edit[]")
-        gender = request.form.get("gender_edit[]")
+        consanguinity = request.form.get("consanguinity_edit[]", "unknown")
+        gender = request.form.get("gender_edit[]", "unknown")
         genes = request.form.getlist("genes[]")
         features = request.form.getlist("feature[]")
         if not len(features):
