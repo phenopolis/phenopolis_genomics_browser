@@ -12,6 +12,7 @@ import {
 } from '@fortawesome/pro-duotone-svg-icons';
 
 import RowFilter from './RowFilter';
+import HideColumn from './HideColumn';
 
 const TableActionBar = (props) => {
   const classes = useStyles();
@@ -35,6 +36,10 @@ const TableActionBar = (props) => {
 
   const handleUpdateFilter = (newFilter) => {
     props.UpdateFilter(newFilter);
+  };
+
+  const handleHideColumn = (index) => {
+    props.UpdateHideColumn(index);
   };
 
   return (
@@ -72,11 +77,6 @@ const TableActionBar = (props) => {
               tableFilter={props.filters}
               UpdateFilter={handleUpdateFilter}
             />
-            {/* <VirtualTableFilter
-            variableList={this.state.columnHide}
-            tableFilter={this.state.tableFilter}
-            UpdateFilter={this.handleUpdateFilter}
-          /> */}
           </Card>
         </Collapse>
 
@@ -84,10 +84,7 @@ const TableActionBar = (props) => {
           <Card
             elevation={0}
             className="card-box mb-0 d-flex flex-row flex-wrap justify-content-center">
-            {/* <HideColumn
-            columnHide={this.state.columnHide}
-            onHideColumn={this.handleHideColumn}
-          /> */}
+            <HideColumn columnHide={props.tableColumn} onHideColumn={handleHideColumn} />
           </Card>
         </Collapse>
 

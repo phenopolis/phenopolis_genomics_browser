@@ -47,6 +47,8 @@ const VersatileTable = (props) => {
 
     const tmpColnames = CreateColumns(tableData.colNames, tableData.data);
 
+    console.log(tmpColnames);
+
     setTableColumn(tmpColnames);
     setTableData(tmpData);
     setFilteredData(tmpData);
@@ -56,14 +58,18 @@ const VersatileTable = (props) => {
 
   const onColumnSort = (sortBy) => {
     const order = sortBy.order === 'asc' ? 1 : -1;
-    const tmpdata = [...tableData];
+    const tmpdata = [...filteredData];
     tmpdata.sort((a, b) => (a[sortBy.key] > b[sortBy.key] ? order : -order));
-    setTableData(tmpdata);
+    setFilteredData(tmpdata);
     setSortBy(sortBy);
   };
 
   const handleUpdateFilter = (newFilter) => {
     setFilter(newFilter);
+  };
+
+  const handleUpdateHideColumn = (index) => {
+    console.log(index);
   };
 
   return (
@@ -80,6 +86,7 @@ const VersatileTable = (props) => {
           tableColumn={tableColumn}
           filters={filters}
           UpdateFilter={handleUpdateFilter}
+          UpdateHideColumn={handleUpdateHideColumn}
         />
       ) : null}
 
@@ -94,7 +101,7 @@ const VersatileTable = (props) => {
                 rowKey="id"
                 // estimatedRowHeight={({ rowData, rowIndex }) => estRowHight(rowData, rowIndex)}
                 estimatedRowHeight={61}
-                columns={tableColumn}
+                columns={tableColumn.filter((x) => x.show === 1)}
                 data={filteredData}
                 sortBy={sortBy}
                 onColumnSort={onColumnSort}

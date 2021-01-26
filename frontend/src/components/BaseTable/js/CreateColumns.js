@@ -4,6 +4,8 @@ import calculateSize from 'calculate-size';
 import ChipList from '../ChipList';
 
 export const CreateColumns = (mycolumns, myrows) => {
+  console.log(mycolumns);
+
   let minColumn = 60;
   let maxColumn = 400;
   let tmpColnames = [];
