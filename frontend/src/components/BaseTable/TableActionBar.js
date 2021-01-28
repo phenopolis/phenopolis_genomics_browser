@@ -38,8 +38,8 @@ const TableActionBar = (props) => {
     props.UpdateFilter(newFilter);
   };
 
-  const handleHideColumn = (index) => {
-    props.UpdateHideColumn(index);
+  const handleHideColumn = (newColumns, action) => {
+    props.UpdateHideColumn(newColumns, action);
   };
 
   return (
@@ -84,7 +84,7 @@ const TableActionBar = (props) => {
           <Card
             elevation={0}
             className="card-box mb-0 d-flex flex-row flex-wrap justify-content-center">
-            <HideColumn columnHide={props.tableColumn} onHideColumn={handleHideColumn} />
+            <HideColumn tableColumn={props.tableColumn} onHideColumn={handleHideColumn} />
           </Card>
         </Collapse>
 

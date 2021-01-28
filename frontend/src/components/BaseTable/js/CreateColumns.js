@@ -100,10 +100,15 @@ export const CreateColumns = (mycolumns, myrows) => {
     }
   }
 
-  let variantIDIndex = tmpColnames.findIndex((column) => column.dataKey === 'variant_id');
-  if (variantIDIndex >= 0) {
-    tmpColnames[variantIDIndex].frozen = Column.FrozenDirection.LEFT;
-  }
+  // let variantIDIndex = tmpColnames.findIndex((column) => column.dataKey === 'variant_id');
+  // if (variantIDIndex >= 0) {
+  //   tmpColnames[variantIDIndex].frozen = Column.FrozenDirection.LEFT;
+  // }
+
+  // variantIDIndex = tmpColnames.findIndex((column) => column.dataKey === 'CHROM');
+  // if (variantIDIndex >= 0) {
+  //   tmpColnames[variantIDIndex].frozen = Column.FrozenDirection.LEFT;
+  // }
 
   return tmpColnames;
 };

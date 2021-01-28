@@ -22,7 +22,8 @@ const VersatileTable = (props) => {
 
   const [filters, setFilter] = useState([]);
 
-  const [ready, setReady] = useState(false);
+  const [DataReady, setDataReady] = useState(false);
+  const [StopMessage, setStopMessage] = useState('');
 
   useEffect(() => {
     if (props.tableData) {
@@ -31,11 +32,19 @@ const VersatileTable = (props) => {
   }, [props.tableData]);
 
   useEffect(() => {
-    if (ready) {
+    if (DataReady) {
       let tmpFilteredData = FilterRow(filters, tableData);
       setFilteredData(tmpFilteredData);
     }
   }, [filters]);
+
+  useEffect(() => {
+    if (tableColumn.every((x) => x.show === 0)) {
+      setStopMessage('Seems there is no column to show, check Show/Hide Column Setting above.');
+    } else {
+      setStopMessage('');
+    }
+  }, [tableColumn]);
 
   const modifyData = (tableData) => {
     const tmpData = tableData.data.map((row, rowIndex) => {
@@ -53,7 +62,7 @@ const VersatileTable = (props) => {
     setTableData(tmpData);
     setFilteredData(tmpData);
     setSortBy({ key: 'CHROM', order: 'asc' });
-    setReady(true);
+    setDataReady(true);
   };
 
   const onColumnSort = (sortBy) => {
@@ -68,8 +77,19 @@ const VersatileTable = (props) => {
     setFilter(newFilter);
   };
 
-  const handleUpdateHideColumn = (index) => {
-    console.log(index);
+  const handleUpdateHideColumn = (newColumns, action) => {
+    // var revTableColumn = [].concat(tableColumn).reverse();
+    // console.log(newColumns)
+    // console.log(revTableColumn)
+    if (action === 'rerender') {
+      setStopMessage('Freezing Column...');
+      setTimeout(function () {
+        //your code to be executed after 1 second
+        setTableColumn(newColumns);
+      }, 500);
+    } else {
+      setTableColumn(newColumns);
+    }
   };
 
   return (
@@ -81,7 +101,7 @@ const VersatileTable = (props) => {
         columnLength={tableColumn.length}
       />
 
-      {ready ? (
+      {DataReady ? (
         <TableActionBar
           tableColumn={tableColumn}
           filters={filters}
@@ -91,7 +111,7 @@ const VersatileTable = (props) => {
       ) : null}
 
       <div style={{ width: '100%', height: '50vh', marginTop: '1em' }}>
-        {ready ? (
+        {DataReady & (StopMessage === '') ? (
           <AutoResizer>
             {({ width, height }) => (
               <BaseTable
@@ -112,7 +132,11 @@ const VersatileTable = (props) => {
           <Container>
             <Box display="flex" justifyContent="center" alignItems="center" minHeight="50vh">
               <Typography variant="h4" gutterBottom style={{ color: 'grey', fontWeight: '900' }}>
-                Processing Data for Phenopolis Table...
+                {StopMessage === '' ? (
+                  <>Processing Data for Phenopolis Table...</>
+                ) : (
+                  <>{StopMessage}</>
+                )}
               </Typography>
             </Box>
           </Container>

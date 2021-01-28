@@ -9,9 +9,7 @@ const useStyles = makeStyles((theme) => ({}));
 const ChipList = (props) => {
   const classes = useStyles();
 
-  useEffect(() => {
-    // console.log(props)
-  }, [props]);
+  useEffect(() => {}, [props]);
 
   return (
     <span>
