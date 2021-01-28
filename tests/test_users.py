@@ -53,7 +53,7 @@ def test_get_user(_admin):
     """res -> tuple(flask.wrappers.Response)"""
     response, status = get_user("Admin")
     assert status == 200
-    user_dict = json.loads(response.data)
+    user_dict = response.json
     assert isinstance(user_dict, dict)
     assert user_dict.get("user") == "Admin", "user_dict={}".format(user_dict)
     assert user_dict.get("argon_password") is None, "user_dict={}".format(user_dict)
@@ -72,7 +72,7 @@ def test_get_users(_admin):
     """res -> tuple(flask.wrappers.Response)"""
     response, status = get_users()
     assert status == 200
-    users = json.loads(response.data)
+    users = response.json
     assert isinstance(users, list), "users={}".format(users)
     assert len(users) >= 2, "users={}".format(users)
     assert "Admin" in users
@@ -81,31 +81,48 @@ def test_get_users(_admin):
 
 def test_enable_user(_admin):
     response, _ = get_user("demo")
-    user = json.loads(response.data)
+    user = response.json
     assert user.get("enabled"), "Demo user is not enabled from the beginning"
     response, status = enable_user("demo", "False")
-    assert json.loads(response.data).get("success")
+    assert response.json.get("success")
     assert status == 200
     response, _ = get_user("demo")
-    user = json.loads(response.data)
+    user = response.json
     assert not user.get("enabled"), "Demo user should be disabled"
     response, status = enable_user("demo", "True")
-    assert json.loads(response.data).get("success")
+    assert response.json.get("success")
     assert status == 200
     response, _ = get_user("demo")
-    user = json.loads(response.data)
+    user = response.json
     assert user.get("enabled"), "Demo user should be enabled"
+    response, status = enable_user("Admin", "False")
+    assert status == 400
+    assert not response.json.get("success")
+    assert response.json.get("message") == "Cannot change the status of Admin user!"
 
 
 def test_bad_attempt_to_disable_user(_admin):
     response, _ = get_user("demo")
-    user = json.loads(response.data)
+    user = response.json
     assert user.get("enabled"), "Demo user is not enabled from the beginning"
     _, status = enable_user("demo", "Falsch")
     assert status == 400
 
 
 def test_create_user(_not_logged_in_client):
+    payload = {"confirmation_url": "http://phenopolis.org/confirm/"}
+    response = _not_logged_in_client.post("/user", json=payload, content_type="application/json")
+    assert response.status_code == 400
+    assert response.json.get("error") == "Missing user name"
+    payload["user"] = "a_tester"
+    response = _not_logged_in_client.post("/user", json=payload, content_type="application/json")
+    assert response.status_code == 400
+    assert response.json.get("error") == "Missing password"
+    payload["argon_password"] = "blablabla"
+    response = _not_logged_in_client.post("/user", json=payload, content_type="application/json")
+    assert response.status_code == 400
+    assert response.json.get("error") == "Missing email"
+
     user_name = "test_register1"
     with session_scope() as db_session:
         try:
@@ -233,9 +250,27 @@ def test_create_user_without_callbackurl(_not_logged_in_client):
     assert response.status_code == 400
 
 
+def test_change_password_demo(_demo_client):
+    response = _demo_client.post(
+        "/user/change-password",
+        json={"current_password": "abc", "new_password": "def"},
+        content_type="application/json",
+    )
+    assert response.status_code == 403
+    assert response.json.get("error") == "You do not have permission to change the password for username 'demo'."
+
+
 def test_change_password(_nondemo_client):
     new_password = "p4$$w0rd"
     old_password = "password"
+
+    response = _nondemo_client.post(
+        "/user/change-password",
+        json={"current_password": "wrong_pass", "new_password": new_password},
+        content_type="application/json",
+    )
+    assert response.status_code == 401
+    assert response.json.get("error") == "Username and current password incorrect. Please try again."
 
     # verifies old password is what it should
     with session_scope() as db_session:

@@ -126,7 +126,6 @@ def update_patient_data(phenopolis_id):
 @application.route("/individual", methods=["POST"])
 @requires_auth
 def create_individual():
-
     if is_demo_user():
         return jsonify(error="Demo user not authorised"), 405
     # checks individuals validity
@@ -241,8 +240,7 @@ def _get_pagination_parameters():
 
 
 def _check_individual_valid(db_session: Session, new_individual: Individual):
-
-    if new_individual is None:
+    if not new_individual.as_dict() or not new_individual.sex:
         raise PhenopolisException("Null individual", 400)
 
     exist_internal_id = (

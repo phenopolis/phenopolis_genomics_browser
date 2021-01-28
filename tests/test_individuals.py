@@ -168,10 +168,16 @@ def test_create_individual_with_admin_user(_admin_client):
     individual = Individual()
     test_external_id = "for_test_Sample"
     individual.external_id = test_external_id
+    response = _admin_client.post("/individual", json=[individual.as_dict()], content_type="application/json")
+    assert response.status_code == 400
+    assert response.json == {"error": "Null individual", "success": False}, "Sex cannot be null"
     individual.sex = "F"
     individual.consanguinity = "unknown"
     individual.genes = "DRAM2"
     individual.observed_features = "HP:0000001"
+    response = _admin_client.post("/individual", json=[Individual().as_dict()], content_type="application/json")
+    assert response.status_code == 400
+    assert response.json == {"error": "Null individual", "success": False}, "Empty individual"
     response = _admin_client.post("/individual", json={}, content_type="application/json")
     assert response.status_code == 400
     assert response.json == {"error": "Empty payload or wrong formatting", "success": False}

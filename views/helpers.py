@@ -11,7 +11,7 @@ def _get_json_payload(clazz=None):
     if not payload:
         raise PhenopolisException("Empty payload or wrong formatting", 400)
     if not isinstance(payload, list) and not isinstance(payload, dict):
-        raise PhenopolisException("Payload of unexpected type: {}".format(type(payload)), 400)
+        raise PhenopolisException(f"Payload of unexpected type: {type(payload)}", 400)
     application.logger.debug(payload)
     if clazz is not None:
         return _parse_payload(payload, clazz)
@@ -24,5 +24,5 @@ def _parse_payload(payload, model_class):
     elif isinstance(payload, list):
         objects = [model_class(**p) for p in payload]
     else:
-        raise PhenopolisException("Payload of unexpected type: {}".format(type(payload)), 400)
+        raise PhenopolisException(f"Payload of unexpected type: {type(payload)}", 400)
     return objects
