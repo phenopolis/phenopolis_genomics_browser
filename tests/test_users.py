@@ -1,5 +1,3 @@
-import json
-
 from passlib.handlers.argon2 import argon2
 from sqlalchemy.orm import Session
 

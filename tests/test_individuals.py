@@ -151,7 +151,7 @@ def test_update_individual_with_admin_user(_admin_client):
         individual_id = "PH00009999"
         response = _admin_client.post(
             f"/update_patient_data/{individual_id}",
-            data=f"genes[]=DRAM2",
+            data="genes[]=DRAM2",
             content_type="application/x-www-form-urlencoded",
         )
         assert response.status_code == 404, "Patient does not exist"
