@@ -4,20 +4,8 @@ DB schema
 # "postgres://admin:donotusethispassword@aws-us-east-1-portal.19.dblayer.com:15813/compose"
 
 import enum
-from sqlalchemy import (
-    Column,
-    String,
-    Integer,
-    Float,
-    ForeignKey,
-    JSON,
-    Boolean,
-    DateTime,
-    Enum,
-    func,
-    BigInteger,
-    SmallInteger,
-)
+from sqlalchemy import Column, String, Integer, Float, ForeignKey, JSON, Boolean, DateTime, Enum, func
+from sqlalchemy import BigInteger, SmallInteger
 from sqlalchemy.orm import relationship
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.sql.schema import MetaData
