@@ -6,10 +6,10 @@ Demo DB need to be updated?
 """
 
 from views.postgres import postgres_cursor, close_db, session_scope
-from db.model import Gene
+from db.model import NewGene, Gene
 
 
-def test_db_sql_query(_demo):
+def test_db_sql_query_old_schema(_demo):
     """res -> tuple"""
     cursor = postgres_cursor()
     cursor.execute(
@@ -20,11 +20,26 @@ def test_db_sql_query(_demo):
     assert "DNA-damage regulated autophagy modulator 2" in res
 
 
-def test_sqlalchemy_query(_demo):
+def test_db_sql_query(_demo):
+    """res -> tuple"""
+    cursor = postgres_cursor()
+    cursor.execute("select * from ensembl.gene where ensembl_gene_id = 'ENSG00000156171' and assembly = 'GRCh37'")
+    res = cursor.fetchone()
+    assert "DNA-damage regulated autophagy modulator 2" in res
+
+
+def test_sqlalchemy_query_old_schema(_demo):
     """res -> db.Gene"""
     with session_scope() as db_session:
         res = db_session.query(Gene).filter(Gene.gene_id == "ENSG00000119685").first()
         assert res.gene_name == "TTLL5"
+
+
+def test_sqlalchemy_query(_demo):
+    """res -> db.NewGene"""
+    with session_scope() as db_session:
+        res = db_session.query(NewGene).filter(NewGene.ensembl_gene_id == "ENSG00000119685").first()
+        assert res.hgnc_symbol == "TTLL5"
 
 
 # Never used so far

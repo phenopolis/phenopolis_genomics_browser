@@ -70,8 +70,7 @@ def create_user():
         payload = _get_json_payload()
         if CONFIRMATION_URL not in payload:
             raise PhenopolisException("Please, provide a confirmation URL", 400)
-        confirmation_url = payload.get(CONFIRMATION_URL)
-        del payload[CONFIRMATION_URL]
+        confirmation_url = payload.pop(CONFIRMATION_URL)
         new_user = User(**payload)
         _check_user_valid(new_user)
         # encode password
@@ -149,8 +148,6 @@ def confirm_user(token):
 
 
 def _check_user_valid(new_user: User):
-    if new_user is None:
-        raise PhenopolisException("Null user", 400)
     if new_user.user is None or new_user.user == "":
         raise PhenopolisException("Missing user name", 400)
     if new_user.argon_password is None or new_user.argon_password == "":
@@ -171,8 +168,6 @@ def _add_config_from_admin(db_session, new_user):
 
 def _get_user_by_id(db_session, user_id: str) -> User:
     users = db_session.query(User).filter(User.user == user_id).all()
-    if len(users) > 1:
-        raise PhenopolisException(message="Unexpected error fetching a user by id", http_status=500)
     if len(users) == 0:
         raise PhenopolisException(message="The user does not exist", http_status=404)
     return users[0]

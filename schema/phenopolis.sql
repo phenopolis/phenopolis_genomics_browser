@@ -59,7 +59,8 @@ create table individual (
     phenopolis_id text not null unique check (phenopolis_id ~ '^PH\d+$'),
     constraint ids_match check (id = replace(phenopolis_id, 'PH', '')::int),
     external_id text unique,
-    sex text not null check (sex in ('M', 'F', 'N', 'U'))
+    sex text not null check (sex in ('M', 'F', 'N', 'U')),
+    consanguinity text CHECK (consanguinity in ('yes','no','unknown'))
 );
 
 create or replace function individual_phenopolis_id_update() returns trigger
@@ -79,7 +80,8 @@ create index on individual (external_id);
 
 
 create table individual_feature (
-    individual_id int references individual (id),
+    individual_id int references individual (id)
+        on update cascade on delete cascade,
     feature_id int not null references hpo.term (id),
     type text not null check (type = any('{observed,unobserved,simplified}')),
     primary key (individual_id, feature_id, type)
@@ -134,7 +136,8 @@ for each row execute procedure timestamp_update();
 
 
 create table individual_gene (
-    individual_id int not null,
+    individual_id int references individual (id)
+        on update cascade on delete cascade,
     gene_id bigint not null references ensembl.gene (identifier),
     primary key (gene_id, individual_id),
 
@@ -153,3 +156,21 @@ create index on individual_gene (pubmed_id);
 create trigger timestamp_update
 before insert or update on individual_gene
 for each row execute procedure timestamp_update();
+
+create table individual_variant_classification (
+    id bigserial primary key,
+    individual_id int not null,
+    variant_id bigint not null,
+    FOREIGN KEY (variant_id, individual_id) REFERENCES individual_variant(variant_id, individual_id),
+    user_id  text not null,
+    classified_on timestamp with time zone,
+    -- this represents the ACMG classification
+    classification text not null check (classification in ('pathogenic', 'likely_pathogenic', 'benign', 'likely_benign', 'unknown_significance')),
+    pubmed_id text,
+    notes text
+);
+
+create index on individual_variant_classification(user_id);
+create index on individual_variant_classification(individual_id, variant_id);
+create index on individual_variant_classification(variant_id);
+create index on individual_variant_classification(pubmed_id);

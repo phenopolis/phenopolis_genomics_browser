@@ -68,7 +68,7 @@ def test_autocomplete(_demo_client, query, qt, msg):
     if msg:
         assert msg in resp.json
         if qt == "patient":
-            # the results must be sorted by individual.internal_id
+            # the results must be sorted by individual.phenopolis_id
             assert resp.json == sorted(resp.json)
         elif qt == "phenotype":
             if HPO_REGEX.match(query) or NUMERIC_REGEX.match(query):

@@ -15,20 +15,13 @@ set -euo pipefail
 psql -e1X "$@" <<HERE
 set work_mem = '1GB';
 
-insert into phenopolis.individual (id, sex)
-select replace(internal_id, 'PH', '')::int, sex
+insert into phenopolis.individual (id, sex, external_id, consanguinity)
+select replace(internal_id, 'PH', '')::int, sex, external_id, lower(consanguinity)
 from public.individuals
 on conflict on constraint individual_phenopolis_id_key do nothing;
 
 select setval('phenopolis.individual_id_seq',
     (select max(id) from phenopolis.individual));
-
-
-update phenopolis.individual
-set external_id = old.external_id
-from individuals old
-where old.internal_id = phenopolis_id;
-
 
 insert into phenopolis.individual_feature (individual_id, feature_id, type)
 select i.id, f.id, 'observed'

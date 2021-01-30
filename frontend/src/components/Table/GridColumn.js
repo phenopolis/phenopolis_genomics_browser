@@ -89,7 +89,7 @@ class GridColumn extends React.Component {
         {key === 'action' ? (
           <div>
             <span>
-              <Tooltip title="Update User Information/Files" placement="top">
+              <Tooltip title="Update patient information/files" placement="top">
                 <IconButton
                   className="bg-white text-third ml-1"
                   style={{ width: 30, height: 30, padding: 0, border: '0.5px solid #616161' }}
@@ -109,7 +109,7 @@ class GridColumn extends React.Component {
                 </IconButton>
               </Tooltip>
 
-              <Tooltip title="Delete This User" placement="top">
+              <Tooltip title="Delete this patient" placement="top">
                 <IconButton
                   className="bg-white text-third ml-1"
                   style={{ width: 30, height: 30, padding: 0, border: '0.5px solid #f44336' }}
