@@ -88,7 +88,7 @@ def autocomplete(query):
 
 def _search_patients(db_session: Session, query, limit):
     r"""'
-    Patient (internal_id) format: PH (PH\d{8}) e.g. 'PH00005862' and are restricted to a particular user
+    Patient (phenopolis_id) format: PH (PH\d{8}) e.g. 'PH00005862' and are restricted to a particular user
     'demo', for example, can only access ['PH00008256', 'PH00008258', 'PH00008267', 'PH00008268']
     so, a search for 'PH000082', for user 'demo', should return only the 4 cases above
     """
@@ -96,18 +96,17 @@ def _search_patients(db_session: Session, query, limit):
         db_session.query(Individual, UserIndividual)
         .filter(
             and_(
-                UserIndividual.internal_id == Individual.internal_id,
+                UserIndividual.internal_id == Individual.phenopolis_id,
                 UserIndividual.user == session[USER],
-                Individual.internal_id.ilike("%{}%".format(query)),
+                Individual.phenopolis_id.ilike(f"%{query}%"),
             )
         )
         .with_entities(Individual)
-        .order_by(Individual.internal_id.asc())
+        .order_by(Individual.phenopolis_id.asc())
         .limit(limit)
         .all()
     )
-
-    return ["individual::" + x.internal_id + "::" + x.internal_id for x in individuals]
+    return [f"individual::{x.phenopolis_id}::{x.phenopolis_id}" for x in individuals]
 
 
 def _search_phenotypes(db_session: Session, query, limit):

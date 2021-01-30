@@ -3,7 +3,7 @@ begin;
 set local search_path to phenopolis, public;
 
 create table individual_gene (
-    individual_id text not null,
+    individual_id int not null,
     gene_id bigint not null references ensembl.gene (identifier),
     primary key (gene_id, individual_id),
 

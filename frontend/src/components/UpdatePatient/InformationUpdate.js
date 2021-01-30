@@ -219,7 +219,7 @@ export default function InformationUpdate(props) {
                       <FormControlLabel
                         value="unknown"
                         control={<Radio color="primary" />}
-                        label="Unknow"
+                        label="Unknown"
                         labelPlacement="Unknown"
                       />
                     </Grid>

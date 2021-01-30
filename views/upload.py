@@ -74,6 +74,8 @@ def download_file():
     data = request.get_json()
     fileKey = data.get("fileKey")
     response = s3_client.generate_presigned_url(
-        "get_object", Params={"Bucket": "phenopolis-website-uploads", "Key": fileKey}, ExpiresIn=DOWNLOAD_SIGNED_URL_TIME
+        "get_object",
+        Params={"Bucket": "phenopolis-website-uploads", "Key": fileKey},
+        ExpiresIn=DOWNLOAD_SIGNED_URL_TIME,
     )
     return jsonify(filename=fileKey, response=response), 200

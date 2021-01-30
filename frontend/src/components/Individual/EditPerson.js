@@ -229,7 +229,7 @@ class EditPerson extends React.Component {
                   <FormControlLabel
                     value="unknown"
                     control={<Radio color="primary" />}
-                    label="Unknow"
+                    label="Unknown"
                     labelPlacement="Unknown"
                   />
                 </Grid>
