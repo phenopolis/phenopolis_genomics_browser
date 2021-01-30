@@ -1,5 +1,6 @@
 """
 Users Individuals view
+NOTE: by @alanwilter - I don't see this module being used anywhere anymore, if ever used before.
 """
 from flask import jsonify
 from sqlalchemy.orm import Session
