@@ -475,6 +475,10 @@ class VirtualGrid extends React.Component {
       var tmpColnames = [];
 
       for (let j = 0; j < mycolumns.length; j++) {
+        if (mycolumns[j].key === 'an') {
+          mycolumns[j].key = 'AN';
+        }
+
         let headSize = calculateSize(mycolumns[j].name, { font: 'Arial', fontSize: '14px' });
         if (headSize.width + 50 > tmpWidth[j]) tmpWidth[j] = headSize.width + 50;
 
@@ -487,6 +491,7 @@ class VirtualGrid extends React.Component {
             'AC',
             'AF',
             'AN',
+            'an',
             'DP',
             'POS',
             'HET_COUNT',

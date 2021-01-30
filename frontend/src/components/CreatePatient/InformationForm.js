@@ -132,20 +132,20 @@ export default function InformationForm() {
         external_id: externalID,
         sex: gender,
         observed_features: featureArray.map((x) => x.feature).join(','),
-//        unobserved_features: '',
+        //        unobserved_features: '',
         consanguinity: consanguinity,
-//        simplified_observed_features_names: featureArray.map((x) => x.name).join(';'),
-//        simplified_observed_features: featureArray.map((x) => x.feature).join(','),
+        //        simplified_observed_features_names: featureArray.map((x) => x.name).join(';'),
+        //        simplified_observed_features: featureArray.map((x) => x.feature).join(','),
         genes: geneArray.map((x) => x.name).join(','),
-//        ancestor_observed_features: 'HP:0000001',
-//        ancestor_observed_features_names: 'All',
+        //        ancestor_observed_features: 'HP:0000001',
+        //        ancestor_observed_features_names: 'All',
       },
     ];
 
     if (NewIndividualData[0].observed_features === '') {
       NewIndividualData[0].observed_features = 'HP:0000001';
-//      NewIndividualData[0].simplified_observed_features = 'HP:0000001';
-//      NewIndividualData[0].simplified_observed_features_names = 'All';
+      //      NewIndividualData[0].simplified_observed_features = 'HP:0000001';
+      //      NewIndividualData[0].simplified_observed_features_names = 'All';
     }
 
     dispatch(createIndividual(NewIndividualData));
