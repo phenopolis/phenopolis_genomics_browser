@@ -78,15 +78,11 @@ const VersatileTable = (props) => {
   };
 
   const handleUpdateHideColumn = (newColumns, action) => {
-    // var revTableColumn = [].concat(tableColumn).reverse();
-    // console.log(newColumns)
-    // console.log(revTableColumn)
     if (action === 'rerender') {
       setStopMessage('Freezing Column...');
       setTimeout(function () {
-        //your code to be executed after 1 second
         setTableColumn(newColumns);
-      }, 500);
+      }, 1);
     } else {
       setTableColumn(newColumns);
     }

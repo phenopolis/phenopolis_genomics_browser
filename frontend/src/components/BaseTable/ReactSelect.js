@@ -4,7 +4,7 @@ import Select, { components } from 'react-select';
 
 import { Avatar } from '@material-ui/core';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faEllipsisH } from '@fortawesome/pro-regular-svg-icons';
+import { faThumbtack, faSigma, faText, faEllipsisH } from '@fortawesome/pro-solid-svg-icons';
 
 const ValueComponent = (props) => {
   const classes = OptionStyles();
@@ -18,13 +18,13 @@ const ValueComponent = (props) => {
         <Avatar
           className={classes.smallAvatar}
           style={{ color: 'white', backgroundColor: '#26a69a' }}>
-          T
+          <FontAwesomeIcon icon={faText} />
         </Avatar>
       ) : option.type === 'number' ? (
         <Avatar
           className={classes.smallAvatar}
           style={{ color: 'white', backgroundColor: '#ef5350' }}>
-          9
+          <FontAwesomeIcon icon={faSigma} />
         </Avatar>
       ) : option.type === 'object' ? (
         <Avatar
@@ -55,13 +55,13 @@ const Option = (props) => {
           <Avatar
             className={classes.smallAvatar}
             style={{ color: 'white', backgroundColor: '#26a69a' }}>
-            T
+            <FontAwesomeIcon icon={faText} />
           </Avatar>
         ) : option.type === 'number' ? (
           <Avatar
             className={classes.smallAvatar}
             style={{ color: 'white', backgroundColor: '#ef5350' }}>
-            9
+            <FontAwesomeIcon icon={faSigma} />
           </Avatar>
         ) : option.type === 'object' ? (
           <Avatar

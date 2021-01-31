@@ -119,26 +119,9 @@ class RowFilter extends React.Component {
   handleSelectColumn = (selectOption, index) => {
     const newFilter = [...this.state.myfilter];
     newFilter[index].column = selectOption;
-
-    if (selectOption === null) {
-      newFilter[index].value = [];
-    } else {
-      if (selectOption.type === 'object') {
-        newFilter[index].value = [];
-      } else {
-        newFilter[index].value = '';
-      }
-    }
+    newFilter[index].value = '';
 
     this.setState({ myfilter: newFilter });
-  };
-
-  handleSelectObjectChip = (event, newValue, index) => {
-    const newFilter = [...this.state.myfilter];
-    newFilter[index].value = newValue;
-    this.setState({ myfilter: newFilter }, () => {
-      this.handleSubmitFilter();
-    });
   };
 
   handleOperationOpen = (event, index, column) => {
@@ -180,6 +163,14 @@ class RowFilter extends React.Component {
   handleValueChange = (event, index) => {
     const newFilter = [...this.state.myfilter];
     newFilter[index].value = event.target.value;
+    this.setState({ myfilter: newFilter }, () => {
+      this.handleSubmitFilter();
+    });
+  };
+
+  handleSelectObjectChip = (event, index) => {
+    const newFilter = [...this.state.myfilter];
+    newFilter[index].value = event;
     this.setState({ myfilter: newFilter }, () => {
       this.handleSubmitFilter();
     });
@@ -384,6 +375,7 @@ class RowFilter extends React.Component {
                           getOptionLabel={(option) => option}
                           options={item.column.chips}
                           menuPortalTarget={document.querySelector('body')}
+                          onChange={(event) => this.handleSelectObjectChip(event, index)}
                         />
                       ) : (
                         <FormControl fullWidth variant="outlined">

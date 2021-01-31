@@ -15,7 +15,9 @@ import { SortableContainer, SortableElement } from 'react-sortable-hoc';
 import arrayMove from 'array-move';
 
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faEllipsisH, faCheck, faTimes } from '@fortawesome/pro-regular-svg-icons';
+import { faCheck, faTimes } from '@fortawesome/pro-regular-svg-icons';
+import { faThumbtack, faSigma, faText, faEllipsisH } from '@fortawesome/pro-solid-svg-icons';
+
 import { indexOf } from 'underscore';
 
 import { Column } from 'react-base-table';
@@ -41,6 +43,8 @@ const SortableItem = SortableElement(({ item, index, ItemIndex, onChipClick }) =
     }
   };
 
+  const handleDelete = () => {};
+
   return (
     <li className={classes.li}>
       <Tooltip title={item.des} placement="top">
@@ -51,9 +55,13 @@ const SortableItem = SortableElement(({ item, index, ItemIndex, onChipClick }) =
           label={item.name}
           avatar={
             item.type === 'string' ? (
-              <Avatar style={{ backgroundColor: '#26a69a', color: 'white' }}>T</Avatar>
+              <Avatar style={{ backgroundColor: '#26a69a', color: 'white' }}>
+                <FontAwesomeIcon icon={faText} />
+              </Avatar>
             ) : item.type === 'number' ? (
-              <Avatar style={{ backgroundColor: '#ef5350', color: 'white' }}>9</Avatar>
+              <Avatar style={{ backgroundColor: '#ef5350', color: 'white' }}>
+                <FontAwesomeIcon icon={faSigma} />
+              </Avatar>
             ) : item.type === 'object' ? (
               <Avatar style={{ backgroundColor: '#42a5f5', color: 'white' }}>
                 <FontAwesomeIcon icon={faEllipsisH} />
@@ -62,11 +70,19 @@ const SortableItem = SortableElement(({ item, index, ItemIndex, onChipClick }) =
               <Avatar style={{ backgroundColor: 'black', color: 'white' }}>?</Avatar>
             )
           }
+          deleteIcon={
+            item.frozen ? (
+              <Avatar style={{ backgroundColor: 'rgba(254,217,10,.7)', color: 'black' }}>
+                <FontAwesomeIcon icon={faThumbtack} style={{ fontSize: '14' }} />
+              </Avatar>
+            ) : null
+          }
+          onDelete={item.frozen ? (event) => onClickHandler(event, item, ItemIndex) : null}
           className={'hideColumn-chip'}
           style={
             item.show
-              ? { color: 'black', fontWeight: '400', backgroundColor: '#d8d8d8' }
-              : { color: 'darkgrey' }
+              ? { color: 'black', fontWeight: '400', backgroundColor: '#e8e8e8' }
+              : { color: 'darkgrey', opacity: '0.5' }
           }
         />
       </Tooltip>
@@ -205,13 +221,13 @@ const HideColumn = (props) => {
           <Avatar
             className={'hideColumn-smallAvatar'}
             style={{ backgroundColor: '#26a69a', color: 'white' }}>
-            T
+            <FontAwesomeIcon icon={faText} />
           </Avatar>{' '}
           means this column is text;
           <Avatar
             className={'hideColumn-smallAvatar'}
             style={{ backgroundColor: '#ef5350', color: 'white' }}>
-            9
+            <FontAwesomeIcon icon={faSigma} />
           </Avatar>
           means this column is numeric;
           <Avatar
