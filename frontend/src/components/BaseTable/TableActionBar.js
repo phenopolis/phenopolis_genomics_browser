@@ -17,7 +17,7 @@ import Plots from './Plots';
 
 const TableActionBar = (props) => {
   const classes = useStyles();
-  const [filterPopoverOpen, setFilterPopoverOpen] = useState(-1);
+  const [filterPopoverOpen, setFilterPopoverOpen] = useState(2);
 
   const toolButtons = [
     { label: 'Filter Rows', icon: faFilter },

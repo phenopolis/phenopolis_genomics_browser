@@ -1,7 +1,7 @@
 import React, { PureComponent, useEffect, useState } from 'react';
 import { makeStyles } from '@material-ui/core/styles';
 
-import { Card, CardContent, Grid, Button } from '@material-ui/core';
+import { Card, CardContent, Grid, Box, Typography } from '@material-ui/core';
 
 import ReactEcharts from 'echarts-for-react';
 import ReactSelect from './ReactSelect';
@@ -15,6 +15,7 @@ const Plots = (props) => {
   const [yAxis, setYAxis] = useState(null);
   const [plotReady, setPlotReady] = useState(false);
   const [msg, setMSG] = useState('');
+  const [errorMsg, setErrorMsg] = useState('');
   const [option, setOption] = useState([]);
 
   useEffect(() => {
@@ -31,7 +32,7 @@ const Plots = (props) => {
 
   const getSeriesData = () => {
     if ((xAxis === null) & (yAxis === null)) {
-      setMSG('Neither of two axises is selected.');
+      setErrorMsg('Neither of two axises is selected.');
       setPlotReady(false);
     } else if ((xAxis !== null) & (yAxis !== null)) {
       // if ((xAxis.type === 'number') & (yAxis.type === 'number')) {
@@ -47,6 +48,7 @@ const Plots = (props) => {
       if (xAxis.type === 'number') {
         let newPlot = CreateHistogram(props.variableList, props.dataRows, xAxis);
         setOption(newPlot.option);
+        setErrorMsg(newPlot.errorMsg);
         setMSG(newPlot.msg);
         setPlotReady(newPlot.plotReady);
       } else if ((xAxis.type === 'string') | (xAxis.type === 'object')) {
@@ -127,14 +129,24 @@ const Plots = (props) => {
                 style={{ height: '40em' }}
               />
             ) : (
-              <div style={{ paddingTop: '0em', color: 'darkgrey', 'white-space': 'pre-wrap' }}>
-                {'Please Select variables for X axis and Y axis to drawn Scatter Plot.\n' +
-                  '1. For single numeric column, Histograme will be drawn to show data distribution.\n' +
-                  '3. For single text or object column, Barplot will be drawn to count apperance of each value.\n' +
-                  '4. For two numeric columns, ScatterPlot will be drawn to show column correlation.\n' +
-                  '5. For two text or object columns, StackBarplot will be drawn to show accumulated apperance.\n' +
-                  '6. For one numeric and one text/object column, Boxplot will be drawn.'}
-                <div style={{ marginTop: '1em', 'white-space': 'pre-wrap' }}>{msg}</div>
+              <div>
+                <Box display="flex" justifyContent="center" alignItems="center" gutterBottom>
+                  <Typography
+                    variant="h6"
+                    gutterBottom
+                    style={{ color: 'grey', fontWeight: '900' }}>
+                    {errorMsg}
+                  </Typography>
+                </Box>
+                <div style={{ paddingTop: '2em', color: 'darkgrey', 'white-space': 'pre-wrap' }}>
+                  {'Please Select variables for X axis and Y axis to drawn Scatter Plot.\n' +
+                    '1. For single numeric column, Histograme will be drawn to show data distribution.\n' +
+                    '3. For single text or object column, Barplot will be drawn to count apperance of each value.\n' +
+                    '4. For two numeric columns, ScatterPlot will be drawn to show column correlation.\n' +
+                    '5. For two text or object columns, StackBarplot will be drawn to show accumulated apperance.\n' +
+                    '6. For one numeric and one text/object column, Boxplot will be drawn.'}
+                  <div style={{ marginTop: '1em', 'white-space': 'pre-wrap' }}>{msg}</div>
+                </div>
               </div>
             )}
           </Grid>
