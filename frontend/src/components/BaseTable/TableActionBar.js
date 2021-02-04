@@ -13,6 +13,7 @@ import {
 
 import RowFilter from './RowFilter';
 import HideColumn from './HideColumn';
+import Plots from './Plots';
 
 const TableActionBar = (props) => {
   const classes = useStyles();
@@ -41,6 +42,8 @@ const TableActionBar = (props) => {
   const handleHideColumn = (newColumns, action) => {
     props.UpdateHideColumn(newColumns, action);
   };
+
+  const handleHighlighRow = () => {};
 
   return (
     <Fragment>
@@ -92,11 +95,11 @@ const TableActionBar = (props) => {
           <Card
             elevation={0}
             className="card-box mb-0 d-flex flex-row flex-wrap justify-content-center">
-            {/* <Plots
-            variableList={this.state.columnHide}
-            dataRows={this.state.filteredData}
-            highlighRow={this.highlighRow}
-          /> */}
+            <Plots
+              variableList={props.tableColumn}
+              dataRows={props.dataRows}
+              highlighRow={handleHighlighRow}
+            />
           </Card>
         </Collapse>
 

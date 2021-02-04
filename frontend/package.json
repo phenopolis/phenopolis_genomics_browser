@@ -20,7 +20,7 @@
     "array-move": "^3.0.1",
     "axios": "^0.21.1",
     "calculate-size": "^1.1.1",
-    "echarts": "^5.0.1",
+    "echarts": "^4.8.0",
     "echarts-for-react": "^2.0.16",
     "echarts-stat": "github:urbanzoom/echarts-stat",
     "faker": "^5.1.0",

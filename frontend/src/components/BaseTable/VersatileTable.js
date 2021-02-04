@@ -101,6 +101,7 @@ const VersatileTable = (props) => {
         <TableActionBar
           tableColumn={tableColumn}
           filters={filters}
+          dataRows={filteredData}
           UpdateFilter={handleUpdateFilter}
           UpdateHideColumn={handleUpdateHideColumn}
         />
