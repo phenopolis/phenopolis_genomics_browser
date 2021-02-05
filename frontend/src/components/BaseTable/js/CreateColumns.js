@@ -65,6 +65,34 @@ export const CreateColumns = (mycolumns, myrows) => {
       }
     }
 
+    // A patch for some certain column, should find a way to change this in the future...
+    if (
+      [
+        'AC',
+        'AF',
+        'AN',
+        'an',
+        'DP',
+        'POS',
+        'HET_COUNT',
+        'af_converge',
+        'af_gnomad_genomes',
+        'af_hgvd',
+        'af_jirdc',
+        'af_kaviar',
+        'af_krgdb',
+        'af_tommo',
+        'cadd_phred',
+        'dann',
+      ].includes(mycolumns[j].key)
+    ) {
+      tmpType = 'number';
+    } else if (['genes'].includes(mycolumns[j].key)) {
+      tmpType = 'object';
+    } else {
+      tmpType = typeof myrows[0][mycolumns[j].key];
+    }
+
     if (mycolumns[j].type === 'links') {
       tmpColnames.push({
         name: tmpName,
@@ -77,7 +105,7 @@ export const CreateColumns = (mycolumns, myrows) => {
         align: Column.Alignment.CENTER,
         sortable: true,
         cellRenderer: ({ cellData, column }) => <ChipList chips={cellData} colName={column} />,
-        type: 'object',
+        type: tmpType,
         chips: tmpChip,
         show: tmpShow,
         des: tmpDes,
@@ -92,7 +120,7 @@ export const CreateColumns = (mycolumns, myrows) => {
         resizable: true,
         align: Column.Alignment.CENTER,
         sortable: true,
-        type: typeof myrows[0][mycolumns[j].key],
+        type: tmpType,
         chips: tmpChip,
         show: tmpShow,
         des: tmpDes,

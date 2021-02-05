@@ -5,7 +5,7 @@ export default {
     top: 20,
   },
   tooltip: {
-    backgroundColor: 'rgba(0,0,0,0.7)',
+    backgroundColor: 'rgba(0,0,0,0.8)',
     trigger: 'item',
     axisPointer: {
       animation: true,

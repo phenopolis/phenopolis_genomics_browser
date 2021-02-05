@@ -7,6 +7,7 @@ import ReactEcharts from 'echarts-for-react';
 import ReactSelect from './ReactSelect';
 
 import { CreateHistogram } from './js/CreateHistogram';
+import { CreateBarplot } from './js/CreateBarplot';
 
 const Plots = (props) => {
   const classes = useStyles();
@@ -52,14 +53,26 @@ const Plots = (props) => {
         setMSG(newPlot.msg);
         setPlotReady(newPlot.plotReady);
       } else if ((xAxis.type === 'string') | (xAxis.type === 'object')) {
-        // this.CreateBarplot(xAxis);
+        let newPlot = CreateBarplot(props.variableList, props.dataRows, xAxis);
+        setOption(newPlot.option);
+        setErrorMsg(newPlot.errorMsg);
+        setMSG(newPlot.msg);
+        setPlotReady(newPlot.plotReady);
       }
     } else if ((xAxis === null) & (yAxis !== null)) {
-      // if (yAxis.type === 'number') {
-      //   this.CreateHistogram(yAxis);
-      // } else if ((yAxis.type === 'string') | (yAxis.type === 'object')) {
-      //   this.CreateBarplot(yAxis);
-      // }
+      if (yAxis.type === 'number') {
+        let newPlot = CreateHistogram(props.variableList, props.dataRows, yAxis);
+        setOption(newPlot.option);
+        setErrorMsg(newPlot.errorMsg);
+        setMSG(newPlot.msg);
+        setPlotReady(newPlot.plotReady);
+      } else if ((yAxis.type === 'string') | (yAxis.type === 'object')) {
+        let newPlot = CreateBarplot(props.variableList, props.dataRows, yAxis);
+        setOption(newPlot.option);
+        setErrorMsg(newPlot.errorMsg);
+        setMSG(newPlot.msg);
+        setPlotReady(newPlot.plotReady);
+      }
     }
   };
 
@@ -139,7 +152,7 @@ const Plots = (props) => {
                   </Typography>
                 </Box>
                 <div style={{ paddingTop: '2em', color: 'darkgrey', 'white-space': 'pre-wrap' }}>
-                  {'Please Select variables for X axis and Y axis to drawn Scatter Plot.\n' +
+                  {'Please Select variables for X axis and Y axis to drawn corresponding.\n' +
                     '1. For single numeric column, Histograme will be drawn to show data distribution.\n' +
                     '3. For single text or object column, Barplot will be drawn to count apperance of each value.\n' +
                     '4. For two numeric columns, ScatterPlot will be drawn to show column correlation.\n' +
