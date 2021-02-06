@@ -9,6 +9,7 @@ import ReactSelect from './ReactSelect';
 import { CreateHistogram } from './js/CreateHistogram';
 import { CreateBarplot } from './js/CreateBarplot';
 import { CreateScatterplot } from './js/CreateScatterplot';
+import { CreateBoxplot } from './js/CreateBoxplot';
 
 const Plots = (props) => {
   const classes = useStyles();
@@ -45,11 +46,12 @@ const Plots = (props) => {
         var newPlot = CreateScatterplot(props.variableList, props.dataRows, xAxis, yAxis);
         newPlot.EventsDict = { click: onScatterClick };
       } else if ((xAxis.type !== 'number') & (yAxis.type === 'number')) {
-        // this.CreateBoxplot(xAxis, yAxis, false);
+        var newPlot = CreateBoxplot(props.variableList, props.dataRows, xAxis, yAxis, false);
       } else if ((xAxis.type === 'number') & (yAxis.type !== 'number')) {
-        // this.CreateBoxplot(yAxis, xAxis, true);
+        var newPlot = CreateBoxplot(props.variableList, props.dataRows, yAxis, xAxis, true);
       } else {
         // this.CreateStackBarPlot(xAxis, yAxis);
+        return null;
       }
     } else if ((xAxis !== null) & (yAxis === null)) {
       if (xAxis.type === 'number') {
@@ -59,7 +61,7 @@ const Plots = (props) => {
       }
     } else if ((xAxis === null) & (yAxis !== null)) {
       if (yAxis.type === 'number') {
-        let newPlot = CreateHistogram(props.variableList, props.dataRows, yAxis);
+        var newPlot = CreateHistogram(props.variableList, props.dataRows, yAxis);
       } else if ((yAxis.type === 'string') | (yAxis.type === 'object')) {
         var newPlot = CreateBarplot(props.variableList, props.dataRows, yAxis);
       }

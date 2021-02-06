@@ -57,8 +57,6 @@ const VersatileTable = (props) => {
 
     const tmpColnames = CreateColumns(tableData.colNames, tableData.data);
 
-    console.log(tmpColnames);
-
     setTableColumn(tmpColnames);
     setTableData(tmpData);
     setFilteredData(tmpData);

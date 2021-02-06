@@ -72,6 +72,11 @@ export default {
       barWidth: '80%',
       data: [],
       type: 'bar',
+      itemStyle: {
+        borderWidth: 2,
+        shadowColor: 'rgba(0, 0, 0, 0.5)',
+        shadowBlur: 10,
+      },
     },
   ],
 };
