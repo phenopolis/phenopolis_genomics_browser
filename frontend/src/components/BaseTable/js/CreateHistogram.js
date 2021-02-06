@@ -5,7 +5,6 @@ import HistogramOption from '../../../assets/echartJS/HistogramOption';
 
 export const CreateHistogram = (mycolumns, myrows, axis) => {
   let tmpValue = myrows.map((x) => Number(x[axis.key]));
-  console.log(tmpValue);
   if (tmpValue.length < 2) {
     return {
       option: [],

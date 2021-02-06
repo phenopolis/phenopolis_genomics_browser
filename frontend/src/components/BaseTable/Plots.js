@@ -8,6 +8,7 @@ import ReactSelect from './ReactSelect';
 
 import { CreateHistogram } from './js/CreateHistogram';
 import { CreateBarplot } from './js/CreateBarplot';
+import { CreateScatterplot } from './js/CreateScatterplot';
 
 const Plots = (props) => {
   const classes = useStyles();
@@ -15,6 +16,7 @@ const Plots = (props) => {
   const [xAxis, setXAxis] = useState(null);
   const [yAxis, setYAxis] = useState(null);
   const [plotReady, setPlotReady] = useState(false);
+  const [EventsDict, setEventsDict] = useState(null);
   const [msg, setMSG] = useState('');
   const [errorMsg, setErrorMsg] = useState('');
   const [option, setOption] = useState([]);
@@ -35,45 +37,43 @@ const Plots = (props) => {
     if ((xAxis === null) & (yAxis === null)) {
       setErrorMsg('Neither of two axises is selected.');
       setPlotReady(false);
-    } else if ((xAxis !== null) & (yAxis !== null)) {
-      // if ((xAxis.type === 'number') & (yAxis.type === 'number')) {
-      //   this.CreateScatterPlot(xAxis, yAxis);
-      // } else if ((xAxis.type !== 'number') & (yAxis.type === 'number')) {
-      //   this.CreateBoxplot(xAxis, yAxis, false);
-      // } else if ((xAxis.type === 'number') & (yAxis.type !== 'number')) {
-      //   this.CreateBoxplot(yAxis, xAxis, true);
-      // } else {
-      //   this.CreateStackBarPlot(xAxis, yAxis);
-      // }
+      return null;
+    }
+
+    if ((xAxis !== null) & (yAxis !== null)) {
+      if ((xAxis.type === 'number') & (yAxis.type === 'number')) {
+        var newPlot = CreateScatterplot(props.variableList, props.dataRows, xAxis, yAxis);
+        newPlot.EventsDict = { click: onScatterClick };
+      } else if ((xAxis.type !== 'number') & (yAxis.type === 'number')) {
+        // this.CreateBoxplot(xAxis, yAxis, false);
+      } else if ((xAxis.type === 'number') & (yAxis.type !== 'number')) {
+        // this.CreateBoxplot(yAxis, xAxis, true);
+      } else {
+        // this.CreateStackBarPlot(xAxis, yAxis);
+      }
     } else if ((xAxis !== null) & (yAxis === null)) {
       if (xAxis.type === 'number') {
-        let newPlot = CreateHistogram(props.variableList, props.dataRows, xAxis);
-        setOption(newPlot.option);
-        setErrorMsg(newPlot.errorMsg);
-        setMSG(newPlot.msg);
-        setPlotReady(newPlot.plotReady);
+        var newPlot = CreateHistogram(props.variableList, props.dataRows, xAxis);
       } else if ((xAxis.type === 'string') | (xAxis.type === 'object')) {
-        let newPlot = CreateBarplot(props.variableList, props.dataRows, xAxis);
-        setOption(newPlot.option);
-        setErrorMsg(newPlot.errorMsg);
-        setMSG(newPlot.msg);
-        setPlotReady(newPlot.plotReady);
+        var newPlot = CreateBarplot(props.variableList, props.dataRows, xAxis);
       }
     } else if ((xAxis === null) & (yAxis !== null)) {
       if (yAxis.type === 'number') {
         let newPlot = CreateHistogram(props.variableList, props.dataRows, yAxis);
-        setOption(newPlot.option);
-        setErrorMsg(newPlot.errorMsg);
-        setMSG(newPlot.msg);
-        setPlotReady(newPlot.plotReady);
       } else if ((yAxis.type === 'string') | (yAxis.type === 'object')) {
-        let newPlot = CreateBarplot(props.variableList, props.dataRows, yAxis);
-        setOption(newPlot.option);
-        setErrorMsg(newPlot.errorMsg);
-        setMSG(newPlot.msg);
-        setPlotReady(newPlot.plotReady);
+        var newPlot = CreateBarplot(props.variableList, props.dataRows, yAxis);
       }
     }
+
+    setOption(newPlot.option);
+    setEventsDict(newPlot.EventsDict);
+    setErrorMsg(newPlot.errorMsg);
+    setMSG(newPlot.msg);
+    setPlotReady(newPlot.plotReady);
+  };
+
+  const onScatterClick = (param) => {
+    props.ScrollToRow(param.dataIndex);
   };
 
   return (
@@ -138,7 +138,7 @@ const Plots = (props) => {
                 option={option}
                 notMerge={true}
                 lazyUpdate={true}
-                // onEvents={EventsDict}
+                onEvents={EventsDict}
                 style={{ height: '40em' }}
               />
             ) : (

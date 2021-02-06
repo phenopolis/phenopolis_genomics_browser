@@ -4,8 +4,14 @@ export default {
     left: 'center',
     top: 20,
   },
+  grid: {
+    left: '3%',
+    right: '3%',
+    bottom: '6%',
+    containLabel: true,
+  },
   tooltip: {
-    backgroundColor: 'rgba(0,0,0,0.8)',
+    backgroundColor: 'rgba(0,0,0,0.9)',
     trigger: 'item',
     axisPointer: {
       animation: true,
@@ -51,6 +57,14 @@ export default {
     nameGap: 40,
     nameLocation: 'middle',
     name: 'Total Counts',
+    splitLine: {
+      show: true,
+      lineStyle: {
+        type: 'dashed',
+        // width: 0.5,
+        color: '#cfd8dc',
+      },
+    },
   },
   series: [
     {

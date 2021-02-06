@@ -43,8 +43,6 @@ const TableActionBar = (props) => {
     props.UpdateHideColumn(newColumns, action);
   };
 
-  const handleHighlighRow = () => {};
-
   return (
     <Fragment>
       <Paper style={{ marginBottom: '3em', fontSize: '14px' }}>
@@ -98,7 +96,7 @@ const TableActionBar = (props) => {
             <Plots
               variableList={props.tableColumn}
               dataRows={props.dataRows}
-              highlighRow={handleHighlighRow}
+              ScrollToRow={props.ScrollToRow}
             />
           </Card>
         </Collapse>

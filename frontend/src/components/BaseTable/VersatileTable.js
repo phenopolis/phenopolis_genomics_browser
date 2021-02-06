@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import { makeStyles } from '@material-ui/core/styles';
 // import CssBaseline from '@material-ui/core/CssBaseline';
 import BaseTable, { Column, AutoResizer } from 'react-base-table';
@@ -14,6 +14,7 @@ import { FilterRow } from './js/FilterRow';
 
 const VersatileTable = (props) => {
   const classes = useStyles();
+  const Table = useRef(null);
   const [tableData, setTableData] = useState([]);
   const [filteredData, setFilteredData] = useState([]);
 
@@ -88,6 +89,10 @@ const VersatileTable = (props) => {
     }
   };
 
+  const handleScrollToRow = (dataIndex) => {
+    Table.current.scrollToRow(dataIndex, 'start');
+  };
+
   return (
     <div className={classes.root}>
       <TableTitle
@@ -104,6 +109,7 @@ const VersatileTable = (props) => {
           dataRows={filteredData}
           UpdateFilter={handleUpdateFilter}
           UpdateHideColumn={handleUpdateHideColumn}
+          ScrollToRow={handleScrollToRow}
         />
       ) : null}
 
@@ -112,6 +118,7 @@ const VersatileTable = (props) => {
           <AutoResizer>
             {({ width, height }) => (
               <BaseTable
+                ref={Table}
                 width={width}
                 height={height}
                 fixed

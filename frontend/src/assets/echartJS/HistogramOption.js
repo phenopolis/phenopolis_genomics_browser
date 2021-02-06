@@ -5,7 +5,7 @@ export default {
     top: 20,
   },
   tooltip: {
-    backgroundColor: 'rgba(0,0,0,0.8)',
+    backgroundColor: 'rgba(0,0,0,0.9)',
     trigger: 'item',
     axisPointer: {
       animation: true,
@@ -40,6 +40,14 @@ export default {
       nameGap: 40,
       nameLocation: 'middle',
       name: 'Total Counts',
+      splitLine: {
+        show: true,
+        lineStyle: {
+          type: 'dashed',
+          // width: 0.5,
+          color: '#cfd8dc',
+        },
+      },
     },
   ],
   toolbox: {

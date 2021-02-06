@@ -37,7 +37,6 @@ export const CreateBarplot = (mycolumns, myrows, axis) => {
   newBarplotOption.xAxis.name = axis.name;
   newBarplotOption.title.text = 'Barplot of ' + axis.name;
   newBarplotOption.tooltip.formatter = function (params) {
-    console.log(params);
     return `${axis.name} (x-axis): <b>${params.name}</b> <br/>
             Total counts (y-axis): <b>${params.data}</b>`;
   };
