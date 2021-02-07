@@ -83,7 +83,7 @@ export const CreateBoxplot = (mycolumns, myrows, xAxis, yAxis, rotate) => {
   }
 
   let tmpMsg =
-    'Now you have chose two axis, boxplot plot has been drawed on the left. \n\n' +
+    'Now you have chose one numeric column and one text (category) column, boxplot plot has been drawed on the left. \n\n' +
     'Dots represents outlier for each box.\n\n' +
     'If you use row filter and column filter, the plot will change promptly';
 
@@ -92,7 +92,7 @@ export const CreateBoxplot = (mycolumns, myrows, xAxis, yAxis, rotate) => {
   if (labels.length >= 20) {
     plotReady = false;
     warningMessage =
-      'More than 20 boxes would be plotted. Too many boxes in one plot may be less informative to observe, and even slow your browser. However, you can still hover over boxplots to get detailed information.';
+      'More than 20 boxes would be plotted. Too many boxes in one plot may be less informative to observe, and even may seriously slow your browser. However, you can still plot it by click if you insist.';
   }
 
   return {
@@ -100,6 +100,7 @@ export const CreateBoxplot = (mycolumns, myrows, xAxis, yAxis, rotate) => {
     EventsDict: {},
     msg: tmpMsg,
     errorMsg: '',
+    warningMsg: warningMessage,
     plotReady: plotReady,
   };
 };

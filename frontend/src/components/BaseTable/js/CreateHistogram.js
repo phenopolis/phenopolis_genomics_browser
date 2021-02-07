@@ -28,14 +28,22 @@ export const CreateHistogram = (mycolumns, myrows, axis) => {
   newHistogramOption.series[0].data = bins.data;
 
   let tmpMsg =
-    'Now you have chose one number axis, histogram will be plotted one the left. \n\n' +
+    'Now you have chose one number column, histogram will be plotted one the left. \n\n' +
     'Note that The x-axis in a histogram is a number line that has been split into number ranges , ' +
     ' or bins. NOT actually ' +
     axis.name +
     ' value. the height of the bar represents the number of data points that fall into that range. \n\n' +
     'You may hover on bar to check total counts (y axis) and corresponding ' +
     axis.name +
-    ' value range in distribution (x axis).';
+    ' value range in distribution (x axis).\n\n' +
+    'If you use row filter and column filter, the plot will change promptly';
 
-  return { option: newHistogramOption, EventsDict: {}, msg: tmpMsg, errorMsg: '', plotReady: true };
+  return {
+    option: newHistogramOption,
+    EventsDict: {},
+    msg: tmpMsg,
+    errorMsg: '',
+    warningMsg: '',
+    plotReady: true,
+  };
 };

@@ -47,7 +47,7 @@ const SortableItem = SortableElement(({ item, index, ItemIndex, onChipClick }) =
 
   return (
     <li className={classes.li}>
-      <Tooltip title={item.des} placement="top">
+      <Tooltip title={<span style={{ fontSize: '13px' }}>{item.des}</span>} placement="top">
         <Chip
           variant="outlined"
           color="default"

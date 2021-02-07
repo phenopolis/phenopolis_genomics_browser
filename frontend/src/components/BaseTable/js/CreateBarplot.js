@@ -45,7 +45,15 @@ export const CreateBarplot = (mycolumns, myrows, axis) => {
     'Now you have chose one categorical axis, barplot will be plotted one the left. \n\n' +
     'You may hover on bar to check total counts (y axis) and corresponding certain category in ' +
     axis.name +
-    ' (x axis). ';
+    ' (x axis). \n\n' +
+    'If you use row filter and column filter, the plot will change promptly';
 
-  return { option: newBarplotOption, EventsDict: {}, msg: tmpMsg, errorMsg: '', plotReady: true };
+  return {
+    option: newBarplotOption,
+    EventsDict: {},
+    msg: tmpMsg,
+    errorMsg: '',
+    warningMsg: '',
+    plotReady: true,
+  };
 };

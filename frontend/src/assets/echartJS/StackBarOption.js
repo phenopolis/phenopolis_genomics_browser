@@ -1,9 +1,28 @@
 export default {
+  title: {
+    text: 'StackBarplot Plot between X and Y',
+    left: 'center',
+    top: 20,
+  },
+  grid: {
+    left: '6%',
+    right: '3%',
+    bottom: '13%',
+    containLabel: true,
+  },
   tooltip: {
-    trigger: 'axis',
+    backgroundColor: 'rgba(0,0,0,0.9)',
+    trigger: 'item',
+    showDelay: 0,
     axisPointer: {
-      type: 'shadow',
+      show: true,
+      type: 'cross',
+      lineStyle: {
+        type: 'dashed',
+        width: 1,
+      },
     },
+    // formatter: 'Data Value (x-axis): {b} <br/> {a} (y-axis): {c0} -  {c1} - {c2}',
   },
   toolbox: {
     feature: {
@@ -27,74 +46,31 @@ export default {
     },
   },
   legend: {
-    data: ['直接访问', '邮件营销', '联盟广告', '视频广告', '搜索引擎'],
+    data: [],
     type: 'scroll',
     x: 'center',
     y: 'bottom',
   },
-  grid: {
-    left: '3%',
-    right: '4%',
-    bottom: '10%',
-    containLabel: true,
-  },
   xAxis: {
     type: 'category',
-    data: ['周一', '周二', '周三', '周四', '周五', '周六', '周日'],
+    data: [],
+    name: '',
+    nameGap: 40,
+    nameLocation: 'middle',
   },
   yAxis: {
     type: 'value',
+    name: '',
+    nameGap: 40,
+    nameLocation: 'middle',
+    splitLine: {
+      show: true,
+      lineStyle: {
+        type: 'dashed',
+        // width: 0.5,
+        color: '#cfd8dc',
+      },
+    },
   },
-  series: [
-    {
-      name: '直接访问',
-      type: 'bar',
-      stack: '总量',
-      label: {
-        show: true,
-        position: 'insideRight',
-      },
-      data: [320, 302, 301, 334, 390, 330, 320],
-    },
-    {
-      name: '邮件营销',
-      type: 'bar',
-      stack: '总量',
-      label: {
-        show: true,
-        position: 'insideRight',
-      },
-      data: [120, 132, 101, 134, 90, 230, 210],
-    },
-    {
-      name: '联盟广告',
-      type: 'bar',
-      stack: '总量',
-      label: {
-        show: true,
-        position: 'insideRight',
-      },
-      data: [220, 182, 191, 234, 290, 330, 310],
-    },
-    {
-      name: '视频广告',
-      type: 'bar',
-      stack: '总量',
-      label: {
-        show: true,
-        position: 'insideRight',
-      },
-      data: [150, 212, 201, 154, 190, 330, 410],
-    },
-    {
-      name: '搜索引擎',
-      type: 'bar',
-      stack: '总量',
-      label: {
-        show: true,
-        position: 'insideRight',
-      },
-      data: [820, 832, 901, 934, 1290, 1330, 1320],
-    },
-  ],
+  series: [],
 };

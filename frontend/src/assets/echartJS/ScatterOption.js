@@ -6,7 +6,7 @@ export default {
   },
   grid: {
     left: '6%',
-    right: '15%',
+    right: '3%',
     bottom: '6%',
     containLabel: true,
   },

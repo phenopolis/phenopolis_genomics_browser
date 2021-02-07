@@ -17,9 +17,16 @@ export const CreateScatterplot = (mycolumns, myrows, xAxis, yAxis) => {
   };
 
   let tmpMsg =
-    'Now you have chose two axis, scatter plot has been drawed on the left. \n\n' +
+    'Now you have chose two numeric columns, scatter plot has been drawed on the left. \n\n' +
     'You may click the points to scroll corresponding row to top table.\n\n' +
     'If you use row filter and column filter, the plot will change promptly';
 
-  return { option: newScatterOption, EventsDict: {}, msg: tmpMsg, errorMsg: '', plotReady: true };
+  return {
+    option: newScatterOption,
+    EventsDict: {},
+    msg: tmpMsg,
+    errorMsg: '',
+    warningMsg: '',
+    plotReady: true,
+  };
 };
