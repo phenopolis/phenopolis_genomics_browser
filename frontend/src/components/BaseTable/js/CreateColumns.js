@@ -1,11 +1,9 @@
 import React from 'react';
-import BaseTable, { Column, AutoResizer } from 'react-base-table';
+import { Column } from 'react-base-table';
 import calculateSize from 'calculate-size';
 import ChipList from '../ChipList';
 
 export const CreateColumns = (mycolumns, myrows) => {
-  console.log(mycolumns);
-
   let minColumn = 60;
   let maxColumn = 400;
   let tmpColnames = [];
@@ -127,16 +125,6 @@ export const CreateColumns = (mycolumns, myrows) => {
       });
     }
   }
-
-  // let variantIDIndex = tmpColnames.findIndex((column) => column.dataKey === 'variant_id');
-  // if (variantIDIndex >= 0) {
-  //   tmpColnames[variantIDIndex].frozen = Column.FrozenDirection.LEFT;
-  // }
-
-  // variantIDIndex = tmpColnames.findIndex((column) => column.dataKey === 'CHROM');
-  // if (variantIDIndex >= 0) {
-  //   tmpColnames[variantIDIndex].frozen = Column.FrozenDirection.LEFT;
-  // }
 
   return tmpColnames;
 };

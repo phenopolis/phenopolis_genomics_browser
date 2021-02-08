@@ -47,6 +47,7 @@ const Gene = (props) => {
                 title={t('Gene.Variants_Analysis')}
                 subtitle={t('Gene.Variants Analysis_subtitle')}
                 tableData={geneInfo.variants}
+                genomePlot={true}
               />
               {/* <VirtualGrid
                 tableData={geneInfo.variants}

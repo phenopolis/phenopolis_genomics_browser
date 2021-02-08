@@ -14,10 +14,11 @@ import {
 import RowFilter from './RowFilter';
 import HideColumn from './HideColumn';
 import Plots from './Plots';
+import GenomePlot from './GenomePlot';
 
 const TableActionBar = (props) => {
   const classes = useStyles();
-  const [filterPopoverOpen, setFilterPopoverOpen] = useState(2);
+  const [filterPopoverOpen, setFilterPopoverOpen] = useState(3);
 
   const toolButtons = [
     { label: 'Filter Rows', icon: faFilter },
@@ -106,11 +107,7 @@ const TableActionBar = (props) => {
             <Card
               elevation={0}
               className="card-box mb-2 mt-2 d-flex flex-row flex-wrap justify-content-center">
-              {/* <GenomePlot
-              data={this.state.filteredData}
-              visibleRows={this.state.visibleRows}
-              name={this.props.name}
-            /> */}
+              <GenomePlot data={props.dataRows} visibleRows={props.visibleRows} name={'Tian'} />
             </Card>
           </Collapse>
         ) : null}

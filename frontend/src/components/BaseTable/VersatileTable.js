@@ -22,6 +22,7 @@ const VersatileTable = (props) => {
   const [tableColumn, setTableColumn] = useState([]);
 
   const [filters, setFilter] = useState([]);
+  const [visibleRows, setVisiableRows] = useState([0, 10]);
 
   const [DataReady, setDataReady] = useState(false);
   const [StopMessage, setStopMessage] = useState('');
@@ -72,6 +73,20 @@ const VersatileTable = (props) => {
     setSortBy(sortBy);
   };
 
+  const onScroll = () => {
+    if (Table.current) {
+      let minIndex = Table.current.table.innerRef.firstChild.attributes.getNamedItem('myassignedid')
+        .value;
+      let maxIndex = Table.current.table.innerRef.lastChild.attributes.getNamedItem('myassignedid')
+        .value;
+      setVisiableRows([minIndex, maxIndex]);
+    }
+  };
+
+  const rowProps = (param) => {
+    return { myAssignedID: param.rowIndex };
+  };
+
   const handleUpdateFilter = (newFilter) => {
     setFilter(newFilter);
   };
@@ -108,6 +123,8 @@ const VersatileTable = (props) => {
           UpdateFilter={handleUpdateFilter}
           UpdateHideColumn={handleUpdateHideColumn}
           ScrollToRow={handleScrollToRow}
+          visibleRows={visibleRows}
+          genomePlot={props.genomePlot}
         />
       ) : null}
 
@@ -127,6 +144,8 @@ const VersatileTable = (props) => {
                 data={filteredData}
                 sortBy={sortBy}
                 onColumnSort={onColumnSort}
+                onScroll={onScroll}
+                rowProps={rowProps}
               />
             )}
           </AutoResizer>
