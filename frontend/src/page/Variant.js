@@ -9,7 +9,8 @@ import TabPanel from '../components/Tab/Tabpanel';
 import { getVariant } from '../redux/actions/variant';
 
 import MetaData from '../components/MetaData';
-import VirtualGrid from '../components/Table/VirtualGrid';
+// import VirtualGrid from '../components/Table/VirtualGrid';
+const VersatileTable = React.lazy(() => import('../components/BaseTable/VersatileTable'));
 
 const Variant = (props) => {
   const { t } = useTranslation();
@@ -90,49 +91,79 @@ const Variant = (props) => {
             </Container>
             <SwipeableViews index={value} onChangeIndex={handleChangeIndex}>
               <TabPanel value={value} index={0} className="variant-tabPannel">
-                <VirtualGrid
+                <VersatileTable
+                  tableData={variantInfo.frequency}
+                  title={t('Variant.Frequency')}
+                  subtitle={t('Variant.Frequency_subtitle')}
+                  genomePlot={false}
+                />
+                {/* <VirtualGrid
                   tableData={variantInfo.frequency}
                   title={t('Variant.Frequency')}
                   subtitle={t('Variant.Frequency_subtitle')}
                   configureLink="variant/frequency"
                   genomePlot={false}
-                />
+                /> */}
               </TabPanel>
               <TabPanel value={value} index={1} className="variant-tabPannel">
-                <VirtualGrid
+                <VersatileTable
+                  tableData={variantInfo.consequence}
+                  title={t('Variant.Consequences')}
+                  subtitle={t('Variant.Consequences_subtitle')}
+                  genomePlot={false}
+                />
+                {/* <VirtualGrid
                   tableData={variantInfo.consequence}
                   title={t('Variant.Consequences')}
                   subtitle={t('Variant.Consequences_subtitle')}
                   configureLink="variant/consequence"
                   genomePlot={false}
-                />
+                /> */}
               </TabPanel>
               <TabPanel value={value} index={2} className="variant-tabPannel">
-                <VirtualGrid
+                <VersatileTable
+                  tableData={variantInfo.quality}
+                  title={t('Variant.Quality')}
+                  subtitle={t('Variant.Quality_subtitle')}
+                  genomePlot={false}
+                />
+                {/* <VirtualGrid
                   tableData={variantInfo.quality}
                   title={t('Variant.Quality')}
                   subtitle={t('Variant.Quality_subtitle')}
                   configureLink="variant/quality"
                   genomePlot={false}
-                />
+                /> */}
               </TabPanel>
               <TabPanel value={value} index={3} className="variant-tabPannel">
-                <VirtualGrid
+                <VersatileTable
+                  tableData={variantInfo.individuals}
+                  title={t('Variant.Individuals')}
+                  subtitle={t('Variant.Individuals_subtitle')}
+                  genomePlot={false}
+                />
+                {/* <VirtualGrid
                   tableData={variantInfo.individuals}
                   title={t('Variant.Individuals')}
                   subtitle={t('Variant.Individuals_subtitle')}
                   configureLink="variant/individuals"
                   genomePlot={false}
-                />
+                /> */}
               </TabPanel>
               <TabPanel value={value} index={4} className="variant-tabPannel">
-                <VirtualGrid
+                <VersatileTable
+                  tableData={variantInfo.genotypes}
+                  title={t('Variant.Genotypes')}
+                  subtitle={t('Variant.Genotypes_subtitle')}
+                  genomePlot={false}
+                />
+                {/* <VirtualGrid
                   tableData={variantInfo.genotypes}
                   title={t('Variant.Genotypes')}
                   subtitle={t('Variant.Genotypes_subtitle')}
                   configureLink="variant/genotypes"
                   genomePlot={false}
-                />
+                /> */}
               </TabPanel>
             </SwipeableViews>
           </div>

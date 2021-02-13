@@ -8,11 +8,13 @@ import SwipeableViews from 'react-swipeable-views';
 import Skeleton from '@material-ui/lab/Skeleton';
 import TabPanel from '../components/Tab/Tabpanel';
 import MetaData from '../components/MetaData';
-import VirtualGrid from '../components/Table/VirtualGrid';
+// import VirtualGrid from '../components/Table/VirtualGrid';
 import EditIcon from '@material-ui/icons/Edit';
 import Dialog from '@material-ui/core/Dialog';
 import EditPerson from '../components/Individual/EditPerson';
 import i18next from 'i18next';
+
+const VersatileTable = React.lazy(() => import('../components/BaseTable/VersatileTable'));
 
 const Individual = (props) => {
   const [value, setValue] = useState(0);
@@ -120,31 +122,51 @@ const Individual = (props) => {
             <>
               <SwipeableViews index={value} onChangeIndex={handleChangeIndex}>
                 <TabPanel value={value} index={0} className="individual-tabPannel">
-                  <VirtualGrid
+                  <VersatileTable
+                    tableData={individualInfo.rare_homs}
+                    title={i18next.t('Individual.Rare_HOMs')}
+                    subtitle={i18next.t('Individual.Rare_HOMs_subtitle')}
+                    genomePlot={false}
+                  />
+                  {/* <VirtualGrid
                     tableData={individualInfo.rare_homs}
                     title={i18next.t('Individual.Rare_HOMs')}
                     subtitle={i18next.t('Individual.Rare_HOMs_subtitle')}
                     configureLink="individual/rare_homs"
                     genomePlot={false}
-                  />
+                  /> */}
                 </TabPanel>
                 <TabPanel value={value} index={1} className="individual-tabPannel">
-                  <VirtualGrid
+                  <VersatileTable
+                    tableData={individualInfo.rare_comp_hets}
+                    title={i18next.t('Individual.Rare_Comp_Hets')}
+                    subtitle={i18next.t('Individual.Rare_Comp_Hets_subtitle')}
+                    genomePlot={false}
+                  />
+
+                  {/* <VirtualGrid
                     tableData={individualInfo.rare_comp_hets}
                     title={i18next.t('Individual.Rare_Comp_Hets')}
                     subtitle={i18next.t('Individual.Rare_Comp_Hets_subtitle')}
                     configureLink="individual/rare_comp_hets"
                     genomePlot={false}
-                  />
+                  /> */}
                 </TabPanel>
                 <TabPanel value={value} index={2} className="individual-tabPannel">
-                  <VirtualGrid
+                  <VersatileTable
+                    tableData={individualInfo.rare_variants}
+                    title={i18next.t('Individual.Rare_Variants')}
+                    subtitle={i18next.t('Individual.Rare_Variants_subtitle')}
+                    genomePlot={false}
+                  />
+
+                  {/* <VirtualGrid
                     tableData={individualInfo.rare_variants}
                     title={i18next.t('Individual.Rare_Variants')}
                     subtitle={i18next.t('Individual.Rare_Variants_subtitle')}
                     configureLink="individual/rare_variants"
                     genomePlot={false}
-                  />
+                  /> */}
                 </TabPanel>
               </SwipeableViews>
               <Dialog

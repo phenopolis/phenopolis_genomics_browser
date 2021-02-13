@@ -75,6 +75,21 @@ const VersatileTable = (props) => {
     setSortBy(sortBy);
   };
 
+  const handleRecalcualteWidth = (TotalWidth) => {
+    let sumWidth = tableColumn.reduce((a, b) => +a + +b.width, 0);
+
+    if (TotalWidth > sumWidth) {
+      var newTableColumn = [...tableColumn];
+
+      newTableColumn.forEach((item, index) => {
+        newTableColumn[index].width =
+          item.width + (item.width / sumWidth) * (TotalWidth - sumWidth);
+      });
+
+      setTableColumn(newTableColumn);
+    }
+  };
+
   const onScroll = () => {
     if (Table.current) {
       let minIndex = Table.current.table.innerRef.firstChild.attributes.getNamedItem('myassignedid')
@@ -157,26 +172,43 @@ const VersatileTable = (props) => {
         />
       ) : null}
 
-      <div style={{ width: '100%', height: '50vh', marginTop: '1em' }}>
+      <div style={{ width: '100%', height: '60vh', marginTop: '1em' }}>
         {DataReady & (StopMessage === '') ? (
           <AutoResizer>
-            {({ width, height }) => (
-              <BaseTable
-                ref={Table}
-                width={width}
-                height={height}
-                fixed
-                rowKey="id"
-                // estimatedRowHeight={({ rowData, rowIndex }) => estRowHight(rowData, rowIndex)}
-                estimatedRowHeight={61}
-                columns={tableColumn.filter((x) => x.show === 1)}
-                data={filteredData}
-                sortBy={sortBy}
-                onColumnSort={onColumnSort}
-                onScroll={onScroll}
-                rowProps={rowProps}
-              />
-            )}
+            {({ width, height }) => {
+              handleRecalcualteWidth(width);
+              return (
+                <BaseTable
+                  ref={Table}
+                  width={width}
+                  height={height}
+                  fixed
+                  rowKey="id"
+                  // estimatedRowHeight={({ rowData, rowIndex }) => estRowHight(rowData, rowIndex)}
+                  estimatedRowHeight={61}
+                  columns={tableColumn.filter((x) => x.show === 1)}
+                  data={filteredData}
+                  sortBy={sortBy}
+                  onColumnSort={onColumnSort}
+                  onScroll={onScroll}
+                  rowProps={rowProps}
+                  emptyRenderer={
+                    <Box
+                      display="flex"
+                      justifyContent="center"
+                      alignItems="center"
+                      minHeight="50vh">
+                      <Typography
+                        variant="h5"
+                        gutterBottom
+                        style={{ color: 'grey', fontWeight: '900' }}>
+                        Sorry, not even one record exist or passed your filter criteria...
+                      </Typography>
+                    </Box>
+                  }
+                />
+              );
+            }}
           </AutoResizer>
         ) : (
           <Container>

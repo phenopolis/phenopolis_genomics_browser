@@ -87,8 +87,10 @@ export const CreateColumns = (mycolumns, myrows) => {
       tmpType = 'number';
     } else if (['genes'].includes(mycolumns[j].key)) {
       tmpType = 'object';
-    } else {
+    } else if (myrows.length > 0) {
       tmpType = typeof myrows[0][mycolumns[j].key];
+    } else {
+      tmpType = 'none';
     }
 
     if (mycolumns[j].type === 'links') {

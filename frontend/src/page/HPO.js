@@ -9,7 +9,8 @@ import TabPanel from '../components/Tab/Tabpanel';
 import { getHPO } from '../redux/actions/hpo';
 
 import MetaData from '../components/MetaData';
-import VirtualGrid from '../components/Table/VirtualGrid';
+// import VirtualGrid from '../components/Table/VirtualGrid';
+const VersatileTable = React.lazy(() => import('../components/BaseTable/VersatileTable'));
 
 const HPO = (props) => {
   const { t } = useTranslation();
@@ -95,22 +96,34 @@ const HPO = (props) => {
 
             <SwipeableViews index={value} onChangeIndex={handleChangeIndex}>
               <TabPanel value={value} index={0} className="hpo-tabPannel">
-                <VirtualGrid
+                <VersatileTable
+                  tableData={hpoInfo.individuals}
+                  title={t('HPO.Individuals')}
+                  subtitle={t('HPO.Individuals_subtitle')}
+                  genomePlot={false}
+                />
+                {/* <VirtualGrid
                   tableData={hpoInfo.individuals}
                   title={t('HPO.Individuals')}
                   subtitle={t('HPO.Individuals_subtitle')}
                   configureLink="hpo/individuals"
                   genomePlot={false}
-                />
+                /> */}
               </TabPanel>
               <TabPanel value={value} index={1} className="hpo-tabPannel">
-                <VirtualGrid
+                <VersatileTable
+                  tableData={hpoInfo.literature_genes}
+                  title={t('HPO.Literature_Genes')}
+                  subtitle={t('HPO.Literature_Genes_subtitle')}
+                  genomePlot={false}
+                />
+                {/* <VirtualGrid
                   tableData={hpoInfo.literature_genes}
                   title={t('HPO.Literature_Genes')}
                   subtitle={t('HPO.Literature_Genes_subtitle')}
                   configureLink="hpo/literature_genes"
                   genomePlot={false}
-                />
+                /> */}
               </TabPanel>
 
               {/* Phenogenon tab is more complex. */}
@@ -139,7 +152,21 @@ const HPO = (props) => {
                 </AppBar>
                 <SwipeableViews index={phenogenonvalue} onChangeIndex={handleChangePhenogenonIndex}>
                   <TabPanel className="hpo-tabPannel" value={phenogenonvalue} index={0}>
-                    <VirtualGrid
+                    <VersatileTable
+                      tableData={hpoInfo.phenogenon_recessive}
+                      title={t('Recessive')}
+                      subtitle={[
+                        <Trans i18nKey="HPO.RECESSIVE_subtitle">
+                          <b>Genotype</b> : With at least two variants on a given gene that have
+                          ExAC homozygous count not higher than{' '}
+                          <b style={{ color: '#2E84CF' }}>2</b>, and CADD phred score not lower than{' '}
+                          <b style={{ color: '#2E84CF' }}>15</b>.
+                        </Trans>,
+                      ]}
+                      genomePlot={false}
+                    />
+
+                    {/* <VirtualGrid
                       tableData={hpoInfo.phenogenon_recessive}
                       title={t('Recessive')}
                       subtitle={[
@@ -152,10 +179,24 @@ const HPO = (props) => {
                       ]}
                       configureLink="hpo/phenogenon_recessive"
                       genomePlot={false}
-                    />
+                    /> */}
                   </TabPanel>
                   <TabPanel className="hpo-tabPannel" value={phenogenonvalue} index={1}>
-                    <VirtualGrid
+                    <VersatileTable
+                      tableData={hpoInfo.phenogenon_dominant}
+                      title={t('Dominant')}
+                      subtitle={[
+                        <Trans i18nKey="HPO.DOMINANT_subtitle">
+                          <b>Genotype</b> : With at least one variant on a given gene that has an
+                          ExAC heterozygous count not higher than ",{' '}
+                          <b style={{ color: '#2E84CF' }}>0.0001</b>, ", and CADD phred score not
+                          lower than ", <b style={{ color: '#2E84CF' }}>15</b>, "."
+                        </Trans>,
+                      ]}
+                      genomePlot={false}
+                    />
+
+                    {/* <VirtualGrid
                       tableData={hpoInfo.phenogenon_dominant}
                       title={t('Dominant')}
                       subtitle={[
@@ -168,19 +209,26 @@ const HPO = (props) => {
                       ]}
                       configureLink="hpo/phenogenon_dominant"
                       genomePlot={false}
-                    />
+                    /> */}
                   </TabPanel>
                 </SwipeableViews>
               </TabPanel>
 
               <TabPanel value={value} index={3} className="hpo-tabPannel">
-                <VirtualGrid
+                <VersatileTable
+                  tableData={hpoInfo.skat}
+                  title={t('HPO.SKAT')}
+                  subtitle={t('HPO.SKAT_subtitle')}
+                  genomePlot={false}
+                />
+
+                {/* <VirtualGrid
                   tableData={hpoInfo.skat}
                   title={t('HPO.SKAT')}
                   subtitle={t('HPO.SKAT_subtitle')}
                   configureLink="hpo/skat"
                   genomePlot={false}
-                />
+                /> */}
               </TabPanel>
             </SwipeableViews>
           </div>

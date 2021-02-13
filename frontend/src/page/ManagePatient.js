@@ -11,7 +11,9 @@ import { faPlusSquare } from '@fortawesome/pro-solid-svg-icons';
 
 import Loading from '../components/General/Loading';
 import UpdatePatient from '../components/UpdatePatient/UpdatePatient';
-const VirtualGrid = React.lazy(() => import('../components/Table/VirtualGrid'));
+
+// const VirtualGrid = React.lazy(() => import('../components/Table/VirtualGrid'));
+const VersatileTable = React.lazy(() => import('../components/BaseTable/VersatileTable'));
 
 const ManagePatient = () => {
   const dispatch = useDispatch();
@@ -57,6 +59,7 @@ const ManagePatient = () => {
             key: item,
             name: item.toUpperCase(),
             base_href: '/gene/',
+            type: 'links',
           };
         } else if (item == 'internal_id') {
           return {
@@ -65,6 +68,7 @@ const ManagePatient = () => {
             key: item,
             name: item.toUpperCase(),
             base_href: '/individual/',
+            type: 'links',
           };
         } else {
           return {
@@ -73,6 +77,7 @@ const ManagePatient = () => {
             key: item,
             name: item.toUpperCase(),
             base_href: '/hpo/',
+            type: 'links',
           };
         }
       });
@@ -104,6 +109,9 @@ const ManagePatient = () => {
           }
         });
       });
+
+      console.log(myData);
+
       setPatientData({ colNames: myColname, data: myData });
       setDataReady(true);
     }
@@ -155,12 +163,15 @@ const ManagePatient = () => {
                 to="/create_patient">
                 Create New Patient
               </Button>
-              <VirtualGrid
+
+              <VersatileTable tableData={PatientData} />
+
+              {/* <VirtualGrid
                 tableData={PatientData}
                 // title={'Manage Patients'}
                 // subtitle={'Here you can Check/Delete/Modify/Create patients.'}
                 handleActionClick={handleActionClick}
-              />
+              /> */}
             </Container>
           </>
         ) : (
