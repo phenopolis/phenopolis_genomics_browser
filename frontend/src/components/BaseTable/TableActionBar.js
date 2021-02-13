@@ -15,6 +15,7 @@ import RowFilter from './RowFilter';
 import HideColumn from './HideColumn';
 import Plots from './Plots';
 import GenomePlot from './GenomePlot';
+import ExportExcel from './ExportExcel';
 
 const TableActionBar = (props) => {
   const classes = useStyles();
@@ -107,7 +108,11 @@ const TableActionBar = (props) => {
             <Card
               elevation={0}
               className="card-box mb-2 mt-2 d-flex flex-row flex-wrap justify-content-center">
-              <GenomePlot data={props.dataRows} visibleRows={props.visibleRows} name={'Tian'} />
+              <GenomePlot
+                data={props.dataRows}
+                visibleRows={props.visibleRows}
+                ScrollToRow={props.ScrollToRow}
+              />
             </Card>
           </Collapse>
         ) : null}
@@ -115,8 +120,8 @@ const TableActionBar = (props) => {
         <Collapse in={filterPopoverOpen === 4}>
           <Card
             elevation={0}
-            className="card-box mb-5 mt-5 d-flex flex-row flex-wrap justify-content-center">
-            {/* <ExportExcel onRequestDownload={this.handleDownloadCSV} /> */}
+            className="card-box mb-2 mt-2 d-flex flex-row flex-wrap justify-content-center">
+            <ExportExcel onRequestDownload={props.onRequestDownload} />
           </Card>
         </Collapse>
       </Paper>

@@ -5,6 +5,8 @@ import BaseTable, { Column, AutoResizer } from 'react-base-table';
 import 'react-base-table/styles.css';
 import './tableStyle.css';
 
+import csvDownload from 'json-to-csv-export';
+
 import { Toolbar, Paper, Typography, Box, Container, Card, Collapse } from '@material-ui/core';
 
 import { CreateColumns } from './js/CreateColumns';
@@ -106,6 +108,32 @@ const VersatileTable = (props) => {
     Table.current.scrollToRow(dataIndex, 'start');
   };
 
+  const handleExcelDownload = () => {
+    var prepareDownload = filteredData.map((row) => {
+      var tmpRow = {};
+      tableColumn.forEach((i) => {
+        if (i.type !== 'object') {
+          tmpRow[i.key] = row[i.key];
+        } else if ((typeof row[i.key][0] === 'object') & (row[i.key][0] !== null)) {
+          tmpRow[i.key] = row[i.key].map((chip) => chip.display).join(';');
+        } else {
+          let tmpValue = row[i.key];
+          if (Array.isArray(tmpValue)) {
+            tmpRow[i.key] = row[i.key].join(';');
+          } else {
+            tmpRow[i.key] = tmpValue;
+          }
+        }
+      });
+      return tmpRow;
+    });
+
+    var d = new Date();
+    let filename = `phenopolis_${d.getDate()}_${d.getMonth()}_${d.getFullYear()}.csv`;
+
+    csvDownload(prepareDownload, filename);
+  };
+
   return (
     <div className={classes.root}>
       <TableTitle
@@ -125,6 +153,7 @@ const VersatileTable = (props) => {
           ScrollToRow={handleScrollToRow}
           visibleRows={visibleRows}
           genomePlot={props.genomePlot}
+          onRequestDownload={handleExcelDownload}
         />
       ) : null}
 

@@ -1,4 +1,4 @@
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Card, CardContent, Chip, Avatar, Grid, Tooltip } from '@material-ui/core';
 import ReactEcharts from 'echarts-for-react';
 
@@ -6,12 +6,7 @@ import GenomePlotOption from '../../assets/echartJS/GenomePlot';
 
 const GenomePlot = (props) => {
   const [opt, setOpt] = React.useState(GenomePlotOption);
-
-  useEffect(() => {
-    if (props.data) {
-      handleAddDots(0, 10);
-    }
-  }, [props.data]);
+  const [EventsDict, setEventsDict] = useState(null);
 
   useEffect(() => {
     handleAddDots(props.visibleRows[0], props.visibleRows[1]);
@@ -47,6 +42,33 @@ const GenomePlot = (props) => {
       return [x[0], 1, x[2], x[3], x[4]];
     });
 
+    var colorFun = (param) => {
+      switch (param.data[3]) {
+        case '5_prime_UTR_variant':
+          return 'rgba(48, 71, 94, 0.1)';
+        case '3_prime_UTR_variant':
+          return 'rgba(48, 71, 94, 0.1)';
+        case 'missense_variant':
+          return 'rgba(242, 204, 143, 0.8)';
+        case 'frameshift_variant':
+          return 'rgba(224, 122, 95, 0.8)';
+        case 'synonymous_variant':
+          return 'rgba(129, 178, 154, 0.8)';
+        case 'intron_variant':
+          return 'rgba(48, 71, 94, 0.1)';
+        case 'stop_gained':
+          return 'rgba(224, 122, 95, 0.8)';
+        case 'splice_region_variant':
+          return 'rgba(224, 122, 95, 0.8)';
+        case 'splice_acceptor_variant':
+          return 'rgba(224, 122, 95, 0.8)';
+        case 'inframe_deletion':
+          return 'rgba(48, 71, 94, 0.1)';
+        default:
+          return 'rgba(48, 71, 94, 0.1)';
+      }
+    };
+
     const newScatterOption = JSON.parse(JSON.stringify(GenomePlotOption));
 
     newScatterOption.series[0].name = 'Variants';
@@ -61,32 +83,7 @@ const GenomePlot = (props) => {
 
     newScatterOption.series[0].itemStyle = {
       normal: {
-        color: (param) => {
-          switch (param.data[3]) {
-            case '5_prime_UTR_variant':
-              return 'rgba(23, 126, 137, 0.5)';
-            case '3_prime_UTR_variant':
-              return 'rgba(8, 76, 97, 0.5)';
-            case 'missense_variant':
-              return 'rgba(114, 67, 75, 0.5)';
-            case 'frameshift_variant':
-              return 'rgba(219, 58, 52, 0.5)';
-            case 'synonymous_variant':
-              return 'rgba(237, 129, 70, 0.5)';
-            case 'intron_variant':
-              return 'rgba(15, 128, 170, 0.5)';
-            case 'stop_gained':
-              return 'rgba(153, 124, 68, 0.5)';
-            case 'splice_region_variant':
-              return 'rgba(50, 48, 49, 0.5)';
-            case 'splice_acceptor_variant':
-              return 'rgba(48, 132, 89, 0.5)';
-            case 'inframe_deletion':
-              return 'rgba(45, 216, 129, 0.5)';
-            default:
-              return 'rgba(0, 0, 0, 0.5)';
-          }
-        },
+        color: colorFun,
       },
     };
 
@@ -98,38 +95,21 @@ const GenomePlot = (props) => {
 
     newScatterOption.series[1].itemStyle = {
       normal: {
-        color: (param) => {
-          switch (param.data[3]) {
-            case '5_prime_UTR_variant':
-              return 'rgba(23, 126, 137, 0.2)';
-            case '3_prime_UTR_variant':
-              return 'rgba(8, 76, 97, 0.2)';
-            case 'missense_variant':
-              return 'rgba(114, 67, 75, 0.2)';
-            case 'frameshift_variant':
-              return 'rgba(219, 58, 52, 0.2)';
-            case 'synonymous_variant':
-              return 'rgba(237, 129, 70, 0.2)';
-            case 'intron_variant':
-              return 'rgba(15, 128, 170, 0.2)';
-            case 'stop_gained':
-              return 'rgba(153, 124, 68, 0.2)';
-            case 'splice_region_variant':
-              return 'rgba(50, 48, 49, 0.2)';
-            case 'splice_acceptor_variant':
-              return 'rgba(48, 132, 89, 0.2)';
-            case 'inframe_deletion':
-              return 'rgba(45, 216, 129, 0.2)';
-            default:
-              return 'rgba(0, 0, 0, 0.2)';
-          }
-        },
+        color: colorFun,
       },
     };
 
-    newScatterOption.title.text = props.name;
+    newScatterOption.tooltip.formatter = function (params) {
+      return `Variant Type: <b>${params.value[3]}</b><br />
+              Coordicate: <b>${params.value[0]}</b>`;
+    };
 
+    setEventsDict({ click: onScatterClick });
     setOpt(newScatterOption);
+  };
+
+  const onScatterClick = (param) => {
+    props.ScrollToRow(param.dataIndex);
   };
 
   return (
@@ -139,8 +119,8 @@ const GenomePlot = (props) => {
           option={opt}
           notMerge={true}
           lazyUpdate={true}
-          // onEvents={this.state.EventsDict}
-          style={{ height: '200px', width: '85vw' }}
+          onEvents={EventsDict}
+          style={{ height: '250px', width: '85vw' }}
         />
       </CardContent>
     </Card>
