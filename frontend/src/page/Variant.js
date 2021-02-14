@@ -9,7 +9,7 @@ import TabPanel from '../components/Tab/Tabpanel';
 import { getVariant } from '../redux/actions/variant';
 
 import MetaData from '../components/MetaData';
-import VirtualGrid from '../components/Table/VirtualGrid';
+const VersatileTable = React.lazy(() => import('../components/BaseTable/VersatileTable'));
 
 const Variant = (props) => {
   const { t } = useTranslation();
@@ -65,7 +65,7 @@ const Variant = (props) => {
                 className="variant-tab_appbar"
                 position="static"
                 color="transparent"
-                elevation="0"
+                elevation={0}
                 m={0}
                 p={0}>
                 <Tabs
@@ -83,54 +83,49 @@ const Variant = (props) => {
                     t('Variant.INDIVIDUALS'),
                     t('Variant.GENOTYPES'),
                   ].map((item, index) => {
-                    return <Tab label={item} {...a11yProps(index)} />;
+                    return <Tab key={index} label={item} {...a11yProps(index)} />;
                   })}
                 </Tabs>
               </AppBar>
             </Container>
             <SwipeableViews index={value} onChangeIndex={handleChangeIndex}>
               <TabPanel value={value} index={0} className="variant-tabPannel">
-                <VirtualGrid
+                <VersatileTable
                   tableData={variantInfo.frequency}
                   title={t('Variant.Frequency')}
                   subtitle={t('Variant.Frequency_subtitle')}
-                  configureLink="variant/frequency"
                   genomePlot={false}
                 />
               </TabPanel>
               <TabPanel value={value} index={1} className="variant-tabPannel">
-                <VirtualGrid
+                <VersatileTable
                   tableData={variantInfo.consequence}
                   title={t('Variant.Consequences')}
                   subtitle={t('Variant.Consequences_subtitle')}
-                  configureLink="variant/consequence"
                   genomePlot={false}
                 />
               </TabPanel>
               <TabPanel value={value} index={2} className="variant-tabPannel">
-                <VirtualGrid
+                <VersatileTable
                   tableData={variantInfo.quality}
                   title={t('Variant.Quality')}
                   subtitle={t('Variant.Quality_subtitle')}
-                  configureLink="variant/quality"
                   genomePlot={false}
                 />
               </TabPanel>
               <TabPanel value={value} index={3} className="variant-tabPannel">
-                <VirtualGrid
+                <VersatileTable
                   tableData={variantInfo.individuals}
                   title={t('Variant.Individuals')}
                   subtitle={t('Variant.Individuals_subtitle')}
-                  configureLink="variant/individuals"
                   genomePlot={false}
                 />
               </TabPanel>
               <TabPanel value={value} index={4} className="variant-tabPannel">
-                <VirtualGrid
+                <VersatileTable
                   tableData={variantInfo.genotypes}
                   title={t('Variant.Genotypes')}
                   subtitle={t('Variant.Genotypes_subtitle')}
-                  configureLink="variant/genotypes"
                   genomePlot={false}
                 />
               </TabPanel>

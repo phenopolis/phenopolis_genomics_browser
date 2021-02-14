@@ -1,4 +1,7 @@
 import React, { useEffect, useState } from 'react';
+
+import { Link } from 'react-router-dom';
+
 import {
   Chip,
   Avatar,
@@ -130,7 +133,7 @@ const TypeChip = (props) => {
     props.onDeleteClick(label);
   };
 
-  const open = Boolean(anchorEl) & (indexTo === randomIndex);
+  const open = Boolean(anchorEl) && indexTo === randomIndex;
 
   return (
     <span>
@@ -169,14 +172,14 @@ const TypeChip = (props) => {
                 loaded ? `${type}-bg chip-title-loaded` : `${type}-bg chip-title-unloaded`
               }>
               <Grid container direction="row" justify="space-between" alignItems="center">
-                <Typography variant="subtitle1" style={{ 'font-weight': '900', color: 'white' }}>
+                <Typography variant="subtitle1" style={{ fontWeight: '900', color: 'white' }}>
                   {props.label}
 
                   {(loaded === false) | (props.to.split('/')[2] !== previewName) ? (
                     <small style={{ color: 'white' }}>
                       {' '}
                       &nbsp;&nbsp;
-                      <CircularProgress size={12} color="white" />
+                      <CircularProgress size={12} color="inherit" />
                     </small>
                   ) : null}
                 </Typography>
@@ -219,21 +222,81 @@ const TypeChip = (props) => {
                 ) : (
                   previewInfo.map((item, index) => {
                     return (
-                      <Grid container spacing={1} key={index}>
+                      <Grid container spacing={1} key={index} style={{ maxWidth: '35em' }}>
                         <Grid item xs={4} className="chip-popover-namegrid">
                           {item[0]}
                         </Grid>
 
                         <Grid item xs={8} className="chip-popover-datagrid">
-                          {typeof item[1] === 'object'
-                            ? item[1].map((subchip, subchipIndex) => {
-                                return (
-                                  <span key={subchipIndex}>
-                                    {subchipIndex === 0 ? '' : ', '} {subchip}
-                                  </span>
-                                );
-                              })
-                            : item[1]}
+                          {item[0] === 'Genes' &&
+                            item[1].map((subchip, subchipIndex) => {
+                              return (
+                                <Chip
+                                  variant="outlined"
+                                  size="small"
+                                  color="primary"
+                                  component={Link}
+                                  to={'/gene/' + subchip}
+                                  clickable
+                                  avatar={
+                                    <Avatar
+                                      className={`gene-bg white-fg`}
+                                      style={{ color: 'white' }}>
+                                      <FontAwesomeIcon icon={ChipIcon['gene'].icon} />
+                                    </Avatar>
+                                  }
+                                  label={subchip}
+                                  key={subchipIndex}
+                                  style={{ margin: '2px' }}
+                                />
+                                // <span key={subchipIndex}>
+                                //   {subchipIndex === 0 ? '' : ', '} {subchip}
+                                // </span>
+                              );
+                            })}
+
+                          {item[0] === 'Features' &&
+                            item[1][0].split(';').map((subchip, subchipIndex) => {
+                              return (
+                                <Chip
+                                  variant="outlined"
+                                  size="small"
+                                  color="primary"
+                                  component={Link}
+                                  to={'/hpo/' + subchip}
+                                  clickable
+                                  avatar={
+                                    <Avatar
+                                      className={`hpo-bg white-fg`}
+                                      style={{ color: 'white' }}>
+                                      <FontAwesomeIcon icon={ChipIcon['hpo'].icon} />
+                                    </Avatar>
+                                  }
+                                  label={subchip}
+                                  key={subchipIndex}
+                                  style={{ margin: '2px' }}
+                                />
+                                // <span key={subchipIndex}>
+                                //   {subchipIndex === 0 ? '' : ', '} {subchip}
+                                // </span>
+                              );
+                            })}
+
+                          {typeof item[1] === 'object' &&
+                            item[0] !== 'Features' &&
+                            item[0] !== 'Genes' &&
+                            item[1].map((subchip, subchipIndex) => {
+                              return (
+                                <span key={subchipIndex}>
+                                  {subchipIndex === 0 ? '' : ', '} {subchip}
+                                </span>
+                              );
+                            })}
+
+                          {typeof item[1] !== 'object' &&
+                            item[0] !== 'Features' &&
+                            item[0] !== 'Genes' &&
+                            (item[1].length > 27 ? item[1].substring(0, 27 - 3) + '...' : item[1])}
                         </Grid>
                       </Grid>
                     );

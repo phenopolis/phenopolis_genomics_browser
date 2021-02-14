@@ -1,15 +1,27 @@
 export default {
-  title: [
-    {
-      text: 'Boxplot',
-      left: 'center',
-    },
-  ],
+  title: {
+    text: 'Boxplot',
+    left: 'center',
+    top: 20,
+  },
+  grid: {
+    left: '10%',
+    right: '3%',
+    bottom: '6%',
+    containLabel: true,
+  },
   tooltip: {
+    backgroundColor: 'rgba(0,0,0,0.9)',
     trigger: 'item',
     axisPointer: {
-      type: 'shadow',
+      animation: true,
+      type: 'cross',
+      lineStyle: {
+        type: 'dashed',
+        width: 1,
+      },
     },
+    formatter: 'Data Value (x-axis): {b} <br/> {a} (y-axis): {c0} -  {c1} - {c2}',
   },
   toolbox: {
     feature: {
@@ -32,54 +44,40 @@ export default {
       },
     },
   },
-  color: ['#2E84CF'],
-  grid: {
-    left: '10%',
-    right: '10%',
-    bottom: '15%',
-  },
+  color: ['#30475e'],
   xAxis: {
     type: 'category',
     data: [],
     boundaryGap: true,
-    nameGap: 30,
-    splitArea: {
-      show: false,
-    },
-    axisLabel: {
-      formatter: '{value}',
-    },
-    splitLine: {
-      show: false,
-    },
+    name: '',
+    nameGap: 40,
+    nameLocation: 'middle',
   },
   yAxis: {
     type: 'value',
     name: '',
-    splitArea: {
-      show: false,
-    },
+    nameGap: 60,
+    nameLocation: 'middle',
     splitLine: {
-      show: false,
+      show: true,
+      lineStyle: {
+        type: 'dashed',
+        color: '#cfd8dc',
+      },
     },
   },
   series: [
     {
       name: 'boxplot',
       type: 'boxplot',
-      data: [],
-      tooltip: {
-        formatter: function (param) {
-          return [
-            'Stats: ' + param.name + ': ',
-            'upper: ' + param.data[5],
-            'Q3: ' + param.data[4],
-            'median: ' + param.data[3],
-            'Q1: ' + param.data[2],
-            'lower: ' + param.data[1],
-          ].join('<br/>');
-        },
+      boxWidth: 40,
+      itemStyle: {
+        borderWidth: 1.5,
+        shadowColor: 'rgba(0, 0, 0, 0.5)',
+        shadowBlur: 5,
+        color: '#dbe4ed',
       },
+      data: [],
     },
     {
       name: 'outlier',

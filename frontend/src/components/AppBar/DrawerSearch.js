@@ -31,28 +31,13 @@ import clsx from 'clsx';
 import { getSearchAutocomplete } from '../../redux/actions/search';
 
 function TabPanel(props) {
-  const { children, value, index, ...other } = props;
+  const { children } = props;
 
-  return (
-    <div
-      role="tabpanel"
-      hidden={value !== index}
-      id={`vertical-tabpanel-${index}`}
-      aria-labelledby={`vertical-tab-${index}`}
-      {...other}>
-      {value === index && (
-        <Box p={3}>
-          <Typography>{children}</Typography>
-        </Box>
-      )}
-    </div>
-  );
+  return <Container style={{ padding: '1em' }}>{children}</Container>;
 }
 
 TabPanel.propTypes = {
   children: PropTypes.node,
-  index: PropTypes.any.isRequired,
-  value: PropTypes.any.isRequired,
 };
 
 function a11yProps(index) {
@@ -301,7 +286,7 @@ const DrawerSearch = (props) => {
                             return (
                               <TypeChip
                                 key={index}
-                                size="middle"
+                                size="medium"
                                 label={item.split('::')[1]}
                                 type={item.split('::')[0]}
                                 action="forward"

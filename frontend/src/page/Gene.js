@@ -7,7 +7,7 @@ import { useTranslation } from 'react-i18next';
 import { getGene } from '../redux/actions/gene';
 
 const MetaData = React.lazy(() => import('../components/MetaData'));
-const VirtualGrid = React.lazy(() => import('../components/Table/VirtualGrid'));
+const VersatileTable = React.lazy(() => import('../components/BaseTable/VersatileTable'));
 
 const Gene = (props) => {
   const { t } = useTranslation();
@@ -42,22 +42,10 @@ const Gene = (props) => {
               }
             />
             <Container maxWidth="xl">
-              <VirtualGrid
-                tableData={geneInfo.variants}
+              <VersatileTable
                 title={t('Gene.Variants_Analysis')}
                 subtitle={t('Gene.Variants Analysis_subtitle')}
-                configureLink="gene/variants"
-                name={
-                  geneInfo.metadata.data[0].gene_name +
-                  ':' +
-                  geneInfo.metadata.data[0].chrom +
-                  ':chr' +
-                  geneInfo.metadata.data[0].chrom +
-                  ':' +
-                  geneInfo.metadata.data[0].start +
-                  '-' +
-                  geneInfo.metadata.data[0].stop
-                }
+                tableData={geneInfo.variants}
                 genomePlot={true}
               />
             </Container>

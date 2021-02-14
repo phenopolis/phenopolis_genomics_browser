@@ -9,7 +9,8 @@ import TabPanel from '../components/Tab/Tabpanel';
 import { getHPO } from '../redux/actions/hpo';
 
 import MetaData from '../components/MetaData';
-import VirtualGrid from '../components/Table/VirtualGrid';
+
+const VersatileTable = React.lazy(() => import('../components/BaseTable/VersatileTable'));
 
 const HPO = (props) => {
   const { t } = useTranslation();
@@ -70,7 +71,7 @@ const HPO = (props) => {
                 className="hpo-tab_appbar"
                 position="static"
                 color="transparent"
-                elevation="0"
+                elevation={0}
                 m={0}
                 p={0}>
                 <Tabs
@@ -87,7 +88,7 @@ const HPO = (props) => {
                     t('HPO.PHENOGENON'),
                     t('HPO.SKAT'),
                   ].map((item, index) => {
-                    return <Tab label={item} {...a11yProps(index)} />;
+                    return <Tab key={index} label={item} {...a11yProps(index)} />;
                   })}
                 </Tabs>
               </AppBar>
@@ -95,20 +96,18 @@ const HPO = (props) => {
 
             <SwipeableViews index={value} onChangeIndex={handleChangeIndex}>
               <TabPanel value={value} index={0} className="hpo-tabPannel">
-                <VirtualGrid
+                <VersatileTable
                   tableData={hpoInfo.individuals}
                   title={t('HPO.Individuals')}
                   subtitle={t('HPO.Individuals_subtitle')}
-                  configureLink="hpo/individuals"
                   genomePlot={false}
                 />
               </TabPanel>
               <TabPanel value={value} index={1} className="hpo-tabPannel">
-                <VirtualGrid
+                <VersatileTable
                   tableData={hpoInfo.literature_genes}
                   title={t('HPO.Literature_Genes')}
                   subtitle={t('HPO.Literature_Genes_subtitle')}
-                  configureLink="hpo/literature_genes"
                   genomePlot={false}
                 />
               </TabPanel>
@@ -123,7 +122,8 @@ const HPO = (props) => {
                     {t('HPO.Phenogenon_subtitle')}
                   </Box>
                 </Typography>
-                <AppBar position="static" color="white" elevation="0" m={0} p={0}>
+
+                <AppBar position="static" color="transparent" elevation={0} m={0} p={0}>
                   <Tabs
                     value={phenogenonvalue}
                     onChange={handleChangePhenogenon}
@@ -133,13 +133,13 @@ const HPO = (props) => {
                     aria-label="full width tabs example"
                     classes={{ indicator: 'hpo-bigIndicator' }}>
                     {[t('HPO.RECESSIVE'), t('HPO.DOMINANT')].map((item, index) => {
-                      return <Tab label={item} {...a11yProps(index)} />;
+                      return <Tab key={index} label={item} {...a11yProps(index)} />;
                     })}
                   </Tabs>
                 </AppBar>
                 <SwipeableViews index={phenogenonvalue} onChangeIndex={handleChangePhenogenonIndex}>
                   <TabPanel className="hpo-tabPannel" value={phenogenonvalue} index={0}>
-                    <VirtualGrid
+                    <VersatileTable
                       tableData={hpoInfo.phenogenon_recessive}
                       title={t('Recessive')}
                       subtitle={[
@@ -150,12 +150,11 @@ const HPO = (props) => {
                           <b style={{ color: '#2E84CF' }}>15</b>.
                         </Trans>,
                       ]}
-                      configureLink="hpo/phenogenon_recessive"
                       genomePlot={false}
                     />
                   </TabPanel>
                   <TabPanel className="hpo-tabPannel" value={phenogenonvalue} index={1}>
-                    <VirtualGrid
+                    <VersatileTable
                       tableData={hpoInfo.phenogenon_dominant}
                       title={t('Dominant')}
                       subtitle={[
@@ -166,7 +165,6 @@ const HPO = (props) => {
                           lower than ", <b style={{ color: '#2E84CF' }}>15</b>, "."
                         </Trans>,
                       ]}
-                      configureLink="hpo/phenogenon_dominant"
                       genomePlot={false}
                     />
                   </TabPanel>
@@ -174,11 +172,10 @@ const HPO = (props) => {
               </TabPanel>
 
               <TabPanel value={value} index={3} className="hpo-tabPannel">
-                <VirtualGrid
+                <VersatileTable
                   tableData={hpoInfo.skat}
                   title={t('HPO.SKAT')}
                   subtitle={t('HPO.SKAT_subtitle')}
-                  configureLink="hpo/skat"
                   genomePlot={false}
                 />
               </TabPanel>

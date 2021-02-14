@@ -38,7 +38,7 @@ const AccountPanel = (props) => {
         <div className="d-flex p-4 bg-secondary card-footer flex-wrap ">
           {actions.map((action, index) => {
             return (
-              <div className="w-25 p-2">
+              <div key={index} className="w-25 p-2">
                 <button
                   className="btn card card-box d-flex align-items-center px-4 py-3 w-100 h-100 account-panel-button"
                   onClick={() => handleTriggerDialog(action.dialogName)}>

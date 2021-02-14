@@ -23,13 +23,13 @@ import {
 import Select from 'react-select';
 import makeAnimated from 'react-select/animated';
 
-import { faPlus, faTrashAlt } from '@fortawesome/pro-duotone-svg-icons';
+import { faPlus, faTrashAlt } from '@fortawesome/pro-regular-svg-icons';
 
 import ReactSelect from './ReactSelect';
 
 const animatedComponents = makeAnimated();
 
-class VirtualTableFilter extends React.Component {
+class RowFilter extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
@@ -119,26 +119,9 @@ class VirtualTableFilter extends React.Component {
   handleSelectColumn = (selectOption, index) => {
     const newFilter = [...this.state.myfilter];
     newFilter[index].column = selectOption;
-
-    if (selectOption === null) {
-      newFilter[index].value = [];
-    } else {
-      if (selectOption.type === 'object') {
-        newFilter[index].value = [];
-      } else {
-        newFilter[index].value = '';
-      }
-    }
+    newFilter[index].value = '';
 
     this.setState({ myfilter: newFilter });
-  };
-
-  handleSelectObjectChip = (event, newValue, index) => {
-    const newFilter = [...this.state.myfilter];
-    newFilter[index].value = newValue;
-    this.setState({ myfilter: newFilter }, () => {
-      this.handleSubmitFilter();
-    });
   };
 
   handleOperationOpen = (event, index, column) => {
@@ -185,6 +168,14 @@ class VirtualTableFilter extends React.Component {
     });
   };
 
+  handleSelectObjectChip = (event, index) => {
+    const newFilter = [...this.state.myfilter];
+    newFilter[index].value = event;
+    this.setState({ myfilter: newFilter }, () => {
+      this.handleSubmitFilter();
+    });
+  };
+
   handleAndOrChange = (index) => {
     const newFilter = [...this.state.myfilter];
     if (newFilter[index].andor === 'and') {
@@ -221,7 +212,7 @@ class VirtualTableFilter extends React.Component {
             <Grid item xs={12}>
               {this.state.myfilter.map((item, index) => {
                 return (
-                  <Grid container direction="row" justify="center" alignItems="center">
+                  <Grid container direction="row" justify="center" alignItems="center" key={index}>
                     <Grid item xs={1}>
                       <FormControlLabel
                         value={item.inuse}
@@ -384,6 +375,7 @@ class VirtualTableFilter extends React.Component {
                           getOptionLabel={(option) => option}
                           options={item.column.chips}
                           menuPortalTarget={document.querySelector('body')}
+                          onChange={(event) => this.handleSelectObjectChip(event, index)}
                         />
                       ) : (
                         <FormControl fullWidth variant="outlined">
@@ -446,7 +438,7 @@ class VirtualTableFilter extends React.Component {
             justify="center"
             alignItems="center"
             className="m-2"
-            style={{ paddingTop: '1em', color: 'darkgrey', 'white-space': 'pre-wrap' }}>
+            style={{ paddingTop: '1em', color: 'darkgrey', whiteSpace: 'pre-wrap' }}>
             {'1. Firstly, please click Add New Filter button to create a new filter.\n' +
               '2. Then select one variable (table column). Based on variable types, different filter modes would be offered.\n' +
               '3. By click operation button, you may select one maths symbol to created a filtering operation for corresponding varaible.\n' +
@@ -459,7 +451,7 @@ class VirtualTableFilter extends React.Component {
   }
 }
 
-VirtualTableFilter.propTypes = {
+RowFilter.propTypes = {
   classes: PropTypes.object.isRequired,
 };
 
@@ -537,4 +529,4 @@ const styles = (theme) => ({
   },
 });
 
-export default compose(withStyles(styles))(VirtualTableFilter);
+export default compose(withStyles(styles))(RowFilter);

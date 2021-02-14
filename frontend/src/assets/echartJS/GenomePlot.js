@@ -1,35 +1,26 @@
 export default {
-  title: {
-    text: 'Scatter Plot between X and Y',
-    subtext: '',
-  },
   grid: {
     left: '3%',
     right: '3%',
-    bottom: '3%',
+    bottom: '10%',
     containLabel: true,
   },
   tooltip: {
+    backgroundColor: 'rgba(0,0,0,0.9)',
     trigger: 'item',
     showDelay: 0,
     axisPointer: {
-      show: true,
-      type: 'cross',
-      lineStyle: {
-        type: 'dashed',
-        width: 1,
-      },
+      show: false,
     },
   },
   // color: ['#2E84CF'],
   xAxis: [
     {
-      name: '',
+      name: 'chr12',
+      nameGap: 30,
+      nameLocation: 'middle',
       type: 'value',
       scale: true,
-      axisLabel: {
-        formatter: '{value}',
-      },
       splitLine: {
         show: false,
       },
@@ -37,7 +28,7 @@ export default {
   ],
   yAxis: [
     {
-      name: 'chr12',
+      name: '',
       show: false,
       max: 3,
     },
@@ -54,6 +45,7 @@ export default {
       name: 'points',
       type: 'scatter',
       data: [],
+      // symbol: 'ellipse',
       symbolSize: null,
     },
     {
