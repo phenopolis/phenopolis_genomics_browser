@@ -7,7 +7,6 @@ import { Container, Dialog } from '@material-ui/core';
 
 import Loading from '../components/General/Loading';
 import UserList from '../components/ManageUser/UserList';
-// const VirtualGrid = React.lazy(() => import('../components/Table/VirtualGrid'));
 
 const ManageUser = () => {
   const dispatch = useDispatch();

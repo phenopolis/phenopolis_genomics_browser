@@ -3,6 +3,7 @@ import { Column } from 'react-base-table';
 import calculateSize from 'calculate-size';
 
 import ChipList from '../ChipList';
+import HeaderCell from '../HeaderCell';
 import ActionColumn from '../ActionColumn';
 
 export const CreateColumns = (mycolumns, myrows, onActionFunction) => {
@@ -131,6 +132,7 @@ export const CreateColumns = (mycolumns, myrows, onActionFunction) => {
         align: Column.Alignment.CENTER,
         sortable: true,
         cellRenderer: ({ cellData, column }) => <ChipList chips={cellData} colName={column} />,
+        headerRenderer: ({ column }) => <HeaderCell colName={column} />,
         type: tmpType,
         chips: tmpChip,
         show: tmpShow,
@@ -146,6 +148,7 @@ export const CreateColumns = (mycolumns, myrows, onActionFunction) => {
         resizable: true,
         align: Column.Alignment.CENTER,
         sortable: true,
+        headerRenderer: ({ column }) => <HeaderCell colName={column} />,
         type: tmpType,
         chips: tmpChip,
         show: tmpShow,

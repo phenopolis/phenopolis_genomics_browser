@@ -1,6 +1,5 @@
 import React, { useEffect } from 'react';
 import { CssBaseline, Container } from '@material-ui/core';
-// import VirtualGrid from '../components/Table/VirtualGrid';
 import Loading from '../components/General/Loading';
 import { useTranslation } from 'react-i18next';
 import { useDispatch, useSelector } from 'react-redux';
@@ -41,20 +40,6 @@ const MyPatient = () => {
                 subtitle=" "
                 genomePlot={false}
               />
-
-              {/* <VirtualGrid
-                tableData={hpoInfo.individuals}
-                title={
-                  t('MyPatient.My_Patients') +
-                  ' (' +
-                  t('MyPatient.Total') +
-                  ' ' +
-                  hpoInfo.preview[0][1] +
-                  ')'
-                }
-                subtitle=" "
-                genomePlot={false}
-              /> */}
             </Container>
           </div>
         </React.Fragment>

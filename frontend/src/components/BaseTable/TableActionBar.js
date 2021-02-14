@@ -19,7 +19,7 @@ import ExportExcel from './ExportExcel';
 
 const TableActionBar = (props) => {
   const classes = useStyles();
-  const [filterPopoverOpen, setFilterPopoverOpen] = useState(3);
+  const [filterPopoverOpen, setFilterPopoverOpen] = useState(-1);
 
   const toolButtons = [
     { label: 'Filter Rows', icon: faFilter },

@@ -12,7 +12,6 @@ import { faPlusSquare } from '@fortawesome/pro-solid-svg-icons';
 import Loading from '../components/General/Loading';
 import UpdatePatient from '../components/UpdatePatient/UpdatePatient';
 
-// const VirtualGrid = React.lazy(() => import('../components/Table/VirtualGrid'));
 const VersatileTable = React.lazy(() => import('../components/BaseTable/VersatileTable'));
 
 const ManagePatient = () => {
@@ -167,13 +166,6 @@ const ManagePatient = () => {
                 genomePlot={false}
                 onActionClick={handleActionClick}
               />
-
-              {/* <VirtualGrid
-                tableData={PatientData}
-                // title={'Manage Patients'}
-                // subtitle={'Here you can Check/Delete/Modify/Create patients.'}
-                handleActionClick={handleActionClick}
-              /> */}
             </Container>
           </>
         ) : (
