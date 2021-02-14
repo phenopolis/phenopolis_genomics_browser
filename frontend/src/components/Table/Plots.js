@@ -439,18 +439,14 @@ class Plots extends React.Component {
               ) : this.state.warningMessage === '' ? (
                 <div style={{ paddingTop: '2em', color: 'darkgrey', textAlign: 'center' }}>
                   Please Select variables for X axis and Y axis to draw Scatter Plot.
-                  <div style={{ marginTop: '1em', 'white-space': 'pre-wrap' }}>
-                    {this.state.msg}
-                  </div>
+                  <div style={{ marginTop: '1em', whiteSpace: 'pre-wrap' }}>{this.state.msg}</div>
                 </div>
               ) : null}
             </Grid>
             <Grid item xs={2} style={{ paddingTop: '5em', color: 'darkgrey' }}>
               {this.state.plotReady ? (
                 <div style={{ paddingTop: '2em', color: 'darkgrey' }}>
-                  <div style={{ marginTop: '1em', 'white-space': 'pre-wrap' }}>
-                    {this.state.msg}
-                  </div>
+                  <div style={{ marginTop: '1em', whiteSpace: 'pre-wrap' }}>{this.state.msg}</div>
                 </div>
               ) : null}
             </Grid>

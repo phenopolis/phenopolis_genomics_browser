@@ -154,7 +154,7 @@ const NoSideBar = (props) => {
 };
 
 NoSideBar.propTypes = {
-  width: PropTypes.oneOf(['lg', 'md', 'sm', 'xl', 'xs']).isRequired,
+  // width: PropTypes.oneOf(['lg', 'md', 'sm', 'xl', 'xs']).isRequired,
 };
 
 export default NoSideBar;

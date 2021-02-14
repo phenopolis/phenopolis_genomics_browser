@@ -23,32 +23,32 @@ const Loading = ({ message }) => {
               justify="center"
               className={'loading-height--md'}>
               <Grid item xs={3}>
-                <div class="loader">
-                  <div class="dot dot1">
+                <div>
+                  <div>
                     <i></i>
                   </div>
-                  <div class="dot dot2">
+                  <div>
                     <i></i>
                   </div>
-                  <div class="dot dot3">
+                  <div>
                     <i></i>
                   </div>
-                  <div class="dot dot4">
+                  <div>
                     <i></i>
                   </div>
-                  <div class="dot dot5">
+                  <div>
                     <i></i>
                   </div>
-                  <div class="dot dot6">
+                  <div>
                     <i></i>
                   </div>
-                  <div class="dot dot7">
+                  <div>
                     <i></i>
                   </div>
-                  <div class="dot dot8">
+                  <div>
                     <i></i>
                   </div>
-                  <div class="dot dot9">
+                  <div>
                     <i></i>
                   </div>
                 </div>

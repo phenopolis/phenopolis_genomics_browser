@@ -66,7 +66,7 @@ const Variant = (props) => {
                 className="variant-tab_appbar"
                 position="static"
                 color="transparent"
-                elevation="0"
+                elevation={0}
                 m={0}
                 p={0}>
                 <Tabs
@@ -84,7 +84,7 @@ const Variant = (props) => {
                     t('Variant.INDIVIDUALS'),
                     t('Variant.GENOTYPES'),
                   ].map((item, index) => {
-                    return <Tab label={item} {...a11yProps(index)} />;
+                    return <Tab key={index} label={item} {...a11yProps(index)} />;
                   })}
                 </Tabs>
               </AppBar>

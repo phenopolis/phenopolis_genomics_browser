@@ -212,7 +212,7 @@ class RowFilter extends React.Component {
             <Grid item xs={12}>
               {this.state.myfilter.map((item, index) => {
                 return (
-                  <Grid container direction="row" justify="center" alignItems="center">
+                  <Grid container direction="row" justify="center" alignItems="center" key={index}>
                     <Grid item xs={1}>
                       <FormControlLabel
                         value={item.inuse}
@@ -438,7 +438,7 @@ class RowFilter extends React.Component {
             justify="center"
             alignItems="center"
             className="m-2"
-            style={{ paddingTop: '1em', color: 'darkgrey', 'white-space': 'pre-wrap' }}>
+            style={{ paddingTop: '1em', color: 'darkgrey', whiteSpace: 'pre-wrap' }}>
             {'1. Firstly, please click Add New Filter button to create a new filter.\n' +
               '2. Then select one variable (table column). Based on variable types, different filter modes would be offered.\n' +
               '3. By click operation button, you may select one maths symbol to created a filtering operation for corresponding varaible.\n' +

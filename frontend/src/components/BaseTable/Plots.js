@@ -72,8 +72,6 @@ const Plots = (props) => {
       }
     }
 
-    console.log(newPlot);
-
     setOption(newPlot.option);
     setEventsDict(newPlot.EventsDict);
     setWarningMsg(newPlot.warningMsg);
@@ -170,7 +168,7 @@ const Plots = (props) => {
               />
             ) : (
               <div>
-                <Box display="flex" justifyContent="center" alignItems="center" gutterBottom>
+                <Box display="flex" justifyContent="center" alignItems="center">
                   <Typography
                     variant="h6"
                     gutterBottom
@@ -178,7 +176,7 @@ const Plots = (props) => {
                     {errorMsg}
                   </Typography>
                 </Box>
-                <div style={{ paddingTop: '2em', color: 'darkgrey', 'white-space': 'pre-wrap' }}>
+                <div style={{ paddingTop: '2em', color: 'darkgrey', whiteSpace: 'pre-wrap' }}>
                   {'Please Select variables for X axis and Y axis to drawn corresponding.\n' +
                     '1. For single numeric column, Histograme will be drawn to show data distribution.\n' +
                     '3. For single text or object column, Barplot will be drawn to count apperance of each value.\n' +
@@ -192,7 +190,7 @@ const Plots = (props) => {
           <Grid item xs={2} style={{ paddingTop: '5em', color: 'darkgrey' }}>
             {plotReady ? (
               <div style={{ paddingTop: '2em', color: 'darkgrey' }}>
-                <div style={{ marginTop: '1em', 'white-space': 'pre-wrap' }}>{msg}</div>
+                <div style={{ marginTop: '1em', whiteSpace: 'pre-wrap' }}>{msg}</div>
               </div>
             ) : null}
           </Grid>

@@ -71,7 +71,7 @@ const HPO = (props) => {
                 className="hpo-tab_appbar"
                 position="static"
                 color="transparent"
-                elevation="0"
+                elevation={0}
                 m={0}
                 p={0}>
                 <Tabs
@@ -88,7 +88,7 @@ const HPO = (props) => {
                     t('HPO.PHENOGENON'),
                     t('HPO.SKAT'),
                   ].map((item, index) => {
-                    return <Tab label={item} {...a11yProps(index)} />;
+                    return <Tab key={index} label={item} {...a11yProps(index)} />;
                   })}
                 </Tabs>
               </AppBar>
@@ -136,7 +136,8 @@ const HPO = (props) => {
                     {t('HPO.Phenogenon_subtitle')}
                   </Box>
                 </Typography>
-                <AppBar position="static" color="white" elevation="0" m={0} p={0}>
+
+                <AppBar position="static" color="transparent" elevation={0} m={0} p={0}>
                   <Tabs
                     value={phenogenonvalue}
                     onChange={handleChangePhenogenon}
@@ -146,7 +147,7 @@ const HPO = (props) => {
                     aria-label="full width tabs example"
                     classes={{ indicator: 'hpo-bigIndicator' }}>
                     {[t('HPO.RECESSIVE'), t('HPO.DOMINANT')].map((item, index) => {
-                      return <Tab label={item} {...a11yProps(index)} />;
+                      return <Tab key={index} label={item} {...a11yProps(index)} />;
                     })}
                   </Tabs>
                 </AppBar>

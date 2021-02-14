@@ -66,7 +66,7 @@ const Individual = (props) => {
             {loaded ? (
               <Fab
                 className="individual-fab"
-                size="middle"
+                size="large"
                 color="primary"
                 aria-label="add"
                 onClick={() => openDialog()}>
@@ -94,7 +94,7 @@ const Individual = (props) => {
                 className="individual-tab_appbar"
                 position="static"
                 color="transparent"
-                elevation="0"
+                elevation={0}
                 m={0}
                 p={0}>
                 <Tabs
@@ -110,7 +110,7 @@ const Individual = (props) => {
                     i18next.t('Individual.RARE_COMP_HETS'),
                     i18next.t('Individual.RARE_VARIANTS'),
                   ].map((item, index) => {
-                    return <Tab label={item} {...a11yProps(index)} key={index} />;
+                    return <Tab key={index} label={item} {...a11yProps(index)} key={index} />;
                   })}
                 </Tabs>
               </AppBar>

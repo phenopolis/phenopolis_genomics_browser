@@ -43,7 +43,7 @@ export default function NewPatient() {
                 justify="center"
                 alignItems="center"
                 className="m-2 font-size-sm mb-3 text-black-50 text-left"
-                style={{ paddingTop: '1em', color: 'darkgrey', 'white-space': 'pre-wrap' }}>
+                style={{ paddingTop: '1em', color: 'darkgrey', whiteSpace: 'pre-wrap' }}>
                 {'1. You may skip file upload step for now.\n' +
                   '2. Patient detail can be modified later.\n' +
                   '3. You may delete patient in Patient Management page.'}

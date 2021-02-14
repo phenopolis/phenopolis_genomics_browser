@@ -174,9 +174,9 @@ const NoLoginBar = (props) => {
   );
 };
 
-NoLoginBar.propTypes = {
-  classes: PropTypes.object.isRequired,
-  width: PropTypes.oneOf(['lg', 'md', 'sm', 'xl', 'xs']).isRequired,
-};
+// NoLoginBar.propTypes = {
+//   classes: PropTypes.object.isRequired,
+//   width: PropTypes.oneOf(['lg', 'md', 'sm', 'xl', 'xs']).isRequired,
+// };
 
 export default NoLoginBar;

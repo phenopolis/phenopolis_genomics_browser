@@ -58,7 +58,7 @@ const VersatileTable = (props) => {
       };
     });
 
-    const tmpColnames = CreateColumns(tableData.colNames, tableData.data);
+    const tmpColnames = CreateColumns(tableData.colNames, tableData.data, props.onActionClick);
 
     setTableColumn(tmpColnames);
     setTableData(tmpData);
@@ -101,7 +101,7 @@ const VersatileTable = (props) => {
   };
 
   const rowProps = (param) => {
-    return { myAssignedID: param.rowIndex };
+    return { myassignedid: param.rowIndex };
   };
 
   const handleUpdateFilter = (newFilter) => {

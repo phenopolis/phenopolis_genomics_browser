@@ -102,9 +102,7 @@ const useStylesSortableItem = makeStyles((theme) => ({
 }));
 
 const SortableList = SortableContainer(({ items, onChipClick }) => {
-  useEffect(() => {
-    console.log(items);
-  }, []);
+  useEffect(() => {}, []);
   return (
     <ul>
       {items.map((item, index) => (
@@ -132,14 +130,14 @@ const HideColumn = (props) => {
       for (let i = 0; i < newTableColumn.length; i++) {
         newTableColumn[i].show = 1;
       }
-      console.log(newTableColumn);
+
       props.onHideColumn(newTableColumn, 'set');
     } else if (action === 'none') {
       const newTableColumn = [...props.tableColumn];
       for (let i = 0; i < newTableColumn.length; i++) {
         newTableColumn[i].show = 0;
       }
-      console.log(newTableColumn);
+
       props.onHideColumn(newTableColumn, 'set');
     }
   };

@@ -110,8 +110,6 @@ const ManagePatient = () => {
         });
       });
 
-      console.log(myData);
-
       setPatientData({ colNames: myColname, data: myData });
       setDataReady(true);
     }
@@ -164,7 +162,11 @@ const ManagePatient = () => {
                 Create New Patient
               </Button>
 
-              <VersatileTable tableData={PatientData} />
+              <VersatileTable
+                tableData={PatientData}
+                genomePlot={false}
+                onActionClick={handleActionClick}
+              />
 
               {/* <VirtualGrid
                 tableData={PatientData}

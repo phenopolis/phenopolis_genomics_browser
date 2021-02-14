@@ -33,13 +33,15 @@ const MetaData = (props) => {
 
         <Paper className={'meta-paper'} style={{ position: 'relative' }}>
           <div style={{ position: 'absolute', bottom: '10px', right: '10px', zIndex: '100' }}>
-            <IconButton aria-label="expand">
-              {expandNumber === 3 ? (
-                <ExpandMoreIcon onClick={() => handleExpendAll(100)} />
-              ) : (
-                <ExpandLessIcon onClick={() => handleExpendAll(3)} />
-              )}
-            </IconButton>
+            {expandNumber === 3 ? (
+              <IconButton aria-label="expand" onClick={() => handleExpendAll(100)}>
+                <ExpandMoreIcon />
+              </IconButton>
+            ) : (
+              <IconButton aria-label="expand" onClick={() => handleExpendAll(3)}>
+                <ExpandLessIcon />
+              </IconButton>
+            )}
           </div>
           <SizeMe>
             {({ size }) => (
@@ -63,6 +65,7 @@ const MetaData = (props) => {
                             metadata.data[0][item.key].map((chip, m) => {
                               return chip.href ? (
                                 <TypeChip
+                                  key={m}
                                   label={chip.display}
                                   type="other"
                                   size="small"
@@ -72,6 +75,7 @@ const MetaData = (props) => {
                                 />
                               ) : (
                                 <TypeChip
+                                  key={m}
                                   label={chip.display}
                                   type={
                                     item.base_href

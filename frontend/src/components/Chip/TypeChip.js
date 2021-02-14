@@ -130,7 +130,7 @@ const TypeChip = (props) => {
     props.onDeleteClick(label);
   };
 
-  const open = Boolean(anchorEl) & (indexTo === randomIndex);
+  const open = Boolean(anchorEl) && indexTo === randomIndex;
 
   return (
     <span>
@@ -169,14 +169,14 @@ const TypeChip = (props) => {
                 loaded ? `${type}-bg chip-title-loaded` : `${type}-bg chip-title-unloaded`
               }>
               <Grid container direction="row" justify="space-between" alignItems="center">
-                <Typography variant="subtitle1" style={{ 'font-weight': '900', color: 'white' }}>
+                <Typography variant="subtitle1" style={{ fontWeight: '900', color: 'white' }}>
                   {props.label}
 
                   {(loaded === false) | (props.to.split('/')[2] !== previewName) ? (
                     <small style={{ color: 'white' }}>
                       {' '}
                       &nbsp;&nbsp;
-                      <CircularProgress size={12} color="white" />
+                      <CircularProgress size={12} color="inherit" />
                     </small>
                   ) : null}
                 </Typography>

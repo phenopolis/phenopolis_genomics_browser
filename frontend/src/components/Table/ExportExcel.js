@@ -25,7 +25,7 @@ const ExportExcel = (props) => {
           justify="center"
           alignItems="center"
           className="m-2"
-          style={{ paddingTop: '1em', color: 'darkgrey', 'white-space': 'pre-wrap' }}>
+          style={{ paddingTop: '1em', color: 'darkgrey', whiteSpace: 'pre-wrap' }}>
           {'1. Please click above button to download current table.\n' +
             '2. This is the table after your filtering.\n' +
             "3. If one cell in below table contains multiple chips, they will be joined by ';'."}
