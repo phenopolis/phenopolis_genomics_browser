@@ -4,7 +4,7 @@ import { makeStyles } from '@material-ui/core/styles';
 import { TableCell, Typography, ButtonGroup, Button, IconButton, Tooltip } from '@material-ui/core';
 
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faPencil, faTrashAlt, faFileAlt } from '@fortawesome/pro-solid-svg-icons';
+import { faPen, faTrashAlt, faFileAlt } from '@fortawesome/pro-solid-svg-icons';
 
 const useStyles = makeStyles((theme) => ({}));
 
@@ -27,7 +27,7 @@ const ActionColumn = (props) => {
           style={{ width: 30, height: 30, padding: 0, border: '0.5px solid #616161' }}
           aria-label="update"
           onClick={() => triggerAction('update')}>
-          <FontAwesomeIcon icon={faPencil} style={{ fontSize: '12' }} />
+          <FontAwesomeIcon icon={faPen} style={{ fontSize: '12' }} />
         </IconButton>
       </Tooltip>
 

@@ -13,11 +13,21 @@ import Dialog from '@material-ui/core/Dialog';
 import EditPerson from '../components/Individual/EditPerson';
 import i18next from 'i18next';
 
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faPen, faFileAlt, faTrashAlt } from '@fortawesome/pro-solid-svg-icons';
+
+import { HashLink } from 'react-router-hash-link';
+
 const VersatileTable = React.lazy(() => import('../components/BaseTable/VersatileTable'));
 
 const Individual = (props) => {
   const [value, setValue] = useState(0);
-  const [editOpen, setEditOpen] = useState(false);
+
+  const editButtons = [
+    { title: 'info', icon: faPen },
+    { title: 'file', icon: faFileAlt },
+    { title: 'delete', icon: faTrashAlt },
+  ];
 
   const dispatch = useDispatch();
   const location = useLocation();
@@ -47,15 +57,6 @@ const Individual = (props) => {
     setValue(index);
   };
 
-  const refreshPage = (patientName) => {
-    setSnack(i18next.t('Individual.edit_message'));
-    dispatch(getIndividualInformation(patientName));
-  };
-
-  const openDialog = () => {
-    setEditOpen(!editOpen);
-  };
-
   return (
     <>
       <React.Fragment>
@@ -63,14 +64,22 @@ const Individual = (props) => {
         <div className="individual-container">
           <Container maxWidth="xl">
             {loaded ? (
-              <Fab
-                className="individual-fab"
-                size="large"
-                color="primary"
-                aria-label="add"
-                onClick={() => openDialog()}>
-                <EditIcon />
-              </Fab>
+              <span className="individual-fab">
+                {editButtons.map((item, index) => {
+                  return (
+                    <Fab
+                      className="mr-2"
+                      size="large"
+                      color="primary"
+                      aria-label="add"
+                      // onClick={() => openDialog()}
+                      component={HashLink}
+                      to={'/editpatient/' + props.match.params.individualId + '#' + item.title}>
+                      <FontAwesomeIcon icon={item.icon} style={{ fontSize: '20px' }} />
+                    </Fab>
+                  );
+                })}
+              </span>
             ) : (
               <Skeleton
                 animation={'wave'}
@@ -145,20 +154,6 @@ const Individual = (props) => {
                   />
                 </TabPanel>
               </SwipeableViews>
-              <Dialog
-                fullWidth={true}
-                maxWidth={'md'}
-                open={editOpen}
-                onClose={() => openDialog()}
-                aria-labelledby="alert-dialog-title"
-                aria-describedby="alert-dialog-description">
-                <EditPerson
-                  patientName={props.match.params.individualId}
-                  metadata={individualInfo.metadata}
-                  dialogClose={() => openDialog()}
-                  refreshData={refreshPage}
-                />
-              </Dialog>
             </>
           ) : (
             <Skeleton height={550} />

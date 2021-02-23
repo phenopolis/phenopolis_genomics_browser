@@ -42,6 +42,7 @@ export const getAllIndividual = () => {
     dispatch({ type: FETCH_INDIVIDUA_REQUEST });
     Service.getAllIndividual()
       .then((res) => {
+        console.log(res);
         dispatch({ type: FETCH_INDIVIDUA_SUCCESS, payload: { data: res.data } });
       })
       .catch((error) => {
