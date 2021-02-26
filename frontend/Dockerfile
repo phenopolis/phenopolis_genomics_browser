@@ -2,7 +2,8 @@ FROM node:14.4.0
 
 WORKDIR /app
 
-RUN npm install --global netlify-cli@2.68
+RUN npm install -g npm
+RUN npm install --global netlify-cli
 COPY package.json package-lock.json .npmrc ./
 RUN npm install
 

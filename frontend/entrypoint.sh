@@ -27,7 +27,7 @@ else
 fi
 
 #trap cleanup INT TERM EXIT
-trap cleanup KILL INT TERM EXIT QUIT WINCH ERR
+trap cleanup INT TERM EXIT QUIT WINCH ERR
 #while true; do :; done
 echo ">>> Starting NETLIFY"
 netlify dev | tee dev.log &
