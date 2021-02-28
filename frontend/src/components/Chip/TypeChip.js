@@ -65,6 +65,8 @@ const TypeChip = (props) => {
 
   const [type, setType] = useState('other');
   const [anchorEl, setAnchorEl] = useState(null);
+  const [showPopover, setShowPopover] = useState(false);
+  const [timeout, setModalTimeout] = React.useState(null);
 
   const redirectTo = () => {
     history.push(best);
@@ -119,12 +121,15 @@ const TypeChip = (props) => {
       dispatch(getPreviewInformation(to));
       dispatch(setPopoverIndex(randomIndex));
       setAnchorEl(event.currentTarget);
+
+      timeout && !showPopover && clearTimeout(timeout);
+      setModalTimeout(setTimeout(() => setShowPopover(true), 750));
     }
   };
 
   const handlePopoverClose = () => {
     setAnchorEl(null);
-    dispatch(setPopoverIndex(false));
+    setShowPopover(false), dispatch(setPopoverIndex(false));
     dispatch(clearPreviewInformation());
   };
 
@@ -133,7 +138,7 @@ const TypeChip = (props) => {
     props.onDeleteClick(label);
   };
 
-  const open = Boolean(anchorEl) && indexTo === randomIndex;
+  const open = Boolean(anchorEl) && indexTo === randomIndex && showPopover;
 
   return (
     <span>
@@ -152,7 +157,10 @@ const TypeChip = (props) => {
         variant="outlined"
         onMouseDown={(event) => handleSearch(event, props.to)}
         onMouseEnter={(event) => handlePopoverOpen(event, props.to)}
-        // onMouseLeave={handlePopoverClose}
+        onMouseLeave={() => {
+          timeout && clearTimeout(timeout);
+          setShowPopover(false);
+        }}
         style={
           props.slash ? { backgroundColor: 'white', opacity: 0.5 } : { backgroundColor: 'white' }
         }
