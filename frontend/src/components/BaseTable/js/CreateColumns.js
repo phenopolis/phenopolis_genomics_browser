@@ -107,8 +107,13 @@ export const CreateColumns = (mycolumns, myrows, onActionFunction) => {
         width: tmpWidth,
         resizable: true,
         align: Column.Alignment.CENTER,
-        cellRenderer: ({ cellData, column, rowIndex }) => (
-          <ActionColumn rowIndex={rowIndex} colName={column} onActionFunction={onActionFunction} />
+        cellRenderer: ({ column, rowIndex }) => (
+          <ActionColumn
+            PatientID={myrows[rowIndex].internal_id[0].display}
+            rowIndex={rowIndex}
+            colName={column}
+            onActionFunction={onActionFunction}
+          />
         ),
         frozen: Column.FrozenDirection.LEFT,
         sortable: false,
