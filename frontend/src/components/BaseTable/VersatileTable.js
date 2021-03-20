@@ -70,7 +70,12 @@ const VersatileTable = (props) => {
   const onColumnSort = (sortBy) => {
     const order = sortBy.order === 'asc' ? 1 : -1;
     const tmpdata = [...filteredData];
-    tmpdata.sort((a, b) => (a[sortBy.key] > b[sortBy.key] ? order : -order));
+    if (sortBy.column.type === 'number') {
+      tmpdata.sort((a, b) => (Number(a[sortBy.key]) > Number(b[sortBy.key]) ? order : -order));
+    } else {
+      tmpdata.sort((a, b) => (a[sortBy.key] > b[sortBy.key] ? order : -order));
+    }
+
     setFilteredData(tmpdata);
     setSortBy(sortBy);
   };
