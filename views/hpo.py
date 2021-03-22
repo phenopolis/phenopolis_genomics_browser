@@ -4,9 +4,9 @@ HPO view - Human Phenotype Ontology
 from flask import session, jsonify
 from views import application
 from views.auth import requires_auth, USER
-from views.postgres import postgres_cursor, session_scope
+from views.postgres import get_db, session_scope
 from views.general import process_for_display, cache_on_browser
-from db.model import HPO
+from views.individual import _get_genes_for_individual, _get_feature_for_individual
 from db.helpers import cursor2dict, query_user_config
 
 
@@ -20,80 +20,102 @@ def hpo(hpo_id="HP:0000001", subset="all", language="en"):
 
     with session_scope() as db_session:
         config = query_user_config(db_session=db_session, language=language, entity="hpo")
+        flag = "hpo_id"
         if not hpo_id.startswith("HP:"):
-            # c.execute("select * from hpo where hpo_name='%s' limit 1"%hpo_id)
-            data = db_session.query(HPO).filter(HPO.hpo_name == hpo_id)
-        else:
-            # c.execute("select * from hpo where hpo_id='%s' limit 1"%hpo_id)
-            data = db_session.query(HPO).filter(HPO.hpo_id == hpo_id)
-        res = [p.as_dict() for p in data][0]
-        application.logger.debug(res)
-        hpo_id = res["hpo_id"]
-        hpo_name = res["hpo_name"]
-        parent_phenotypes = [
-            {"display": i, "end_href": j}
-            for i, j, in zip(res["hpo_ancestor_names"].split(";"), res["hpo_ancestor_ids"].split(";"))
-        ]
-        c = postgres_cursor()
-        c.execute(
-            """select *
-            from individuals as i,
-            users_individuals as ui
+            flag = "name"
+        sql_query = rf"""
+            select
+                t.id, t.hpo_id, t.name
+            from
+                hpo.term t
             where
-            i.internal_id=ui.internal_id
-            and ui.user='%s'
-            and i.ancestor_observed_features like '%s'"""
-            % (session[USER], "%" + hpo_id + "%",)
-        )
-        individuals = cursor2dict(c)
-        if hpo_id != "HP:0000001":
-            c.execute("select * from phenogenon where hpo_id='%s'" % hpo_id)
-            config[0]["phenogenon_recessive"]["data"] = [
-                {
-                    "gene_id": [{"display": gene_id, "end_href": gene_id}],
-                    "hpo_id": hpo_id,
-                    "hgf_score": hgf,
-                    "moi_score": moi_score,
-                }
-                for gene_id, hpo_id, hgf, moi_score, in c.fetchall()
-            ]
-            c.execute("select * from phenogenon where hpo_id='%s'" % hpo_id)
-            config[0]["phenogenon_dominant"]["data"] = [
-                {
-                    "gene_id": [{"display": gene_id, "end_href": gene_id}],
-                    "hpo_id": hpo_id,
-                    "hgf_score": hgf,
-                    "moi_score": moi_score,
-                }
-                for gene_id, hpo_id, hgf, moi_score, in c.fetchall()
-            ]
-            # Chr,Start,End,HPO,Symbol,ENSEMBL,FisherPvalue,SKATO,variants,CompoundHetPvalue,HWEp,min_depth,nb_alleles_cases,case_maf,nb_ctrl_homs,nb_case_homs,MaxMissRate,nb_alleles_ctrls,nb_snps,nb_cases,minCadd,MeanCallRateCtrls,MeanCallRateCases,OddsRatio,MinSNPs,nb_ctrl_hets,total_maf,MaxCtrlMAF,ctrl_maf,nb_ctrls,nb_case_hets,maxExac
-            c.execute("select Symbol,FisherPvalue,SKATO,OddsRatio,variants from skat where HPO='%s'" % hpo_id)
-            config[0]["skat"]["data"] = [
-                {
-                    "gene_id": [{"display": gene_id, "end_href": gene_id}],
-                    "fisher_p_value": fisher_p_value,
-                    "skato": skato,
-                    "odds_ratio": odds_ratio,
-                    "variants": [],
-                }
-                for gene_id, fisher_p_value, skato, odds_ratio, _variants in c.fetchall()[:100]
-            ]
+                t.id in (
+                select
+                    distinct(regexp_split_to_table(path::text, '\.'))::int as ancestor
+                from
+                    hpo.is_a_path tpath
+                join hpo.term ht on
+                    tpath.term_id = ht.id
+                where
+                    ht.{flag} = %s )
+            order by
+                t.id"""
+        sqlq = sql_query
+        with get_db() as conn:
+            with conn.cursor() as cur:
+                cur.execute(sqlq, [hpo_id])
+                res = cursor2dict(cur)
+        application.logger.debug(res)
+        if not res:
+            return jsonify(config)
+        h_id = res[-1]["id"]
+        hpo_id = res[-1]["hpo_id"]
+        hpo_name = res[-1]["name"]
+        parent_phenotypes = [
+            {"display": i, "end_href": j} for j, i in [(h, n) for i, h, n in [ii.values() for ii in res]]
+        ]
+        # query to give the ancestors for a given hpo for a given user for all patients this user has access
+        sqlq = """
+            select distinct i.id, i.external_id, i.phenopolis_id, i.sex, i.consanguinity
+            from hpo.term t join phenopolis.individual_feature if2 on t.id = if2.feature_id
+            join phenopolis.individual i on i.id = if2.individual_id
+            join public.users_individuals ui on ui.internal_id = i.phenopolis_id
+            where exists (
+                select 1 from hpo.is_a_path p
+                where p.term_id = t.id
+                and p.path ~ %s
+            )
+            and ui."user" = %s
+            """
+        with get_db() as conn:
+            with conn.cursor() as cur:
+                cur.execute(sqlq, (f"*.{h_id}.*", session[USER]))
+
+                individuals = cursor2dict(cur)
+
+                if hpo_id != "HP:0000001":
+                    cur.execute("select * from phenogenon where hpo_id='%s'" % hpo_id)
+                    config[0]["phenogenon_recessive"]["data"] = [
+                        {
+                            "gene_id": [{"display": gene_id, "end_href": gene_id}],
+                            "hpo_id": hpo_id,
+                            "hgf_score": hgf,
+                            "moi_score": moi_score,
+                        }
+                        for gene_id, hpo_id, hgf, moi_score, in cur.fetchall()
+                    ]
+                    cur.execute("select * from phenogenon where hpo_id='%s'" % hpo_id)
+                    config[0]["phenogenon_dominant"]["data"] = [
+                        {
+                            "gene_id": [{"display": gene_id, "end_href": gene_id}],
+                            "hpo_id": hpo_id,
+                            "hgf_score": hgf,
+                            "moi_score": moi_score,
+                        }
+                        for gene_id, hpo_id, hgf, moi_score, in cur.fetchall()
+                    ]
+                    # Chr,Start,End,HPO,Symbol,ENSEMBL,FisherPvalue,SKATO,variants,CompoundHetPvalue,HWEp,min_depth,nb_alleles_cases,case_maf,nb_ctrl_homs,nb_case_homs,MaxMissRate,nb_alleles_ctrls,nb_snps,nb_cases,minCadd,MeanCallRateCtrls,MeanCallRateCases,OddsRatio,MinSNPs,nb_ctrl_hets,total_maf,MaxCtrlMAF,ctrl_maf,nb_ctrls,nb_case_hets,maxExac
+                    cur.execute("select Symbol,FisherPvalue,SKATO,OddsRatio,variants from skat where HPO='%s'" % hpo_id)
+                    config[0]["skat"]["data"] = [
+                        {
+                            "gene_id": [{"display": gene_id, "end_href": gene_id}],
+                            "fisher_p_value": fisher_p_value,
+                            "skato": skato,
+                            "odds_ratio": odds_ratio,
+                            "variants": [],
+                        }
+                        for gene_id, fisher_p_value, skato, odds_ratio, _variants in cur.fetchall()[:100]
+                    ]
         application.logger.debug(len(individuals))
         config[0]["preview"] = [["Number of Individuals", len(individuals)]]
         if subset == "preview":
             return jsonify([{subset: y["preview"]} for y in config])
         for ind in individuals:
-            ind["internal_id"] = [{"display": ind["internal_id"]}]
+            ind["internal_id"] = [{"display": ind["phenopolis_id"]}]
             ind["simplified_observed_features_names"] = [
-                {"display": i, "end_href": j}
-                for i, j, in zip(
-                    ind["simplified_observed_features_names"].split(";"),
-                    ind["simplified_observed_features"].split(","),
-                )
+                {"display": j, "end_href": i} for i, j, in _get_feature_for_individual(ind)
             ]
-            if ind["genes"]:
-                ind["genes"] = [{"display": i} for i in ind.get("genes", "").split(",")]
+            ind["genes"] = [{"display": i[0]} for i in _get_genes_for_individual(ind)]
         config[0]["individuals"]["data"] = individuals
         config[0]["metadata"]["data"] = [
             {"name": hpo_name, "id": hpo_id, "count": len(individuals), "parent_phenotypes": parent_phenotypes}

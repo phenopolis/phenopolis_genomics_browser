@@ -58,8 +58,8 @@ def test_exceptions(_demo):
 @pytest.mark.parametrize(
     ("query", "subset", "msg"),
     (
-        ("HP:0000478", "all", "Retinal dystrophy;Abnormal fundus morphology"),
-        ("Neurogenic bladder", "all", "HP:0000011"),
+        ("HP:0000478", "all", "Phenotypic abnormality"),
+        ("Conductive hearing impairment", "all", "HP:0000405"),
         ("HP:0000478", "preview", '[{"preview":[["Number of Individuals"'),
         ("HP:0000478", "metadata", '"name":"Abnormality of the eye"'),
     ),

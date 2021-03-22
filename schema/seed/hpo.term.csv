@@ -9,10 +9,16 @@
 107,HP:0000107,Renal cyst,A fluid filled sac in the kidney.,
 118,HP:0000118,Phenotypic abnormality,A phenotypic abnormality.,This is the root of the phenotypic abnormality subontology of the HPO.
 119,HP:0000119,Abnormality of the genitourinary system,The presence of any abnormality of the genitourinary system.,
+152,HP:0000152,Abnormality of head or neck,An abnormality of head and neck.,
+234,HP:0000234,Abnormality of the head,An abnormality of the head.,
+271,HP:0000271,Abnormality of the face,An abnormality of the face.,
+309,HP:0000309,Abnormality of the midface,"An anomaly of the midface, which is a region and not an anatomical term. It extends, superiorly, from the inferior orbital margin to, inferiorly, the level of nasal base. It is formed by the maxilla (upper jaw) and zygoma and cheeks and malar region. Traditionally, the nose and premaxilla are not included in the midface.",
 316,HP:0000316,Hypertelorism,"Interpupillary distance more than 2 SD above the mean (alternatively, the appearance of an increased interpupillary distance or widely spaced eyes).",
 356,HP:0000356,Abnormality of the outer ear,An abnormality of the external ear.,
 359,HP:0000359,Abnormality of the inner ear,An abnormality of the inner ear.,
+364,HP:0000364,Hearing abnormality,An abnormality of the sensory perception of sound.,"According to the World Health Organization, deafness refers to the complete loss of hearing ability in one or two ears. Hearing impairment refers to both complete and partial loss of the ability to hear."
 365,HP:0000365,Hearing impairment,A decreased magnitude of the sensory perception of sound.,"Hearing loss can be categorized by which part of the auditory system is damaged, as conductive hearing loss, sensorineural hearing loss, and mixed hearing loss. Another axis of classification uses the degree of hearing impairment. The degree of hearing loss is computed by using a three frequency average taken at 500 Hz, 1,000 Hz and 2,000 Hz. The average of these three frequencies is called the Pure Tone Average (PTA). 0-20 dB is considered normal, 21-40 dB mild loss, 41-60 dB moderate loss, 61-70 dB moderately severe loss,71-90 dB severe loss, and greater than 90 dB profound loss. Note that the word deafness is occasionally used to describe partial hearing loss. The World Health Organization uses the word deafness to refer to complete loss of the ability to hear, and hearing impairment to refer to any degree of reduced hearing."
+370,HP:0000370,Abnormality of the middle ear,An abnormality of the middle ear.,
 383,HP:0000383,Abnormality of periauricular region,,
 384,HP:0000384,Preauricular skin tag,A rudimentary tag of skin often containing ear tissue including a core of cartilage and located just anterior to the auricle (outer part of the ear).,
 405,HP:0000405,Conductive hearing impairment,An abnormality of vibrational conductance of sound to the inner ear leading to impairment of sensory perception of sound.,A conductive hearing impariment with greater than 90 dB loss.
@@ -27,7 +33,9 @@
 587,HP:0000587,Abnormality of the optic nerve,Abnormality of the optic nerve.,"The optic nerve, which is also known as cranial nerve II, transmits visual information from the retina to the brain. The term 'optic disc' is frequently used to describe the portion of the optic nerve clinically visible on fundoscopic examination."
 589,HP:0000589,Coloboma,A developmental defect characterized by a cleft of some portion of the eye or ocular adnexa.,
 593,HP:0000593,Abnormal anterior chamber morphology,"Abnormality of the anterior chamber, which is the space in the eye that is behind the cornea and in front of the iris.",
+598,HP:0000598,Abnormality of the ear,An abnormality of the ear.,Either a morphological abnormality or hearing deficit. This should be split more cleanly in the future.
 601,HP:0000601,Hypotelorism,"Interpupillary distance less than 2 SD below the mean (alternatively, the appearance of an decreased interpupillary distance or closely spaced eyes).",
+951,HP:0000951,Abnormality of the skin,An abnormality of the skin.,
 953,HP:0000953,Hyperpigmentation of the skin,A darkening of the skin related to an increase in melanin production and deposition.,
 1000,HP:0001000,Abnormality of skin pigmentation,An abnormality of the pigmentation of the skin.,
 1010,HP:0001010,Hypopigmentation of the skin,A reduction of skin color related to a decrease in melanin production and deposition.,
@@ -35,23 +43,33 @@
 1098,HP:0001098,Abnormal fundus morphology,Any structural abnormality of the fundus of the eye.,
 1103,HP:0001103,Abnormal macular morphology,"A structural abnormality of the macula lutea, which is an oval-shaped highly pigmented yellow spot near the center of the retina.","The term macula derives from the presence of the xanthophyll pigments, lutein and zeaxanthin, in a region five to six millimetres in diameter at the posterior pole of  the  eye,  appearing  as  a  yellow  spot (macula  lutea),  when  viewed  in  red-free light."
 1507,HP:0001507,Growth abnormality,,
+1574,HP:0001574,Abnormality of the integument,"An abnormality of the integument, which consists of the skin and the superficial fascia.","Abnormality of skin, hair, or nails."
+1626,HP:0001626,Abnormality of the cardiovascular system,Any abnormality of the cardiovascular system.,"The cardiovascular system consists of the heart, vasculature, and the lymphatic system."
 2597,HP:0002597,Abnormality of the vasculature,An abnormality of the vasculature.,
+2664,HP:0002664,Neoplasm,An organ or organ-system abnormality that consists of uncontrolled autonomous cell-proliferation which can occur in any part of the body as a benign or malignant neoplasm (tumour).,"The World Health Organization (WHO) classifies neoplasms into four main groups: (i) benign neoplasm, (ii) in situ neoplasm, (iii) malignant neoplasm, and (iv) neoplasm of uncertain or unknown behavior. A malignant neoplasm is also known as cancer."
 4328,HP:0004328,Abnormal anterior eye segment morphology,"An abnormality of the anterior segment of the eyeball (which comprises the structures in front of the vitreous humour: the cornea, iris, ciliary body, and lens).","The anterior segment comprises the structures in front of the vitreous humour: the cornea, iris, ciliary body, and lens."
 4329,HP:0004329,Abnormal posterior eye segment morphology,,"The posterior segment comprises the anterior hyaloid membrane and all of the optical structures behind it: the vitreous humor, retina, choroid, and optic nerve."
+4426,HP:0004426,Abnormality of the cheek,An abnormality of the cheek- one of two bilateral soft tissue facial structures in the region of the face inferior to the eyes and between the nose and the ear. \,
 4467,HP:0004467,Preauricular pit,Small indentation anterior to the insertion of the ear.,"Preauricular cysts and sinuses are ectodermal remnants from an aberrant development of the auditory tubercles, tend to be bilateral and are localized anterior to the tragus of the ear. The preauricular sinus is a benign congenital lesion of the preauricular soft tissue consisting of a blind-ending narrow tube or pit. It is also known as preauricular pit, preauricular fistula, preauricular tract and preauricular cyst. It can be asymptomatic or present as an infected and discharging sinus. It presents as a small pit adjacent to the external ear usually located at the anterior margin of the ascending limb of the helix. The preauricular sinus is variably also termed a preauricular pit, preauricular fistula, preauricular tract and preauricular cyst."
 5306,HP:0005306,Capillary hemangioma,"The presence of a capillary hemangioma, which are hemangiomas with small endothelial spaces.",
 7754,HP:0007754,Macular dystrophy,"Macular dystrophy is a nonspecific term for premature retinal cell aging and cell death, generally confied to the macula in which no clear extrinsic cause is evident.",
 8056,HP:0008056,Aplasia/Hypoplasia affecting the eye,,
 10609,HP:0010609,Skin tags,"Cutaneous skin tags also known as acrochorda or fibroepithelial polyps are small benign tumours that may either form secondarily over time primarily in areas where the skin forms creases, such as the neck, armpit or groin or may also be present at birth, in which case they usually occur in the periauricular region.",
 10935,HP:0010935,Abnormality of the upper urinary tract,An abnormality of the upper urinary tract.,The upper urinary tract is a subdivision of urinary system which consists of the kidney and the ureters.
+11121,HP:0011121,Abnormality of skin morphology,Any morphological abnormality of the skin.,
 11276,HP:0011276,Vascular skin abnormality,,
 11354,HP:0011354,Generalized abnormality of skin,An abnormality of the skin that is not localized to any one particular region.,
+11355,HP:0011355,Localized skin lesion,A lesion of the skin that is located in a specific region rather than being generalized.,
 11389,HP:0011389,Functional abnormality of the inner ear,An abnormality of the function of the inner ear.,"The inner ear comprises the cochlea, three semicircular canals and the vestibule (labyrinth), and is directly responsible for hearing. Additionally, the vestibule and semicircular canals function to maintain balance or equilibrium."
 11452,HP:0011452,Functional abnormality of the middle ear,An abnormality of the function of the middle ear.,"The middle ear comprises the tympanic cavity in the temporal bone of the skull behind the eardrum, and is separated from the outer ear by the ear drum. The tympanic cavity contains the auditory ossicles (malleus, incus, stapes) that vibrate when exposed to sound, forming a chain that extends to the oval window of the inner ear and whose main function is to amplify sound. Additionally, the middle ear connects to the back of the throat and nose through the Eustachian tube."
+11793,HP:0011793,Neoplasm by anatomical site,Neoplasm categorized according to the anatomical site of origin of the neoplasm.,
 12210,HP:0012210,Abnormal renal morphology,Any structural anomaly of the kidney.,
 12372,HP:0012372,Abnormal eye morphology,"A structural anomaly of the globe of the eye, or bulbus oculi.",previously: Abnormal globe morphology
 12373,HP:0012373,Abnormal eye physiology,A functional anomaly of the eye.,
 31703,HP:0031703,Abnormal ear morphology,Any structural anomaly of the ear.,
+31704,HP:0031704,Abnormal ear physiology,Any functional anomaly of the ear.,
+100276,HP:0100276,Skin pit,"A small, skin-lined tract that leads from the surface to deep within the tissues.",
 100277,HP:0100277,Periauricular skin pits,Benign congenital lesions of the periauricular soft tissue consisting of a blind-ending narrow tube or pit.,
+100742,HP:0100742,Vascular neoplasm,A benign or malignant neoplasm (tumour) originating in the vascular system.,
 100886,HP:0100886,Abnormality of globe location,An abnormality in the placement of the ocular globe (eyeball).,
 100887,HP:0100887,Abnormality of globe size,An abnormality in the size of the ocular globe (eyeball).,
