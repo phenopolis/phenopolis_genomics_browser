@@ -4,9 +4,9 @@ A description of the code setup is available [here](code_setup.md).
 
 ## Setup using docker compose
 
-Set the following environment variables in `private.env` :
+Set the following environment variables in `private.env`:
 
-``` bash
+```bash
 AWS_SECRET_ACCESS_KEY=....
 AWS_ACCESS_KEY_ID=....
 
@@ -19,7 +19,7 @@ Note: do not add single or double quotes around the value as they are preserved.
 
 This will set up the database and load the demo database.
 
-``` bash
+```bash
 docker-compose up
 ```
 
@@ -37,7 +37,7 @@ With the demo data the following exemplar links should work on the frontend:
 
 Rebuild, if you change `Dockerfile` or `requirements.txt`
 
-``` bash
+```bash
 docker-compose up --build
 ```
 
@@ -51,13 +51,13 @@ If you do not wish to load any data, simply comment out all the lines within thi
 
 It is possible to connect to the postgres shell as follows:
 
-``` bash
+```bash
 # Note change the values of the user and database name required
 docker-compose exec db psql --user phenopolis_api --dbname phenopolis_db
 ```
 
 > Note: When importing an AWS RDS SQL dump, you will need to create the below user before importing the SQL file:
 
-``` bash
+```bash
 docker-compose exec db sh -c 'createuser rdsadmin -U phenopolis_api'
 ```

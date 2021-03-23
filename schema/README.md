@@ -5,7 +5,7 @@ This schema should be created automatically in the Docker Phenopolis API db.
 Generally, if you have an existing database and superuser, you can create it
 using:
 
-``` bash
+```bash
     psql -1X -f database.sql
 ```
 
@@ -15,13 +15,13 @@ The database port is not exposed. However you can connect to a running
 container. The `script/dchost NAME` script can be used to get the container
 name, e.g.:
 
-``` bash
+```bash
 psql "host=$(scripts/dchost db) user=phenopolis_api dbname=phenopolis_db"
 ```
 
 You can avoid to specify the password by adding it to the [.pgpass file](https://www.postgresql.org/docs/current/libpq-pgpass.html)
 
-``` bash
+```bash
 # hostname:port:database:username:password
 *:*:*:phenopolis_api:phenopolis_api
 ```
@@ -31,21 +31,20 @@ You can avoid to specify the password by adding it to the [.pgpass file](https:/
 The database has a `schema_patch` table used to record the patches applied so
 far to the database:
 
-* If you want to add a table or change the database otherwise you should add
+- If you want to add a table or change the database otherwise you should add
 
   a patch into the `schema/patches` directory.
 
-* In order to apply the new patches available you can run the script
-
-`script/patch_db.py` . This should happen in production bot if you are a dev
+- In order to apply the new patches available you can run the script
+  `script/patch_db.py`. This should happen in production bot if you are a dev
   with a persistent database you may want to run it against your database when
   you pull new code.
 
-* The wrapper `script/patch_docker_db.sh` can be run to apply new patches to
+- The wrapper `script/patch_docker_db.sh` can be run to apply new patches to
 
   the database in docker-compose.
 
-* The wrappers `script/patch_dev_db.sh` and `script/patch_prod_db.sh` can be
+- The wrappers `script/patch_dev_db.sh` and `script/patch_prod_db.sh` can be
 
   run to apply new patches to the dev and prod database (to run on the
 `phenopolis_api` host).
@@ -55,7 +54,7 @@ far to the database:
 Individual variants ( `VAR.tsv` ) files can be loaded from a local file or from
 AWS. In the latter case you should export aws credentials as env var.
 
-``` bash
+```bash
 export AWS_SECRET_ACCESS_KEY=bT...7z
 export AWS_ACCESS_KEY_ID=QB...4B
 ./scripts/import_individual_variants.py \
@@ -69,7 +68,7 @@ CADD annotations are in a format pretty much compatible with PostgreSQL COPY
 command so importing it is straightforward, as long as the first two lines of
 comments are dropped:
 
-``` bash
+```bash
 
 curl -s https://krishna.gs.washington.edu/download/CADD/v1.6/GRCh37/gnomad.genomes.r2.1.1.snv.tsv.gz
     | gzip -cd | egrep -v '^#' \
@@ -87,7 +86,7 @@ using the `scripts/import_gnomad.py` script. The script only converts the file
 into COPY format in order to leave the import destination flexible. For
 instance:
 
-``` bash
+```bash
 import_gnomad.py -v https://example.com/gnomad.genomes.r3.0.sites.chr22.vcf.bgz \
     | psql -c "copy gnomad.annotation_v3 from stdin" \
         "host=$(scripts/dchost db) user=phenopolis_api dbname=phenopolis_db"
@@ -95,7 +94,7 @@ import_gnomad.py -v https://example.com/gnomad.genomes.r3.0.sites.chr22.vcf.bgz 
 
 You can import all the chromosome files using:
 
-``` bash
+```bash
 for i in $(seq 1 22) X Y; do
     ./scripts/import_gnomad.py -v \
         https://storage.googleapis.com/gnomad-public/release/3.0/vcf/genomes/gnomad.genomes.r3.0.sites.chr$i.vcf.bgz
@@ -108,7 +107,7 @@ done
 
 In order to load hbo files in the docker db:
 
-``` bash
+```bash
 dc exec app python3 ./scripts/import_hpo.py \
     --dsn "host=db user=postgres dbname=phenopolis_db"
 ```
@@ -122,7 +121,7 @@ too.
 The script prints on stdout data compatible with the `COPY` command. It can be
 used as:
 
-``` bash
+```bash
 ./scripts/import_kaviar.py -v \
     http://s3-us-west-2.amazonaws.com/kaviar-160204-public/Kaviar-160204-Public-hg19.vcf.tar \
     | psql -c "copy kaviar.annotation_hg19 (chrom, pos, ref, alt, ac, af, an, ds) from stdin" \
@@ -151,7 +150,7 @@ You can import gene, transcript and exon annotations from Ensembl running
 
 Load the data as follows:
 
-``` postgres
+```sql
 \copy ensembl.gene FROM 'genes.csv' delimiter ',' CSV HEADER;
 \copy ensembl.transcript FROM 'transcripts.csv' delimiter ',' CSV HEADER;
 \copy ensembl.exon FROM 'exons.csv' delimiter ',' CSV HEADER;
@@ -170,7 +169,7 @@ Load the data as follows:
 
 The HPO terms are in the `hpo.term` table:
 
-``` postgres
+```sql
 phenopolis_dev_db=> select id, hpo_id, name, description from hpo.term where hpo_id = 'HP:0000478';
  id  |   hpo_id   |          name          |                                       description
 -----+------------+------------------------+-----------------------------------------------------------------------------------------
@@ -180,7 +179,7 @@ phenopolis_dev_db=> select id, hpo_id, name, description from hpo.term where hpo
 
 HPO terms are in a graph. The edges of the graph are in the `hpo.is_a` table:
 
-``` postgres
+```sql
 phenopolis_dev_db=> select * from hpo.is_a limit 3;
  term_id | is_a_id
 ---------+---------
@@ -194,7 +193,7 @@ The `hpo.is_a_path` is a materialised view which has all the paths from the
 root to any term expanded, for instance these are all the paths _leading to_
 term 478:
 
-``` postgres
+```sql
 phenopolis_dev_db=> select * from hpo.is_a_path where term_id = 478;
  term_id |   path
 ---------+-----------
@@ -208,7 +207,7 @@ type holding a path of labels. It allows for efficient querying of all the
 paths containing an element: if we are looking for `478` in any position we can
 query:
 
-``` postgres
+```sql
 phenopolis_dev_db=> select * from hpo.is_a_path where path ~ '*.478.*' limit 3;
  term_id |                 path
 ---------+--------------------------------------
@@ -220,7 +219,7 @@ phenopolis_dev_db=> select * from hpo.is_a_path where path ~ '*.478.*' limit 3;
 
 Put together, the original question can be answered with:
 
-``` postgres
+```sql
 select t.hpo_id, t.name
 from hpo.term t
 where exists (

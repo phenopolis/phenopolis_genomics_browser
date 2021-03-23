@@ -12,13 +12,13 @@ Instead, please create a new branch and create a PR back into prod-live.
 
 ### Requirements
 
-* Node JS (version ...)
+- Node JS (version ...)
 
 ### Dependencies
 
 Install all dependencies
 
-``` bash
+```bash
 npm install
 
 npm install -g netlify-cli
@@ -28,7 +28,7 @@ npm install -g netlify-cli
 
 1. First login into Netlify:
 
-   ``` bash
+   ```bash
    # use the Phenopolis account
    netlify login
    # run netlify logout if you are already logged in with a different account
@@ -36,13 +36,13 @@ npm install -g netlify-cli
 
 2. Then connect the folder to the correct Netlify site:  
 
-   ``` bash
+   ```bash
    netlify link
    ```
 
    This will display:
 
-   ``` bash
+   ```bash
    netlify link will connect this folder to a site on Netlify
    
    ? How do you want to link this folder to a site?
@@ -55,7 +55,7 @@ npm install -g netlify-cli
 
    Select `Use current git remote origin...`
 
-   ``` bash
+   ```bash
    ? How do you want to link this folder to a site? Use current git remote origin (https://github.com/phenopolis/phenopolis_frontend_react)
    
    Looking for sites connected to 'https://github.com/phenopolis/phenopolis_frontend_react'...
@@ -72,7 +72,7 @@ npm install -g netlify-cli
 
    If you are communicating with dev API on AWS:
 
-   ``` bash
+   ```bash
    # copy _redirects_dev to _redirects
    cp _redirects_dev _redirects
    
@@ -81,7 +81,7 @@ npm install -g netlify-cli
 
    If you are communicating with local Flask API server running on port 5000, run the following:
 
-   ``` bash
+   ```bash
    cp _redirects_localhost _redirects
    ```
 

@@ -2,7 +2,7 @@
 
 In a hurry? First be sure that `docker-compose up` is running and then just do:
 
-``` bash
+```bash
 docker-compose exec app bash -c "flake8; black --diff --check .; pytest"
 ```
 
@@ -10,15 +10,15 @@ docker-compose exec app bash -c "flake8; black --diff --check .; pytest"
 
 If you want, you can install locally the modules needed, but your mileage may vary
 
-* install:
+- install:
 
-``` bash
+```bash
 pip install pytest pytest-cov python-dotenv black flake8
 ```
 
-* run them:
+- run them:
 
-``` bash
+```bash
 #Flake8
 flake8
 
@@ -31,28 +31,26 @@ pytest --setup-show -v
 
 ## Using coverage
 
-* Install: `pip install gunicorn`
-* Create file `docker-compose.override.yml` containing:
+- Install: `pip install gunicorn`
+- Create file `docker-compose.override.yml` containing:
 
-``` yaml
+```yaml
 version: '3.8'
 services:
    db:
       ports:
-
       - 5432:5432
-
 ```
 
-* Start `db` container with `postgres` port 5432 exposed (`docker-compose.override.yml` will be _automagically_ loaded):
+- Start `db` container with `postgres` port 5432 exposed (`docker-compose.override.yml` will be _automagically_ loaded):
 
-``` bash
+```bash
 docker-compose up -d db
 ```
 
 Then run:
 
-``` bash
+```bash
 APP_ENV=prod pytest --cov views --cov db --cov-report term-missing:skip-covered -sv
 ```
 
@@ -62,13 +60,13 @@ which should show a coverage summary at the end.
 
 Install it with:
 
-``` bash
+```bash
 pip install tox
 ```
 
 and run with:
 
-``` bash
+```bash
 tox --skip-pkg-install
 ```
 
@@ -76,7 +74,7 @@ Using `cycvf2` now
 
 Yet, one can still test code format with:
 
-``` bash
+```bash
 tox --skip-pkg-install -e black,flake8
 ```
 
