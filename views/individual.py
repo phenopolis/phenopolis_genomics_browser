@@ -520,7 +520,7 @@ def _update_individual(consanguinity, gender, genes, hpos: List[tuple], individu
         with conn.cursor() as cur:
             cur.execute(
                 """
-            delete from phenopolis.individual_feature where individual_id = %(id)s;-- and type = 'observed';
+            delete from phenopolis.individual_feature where individual_id = %(id)s;
             insert into phenopolis.individual_feature (individual_id, feature_id, type) select %(id)s as individual_id,
             unnest(%(hpo_ids)s::int[]) as feature_id, 'observed' as type;
             insert into phenopolis.individual_feature (individual_id, feature_id, type) select %(id)s as individual_id,

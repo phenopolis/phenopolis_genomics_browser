@@ -20,9 +20,9 @@ def hpo(hpo_id="HP:0000001", subset="all", language="en"):
 
     with session_scope() as db_session:
         config = query_user_config(db_session=db_session, language=language, entity="hpo")
-        flag = "hpo_id"
+        field = "hpo_id"
         if not hpo_id.startswith("HP:"):
-            flag = "name"
+            field = "name"
         sql_query = rf"""
             select
                 t.id, t.hpo_id, t.name
@@ -31,13 +31,13 @@ def hpo(hpo_id="HP:0000001", subset="all", language="en"):
             where
                 t.id in (
                 select
-                    distinct(regexp_split_to_table(path::text, '\.'))::int as ancestor
+                    regexp_split_to_table(path::text, '\.')::int as ancestor
                 from
                     hpo.is_a_path tpath
                 join hpo.term ht on
                     tpath.term_id = ht.id
                 where
-                    ht.{flag} = %s )
+                    ht.{field} = %s )
             order by
                 t.id"""
         sqlq = sql_query
