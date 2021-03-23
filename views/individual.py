@@ -20,7 +20,7 @@ from db.model import (
     NewGene,
 )
 from views import application
-from views.auth import requires_auth, requires_admin, is_demo_user, USER, ADMIN_USER
+from views.auth import requires_auth, is_demo_user, USER, ADMIN_USER
 from views.exceptions import PhenopolisException
 from views.helpers import _get_json_payload
 from views.postgres import session_scope, get_db
@@ -134,15 +134,13 @@ def create_individual():
             dlist = _get_json_payload()
             new_individuals = []
             for d in dlist:
+                genes = []
                 if d.get("observed_features"):
                     feats = d.pop("observed_features").split(",")
                 else:
                     feats = []
-                if d.get("genes"):
+                if d.get("genes") or d.get("genes") == "":
                     genes = d.pop("genes").split(",")
-                else:
-                    genes = []
-                    d.pop("genes")
                 i = Individual(**d)
                 _check_individual_valid(db_session, i)
                 new_individuals.append((i, genes, feats))
@@ -166,6 +164,8 @@ def create_individual():
                 # add entry to user_individual
                 # TODO: enable access to more users than the creator
                 db_session.add(UserIndividual(user=session[USER], internal_id=i.phenopolis_id))
+                if session[USER] != ADMIN_USER:
+                    db_session.add(UserIndividual(user=ADMIN_USER, internal_id=i.phenopolis_id))
                 db_session.commit()
                 _insert_genes(i, g)
                 _insert_feats(i, f)
@@ -204,7 +204,7 @@ def _insert_feats(individual, hpo_ids):
 
 
 @application.route("/individual/<phenopolis_id>", methods=["DELETE"])
-@requires_admin
+@requires_auth
 def delete_individual(phenopolis_id):
     with session_scope() as db_session:
         individual = _fetch_authorized_individual(db_session, phenopolis_id)
@@ -522,12 +522,14 @@ def _update_individual(consanguinity, gender, genes, hpos: List[tuple], individu
                 """
             delete from phenopolis.individual_feature where individual_id = %(id)s;-- and type = 'observed';
             insert into phenopolis.individual_feature (individual_id, feature_id, type) select %(id)s as individual_id,
-            unnest(%(hpo_ids)s::int[]) as feature_id, unnest('{observed,simplified}'::text[]) as type;
+            unnest(%(hpo_ids)s::int[]) as feature_id, 'observed' as type;
+            insert into phenopolis.individual_feature (individual_id, feature_id, type) select %(id)s as individual_id,
+            unnest(%(hpo_ids)s::int[]) as feature_id, 'simplified' as type;
             delete from phenopolis.individual_gene where individual_id = %(id)s;
             insert into phenopolis.individual_gene (individual_id, gene_id) select %(id)s as individual_id,
             identifier from ensembl.gene where hgnc_symbol = any(%(genes)s::text[]) and assembly = 'GRCh37';
             """,
-                {"id": individual.id, "hpo_ids": hpo_ids * 2, "genes": genes},
+                {"id": individual.id, "hpo_ids": hpo_ids, "genes": genes},
             )
 
 

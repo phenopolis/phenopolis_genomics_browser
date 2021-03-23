@@ -62,6 +62,8 @@ def test_exceptions(_demo):
         ("Conductive hearing impairment", "all", "HP:0000405"),
         ("HP:0000478", "preview", '[{"preview":[["Number of Individuals"'),
         ("HP:0000478", "metadata", '"name":"Abnormality of the eye"'),
+        ("HP:0001", "preview", '"type":"links"}],"data":[]}'),  # HP:0001 does not exist in DB
+        ("xyw2zkh", "all", '"type":"links"}],"data":[]}'),  # xyw2zkh does not exist in DB
     ),
 )
 def test_hpo(_demo, query, subset, msg):
