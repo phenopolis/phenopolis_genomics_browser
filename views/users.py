@@ -6,7 +6,7 @@ from flask_mail import Message
 from passlib.handlers.argon2 import argon2
 from sqlalchemy import func
 from db.model import User, UserIndividual, UserConfig
-from views import application, mail
+from views import MAIL_USERNAME, application, mail
 from views.auth import requires_auth, check_auth, requires_admin, is_demo_user, USER, ADMIN_USER
 from views.exceptions import PhenopolisException
 from views.general import _parse_boolean_parameter
@@ -175,7 +175,7 @@ def _get_user_by_id(db_session, user_id: str) -> User:
 
 def _send_confirmation_email(user: User, confirmation_url: str):
     confirmation_token = generate_confirmation_token(user.email)
-    m = Message("Confirm your registration into Phenopolis", sender="no-reply@phenopolis.org", recipients=[user.email],)
+    m = Message("Confirm your registration into Phenopolis", sender=MAIL_USERNAME, recipients=[user.email],)
     m.body = "Welcome to Phenopolis {user}, confirm your registration in the following link {url_base}/{token}".format(
         user=user.user, url_base=confirmation_url, token=confirmation_token
     )

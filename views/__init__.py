@@ -18,6 +18,8 @@ import psycopg2
 # Options are: prod, dev, debug (default)
 APP_ENV = os.getenv("APP_ENV", "debug")
 
+MAIL_USERNAME = os.getenv("MAIL_USERNAME", "no-reply@phenopolis.com")
+
 ENV_LOG_FLAG = True
 if APP_ENV in ["prod"]:
     ENV_LOG_FLAG = False
@@ -65,7 +67,7 @@ def _load_config():
     application.config["SERVED_URL"] = os.getenv("SERVED_URL", "127.0.0.1")
     application.config["MAIL_SERVER"] = os.getenv("MAIL_SERVER", "smtp.gmail.com")
     application.config["MAIL_PORT"] = os.getenv("MAIL_PORT", "587")
-    application.config["MAIL_USERNAME"] = os.getenv("MAIL_USERNAME", "no-reply@phenopolis.org")
+    application.config["MAIL_USERNAME"] = MAIL_USERNAME
     application.config["MAIL_PASSWORD"] = os.getenv("MAIL_PASSWORD", "get_password")
     application.config["MAIL_USE_TLS"] = os.getenv("MAIL_USE_TLS", "true") == "true"
     application.config["MAIL_USE_SSL"] = os.getenv("MAIL_USE_SSL", "false") == "true"
