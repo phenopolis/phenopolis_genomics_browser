@@ -9,7 +9,7 @@ from flask_mail import Message
 from sqlalchemy.orm import Session
 from werkzeug.exceptions import HTTPException
 from db.model import UserIndividual
-from views import application, mail, APP_ENV
+from views import MAIL_USERNAME, application, mail, APP_ENV
 from views.auth import USER
 from views.exceptions import PhenopolisException
 from datetime import datetime, timedelta
@@ -24,9 +24,7 @@ def check_health():
 @application.after_request
 def after_request(response):
     application.logger.info(
-        "{} {} {} {} {}".format(
-            request.remote_addr, request.method, request.scheme, request.full_path, response.status,
-        )
+        f"{request.remote_addr} {request.method} {request.scheme} {request.full_path} {response.status}"
     )
     # avoids rewriting the cache config if it has been set previously
     if "Cache-control" not in response.headers:
@@ -41,9 +39,7 @@ def after_request(response):
 @application.errorhandler(Exception)
 def exceptions(e):
     application.logger.error(
-        "{} {} {} {} 5xx INTERNAL SERVER ERROR".format(
-            request.remote_addr, request.method, request.scheme, request.full_path,
-        )
+        f"{request.remote_addr} {request.method} {request.scheme} {request.full_path} 5xx INTERNAL SERVER ERROR"
     )
     application.logger.exception(e)
     response = Response()
@@ -76,11 +72,9 @@ def _build_response_from_exception(response, exception):
 
 def _send_error_mail(code):
     msg = Message(
-        "{code}: {method} {url}{path}".format(
-            code=code, method=request.method, url=application.config["SERVED_URL"], path=request.full_path,
-        ),
-        sender="no-reply@phenopolis.org",
-        recipients=["no-reply@phenopolis.org"],
+        f"{code}: {request.method} {application.config['SERVED_URL']}{request.full_path}",
+        sender=MAIL_USERNAME,
+        recipients=[MAIL_USERNAME],
     )
     msg.body = traceback.format_exc()
     mail.send(msg)
@@ -122,10 +116,10 @@ def process_for_display(db_session: Session, data):
 
 def _parse_boolean_parameter(val):
     """Convert a string representation of truth to true (1) or false (0).
-        True values are 'y', 'yes', 't', 'true', 'on', and '1'; false values
-        are 'n', 'no', 'f', 'false', 'off', and '0'.  Raises ValueError if
-        'val' is anything else.
-        """
+    True values are 'y', 'yes', 't', 'true', 'on', and '1'; false values
+    are 'n', 'no', 'f', 'false', 'off', and '0'.  Raises ValueError if
+    'val' is anything else.
+    """
     # NOTE: this code was adapted from https://github.com/python/cpython/blob/master/Lib/distutils/util.py#L307
     val = val.lower()
     if val in ("y", "yes", "t", "true", "on", "1"):
