@@ -127,7 +127,7 @@ def _search_phenotypes(db_session: Session, query, limit):
         # NOTE: order results by similarity and then by hpo_name (case insensitive)
         phenotypes_and_distances = (
             db_session.query(HPO, HPO.hpo_name.op("<->")(query).label("distance"))
-            .filter(HPO.hpo_name.op("%%")(query))
+            .filter(HPO.hpo_name.op("%")(query))
             .order_by("distance", asc(func.lower(HPO.hpo_name)))
             .limit(limit)
             .all()
@@ -172,14 +172,14 @@ def _search_genes(db_session: Session, query, limit):
         # NOTE: makes two queries by gene name and by other names and returns only the closest results
         genes_by_gene_name = (
             db_session.query(Gene, Gene.gene_name.op("<->")(query).label("distance"))
-            .filter(Gene.gene_name.op("%%")(query))
+            .filter(Gene.gene_name.op("%")(query))
             .order_by("distance", asc(func.lower(Gene.gene_name)))
             .limit(limit)
             .all()
         )
         genes_by_other_names = (
             db_session.query(Gene, Gene.other_names.op("<->")(query).label("distance"))
-            .filter(Gene.other_names.op("%%")(query))
+            .filter(Gene.other_names.op("%")(query))
             .order_by("distance", asc(func.lower(Gene.gene_name)))
             .limit(limit)
             .all()

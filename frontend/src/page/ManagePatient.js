@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import CssBaseline from '@material-ui/core/CssBaseline';
 import { useDispatch, useSelector } from 'react-redux';
 import { Link } from 'react-router-dom';
+import { useHistory } from 'react-router-dom';
 import { getAllIndividual } from '../redux/actions/individuals';
 
 import { Container, Dialog, Button, Typography, Box } from '@material-ui/core';
@@ -10,7 +11,6 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faPlusSquare } from '@fortawesome/pro-solid-svg-icons';
 
 import Loading from '../components/General/Loading';
-import UpdatePatient from '../components/UpdatePatient/UpdatePatient';
 
 const VersatileTable = React.lazy(() => import('../components/BaseTable/VersatileTable'));
 
@@ -18,9 +18,6 @@ const ManagePatient = () => {
   const dispatch = useDispatch();
   const [DataReady, setDataReady] = useState(false);
   const [PatientData, setPatientData] = useState(null);
-  const [SelectedPatient, setSelectedPatient] = useState(null);
-  const [TabIndex, setTabIndex] = useState(0);
-  const [UpdateDialog, setUpdateDialog] = useState(false);
 
   useEffect(() => {
     dispatch(getAllIndividual());
@@ -114,28 +111,6 @@ const ManagePatient = () => {
     }
   }, [allPatientInfo, loaded]);
 
-  const handleActionClick = (rowIndex, action) => {
-    if (action === 'update') {
-      setTabIndex(0);
-    } else if (action == 'file') {
-      setTabIndex(1);
-    } else if (action == 'delete') {
-      setTabIndex(2);
-    }
-
-    setSelectedPatient(rowIndex);
-    setUpdateDialog(true);
-  };
-
-  const handleUpdateClose = () => {
-    setUpdateDialog(false);
-  };
-
-  const handleActionSucces = (action) => {
-    setUpdateDialog(false);
-    dispatch(getAllIndividual());
-  };
-
   return (
     <>
       <CssBaseline />
@@ -164,32 +139,13 @@ const ManagePatient = () => {
               <VersatileTable
                 tableData={PatientData}
                 genomePlot={false}
-                onActionClick={handleActionClick}
+                // onActionClick={handleActionClick}
               />
             </Container>
           </>
         ) : (
           <Loading message={"Fetching all Patients' information..."} />
         )}
-
-        {SelectedPatient !== null ? (
-          <Dialog
-            open={UpdateDialog}
-            onClose={handleUpdateClose}
-            aria-labelledby="alert-dialog-title"
-            aria-describedby="alert-dialog-description"
-            scroll="paper"
-            maxWidth="md"
-            fullWidth>
-            <div style={{ height: '70vh', backgroundColor: '#f8f9ff' }}>
-              <UpdatePatient
-                userInfo={PatientData.data[SelectedPatient]}
-                actionSuccess={(action) => handleActionSucces(action)}
-                tabIndex={TabIndex}
-              />
-            </div>
-          </Dialog>
-        ) : null}
       </div>
     </>
   );

@@ -27,6 +27,7 @@ import HPO from './page/HPO';
 import Individual from './page/Individual';
 import Variant from './page/Variant';
 import MyPatient from './page/MyPatient';
+import EditPatient from './page/EditPatient';
 
 import { BrowserRouter as Router, Route, Switch } from 'react-router-dom';
 import { CookiesProvider } from 'react-cookie';
@@ -87,6 +88,7 @@ function App() {
                 <ProtectedRoute path="/hpo/:hpoId" component={HPO} />
                 <ProtectedRoute path="/individual/:individualId" component={Individual} />
                 <ProtectedRoute path="/variant/:variantId" component={Variant} />
+                <ProtectedRoute path="/editpatient/:individualId" component={EditPatient} />
 
                 <Route component={NotFoundPage} />
               </Switch>

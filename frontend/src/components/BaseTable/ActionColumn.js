@@ -1,54 +1,47 @@
-import React, { useEffect } from 'react';
-import { makeStyles } from '@material-ui/core/styles';
+import React from 'react';
+import { HashLink } from 'react-router-hash-link';
 
-import { TableCell, Typography, ButtonGroup, Button, IconButton, Tooltip } from '@material-ui/core';
+import { Tooltip, Fab, IconButton } from '@material-ui/core';
 
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faPencil, faTrashAlt, faFileAlt } from '@fortawesome/pro-solid-svg-icons';
-
-const useStyles = makeStyles((theme) => ({}));
+import { faPen, faTrashAlt, faFileAlt } from '@fortawesome/pro-solid-svg-icons';
 
 const ActionColumn = (props) => {
-  const classes = useStyles();
-
-  useEffect(() => {
-    // console.log(props)
-  }, [props]);
-
-  const triggerAction = (action) => {
-    props.onActionFunction(props.rowIndex, action);
-  };
-
   return (
     <span>
       <Tooltip title="Update patient information/files" placement="top">
         <IconButton
-          className="bg-white text-third ml-1"
-          style={{ width: 30, height: 30, padding: 0, border: '0.5px solid #616161' }}
-          aria-label="update"
-          onClick={() => triggerAction('update')}>
-          <FontAwesomeIcon icon={faPencil} style={{ fontSize: '12' }} />
+          className="mr-2"
+          size="small"
+          color="primary"
+          aria-label="info"
+          component={HashLink}
+          to={'/editpatient/' + props.PatientID + '#info'}>
+          <FontAwesomeIcon icon={faPen} />
         </IconButton>
       </Tooltip>
 
       <Tooltip title="Manage VCF file for this patient" placement="top">
         <IconButton
-          className="bg-white text-third ml-1"
-          style={{ width: 30, height: 30, padding: 0, border: '0.5px solid #616161' }}
+          className="mr-2"
+          size="small"
+          color="primary"
           aria-label="file"
-          onClick={() => triggerAction('file')}>
-          <FontAwesomeIcon icon={faFileAlt} style={{ fontSize: '12' }} />
+          component={HashLink}
+          to={'/editpatient/' + props.PatientID + '#file'}>
+          <FontAwesomeIcon icon={faFileAlt} />
         </IconButton>
       </Tooltip>
 
       <Tooltip title="Delete this patient" placement="top">
         <IconButton
-          className="bg-white text-third ml-1"
-          style={{ width: 30, height: 30, padding: 0, border: '0.5px solid #f44336' }}
-          aria-label="delete"
+          className="mr-2"
+          size="small"
           color="secondary"
-          onClick={() => triggerAction('delete')}>
-          <FontAwesomeIcon icon={faTrashAlt} style={{ fontSize: '12' }} />
+          aria-label="delete"
+          component={HashLink}
+          to={'/editpatient/' + props.PatientID + '#delete'}>
+          <FontAwesomeIcon icon={faTrashAlt} />
         </IconButton>
       </Tooltip>
     </span>

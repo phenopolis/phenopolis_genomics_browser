@@ -4,8 +4,7 @@ import views.individual as vi  # to allow MAX_PAGE_SIZE redefinition
 from sqlalchemy.orm import Session
 
 from db.model import Individual, UserIndividual
-from tests.test_views import _check_only_available_to_admin
-from views.individual import get_individual_by_id, delete_individual, get_all_individuals, MAPPING_SEX_REPRESENTATIONS
+from views.individual import get_individual_by_id, get_all_individuals, MAPPING_SEX_REPRESENTATIONS
 from views.postgres import session_scope
 from views.auth import USER
 
@@ -258,12 +257,6 @@ def test_create_multiple_individuals(_admin_client):
         _clean_test_individuals(_admin_client, db_session, test_external_id2)
 
 
-def test_delete_individual_failing_for_non_admin(_demo):
-    """res -> tuple(flask.wrappers.Response)"""
-    res = delete_individual("whatever_individual")
-    _check_only_available_to_admin(res)
-
-
 def test_delete_individual(_admin_client):
     # creates an individual
     individual = Individual()
@@ -288,11 +281,42 @@ def test_delete_individual(_admin_client):
         observed_individual = db_session.query(Individual).filter(Individual.external_id == test_external_id).first()
         assert observed_individual is None, "Deletion was not successful"
 
+        # try to delete non-existent individual
+        response = _admin_client.delete("/individual/PH00000000", content_type="application/json")
+        assert response.status_code == 404
 
-def test_delete_not_existing_individual(_admin_client):
-    # deletes individual
-    response = _admin_client.delete("/individual/PH00000000", content_type="application/json")
-    assert response.status_code == 404
+
+def test_delete_individual_for_user(_nondemo_client):
+    # creates an individual
+    individual = Individual()
+    test_external_id = "for_test_Sample"
+    individual.external_id = test_external_id
+    individual.sex = "M"
+    response = _nondemo_client.post("/individual", json=[individual.as_dict()], content_type="application/json")
+    assert response.status_code == 200
+
+    # confirms existence of new individual
+    with session_scope() as db_session:
+        observed_individual = db_session.query(Individual).filter(Individual.external_id == test_external_id).first()
+        assert observed_individual is not None, "Empty newly created individual"
+
+        # deletes individual
+        response = _nondemo_client.delete(
+            f"/individual/{observed_individual.phenopolis_id}", content_type="application/json"
+        )
+        assert response.status_code == 200
+
+        # confirms it does not exist
+        observed_individual = db_session.query(Individual).filter(Individual.external_id == test_external_id).first()
+        assert observed_individual is None, "Deletion was not successful"
+
+        # try to delete non-existent individual
+        response = _nondemo_client.delete("/individual/PH00000000", content_type="application/json")
+        assert response.status_code == 404
+
+        # try to delete a non-authorised patient for a given user
+        response = _nondemo_client.delete("/individual/PH00008258", content_type="application/json")
+        assert response.status_code == 404, "PH00008258 exists but access not authorised"
 
 
 def test_get_all_individuals_default_page(_demo):

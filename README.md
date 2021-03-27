@@ -2,7 +2,7 @@
 
 A description of the code setup is available [here](code_setup.md).
 
-## Setup using docker compose:
+## Setup using docker compose
 
 Set the following environment variables in `private.env`:
 

@@ -1,7 +1,7 @@
 """
 Individual view
 """
-from typing import List, Tuple
+from typing import List, Tuple, Union
 from sqlalchemy import func, and_, or_
 from sqlalchemy.dialects.postgresql import aggregate_order_by
 from sqlalchemy.orm import Session
@@ -20,7 +20,7 @@ from db.model import (
     NewGene,
 )
 from views import application
-from views.auth import requires_auth, requires_admin, is_demo_user, USER, ADMIN_USER
+from views.auth import requires_auth, is_demo_user, USER, ADMIN_USER
 from views.exceptions import PhenopolisException
 from views.helpers import _get_json_payload
 from views.postgres import session_scope, get_db
@@ -134,14 +134,13 @@ def create_individual():
             dlist = _get_json_payload()
             new_individuals = []
             for d in dlist:
+                genes = []
                 if d.get("observed_features"):
                     feats = d.pop("observed_features").split(",")
                 else:
                     feats = []
-                if d.get("genes"):
+                if d.get("genes") or d.get("genes") == "":
                     genes = d.pop("genes").split(",")
-                else:
-                    genes = []
                 i = Individual(**d)
                 _check_individual_valid(db_session, i)
                 new_individuals.append((i, genes, feats))
@@ -165,6 +164,8 @@ def create_individual():
                 # add entry to user_individual
                 # TODO: enable access to more users than the creator
                 db_session.add(UserIndividual(user=session[USER], internal_id=i.phenopolis_id))
+                if session[USER] != ADMIN_USER:
+                    db_session.add(UserIndividual(user=ADMIN_USER, internal_id=i.phenopolis_id))
                 db_session.commit()
                 _insert_genes(i, g)
                 _insert_feats(i, f)
@@ -203,7 +204,7 @@ def _insert_feats(individual, hpo_ids):
 
 
 @application.route("/individual/<phenopolis_id>", methods=["DELETE"])
-@requires_admin
+@requires_auth
 def delete_individual(phenopolis_id):
     with session_scope() as db_session:
         individual = _fetch_authorized_individual(db_session, phenopolis_id)
@@ -321,19 +322,25 @@ def _map_individual2output(config, individual: Individual):
     config[0]["metadata"]["data"][0].update(individual.as_dict())
     config[0]["metadata"]["data"][0]["internal_id"] = [{"display": individual.phenopolis_id}]
     config[0]["metadata"]["data"][0]["simplified_observed_features"] = [
-        {"display": x[0], "end_href": x[1]} for x in _get_feature_for_individual(individual)
+        {"display": x[1], "end_href": x[0]} for x in _get_feature_for_individual(individual)
     ]
     genes = _get_genes_for_individual(individual)
     config[0]["metadata"]["data"][0]["genes"] = [{"display": i[0]} for i in genes]
     return config
 
 
-def _get_feature_for_individual(individual: Individual, atype="simplified"):
+def _get_feature_for_individual(
+    individual: Union[Individual, dict], atype: str = "simplified"
+) -> List[Tuple[str, str]]:
     """
     returns observed_features for a given individual
     options are: simplified (default), observed, unobserved
     e.g. [('HP:0000007', 'Autosomal recessive inheritance'), ('HP:0000505', 'Visual impairment')]
     """
+    if isinstance(individual, Individual):
+        ind_id = individual.id
+    elif isinstance(individual, dict):
+        ind_id = individual.get("id")
     with get_db() as conn:
         with conn.cursor() as cur:
             cur.execute(
@@ -341,15 +348,15 @@ def _get_feature_for_individual(individual: Individual, atype="simplified"):
                 select t.hpo_id, t."name" from individual i join individual_feature if2 on (i.id = if2.individual_id)
                 join hpo.term t on (t.id = if2.feature_id) and if2."type" = %s
                 and i.id = %s""",
-                (atype, individual.id),
+                (atype, ind_id),
             )
             res = cur.fetchall()
     return res
 
 
-def _get_ancestors_for_individual(individual: Individual):
+def _get_ancestors_for_individual(individual: Individual) -> List[Tuple[str, str]]:
     """
-    returns tuple (ancestor_observed_features, ancestor_observed_features_name) for a given individual
+    returns a list of tuples (ancestor_observed_features, ancestor_observed_features_name) for a given individual
     e.g. [('HP:0000007', 'Autosomal recessive inheritance'), ('HP:0000505', 'Visual impairment')]
     """
     with get_db() as conn:
@@ -369,8 +376,12 @@ def _get_ancestors_for_individual(individual: Individual):
     return res
 
 
-def _get_genes_for_individual(individual: Individual):
+def _get_genes_for_individual(individual: Union[Individual, dict]) -> List[Tuple[str]]:
     """returns e.g. [('TTLL5',)]"""
+    if isinstance(individual, Individual):
+        ind_id = individual.id
+    elif isinstance(individual, dict):
+        ind_id = individual.get("id")
     with get_db() as conn:
         with conn.cursor() as cur:
             cur.execute(
@@ -379,7 +390,7 @@ def _get_genes_for_individual(individual: Individual):
             join phenopolis.individual_gene ig on i.id = ig.individual_id
             join ensembl.gene g on g.identifier = ig.gene_id
             and i.id = %s""",
-                [individual.id],
+                [ind_id],
             )
             genes = cur.fetchall()
     return genes
@@ -391,7 +402,8 @@ def _get_heterozygous_variants(db_session: Session, individual: Individual) -> L
 
 def _query_heterozygous_variants(db_session: Session, individual):
     return (
-        db_session.query(HeterozygousVariant, Variant)
+        db_session.query(Variant)
+        .select_from(HeterozygousVariant)
         .filter(HeterozygousVariant.individual == individual.phenopolis_id)
         .join(
             Variant,
@@ -412,7 +424,8 @@ def _get_homozygous_variants(db_session: Session, individual: Individual) -> Lis
 
 def _query_homozygous_variants(db_session: Session, individual):
     return (
-        db_session.query(HomozygousVariant, Variant)
+        db_session.query(Variant)
+        .select_from(HomozygousVariant)
         .filter(HomozygousVariant.individual == individual.phenopolis_id)
         .join(
             Variant,
@@ -427,7 +440,7 @@ def _query_homozygous_variants(db_session: Session, individual):
     )
 
 
-def _fetch_all_individuals(db_session: Session, offset, limit) -> List[Tuple[Individual, List[str]]]:
+def _fetch_all_individuals(db_session: Session, offset, limit) -> List[Tuple[Individual, str, str]]:
     """
     For admin users it returns all individuals and all users having access to them.
     But for other than admin it returns only individuals which this user has access, other users having access are
@@ -507,9 +520,11 @@ def _update_individual(consanguinity, gender, genes, hpos: List[tuple], individu
         with conn.cursor() as cur:
             cur.execute(
                 """
-            delete from phenopolis.individual_feature where individual_id = %(id)s and type = 'observed';
+            delete from phenopolis.individual_feature where individual_id = %(id)s;
             insert into phenopolis.individual_feature (individual_id, feature_id, type) select %(id)s as individual_id,
             unnest(%(hpo_ids)s::int[]) as feature_id, 'observed' as type;
+            insert into phenopolis.individual_feature (individual_id, feature_id, type) select %(id)s as individual_id,
+            unnest(%(hpo_ids)s::int[]) as feature_id, 'simplified' as type;
             delete from phenopolis.individual_gene where individual_id = %(id)s;
             insert into phenopolis.individual_gene (individual_id, gene_id) select %(id)s as individual_id,
             identifier from ensembl.gene where hgnc_symbol = any(%(genes)s::text[]) and assembly = 'GRCh37';

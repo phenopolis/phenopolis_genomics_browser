@@ -71,12 +71,16 @@ export default function FileUpload(props) {
         limit: 2,
         timeout: ms('1 minute'),
         getUploadParameters(file) {
-          return axios
-            .post('api/preSignS3URL', {
+          return axios({
+            method: 'post',
+            url: 'api/preSignS3URL',
+            baseURL: '/',
+            data: {
               prefix: patientID,
               filename: patientID + '_' + file.name,
               contentType: file.type,
-            })
+            },
+          })
             .then((response) => {
               return response.data;
             })
@@ -108,7 +112,10 @@ export default function FileUpload(props) {
     <Fragment>
       <Container className="mt-0 px-0 py-0">
         <Card className="p-4 mb-2">
-          <div className="font-size-lg font-weight-bold">Uploaded Files</div>
+          <div className="font-size-lg font-weight-bold">Files</div>
+          <Divider className="my-4" />
+
+          <div className="font-size-md">Uploaded Files</div>
           <Container style={{ marginTop: '2em' }}>
             {fetchFileLoaded ? (
               <Grid container spacing={4}>
@@ -168,7 +175,7 @@ export default function FileUpload(props) {
             )}
           </Container>
           <Divider className="my-4" />
-          <div className="font-size-lg font-weight-bold">Upload VCF File</div>
+          <div className="font-size-md">Upload VCF File</div>
           <Container style={{ marginTop: '2em' }}>
             <Dashboard id="phenopolis" uppy={uppy} width="100%" height="300px" />
           </Container>

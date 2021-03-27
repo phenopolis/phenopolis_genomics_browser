@@ -34,7 +34,7 @@ export default function PatientDelete(props) {
   return (
     <Fragment>
       <Container className="mt-0 px-0 py-0">
-        <Card className="p-4 mb-2">
+        <Card className="p-4 mb-2" style={{ border: '2px solid red' }}>
           <div className="font-size-lg font-weight-bold">Delete Patient</div>
           <Divider className="my-4" />
           <Grid container justify="center">
