@@ -50,8 +50,8 @@ def count_hpos(individuals: List[Individual]):
     with get_db() as conn:
         with conn.cursor() as cur:
             cur.execute(
-                """select ife.type, count(distinct ife.feature_id) from individual_feature ife where
-        ife.individual_id = any(%s) and ife.type in ('observed','unobserved') group by ife.type""",
+                """select ife.type, count(distinct ife.feature_id) from phenopolis.individual_feature ife
+                where ife.individual_id = any(%s) and ife.type in ('observed','unobserved') group by ife.type""",
                 [[x.id for x in individuals]],
             )
             res = dict(cur.fetchall())
