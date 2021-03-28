@@ -345,7 +345,8 @@ def _get_feature_for_individual(
         with conn.cursor() as cur:
             cur.execute(
                 """
-                select t.hpo_id, t."name" from individual i join individual_feature if2 on (i.id = if2.individual_id)
+                select t.hpo_id, t."name" from phenopolis.individual i
+                join phenopolis.individual_feature if2 on (i.id = if2.individual_id)
                 join hpo.term t on (t.id = if2.feature_id) and if2."type" = %s
                 and i.id = %s""",
                 (atype, ind_id),
