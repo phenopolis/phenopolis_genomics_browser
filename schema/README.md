@@ -1,5 +1,7 @@
 # Phenopolis API schema
 
+Use [yEd](https://www.yworks.com/products/yed) to visualise and edit `schema/phenopolis_db.graphml`
+
 This schema should be created automatically in the Docker Phenopolis API db.
 
 Generally, if you have an existing database and superuser, you can create it
