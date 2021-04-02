@@ -1,7 +1,7 @@
 #!/bin/bash
 
-# Migrate variants data from `public.individuals` to `phenopolis.individual`
-# and `phenopolis.individual_feature`.
+# Migrate variants data from `public.individuals` to `phenopolis.individual`,
+# `phenopolis.individual_feature` and phenopolis.individual_gene.
 #
 # Usage:
 #
