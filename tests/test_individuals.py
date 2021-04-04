@@ -127,7 +127,7 @@ def test_update_individual_with_admin_user(_admin_client):
             f"/update_patient_data/{individual_id}",
             data=f"gender_edit[]={new_sex_for_api}&feature[]=Abnormality of body height"
             "&feature[]=Multicystic kidney dysplasia"
-            "&feature[]=Mode of inheritance&genes[]=DRAM2&genes[]=HAP1",
+            "&feature[]=Mode of inheritance&genes[]=TTLL5&genes[]=GAST",
             content_type="application/x-www-form-urlencoded",
         )
         assert response.status_code == 200
