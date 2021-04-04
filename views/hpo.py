@@ -45,8 +45,7 @@ def hpo(hpo_id="HP:0000001", subset="all", language="en"):
                 cur.execute(sqlq, [hpo_id])
                 res = cursor2dict(cur)
         application.logger.debug(res)
-        if not res:
-            return jsonify(config)
+        # NOTE: if not res ---> error 500 : HPO not exist.
         d_hpo = [x for x in res if x[field] == hpo_id][0]
         h_id = d_hpo["id"]
         hpo_id = d_hpo["hpo_id"]
@@ -113,15 +112,19 @@ def hpo(hpo_id="HP:0000001", subset="all", language="en"):
         config[0]["preview"] = [["Number of Individuals", len(individuals)]]
         if subset == "preview":
             return jsonify([{subset: y["preview"]} for y in config])
-        for ind in individuals:
-            ind["internal_id"] = [{"display": ind["phenopolis_id"]}]
+        for ind in individuals[:]:
             if ind["simplified_observed_features_names"]:
+                ind["internal_id"] = [{"display": ind["phenopolis_id"]}]
+                if ind["genes"]:
+                    ind["genes"] = [{"display": i} for i in ind["genes"]]
+                else:
+                    ind["genes"] = []
                 ind["simplified_observed_features_names"] = [
                     {"display": j, "end_href": i}
                     for i, j, in [x.split("@") for x in ind["simplified_observed_features_names"]]
                 ]
-            if ind["genes"]:
-                ind["genes"] = [{"display": i} for i in ind.get("genes", "")]
+            else:
+                individuals.remove(ind)
         config[0]["individuals"]["data"] = individuals
         config[0]["metadata"]["data"] = [
             {"name": hpo_name, "id": hpo_id, "count": len(individuals), "parent_phenotypes": parent_phenotypes}
