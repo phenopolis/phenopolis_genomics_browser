@@ -1,5 +1,7 @@
 # Phenopolis API schema
 
+Use [yEd](https://www.yworks.com/products/yed) to visualise and edit `schema/phenopolis_db.graphml`
+
 This schema should be created automatically in the Docker Phenopolis API db.
 
 Generally, if you have an existing database and superuser, you can create it
@@ -248,3 +250,38 @@ limit 10;
 ```
 
 (after removing the limit there are 1125 terms).
+
+## Manual fixes applied to Dev_DB (to reproduce in Prod_DB)
+
+1. **CRITICAL**: apply this fix before doing `scripts/migrate_individuals.sh`.
+
+    Fix `PH00002126` in `public.individuals` as it misses `hpo_id`:
+
+    ```sql
+    update public.individuals set observed_features = (
+        select string_agg(DISTINCT t.hpo_id , ',' ORDER BY t.hpo_id) AS hpo_ids from hpo.term t 
+        where t."name" = any(string_to_array((select observed_features_names from public.individuals i where i.internal_id = 'PH00002126'),';'))
+    ),
+    simplified_observed_features = (
+        select string_agg(DISTINCT t.hpo_id , ',' ORDER BY t.hpo_id) AS hpo_ids from hpo.term t 
+        where t."name" = any(string_to_array((select observed_features_names from public.individuals i where i.internal_id = 'PH00002126'),';'))
+    )
+    where internal_id = 'PH00002126'
+    ;
+    ```
+
+    Fix applied on 02/04/21.
+
+2. `Admin` must co-own `patients` with `user`:
+
+    ```sql
+    insert into public.users_individuals ("user", internal_id)
+    select 'Admin', phenopolis_id from (
+        select i.phenopolis_id from phenopolis.individual i
+        except
+        select ui.internal_id from public.users_individuals ui
+    ) as foo
+    ;
+    ```
+
+    Fix applied on 02/04/21, 120 rows added.

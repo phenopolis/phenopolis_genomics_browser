@@ -58,18 +58,38 @@ def test_exceptions(_demo):
 @pytest.mark.parametrize(
     ("query", "subset", "msg"),
     (
+        ("HP:0000001", "all", '{"display":"GAST"},{"display":"TTLL5"}'),
         ("HP:0000478", "all", "Phenotypic abnormality"),
         ("Conductive hearing impairment", "all", "HP:0000405"),
         ("HP:0000478", "preview", '[{"preview":[["Number of Individuals"'),
         ("HP:0000478", "metadata", '"name":"Abnormality of the eye"'),
-        ("HP:0001", "preview", '"type":"links"}],"data":[]}'),  # HP:0001 does not exist in DB
-        ("xyw2zkh", "all", '"type":"links"}],"data":[]}'),  # xyw2zkh does not exist in DB
     ),
 )
 def test_hpo(_demo, query, subset, msg):
     """res -> str"""
     response = hpo(query, subset=subset)
     assert msg in str(response.data)
+
+
+@pytest.mark.parametrize(
+    ("query", "subset", "msg"),
+    (
+        (
+            "HP:0001",
+            "preview",
+            {"type": "IndexError", "message": ["list index out of range"]},
+        ),  # HP:0001 does not exist in DB
+        (
+            "xyw2zkh",
+            "all",
+            {"type": "IndexError", "message": ["list index out of range"]},
+        ),  # xyw2zkh does not exist in DB
+    ),
+)
+def test_hpo_web(_demo_client, query, subset, msg):
+    resp = _demo_client.get(f"/hpo/{query}/{subset}")
+    assert resp.status_code == 500
+    assert resp.json.get("error") == msg
 
 
 def test_statistics(_demo):
