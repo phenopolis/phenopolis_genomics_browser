@@ -62,7 +62,7 @@ def hpo(hpo_id="HP:0000001", subset="all", language="en"):
                     where ig.individual_id = i.id
             ) AS genes,
             (
-                    select array_agg(concat(t.hpo_id,'@', t."name"))
+                    select array_agg(distinct concat(t.hpo_id,'@', t."name"))
                     from hpo.term t
                     join phenopolis.individual_feature if2 on t.id = if2.feature_id
                     join hpo.is_a_path p on p.term_id = t.id
