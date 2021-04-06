@@ -138,6 +138,8 @@ def test_update_individual_with_admin_user(_admin_client):
         assert observed_sex == sex, "Update sex did not work"
         observed_hpo_names = [x[1] for x in vi._get_feature_for_individual(individual, atype="observed")]
         assert len(observed_hpo_names) == 3, "Update HPOs did not work"
+        unobserved_hpo_names = [x[1] for x in vi._get_feature_for_individual(individual, atype="unobserved")]
+        assert len(unobserved_hpo_names) == 17, "Do not touch unobserved"
         assert "Abnormality of body height" in observed_hpo_names, "Update HPOs did not work"
         assert "Multicystic kidney dysplasia" in observed_hpo_names, "Update HPOs did not work"
         assert "Mode of inheritance" in observed_hpo_names, "Update HPOs did not work"
