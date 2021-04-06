@@ -113,15 +113,18 @@ def hpo(hpo_id="HP:0000001", subset="all", language="en"):
         if subset == "preview":
             return jsonify([{subset: y["preview"]} for y in config])
         for ind in individuals[:]:
-            ind["internal_id"] = [{"display": ind["phenopolis_id"]}]
-            if ind["genes"]:
-                ind["genes"] = [{"display": i} for i in ind["genes"]]
+            if ind["simplified_observed_features_names"]:
+                ind["internal_id"] = [{"display": ind["phenopolis_id"]}]
+                if ind["genes"]:
+                    ind["genes"] = [{"display": i} for i in ind["genes"]]
+                else:
+                    ind["genes"] = []
+                ind["simplified_observed_features_names"] = [
+                    {"display": j, "end_href": i}
+                    for i, j, in [x.split("@") for x in ind["simplified_observed_features_names"]]
+                ]
             else:
-                ind["genes"] = []
-            ind["simplified_observed_features_names"] = [
-                {"display": j, "end_href": i}
-                for i, j, in [x.split("@") for x in ind["simplified_observed_features_names"]]
-            ]
+                individuals.remove(ind)
         config[0]["individuals"]["data"] = individuals
         config[0]["metadata"]["data"] = [
             {"name": hpo_name, "id": hpo_id, "count": len(individuals), "parent_phenotypes": parent_phenotypes}
