@@ -369,7 +369,7 @@ def test_get_all_individuals_with_pagination(_admin_client):
     assert len(third_page) == 0
 
     # check elements between the pages are different
-    internal_ids = [i.get("phenopolis_id") for i in first_page + second_page + third_page]
+    internal_ids = [i.get("id") for i in first_page + second_page + third_page]
     assert len(set(internal_ids)) == 4
 
 
