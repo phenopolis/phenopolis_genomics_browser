@@ -270,7 +270,7 @@ limit 10;
     ;
     ```
 
-    Fix applied on 02/04/21.
+    Fix applied on 02/04/21. **Present in Prod_DB**.
 
 2. `Admin` must co-own `patients` with `user`:
 
@@ -284,4 +284,48 @@ limit 10;
     ;
     ```
 
-    Fix applied on 02/04/21, 120 rows added.
+    Fix applied on 02/04/21, 120 rows added. Likely not an issue in Prod_DB.
+
+3. Patients created with broken code had `simplified` HPO_IDs missing, related to (2):
+
+    ```sql
+    insert into phenopolis.individual_feature (individual_id,feature_id,"type")
+    select individual_id, feature_id, 'simplified' 
+    from phenopolis.individual_feature where individual_id in (
+        select if2.individual_id from phenopolis.individual_feature if2 where if2."type" = 'observed'
+        except
+        select if2.individual_id from phenopolis.individual_feature if2 where if2."type" = 'simplified'
+    ) and "type" = 'observed'
+    ;
+    ```
+
+    Fix applied on 06/04/21, 648 rows added. Likely not an issue in Prod_DB.
+
+4. Fix patients entries with an empty `user`:
+
+    Check for the ofending rows:
+
+    ```sql
+    select count(ui.internal_id) from public.users_individuals ui where ui."user" = '';
+    ```
+
+    4980 rows reported.
+
+    Check if for a given `internal_id` there is at least one real user:
+
+    ```sql
+    select ui.internal_id from public.users_individuals ui where ui."user" = ''
+    except
+    select ui.internal_id from public.users_individuals ui where ui."user" <> '';
+
+    ```
+
+    It must return Zero rows.
+
+    Apply fix:
+
+    ```sql
+    delete from public.users_individuals where "user" = '';
+    ```
+
+    Fix applied on 06/04/21, 4980 rows removed. **Present in Prod_DB**.

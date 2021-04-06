@@ -138,6 +138,8 @@ def test_update_individual_with_admin_user(_admin_client):
         assert observed_sex == sex, "Update sex did not work"
         observed_hpo_names = [x[1] for x in vi._get_feature_for_individual(individual, atype="observed")]
         assert len(observed_hpo_names) == 3, "Update HPOs did not work"
+        unobserved_hpo_names = [x[1] for x in vi._get_feature_for_individual(individual, atype="unobserved")]
+        assert len(unobserved_hpo_names) == 17, "Do not touch unobserved"
         assert "Abnormality of body height" in observed_hpo_names, "Update HPOs did not work"
         assert "Multicystic kidney dysplasia" in observed_hpo_names, "Update HPOs did not work"
         assert "Mode of inheritance" in observed_hpo_names, "Update HPOs did not work"
@@ -367,7 +369,7 @@ def test_get_all_individuals_with_pagination(_admin_client):
     assert len(third_page) == 0
 
     # check elements between the pages are different
-    internal_ids = [i.get("phenopolis_id") for i in first_page + second_page + third_page]
+    internal_ids = [i.get("id") for i in first_page + second_page + third_page]
     assert len(set(internal_ids)) == 4
 
 

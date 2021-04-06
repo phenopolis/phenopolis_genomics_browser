@@ -1,24 +1,14 @@
 """
 Individual view
 """
-from typing import List, Tuple, Union
-from sqlalchemy import func, and_, or_
-from sqlalchemy.dialects.postgresql import aggregate_order_by
-from sqlalchemy.orm import Session
-
 import db.helpers
+from typing import Dict, List, Optional, Tuple, Union
+from sqlalchemy import func, and_, or_
+from psycopg2 import sql
+from sqlalchemy.orm import Session
 from collections import Counter
 from flask import session, jsonify, request
-from db.model import (
-    Individual,
-    UserIndividual,
-    Variant,
-    HomozygousVariant,
-    HeterozygousVariant,
-    Sex,
-    IndividualGene,
-    NewGene,
-)
+from db.model import Individual, UserIndividual, Variant, HomozygousVariant, HeterozygousVariant, Sex
 from views import application
 from views.auth import requires_auth, is_demo_user, USER, ADMIN_USER
 from views.exceptions import PhenopolisException
@@ -26,7 +16,6 @@ from views.helpers import _get_json_payload
 from views.postgres import session_scope, get_db
 from bidict import bidict
 from views.general import process_for_display, cache_on_browser
-from sqlalchemy.sql.elements import literal_column
 
 MAPPING_SEX_REPRESENTATIONS = bidict({"male": Sex.M, "female": Sex.F, "unknown": Sex.U})
 MAX_PAGE_SIZE = 100000
@@ -43,28 +32,30 @@ def get_all_individuals():
                     jsonify(message="The maximum page size for individuals is {}".format(MAX_PAGE_SIZE)),
                     400,
                 )
-            individuals_and_users = _fetch_all_individuals(db_session=db_session, offset=offset, limit=limit)
-            results = []
-            for i, g, ui in individuals_and_users:
-                individual_dict = i.as_dict()
-                individual_dict["users"] = ui.split(",")
-                individual_dict["genes"] = g
-                individual_dict["internal_id"] = individual_dict["phenopolis_id"]
-                obf = _get_feature_for_individual(i, "observed")
-                sobf = _get_feature_for_individual(i)
-                uobf = _get_feature_for_individual(i, "unobserved")
-                aobf = _get_ancestors_for_individual(i)
-                individual_dict["ancestor_observed_features"] = ",".join([x[0] for x in aobf])
-                individual_dict["ancestor_observed_features_names"] = ",".join([x[1] for x in aobf])
-                individual_dict["observed_features"] = ",".join([x[0] for x in obf])
-                individual_dict["observed_features_names"] = ";".join([x[1] for x in obf])
-                individual_dict["simplified_observed_features"] = ",".join([x[0] for x in sobf])
-                individual_dict["simplified_observed_features_names"] = ";".join([x[1] for x in sobf])
-                individual_dict["unobserved_features"] = ",".join([x[0] for x in uobf])
-                results.append(individual_dict)
+            individuals = _fetch_all_individuals(db_session=db_session, offset=offset, limit=limit)
+            for ind in individuals:
+                a1, a2 = zip(*[x.split("@") for x in sorted(ind["ancestor_observed_features"])])
+                o1, o2 = zip(*[x.split("@") for x in sorted(ind["observed_features"])])
+                # NOTE: casting list in strings just for frotend, but list is better, I guess (Alan)
+                ind["ancestor_observed_features"] = ",".join(a1)
+                ind["ancestor_observed_features_names"] = ",".join(a2)
+                ind["observed_features"] = ",".join(o1)
+                ind["observed_features_names"] = ",".join(o2)
+                ind["simplified_observed_features"] = ""
+                ind["simplified_observed_features_names"] = ""
+                ind["phenopolis_id"] = ind["internal_id"]
+                if ind["unobserved_features"]:
+                    ind["unobserved_features"] = ",".join(ind["unobserved_features"])
+                else:
+                    ind["unobserved_features"] = ""
+                if ind["genes"]:
+                    ind["genes"] = ",".join(ind["genes"])
+                else:
+                    ind["genes"] = ""
+
         except PhenopolisException as e:
             return jsonify(success=False, message=str(e)), e.http_status
-    return jsonify(results), 200
+    return jsonify(individuals), 200
 
 
 @application.route("/<language>/individual/<phenopolis_id>")
@@ -441,15 +432,21 @@ def _query_homozygous_variants(db_session: Session, individual):
     )
 
 
-def _fetch_all_individuals(db_session: Session, offset, limit) -> List[Tuple[Individual, str, str]]:
+def _fetch_all_individuals(db_session: Session, offset, limit) -> List[Dict]:
     """
     For admin users it returns all individuals and all users having access to them.
     But for other than admin it returns only individuals which this user has access, other users having access are
     not returned
     """
-    query = _query_all_individuals(db_session)
-    individuals = query.offset(offset).limit(limit).all()
-    return [(i, g, u) for i, g, u in individuals]
+    query = _query_all_individuals(db_session) + sql.SQL("limit {} offset {}".format(limit, offset))
+    with get_db() as conn:
+        with conn.cursor() as cur:
+            cur.execute(query, [session[USER]])
+            individuals = db.helpers.cursor2dict(cur)
+    if session[USER] != ADMIN_USER:
+        for dd in individuals:
+            dd["users"] = [session[USER]]
+    return individuals
 
 
 def _count_all_individuals(db_session: Session) -> int:
@@ -458,7 +455,11 @@ def _count_all_individuals(db_session: Session) -> int:
     But for other than admin it counts only individuals which this user has access, other users having access are
     not counted
     """
-    return _query_all_individuals(db_session).count()
+    query = _query_all_individuals(db_session)
+    with get_db() as conn:
+        with conn.cursor() as cur:
+            cur.execute(query, [session[USER]])
+    return cur.rowcount
 
 
 def _count_all_individuals_by_sex(db_session: Session, sex: Sex) -> int:
@@ -467,32 +468,69 @@ def _count_all_individuals_by_sex(db_session: Session, sex: Sex) -> int:
     But for other than admin it counts only individuals which this user has access, other users having access are
     not counted
     """
-    return _query_all_individuals(db_session, Individual.sex == sex).count()
+    query = _query_all_individuals(db_session, sex)
+    with get_db() as conn:
+        with conn.cursor() as cur:
+            cur.execute(query, (session[USER], sex.name))
+    return cur.rowcount
 
 
-def _query_all_individuals(db_session, additional_filter=None):
-    user_id = session[USER]
-    query = (
-        db_session.query(
-            Individual,
-            func.string_agg(
-                NewGene.hgnc_symbol.distinct(), aggregate_order_by(literal_column("','"), NewGene.hgnc_symbol)
-            ),
-            func.string_agg(
-                UserIndividual.user.distinct(), aggregate_order_by(literal_column("','"), UserIndividual.user)
-            ),
-        )
-        .outerjoin(UserIndividual, Individual.phenopolis_id == UserIndividual.internal_id)
-        .outerjoin(IndividualGene, Individual.id == IndividualGene.individual_id)
-        .outerjoin(NewGene, IndividualGene.gene_id == NewGene.identifier)
-        .group_by(Individual)
-        .order_by(Individual.phenopolis_id.desc())
+def _query_all_individuals(db_session, additional_filter: Optional[Sex] = None) -> sql.SQL:
+
+    # e.g. additional_filter = 'Sex'
+    q1 = sql.SQL(
+        """where exists (
+            select 1 from public.users_individuals ui
+            where ui.internal_id = i.phenopolis_id
+            and ui."user" = %s)"""
     )
+
+    conds = [q1]
     if additional_filter is not None:
-        query = query.filter(additional_filter)
-    if user_id != ADMIN_USER:
-        query = query.filter(UserIndividual.user == user_id)
-    query = query.group_by(Individual).order_by(Individual.phenopolis_id.desc())
+        conds.append(sql.SQL("i.sex = %s"))
+    query = sql.SQL(
+        r"""
+        select i.id, i.external_id, i.phenopolis_id as internal_id, i.sex, i.consanguinity,
+        (
+            select array_agg(ui."user")
+            from public.users_individuals ui
+            where ui.internal_id = i.phenopolis_id
+        ) AS users,
+        (
+            select array_agg(g.hgnc_symbol)
+            from phenopolis.individual_gene ig
+            join ensembl.gene g on g.identifier = ig.gene_id
+            where ig.individual_id = i.id
+        ) AS genes,
+        (
+            select array_agg(concat(t.hpo_id,'@', t."name"))
+            from hpo.term t
+            join phenopolis.individual_feature if2 on t.id = if2.feature_id
+            where i.id = if2.individual_id
+            and if2."type" = 'observed'
+        ) as observed_features,
+        (
+            select array_agg(t.hpo_id)
+            from hpo.term t
+            join phenopolis.individual_feature if2 on t.id = if2.feature_id
+            where i.id = if2.individual_id
+            and if2."type" = 'unobserved'
+        ) as unobserved_features,
+        (
+            select array_agg(concat(t.hpo_id,'@', t."name"))
+            from hpo.term t where t.id in (
+                select (regexp_split_to_table(p."path"::text, '\.'))::int as ancestor
+                from phenopolis.individual_feature if2
+                join hpo.is_a_path p on if2.feature_id = p.term_id
+                where i.id = if2.individual_id
+                and if2."type" = 'observed'
+            )
+        ) as ancestor_observed_features
+        from phenopolis.individual i
+        {filter}
+        """
+    ).format(filter=sql.SQL(" and ").join(conds))
+
     return query
 
 
@@ -521,7 +559,8 @@ def _update_individual(consanguinity, gender, genes, hpos: List[tuple], individu
         with conn.cursor() as cur:
             cur.execute(
                 """
-            delete from phenopolis.individual_feature where individual_id = %(id)s;
+            delete from phenopolis.individual_feature where individual_id = %(id)s
+            and "type" = any('{observed,simplified}');
             insert into phenopolis.individual_feature (individual_id, feature_id, type) select %(id)s as individual_id,
             unnest(%(hpo_ids)s::int[]) as feature_id, 'observed' as type;
             insert into phenopolis.individual_feature (individual_id, feature_id, type) select %(id)s as individual_id,
