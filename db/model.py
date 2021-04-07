@@ -7,13 +7,14 @@ import enum
 from sqlalchemy import Column, String, Integer, Float, ForeignKey, JSON, Boolean, DateTime, Enum, func
 from sqlalchemy import BigInteger, SmallInteger
 from sqlalchemy.orm import relationship
-from sqlalchemy.ext.declarative import declarative_base
+from sqlalchemy.ext.declarative import declarative_base, DeclarativeMeta
 from sqlalchemy.sql.schema import MetaData
 
-Public = declarative_base()
-Phenopolis = declarative_base(metadata=MetaData(schema="phenopolis"))
-Ensembl = declarative_base(metadata=MetaData(schema="ensembl"))
-Hpo = declarative_base(metadata=MetaData(schema="hpo"))
+
+Public: DeclarativeMeta = declarative_base()
+Phenopolis: DeclarativeMeta = declarative_base(metadata=MetaData(schema="phenopolis"))
+Ensembl: DeclarativeMeta = declarative_base(metadata=MetaData(schema="ensembl"))
+Hpo: DeclarativeMeta = declarative_base(metadata=MetaData(schema="hpo"))
 
 # meta=MetaData(engine)
 
@@ -148,15 +149,15 @@ class IndividualFeature(Phenopolis, AsDictable):
 
 class User(Public, AsDictable):
     __tablename__ = "users"
-    user = Column("user", primary_key=True, unique=True)
+    user = Column("user", String(255), primary_key=True, unique=True)
     argon_password = Column("argon_password", String(255))
     individuals = relationship("UserIndividual", backref="users")
     enabled = Column("enabled", Boolean(), default=False)
     registered_on = Column("registered_on", DateTime(timezone=True), default=func.now())
     confirmed = Column("confirmed", Boolean(), default=False)
     confirmed_on = Column("confirmed_on", DateTime(timezone=True))
-    email = Column("email", unique=True)
-    full_name = Column("full_name")
+    email = Column("email", String(255), unique=True)
+    full_name = Column("full_name", String(255))
 
 
 class UserConfig(Public, AsDictable):
@@ -176,7 +177,9 @@ class Sex(enum.Enum):
     U = 3
 
 
-class Individuals(Public, AsDictable):
+class _Individuals(Public, AsDictable):
+    """Retired, not used anywhere, anymore"""
+
     __tablename__ = "individuals"
     external_id = Column("external_id", String(255), primary_key=True)
     internal_id = Column("internal_id", String(255), primary_key=True)

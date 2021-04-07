@@ -1,6 +1,6 @@
 individual_id,gene_id,status,clinvar_id,pubmed_id,comment,user_id,timestamp
+8256,19297,,,,,,
 8258,21302,,,,,,
-8267,3,,,,,,
+8267,3,,,,,,# ficticious association, for test only
 8267,21302,,,,,,
 8268,19297,,,,,,
-8256,19297,,,,,,

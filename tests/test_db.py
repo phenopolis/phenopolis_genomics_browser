@@ -5,6 +5,7 @@ Using some reliable common ground
 Demo DB need to be updated?
 """
 
+from views import HG_ASSEMBLY
 from views.postgres import postgres_cursor, close_db, session_scope
 from db.model import NewGene, Gene
 
@@ -23,7 +24,9 @@ def test_db_sql_query_old_schema(_demo):
 def test_db_sql_query(_demo):
     """res -> tuple"""
     cursor = postgres_cursor()
-    cursor.execute("select * from ensembl.gene where ensembl_gene_id = 'ENSG00000156171' and assembly = 'GRCh37'")
+    cursor.execute(
+        "select * from ensembl.gene where ensembl_gene_id = 'ENSG00000156171' and assembly = %s", [HG_ASSEMBLY]
+    )
     res = cursor.fetchone()
     assert "DNA-damage regulated autophagy modulator 2" in res
 
