@@ -2,7 +2,13 @@ from views.postgres import session_scope
 from flask import session
 from views.auth import ADMIN_USER, USER
 from db.model import Sex, Individual
-from views.statistics import count_variants
+from views.statistics import count_variants, phenopolis_statistics
+
+
+def test_statistics_api(_demo):
+    """res -> dict"""
+    res = phenopolis_statistics().json
+    assert "total_variants" in res.keys()
 
 
 def test_statistics(_admin_client):
