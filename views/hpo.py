@@ -80,7 +80,7 @@ def hpo(hpo_id="HP:0000001", subset="all", language="en"):
             with conn.cursor() as cur:
                 cur.execute(sqlq, (f"*.{h_id}.*", session[USER]))
 
-                individuals = cursor2dict(cur)
+                individuals = sorted(cursor2dict(cur), key=lambda i: i["id"])
 
                 if hpo_id != "HP:0000001":
                     cur.execute("select * from phenogenon where hpo_id=%s", [hpo_id])
