@@ -442,7 +442,7 @@ def _fetch_all_individuals(db_session: Session, offset, limit) -> List[Dict]:
     with get_db() as conn:
         with conn.cursor() as cur:
             cur.execute(query, [session[USER]])
-            individuals = db.helpers.cursor2dict(cur)
+            individuals = sorted(db.helpers.cursor2dict(cur), key=lambda i: i["id"])
     if session[USER] != ADMIN_USER:
         for dd in individuals:
             dd["users"] = [session[USER]]

@@ -6,12 +6,9 @@ TODO:
       I think it's a frontend feature
 """
 
-import pytest
 from views.gene import gene
-from views.hpo import hpo
 from views.individual import get_all_individuals
 from views.general import check_health, after_request, exceptions
-from views.statistics import phenopolis_statistics
 from werkzeug.exceptions import BadHost
 
 
@@ -53,49 +50,6 @@ def test_exceptions(_demo):
     ee = BadHost()
     res = exceptions(ee)
     assert res.status_code == 400
-
-
-@pytest.mark.parametrize(
-    ("query", "subset", "msg"),
-    (
-        ("HP:0000001", "all", '{"display":"GAST"},{"display":"TTLL5"}'),
-        ("HP:0000478", "all", "Phenotypic abnormality"),
-        ("Conductive hearing impairment", "all", "HP:0000405"),
-        ("HP:0000478", "preview", '[{"preview":[["Number of Individuals"'),
-        ("HP:0000478", "metadata", '"name":"Abnormality of the eye"'),
-    ),
-)
-def test_hpo(_demo, query, subset, msg):
-    """res -> str"""
-    response = hpo(query, subset=subset)
-    assert msg in str(response.data)
-
-
-@pytest.mark.parametrize(
-    ("query", "subset", "msg"),
-    (
-        (
-            "HP:0001",
-            "preview",
-            {"type": "IndexError", "message": ["list index out of range"]},
-        ),  # HP:0001 does not exist in DB
-        (
-            "xyw2zkh",
-            "all",
-            {"type": "IndexError", "message": ["list index out of range"]},
-        ),  # xyw2zkh does not exist in DB
-    ),
-)
-def test_hpo_web(_demo_client, query, subset, msg):
-    resp = _demo_client.get(f"/hpo/{query}/{subset}")
-    assert resp.status_code == 500
-    assert resp.json.get("error") == msg
-
-
-def test_statistics(_demo):
-    """res -> dict"""
-    res = phenopolis_statistics().json
-    assert "total_variants" in res.keys()
 
 
 def _check_only_available_to_admin(res):
