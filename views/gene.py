@@ -5,7 +5,7 @@ from sqlalchemy.orm import Session
 
 import db.helpers
 from flask import jsonify
-from views import application
+from views import HG_ASSEMBLY, application
 from views.auth import requires_auth, is_demo_user
 from views.postgres import session_scope
 from views.general import process_for_display, cache_on_browser
@@ -35,25 +35,24 @@ def gene(gene_id, subset="all", language="en"):
         for d in config[0]["metadata"]["data"]:
             # d['pLI']=1
             d["external_services"] = [
-                {"display": "GnomAD Browser", "href": "http://gnomad.broadinstitute.org/gene/" + gene_id},
-                {"display": "GeneCards", "href": "http://www.genecards.org/cgi-bin/carddisp.pl?gene=" + gene_name},
+                {"display": "GnomAD Browser", "href": f"http://gnomad.broadinstitute.org/gene/{gene_id}"},
+                {"display": "GeneCards", "href": f"http://www.genecards.org/cgi-bin/carddisp.pl?gene={gene_name}"},
             ]
             d["genome_browser"] = [
                 {
                     "display": "Ensembl Browser",
-                    "href": "http://grch37.ensembl.org/Homo_sapiens/Gene/Summary?g=" + gene_id,
+                    "href": f"http://{HG_ASSEMBLY.lower()}.ensembl.org/Homo_sapiens/Gene/Summary?g={gene_id}",
                 },
                 {
                     "display": "UCSC Browser",
-                    "href": "http://genome.ucsc.edu/cgi-bin/hgTracks?db=hg19&position=chr%s:%s-%s"
-                    % (chrom, start, stop,),
+                    "href": f"http://genome.ucsc.edu/cgi-bin/hgTracks?db=hg19&position=chr{chrom}:{start}-{stop}",
                 },
             ]
             d["other"] = [
-                {"display": "Wikipedia", "href": "http://en.wikipedia.org/" + gene_name},
-                {"display": "Pubmed Search", "href": "http://www.ncbi.nlm.nih.gov/pubmed?term=" + gene_name},
-                {"display": "Wikigenes", "href": "http://www.wikigenes.org/?search=" + gene_name},
-                {"display": "GTEx (expression)", "href": "http://www.gtexportal.org/home/gene/" + gene_name},
+                {"display": "Wikipedia", "href": f"http://en.wikipedia.org/{gene_name}"},
+                {"display": "Pubmed Search", "href": f"http://www.ncbi.nlm.nih.gov/pubmed?term={gene_name}"},
+                {"display": "Wikigenes", "href": f"http://www.wikigenes.org/?search={gene_name}"},
+                {"display": "GTEx (expression)", "href": f"http://www.gtexportal.org/home/gene/{gene_name}"},
             ]
             #         d["related_hpo"] = [
             #             {
@@ -68,12 +67,12 @@ def gene(gene_id, subset="all", language="en"):
             #         ]
             d["related_hpo"] = []
         # c.execute("select * from variants where gene_symbol='%s'"%(x[0]['metadata']['data'][0]['gene_name'],))
-        gene_id = config[0]["metadata"]["data"][0]["gene_id"]
+        # gene_id = config[0]["metadata"]["data"][0]["gene_id"]
         data = db_session.query(Gene).filter(Gene.gene_id == gene_id).first().variants
         config[0]["variants"]["data"] = [p.as_dict() for p in data]
         cadd_gt_20 = 0
         for v in config[0]["variants"]["data"]:
-            v["variant_id"] = [{"display": "%s-%s-%s-%s" % (v["CHROM"], v["POS"], v["REF"], v["ALT"],)}]
+            v["variant_id"] = [{"display": f'{v["CHROM"]}-{v["POS"]}-{v["REF"]}-{v["ALT"]}'}]
             if v["cadd_phred"] and v["cadd_phred"] != "NA" and float(v["cadd_phred"]) >= 20:
                 cadd_gt_20 += 1
         config[0]["preview"] = [
@@ -103,5 +102,5 @@ def query_gene(db_session: Session, gene_id):
         data = db_session.query(Gene).filter(Gene.gene_name_upper == gene_id).all()
         if not data:
             # otherwise looks for synonyms ensuring complete match by appending quotes
-            data = db_session.query(Gene).filter(Gene.other_names.like('%"' + gene_id + '"%')).all()
+            data = db_session.query(Gene).filter(Gene.other_names.like(f"%{gene_id}%")).all()
     return [p.as_dict() for p in data]

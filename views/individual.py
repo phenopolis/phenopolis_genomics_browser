@@ -9,7 +9,7 @@ from sqlalchemy.orm import Session
 from collections import Counter
 from flask import session, jsonify, request
 from db.model import Individual, UserIndividual, Variant, HomozygousVariant, HeterozygousVariant, Sex
-from views import application
+from views import HG_ASSEMBLY, application
 from views.auth import requires_auth, is_demo_user, USER, ADMIN_USER
 from views.exceptions import PhenopolisException
 from views.helpers import _get_json_payload
@@ -175,9 +175,9 @@ def _insert_genes(individual, genes):
             cur.execute(
                 """
             insert into phenopolis.individual_gene (individual_id, gene_id) select %(id)s as individual_id,
-            identifier from ensembl.gene where hgnc_symbol = any(%(genes)s::text[]) and assembly = 'GRCh37';
+            identifier from ensembl.gene where hgnc_symbol = any(%(genes)s::text[]) and assembly = %(hga)s;
             """,
-                {"id": individual.id, "genes": genes},
+                {"id": individual.id, "genes": genes, "hga": HG_ASSEMBLY},
             )
 
 
@@ -567,9 +567,9 @@ def _update_individual(consanguinity, gender, genes, hpos: List[tuple], individu
             unnest(%(hpo_ids)s::int[]) as feature_id, 'simplified' as type;
             delete from phenopolis.individual_gene where individual_id = %(id)s;
             insert into phenopolis.individual_gene (individual_id, gene_id) select %(id)s as individual_id,
-            identifier from ensembl.gene where hgnc_symbol = any(%(genes)s::text[]) and assembly = 'GRCh37';
+            identifier from ensembl.gene where hgnc_symbol = any(%(genes)s::text[]) and assembly = %(hga)s;
             """,
-                {"id": individual.id, "hpo_ids": hpo_ids, "genes": genes},
+                {"id": individual.id, "hpo_ids": hpo_ids, "genes": genes, "hga": HG_ASSEMBLY},
             )
 
 
@@ -581,7 +581,7 @@ def _get_hpos(features: List[str]):
     return res
 
 
-def get_authorized_individuals(db_session: Session) -> List[Individual]:
+def _get_authorized_individuals(db_session: Session) -> List[Individual]:
     user_id = session[USER]
     query = db_session.query(Individual, UserIndividual)
     if user_id != ADMIN_USER:

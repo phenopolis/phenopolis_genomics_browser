@@ -18,6 +18,8 @@ import psycopg2
 # Options are: prod, dev, debug (default)
 APP_ENV = os.getenv("APP_ENV", "debug")
 
+HG_ASSEMBLY = os.getenv("HG_ASSEMBLY", "GRCh37")
+
 MAIL_USERNAME = os.getenv("MAIL_USERNAME", "no-reply@phenopolis.com")
 
 ENV_LOG_FLAG = True
