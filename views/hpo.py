@@ -51,7 +51,7 @@ def hpo(hpo_id="HP:0000001", subset="all", language="en"):
         hpo_id = d_hpo["hpo_id"]
         hpo_name = d_hpo["name"]
         parent_phenotypes = [
-            {"display": i, "end_href": j} for j, i in [(h, n) for i, h, n in [ii.values() for ii in res]]
+            {"display": i, "end_href": j} for j, i in [(h, n) for _i, h, n in [ii.values() for ii in res]]
         ]
         # query to give the ancestors for a given hpo for a given user for all patients this user has access
         sqlq = """

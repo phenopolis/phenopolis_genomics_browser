@@ -9,7 +9,7 @@ from sqlalchemy import and_
 from db.model import Variant, Sex, HeterozygousVariant, Individual, HomozygousVariant, UserIndividual
 from views import application
 from views.auth import requires_auth, USER
-from views.individual import _count_all_individuals, _count_all_individuals_by_sex, get_authorized_individuals
+from views.individual import _count_all_individuals, _count_all_individuals_by_sex, _get_authorized_individuals
 from views.postgres import session_scope, get_db
 
 COMMON_VARIANTS_THRESHOLD = 0.05
@@ -31,7 +31,7 @@ def phenopolis_statistics():
         total_variants = count_variants(db_session)
 
         # counts HPOs
-        individuals = get_authorized_individuals(db_session)
+        individuals = _get_authorized_individuals(db_session)
         count_observed_features, count_unobserved_features = count_hpos(individuals)
 
     return jsonify(
