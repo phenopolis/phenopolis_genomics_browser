@@ -22,10 +22,10 @@ def phenopolis_statistics():
     with session_scope() as db_session:
 
         # counts individuals
-        total_patients = _count_all_individuals(db_session)
-        male_patients = _count_all_individuals_by_sex(db_session, Sex.M)
-        female_patients = _count_all_individuals_by_sex(db_session, Sex.F)
-        unknown_patients = _count_all_individuals_by_sex(db_session, Sex.U)
+        total_patients = _count_all_individuals()
+        male_patients = _count_all_individuals_by_sex(Sex.M)
+        female_patients = _count_all_individuals_by_sex(Sex.F)
+        unknown_patients = _count_all_individuals_by_sex(Sex.U)
 
         # counts variants
         total_variants = count_variants(db_session)
