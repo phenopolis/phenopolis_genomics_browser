@@ -55,32 +55,35 @@ def hpo(hpo_id="HP:0000001", subset="all", language="en"):
         ]
         # query to give the ancestors for a given hpo for a given user for all patients this user has access
         sqlq = """
-            select i.id, i.external_id, i.phenopolis_id, i.sex, i.consanguinity,
-            (select array_agg(g.hgnc_symbol)
-                    from phenopolis.individual_gene ig
-                    join ensembl.gene g on g.identifier = ig.gene_id
-                    where ig.individual_id = i.id
-            ) AS genes,
-            (
-                    select array_agg(distinct concat(t.hpo_id,'@', t."name"))
-                    from hpo.term t
-                    join phenopolis.individual_feature if2 on t.id = if2.feature_id
-                    join hpo.is_a_path p on p.term_id = t.id
-                    where i.id = if2.individual_id
-                    and type = 'simplified'
-                    and p.path ~ %s
-            ) AS simplified_observed_features_names
-            from phenopolis.individual i
-            where exists (
-                    select 1 from public.users_individuals ui
-                    where ui.internal_id = i.phenopolis_id
-                    and ui."user" = %s)
+            select * from (
+                select i.id, i.external_id, i.phenopolis_id, i.sex, i.consanguinity,
+                (select array_agg(g.hgnc_symbol)
+                        from phenopolis.individual_gene ig
+                        join ensembl.gene g on g.identifier = ig.gene_id
+                        where ig.individual_id = i.id
+                ) AS genes,
+                (
+                        select array_agg(distinct concat(t.hpo_id,'@', t."name"))
+                        from hpo.term t
+                        join phenopolis.individual_feature if2 on t.id = if2.feature_id
+                        join hpo.is_a_path p on p.term_id = t.id
+                        where i.id = if2.individual_id
+                        and type ='observed' --'simplified'
+                        and p.path ~ %s
+                ) AS simplified_observed_features_names
+                from phenopolis.individual i
+                where exists (
+                        select 1 from public.users_individuals ui
+                        where ui.internal_id = i.phenopolis_id
+                        and ui."user" = %s)
+            ) ind where ind.simplified_observed_features_names is not null
+            order by ind.id
             """
         with get_db() as conn:
             with conn.cursor() as cur:
                 cur.execute(sqlq, (f"*.{h_id}.*", session[USER]))
 
-                individuals = sorted(cursor2dict(cur), key=lambda i: i["id"])
+                individuals = cursor2dict(cur)
 
                 if hpo_id != "HP:0000001":
                     cur.execute("select * from phenogenon where hpo_id=%s", [hpo_id])
@@ -113,18 +116,15 @@ def hpo(hpo_id="HP:0000001", subset="all", language="en"):
         if subset == "preview":
             return jsonify([{subset: y["preview"]} for y in config])
         for ind in individuals[:]:
-            if ind["simplified_observed_features_names"]:
-                ind["internal_id"] = [{"display": ind["phenopolis_id"]}]
-                if ind["genes"]:
-                    ind["genes"] = [{"display": i} for i in ind["genes"]]
-                else:
-                    ind["genes"] = []
-                ind["simplified_observed_features_names"] = [
-                    {"display": j, "end_href": i}
-                    for i, j, in [x.split("@") for x in ind["simplified_observed_features_names"]]
-                ]
+            ind["internal_id"] = [{"display": ind["phenopolis_id"]}]
+            if ind["genes"]:
+                ind["genes"] = [{"display": i} for i in ind["genes"]]
             else:
-                individuals.remove(ind)
+                ind["genes"] = []
+            ind["simplified_observed_features_names"] = [
+                {"display": j, "end_href": i}
+                for i, j, in [x.split("@") for x in ind["simplified_observed_features_names"]]
+            ]
         config[0]["individuals"]["data"] = individuals
         config[0]["metadata"]["data"] = [
             {"name": hpo_name, "id": hpo_id, "count": len(individuals), "parent_phenotypes": parent_phenotypes}
