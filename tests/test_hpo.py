@@ -44,3 +44,9 @@ def test_hpo_web(_demo_client, query, subset, msg):
     resp = _demo_client.get(f"/hpo/{query}/{subset}")
     assert resp.status_code == 500
     assert resp.json.get("error") == msg
+
+
+def test_hpo_preview(_nondemo_client):
+    resp = _nondemo_client.get("/hpo/HP:0000478/preview")
+    assert resp.status_code == 200
+    assert resp.json == [{"preview": [["Number of Individuals", 1]]}]
