@@ -438,7 +438,7 @@ def _fetch_all_individuals(db_session: Session, offset, limit) -> List[Dict]:
     But for other than admin it returns only individuals which this user has access, other users having access are
     not returned
     """
-    query = _query_all_individuals(db_session) + sql.SQL("limit {} offset {}".format(limit, offset))
+    query = _query_all_individuals() + sql.SQL("limit {} offset {}".format(limit, offset))
     with get_db() as conn:
         with conn.cursor() as cur:
             cur.execute(query, [session[USER]])
@@ -449,33 +449,33 @@ def _fetch_all_individuals(db_session: Session, offset, limit) -> List[Dict]:
     return individuals
 
 
-def _count_all_individuals(db_session: Session) -> int:
+def _count_all_individuals() -> int:
     """
     For admin users it counts all individuals and all users having access to them.
     But for other than admin it counts only individuals which this user has access, other users having access are
     not counted
     """
-    query = _query_all_individuals(db_session)
+    query = _query_all_individuals()
     with get_db() as conn:
         with conn.cursor() as cur:
             cur.execute(query, [session[USER]])
     return cur.rowcount
 
 
-def _count_all_individuals_by_sex(db_session: Session, sex: Sex) -> int:
+def _count_all_individuals_by_sex(sex: Sex) -> int:
     """
     For admin users it counts all individuals and all users having access to them.
     But for other than admin it counts only individuals which this user has access, other users having access are
     not counted
     """
-    query = _query_all_individuals(db_session, sex)
+    query = _query_all_individuals(sex)
     with get_db() as conn:
         with conn.cursor() as cur:
             cur.execute(query, (session[USER], sex.name))
     return cur.rowcount
 
 
-def _query_all_individuals(db_session, additional_filter: Optional[Sex] = None) -> sql.SQL:
+def _query_all_individuals(additional_filter: Optional[Sex] = None) -> sql.SQL:
 
     # e.g. additional_filter = 'Sex'
     q1 = sql.SQL(
