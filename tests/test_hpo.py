@@ -28,9 +28,23 @@ def test_duplicated_hpo(_demo_client):
 @pytest.mark.parametrize(
     ("query", "subset", "msg"),
     (
+        ("HP:0001", "preview", [{"preview": [["Number of Individuals", 0]]}]),  # HP:0001 does not exist in DB
+        ("xyw2zkh", "preview", [{"preview": [["Number of Individuals", 0]]}]),  # xyw2zkh does not exist in DB
+        ("HP:0000478", "preview", [{"preview": [["Number of Individuals", 1]]}]),
+    ),
+)
+def test_hpo_web(_nondemo_client, query, subset, msg):
+    resp = _nondemo_client.get(f"/hpo/{query}/{subset}")
+    assert resp.status_code == 200
+    assert resp.json == msg
+
+
+@pytest.mark.parametrize(
+    ("query", "subset", "msg"),
+    (
         (
             "HP:0001",
-            "preview",
+            "all",
             {"type": "IndexError", "message": ["list index out of range"]},
         ),  # HP:0001 does not exist in DB
         (
@@ -40,13 +54,7 @@ def test_duplicated_hpo(_demo_client):
         ),  # xyw2zkh does not exist in DB
     ),
 )
-def test_hpo_web(_demo_client, query, subset, msg):
-    resp = _demo_client.get(f"/hpo/{query}/{subset}")
+def test_hpo_preview(_nondemo_client, query, subset, msg):
+    resp = _nondemo_client.get(f"/hpo/{query}/{subset}")
     assert resp.status_code == 500
     assert resp.json.get("error") == msg
-
-
-def test_hpo_preview(_nondemo_client):
-    resp = _nondemo_client.get("/hpo/HP:0000478/preview")
-    assert resp.status_code == 200
-    assert resp.json == [{"preview": [["Number of Individuals", 1]]}]
