@@ -2,13 +2,13 @@
 General modules
 """
 import traceback
+from views.postgres import get_db
 import ujson as json
 from time import strftime
 from flask import jsonify, request, Response, session
 from flask_mail import Message
 from sqlalchemy.orm import Session
 from werkzeug.exceptions import HTTPException
-from db.model import UserIndividual
 from views import MAIL_USERNAME, application, mail, APP_ENV
 from views.auth import USER
 from views.exceptions import PhenopolisException
@@ -85,15 +85,14 @@ def _send_error_mail(code):
 # need to figure out how to encode json data type in postgres import
 # rather do the conversion on the fly
 def process_for_display(db_session: Session, data):
-    my_patients = list(
-        db_session.query(UserIndividual)
-        .filter(UserIndividual.user == session[USER])
-        .with_entities(UserIndividual.internal_id)
-    )
-    # TODO: avoid this trnasformation to dict and use the objects themselves
+    with get_db() as conn:
+        with conn.cursor() as cur:
+            cur.execute('select ui.internal_id from public.users_individuals ui where ui."user" = %s', [session[USER]])
+            my_patients = [x[0] for x in cur.fetchall()]
+    # TODO: avoid this transformation to dict and use the objects themselves
     for x2 in data:
         if "CHROM" in x2 and "POS" in x2 and "REF" in x2 and "ALT" in x2:
-            variant_id = "%s-%s-%s-%s" % (x2["CHROM"], x2["POS"], x2["REF"], x2["ALT"],)
+            variant_id = f'{x2["CHROM"]}-{x2["POS"]}-{x2["REF"]}-{x2["ALT"]}'
             x2["variant_id"] = [{"end_href": variant_id, "display": variant_id[:60]}]
         if "gene_symbol" in x2:
             x2["gene_symbol"] = [{"display": x3} for x3 in x2["gene_symbol"].split(",") if x3]
@@ -107,11 +106,12 @@ def process_for_display(db_session: Session, data):
                 {"display": "my:" + x3, "end_href": x3} if x3 in my_patients else {"display": x3, "end_href": x3}
                 for x3 in json.loads(x2["HOM"])
             ]
-        # TODO: how to test these 2 cases below? Any example of entries containing these features?
-        if "hpo_ancestors" in x2:
-            x2["hpo_ancestors"] = [{"display": x3} for x3 in x2["hpo_ancestors"].split(";") if x3]
-        if "genes" in x2 and x2["genes"] == "":
-            x2["genes"] = []
+        # NOTE: nowhere in the project is using the lines below, I'm commenting them out @alan
+        # NOTE: gene.py has commented lines about 'related_hpo' @alan
+        # if "hpo_ancestors" in x2:
+        #     x2["hpo_ancestors"] = [{"display": x3} for x3 in x2["hpo_ancestors"].split(";") if x3]
+        # if "genes" in x2 and x2["genes"] == "":
+        #     x2["genes"] = []
 
 
 def _parse_boolean_parameter(val):
