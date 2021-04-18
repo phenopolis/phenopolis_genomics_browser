@@ -62,7 +62,7 @@ export default function InformationUpdate(props) {
     } else if (userInfo.sex === 'F') {
       setGender('female');
     } else {
-      setGender('unknown');
+      setGender('U');
     }
 
     setConsanguinity(userInfo.consanguinity);
@@ -150,7 +150,6 @@ export default function InformationUpdate(props) {
     geneArray.forEach((x) => {
       formData = `${formData}&genes%5B%5D=${x.name.split(' ').join('+')}`;
     });
-
     dispatch(updateOneIndividual({ patient_id: internalID, data: formData }));
   };
 
@@ -218,7 +217,7 @@ export default function InformationUpdate(props) {
                   </Grid>
                   <Grid item xs={3}>
                     <FormControlLabel
-                      value="unknown"
+                      value="U"
                       control={<Radio color="primary" />}
                       label="Unknown"
                       labelPlacement="Unknown"
