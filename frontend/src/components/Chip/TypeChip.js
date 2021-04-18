@@ -157,10 +157,10 @@ const TypeChip = (props) => {
         variant="outlined"
         onMouseDown={(event) => handleSearch(event, props.to)}
         onMouseEnter={(event) => handlePopoverOpen(event, props.to)}
-        onMouseLeave={() => {
-          timeout && clearTimeout(timeout);
-          setShowPopover(false);
-        }}
+        // onMouseLeave={() => {
+        //   timeout && clearTimeout(timeout);
+        //   setShowPopover(false);
+        // }}
         style={
           props.slash ? { backgroundColor: 'white', opacity: 0.5 } : { backgroundColor: 'white' }
         }
