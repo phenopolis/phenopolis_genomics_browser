@@ -2,6 +2,7 @@
 HPO view - Human Phenotype Ontology
 """
 from flask import session, jsonify
+from psycopg2 import sql
 from views import application
 from views.auth import requires_auth, USER
 from views.postgres import get_db, session_scope
@@ -22,7 +23,8 @@ def hpo(hpo_id="HP:0000001", subset="all", language="en"):
         field = "hpo_id"
         if not hpo_id.startswith("HP:"):
             field = "name"
-        sql_query = rf"""
+        sql_query = sql.SQL(
+            rf"""
             select
                 t.id, t.hpo_id, t.name
             from
@@ -39,9 +41,15 @@ def hpo(hpo_id="HP:0000001", subset="all", language="en"):
                     ht.{field} = %s )
             order by
                 t.id"""
+        )
         sqlq = sql_query
         with get_db() as conn:
             with conn.cursor() as cur:
+                if subset == "preview":
+                    ni = _preview(cur, session[USER], hpo_id)
+                    config[0]["preview"] = [["Number of Individuals", ni]]
+                    return jsonify([{subset: y["preview"]} for y in config])
+
                 cur.execute(sqlq, [hpo_id])
                 res = cursor2dict(cur)
         application.logger.debug(res)
@@ -54,34 +62,34 @@ def hpo(hpo_id="HP:0000001", subset="all", language="en"):
             {"display": i, "end_href": j} for j, i in [(h, n) for _i, h, n in [ii.values() for ii in res]]
         ]
         # query to give the ancestors for a given hpo for a given user for all patients this user has access
-        sqlq = """
-            select * from (
-                select i.id, i.external_id, i.phenopolis_id, i.sex, i.consanguinity,
-                (select array_agg(g.hgnc_symbol)
-                        from phenopolis.individual_gene ig
-                        join ensembl.gene g on g.identifier = ig.gene_id
-                        where ig.individual_id = i.id
-                ) AS genes,
-                (
-                        select array_agg(distinct concat(t.hpo_id,'@', t."name"))
-                        from hpo.term t
-                        join phenopolis.individual_feature if2 on t.id = if2.feature_id
-                        join hpo.is_a_path p on p.term_id = t.id
-                        where i.id = if2.individual_id
-                        and type ='observed' --'simplified'
-                        and p.path ~ %s
-                ) AS simplified_observed_features_names
-                from phenopolis.individual i
-                where exists (
-                        select 1 from public.users_individuals ui
-                        where ui.internal_id = i.phenopolis_id
-                        and ui."user" = %s)
-            ) ind where ind.simplified_observed_features_names is not null
-            order by ind.id
+        sqlq = sql.SQL(
             """
+            select distinct i.id, i.external_id, i.phenopolis_id, i.sex, i.consanguinity,
+            (select array_agg(g.hgnc_symbol)
+                    from phenopolis.individual_gene ig
+                    join ensembl.gene g on g.identifier = ig.gene_id
+                    where ig.individual_id = i.id
+            ) AS genes,
+            (
+                    select array_agg(distinct concat(t.hpo_id,'@', t."name"))
+                    from hpo.term t
+                    join phenopolis.individual_feature if2 on t.id = if2.feature_id
+                    where i.id = if2.individual_id
+                    and if2."type" ='observed'
+            ) AS simplified_observed_features_names
+            from phenopolis.individual i
+            join public.users_individuals ui on ui.internal_id = i.phenopolis_id
+            join phenopolis.individual_feature if3 on i.id = if3.individual_id and if3."type" = 'observed'
+            join hpo.term t2 on t2.id = if3.feature_id
+            join hpo.is_a_path p on p.term_id = t2.id
+            where ui."user" = %s
+            and p.path ~ %s
+            order by i.id
+            """
+        )
         with get_db() as conn:
             with conn.cursor() as cur:
-                cur.execute(sqlq, (f"*.{h_id}.*", session[USER]))
+                cur.execute(sqlq, (session[USER], f"*.{h_id}.*"))
 
                 individuals = cursor2dict(cur)
 
@@ -113,8 +121,6 @@ def hpo(hpo_id="HP:0000001", subset="all", language="en"):
                     ]
         application.logger.debug(len(individuals))
         config[0]["preview"] = [["Number of Individuals", len(individuals)]]
-        if subset == "preview":
-            return jsonify([{subset: y["preview"]} for y in config])
         for ind in individuals[:]:
             ind["internal_id"] = [{"display": ind["phenopolis_id"]}]
             if ind["genes"]:
@@ -134,3 +140,30 @@ def hpo(hpo_id="HP:0000001", subset="all", language="en"):
         return jsonify(config)
     else:
         return jsonify([{subset: y[subset]} for y in config])
+
+
+def _preview(cur, user, hpo_id):
+    q1 = sql.SQL(
+        """select * from phenopolis.individual i
+        join public.users_individuals ui on ui.internal_id = i.phenopolis_id
+        and ui."user" = %s
+        """
+    )
+    q2 = sql.SQL(
+        f"""where exists (
+            select 1 from hpo.is_a_path p, hpo.term t, phenopolis.individual_feature if2
+            where p.term_id = t.id
+            and if2.feature_id = t.id and i.id = if2.individual_id and if2."type" = 'observed'
+            and p.path ~ (
+                select ('*.' || id || '.*')::lquery
+                from hpo.term t2
+                where t2.hpo_id = '{hpo_id}'
+            )
+        )
+    """
+    )
+    q = q1
+    if hpo_id != "HP:0000001":
+        q = q1 + q2
+    cur.execute(q, [user])
+    return cur.rowcount

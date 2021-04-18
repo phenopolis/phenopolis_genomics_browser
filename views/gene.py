@@ -70,6 +70,7 @@ def gene(gene_id, subset="all", language="en"):
         # gene_id = config[0]["metadata"]["data"][0]["gene_id"]
         data = db_session.query(Gene).filter(Gene.gene_id == gene_id).first().variants
         config[0]["variants"]["data"] = [p.as_dict() for p in data]
+        config[0]["metadata"]["data"][0]["number_of_variants"] = len(config[0]["variants"]["data"])
         cadd_gt_20 = 0
         for v in config[0]["variants"]["data"]:
             v["variant_id"] = [{"display": f'{v["CHROM"]}-{v["POS"]}-{v["REF"]}-{v["ALT"]}'}]
@@ -77,18 +78,18 @@ def gene(gene_id, subset="all", language="en"):
                 cadd_gt_20 += 1
         config[0]["preview"] = [
             ["pLI", config[0]["metadata"]["data"][0].get("pLI", "")],
-            ["Number of variants", len(config[0]["variants"]["data"])],
+            ["Number of variants", config[0]["metadata"]["data"][0]["number_of_variants"]],
             ["CADD > 20", cadd_gt_20],
         ]
-        for d in config[0]["metadata"]["data"]:
-            d["number_of_variants"] = len(config[0]["variants"]["data"])
+        if subset == "preview":
+            return jsonify([{subset: y["preview"]} for y in config])
         process_for_display(db_session, config[0]["variants"]["data"])
         # print x[0]['preview']
         # print x[0]['variants']['data'][0]
         if is_demo_user() and gene_name not in ["TTLL5", "DRAM2"]:
             config[0]["variants"]["data"] = []
-        if subset == "all":
-            return jsonify(config)
+    if subset == "all":
+        return jsonify(config)
     return jsonify([{subset: y[subset]} for y in config])
 
 
