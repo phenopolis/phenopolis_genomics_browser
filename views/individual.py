@@ -253,11 +253,9 @@ def _check_individual_valid(db_session: Session, new_individual: Individual):
 
 def _individual_complete_view(db_session: Session, config, individual: Individual, subset):
     # hom variants
-    config[0]["rare_homs"]["data"] = list(map(lambda x: x.as_dict(), _get_homozygous_variants(db_session, individual)))
+    config[0]["rare_homs"]["data"] = [x.as_dict() for x in _get_homozygous_variants(db_session, individual)]
     # rare variants
-    config[0]["rare_variants"]["data"] = list(
-        map(lambda x: x.as_dict(), _get_heterozygous_variants(db_session, individual))
-    )
+    config[0]["rare_variants"]["data"] = [x.as_dict() for x in _get_heterozygous_variants(db_session, individual)]
     # rare_comp_hets
     gene_counter = Counter([v["gene_symbol"] for v in config[0]["rare_variants"]["data"]])
     rare_comp_hets_variants = [v for v in config[0]["rare_variants"]["data"] if gene_counter[v["gene_symbol"]] > 1]
