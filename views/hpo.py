@@ -65,7 +65,7 @@ def hpo(hpo_id="HP:0000001", subset="all", language="en"):
         sqlq = sql.SQL(
             """
             select distinct i.id, i.external_id, i.phenopolis_id, i.sex, i.consanguinity,
-            (select array_agg(g.hgnc_symbol)
+            (select array_agg(distinct g.hgnc_symbol order by g.hgnc_symbol)
                     from phenopolis.individual_gene ig
                     join ensembl.gene g on g.identifier = ig.gene_id
                     where ig.individual_id = i.id
@@ -129,7 +129,10 @@ def hpo(hpo_id="HP:0000001", subset="all", language="en"):
                 ind["genes"] = []
             ind["simplified_observed_features_names"] = [
                 {"display": j, "end_href": i}
-                for i, j, in [x.split("@") for x in ind["simplified_observed_features_names"]]
+                for i, j, in [
+                    x.split("@")
+                    for x in sorted(ind["simplified_observed_features_names"], key=lambda x: x.split("@")[1])
+                ]
             ]
         config[0]["individuals"]["data"] = individuals
         config[0]["metadata"]["data"] = [
