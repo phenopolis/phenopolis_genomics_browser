@@ -96,15 +96,15 @@ def process_for_display(db_session: Session, data):
             x2["variant_id"] = [{"end_href": variant_id, "display": variant_id[:60]}]
         if "gene_symbol" in x2:
             x2["gene_symbol"] = [{"display": x3} for x3 in x2["gene_symbol"].split(",") if x3]
-        if "HET" in x2:
+        if x2.get("HET"):
             x2["HET"] = [
                 {"display": "my:" + x3, "end_href": x3} if x3 in my_patients else {"display": x3, "end_href": x3}
-                for x3 in json.loads(x2["HET"])
+                for x3 in x2["HET"]
             ]
-        if "HOM" in x2:
+        if x2.get("HOM"):
             x2["HOM"] = [
                 {"display": "my:" + x3, "end_href": x3} if x3 in my_patients else {"display": x3, "end_href": x3}
-                for x3 in json.loads(x2["HOM"])
+                for x3 in x2["HOM"]
             ]
         # NOTE: nowhere in the project is using the lines below, I'm commenting them out @alan
         # NOTE: gene.py has commented lines about 'related_hpo' @alan
