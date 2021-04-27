@@ -1,7 +1,7 @@
 from views.postgres import session_scope
 from flask import session
 from views.auth import ADMIN_USER, USER
-from db.model import Sex, Individual
+from db.model import Variant
 from views.statistics import count_variants, phenopolis_statistics
 
 
@@ -17,8 +17,8 @@ def test_statistics(_admin_client):
     data = resp.json
     assert data.get("exomes") == 4
     assert data.get("females") == 1
-    assert data.get("males") == 3
-    assert data.get("unknowns") == 0
+    assert data.get("males") == 2
+    assert data.get("unknowns") == 1
     assert data.get("total_variants") == 8
     assert data.get("observed_features") == 7
     assert data.get("unobserved_features") == 17
@@ -30,8 +30,8 @@ def test_statistics_with_demo_user(_demo_client):
     data = resp.json
     assert data.get("exomes") == 4
     assert data.get("females") == 1
-    assert data.get("males") == 3
-    assert data.get("unknowns") == 0
+    assert data.get("males") == 2
+    assert data.get("unknowns") == 1
     assert data.get("total_variants") == 8
     assert data.get("observed_features") == 7
     assert data.get("unobserved_features") == 17
@@ -55,5 +55,5 @@ def test_additional_filter(_admin):
     # it is here for completeness coverage
     session[USER] = ADMIN_USER
     with session_scope() as db_session:
-        tcvf = count_variants(db_session, additional_filter=Individual.sex == Sex.F)
-    assert tcvf == 8
+        tcvg = count_variants(db_session, additional_filter=Variant.gene_id == "ENSG00000119685")
+    assert tcvg == 5
