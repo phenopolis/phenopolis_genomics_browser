@@ -134,7 +134,7 @@ def _search_phenotypes(db_session: Session, query, limit):
         )
         phenotypes = [p for p, _ in phenotypes_and_distances]
 
-    return ["hpo::" + x.hpo_name + "::" + x.hpo_id for x in phenotypes]
+    return [f"hpo::{x.hpo_name}::{x.hpo_id}" for x in phenotypes]
 
 
 def _search_genes(db_session: Session, query, limit):
@@ -186,7 +186,7 @@ def _search_genes(db_session: Session, query, limit):
         )
         genes = [g for g, _ in sorted(genes_by_gene_name + genes_by_other_names, key=lambda x: x[1])[0:limit]]
     # while the search is performed on the upper cased gene name, it returns the original gene name
-    return ["gene::" + x.gene_name + "::" + x.gene_id for x in genes]
+    return [f"gene::{x.gene_name}::{x.gene_id}" for x in genes]
 
 
 def _search_variants(db_session: Session, query, limit):
@@ -201,11 +201,7 @@ def _search_variants(db_session: Session, query, limit):
     elif hgvs_type is not None:
         variants = _search_variants_by_hgvs(db_session, hgvs_type, entity, hgvs, limit)
 
-    return [
-        "variant::"
-        + "{CHROM}-{POS}-{REF}-{ALT}::{CHROM}-{POS}-{REF}-{ALT}".format(CHROM=v.CHROM, POS=v.POS, REF=v.REF, ALT=v.ALT)
-        for v in variants
-    ]
+    return [f"variant::{v.CHROM}-{v.POS}-{v.REF}-{v.ALT}::{v.CHROM}-{v.POS}-{v.REF}-{v.ALT}" for v in variants]
 
 
 def _search_variants_by_coordinates(db_session: Session, chrom, pos, ref, alt, limit) -> List[Variant]:
