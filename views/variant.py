@@ -30,9 +30,9 @@ def variant(variant_id, language="en") -> Response:
         response.status_code = 400
         return response
     # return _get_variant(chrom, pos, ref, alt, language)
-    variant = _get_variants(variant_id)
-    if variant:
-        variant = variant[0]
+    vlist = _get_variants(variant_id)
+    if vlist:
+        variant = vlist[0]
     else:
         response = jsonify(message="Missing variant")
         response.status_code = 404
@@ -62,10 +62,14 @@ def variant_preview(variant_id) -> Response:
 def _get_variants(target: str):
     """Returns a list of dict variants
     Args:
-        target (str): a variant, a gene_id or a phenopolis_id
-        must be like, e.g.: '14-76156575-A-G' or ENSG00000144285 or PH00008256
+        target (str):
+            * variant_id (e.g '14-76156575-A-G') - and it will return the variant(s) dict for it
+                '12-7241974-C-T', e.g., returns 2 dicts because of 'phenopolis.individual_variant'
+            * gene_id (e.g. 'ENSG00000144285') - and it will return all variants linked to that gene
+            * phenopolis_id (e.g. 'PH00008256') - aand it will return all variants linked to that patient
+        input 'target' must obey its respective string format.
     Returns:
-        List[dict variant]: empty ([]), one or more variants
+        List[dict variant]: empty ([]), one or more variants depending on input target
     """
     if CHROMOSOME_POS_REF_ALT_REGEX.match(target):
         c, p, r, a = target.split("-")
@@ -140,7 +144,7 @@ def _get_variants(target: str):
             cur.execute(sqlq)
             variants = cursor2dict(cur)
     for v in variants:
-        v["variant_id"] = [{"display": f'{v["CHROM"]}-{v["POS"]}-{v["REF"]}-{v["ALT"]}'}]
+        # v["variant_id"] = [{"display": f'{v["CHROM"]}-{v["POS"]}-{v["REF"]}-{v["ALT"]}'}]
         gs, gi = zip(*[x.split("@") for x in sorted(v["genes"])])
         v["gene_symbol"] = ",".join(gs)
         v["gene_id"] = ",".join(gi)
@@ -162,7 +166,6 @@ def _get_variants(target: str):
         v["ID"] = ""  # to be removed
         v["MLEAC"] = ""  # to be removed
         v["MLEAF"] = ""  # to be removed
-
     return variants
 
 
