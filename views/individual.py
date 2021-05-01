@@ -1,7 +1,8 @@
 """
 Individual view
 """
-import db.helpers
+import functools
+import operator
 from typing import Dict, List, Optional, Tuple, Union
 from sqlalchemy import func, and_, or_
 from psycopg2 import sql
@@ -16,6 +17,8 @@ from views.helpers import _get_json_payload
 from views.postgres import session_scope, get_db
 from bidict import bidict
 from views.general import process_for_display, cache_on_browser
+from db.helpers import cursor2dict, query_user_config
+from views.variant import _get_variants
 
 MAPPING_SEX_REPRESENTATIONS = bidict({"male": Sex.M, "female": Sex.F, "unknown": Sex.U})
 MAX_PAGE_SIZE = 100000
@@ -66,7 +69,7 @@ def get_all_individuals():
 @cache_on_browser()
 def get_individual_by_id(phenopolis_id, subset="all", language="en"):
     with session_scope() as db_session:
-        config = db.helpers.query_user_config(db_session=db_session, language=language, entity="individual")
+        config = query_user_config(db_session=db_session, language=language, entity="individual")
         individual = _fetch_authorized_individual(db_session, phenopolis_id)
         # unauthorized access to individual
         if not individual:
@@ -252,13 +255,23 @@ def _check_individual_valid(db_session: Session, new_individual: Individual):
 
 
 def _individual_complete_view(db_session: Session, config, individual: Individual, subset):
+    variants = _get_variants(individual.phenopolis_id)
+    hom_vars = [x for x in variants if "HOM" in x["zigosity"]]
+    het_vars = [x for x in variants if "HET" in x["zigosity"]]
     # hom variants
-    config[0]["rare_homs"]["data"] = [x.as_dict() for x in _get_homozygous_variants(db_session, individual)]
+    config[0]["rare_homs"]["data"] = hom_vars
     # rare variants
-    config[0]["rare_variants"]["data"] = [x.as_dict() for x in _get_heterozygous_variants(db_session, individual)]
+    config[0]["rare_variants"]["data"] = het_vars
     # rare_comp_hets
-    gene_counter = Counter([v["gene_symbol"] for v in config[0]["rare_variants"]["data"]])
-    rare_comp_hets_variants = [v for v in config[0]["rare_variants"]["data"] if gene_counter[v["gene_symbol"]] > 1]
+    genes: List[str] = functools.reduce(operator.iconcat, [v["gene_symbol"].split(",") for v in het_vars], [])
+    gene_counter = Counter(genes)
+    genes = [x for x, y in gene_counter.items() if y > 1 and x]
+    rare_comp_hets_variants = []
+    for v in het_vars:
+        if v["gene_symbol"]:
+            for g in v["gene_symbol"].split(","):
+                if g in genes:
+                    rare_comp_hets_variants.append(v)
     config[0]["rare_comp_hets"]["data"] = rare_comp_hets_variants
 
     if not config[0]["metadata"]["data"]:
@@ -334,7 +347,7 @@ def _get_feature_for_individual(
         with conn.cursor() as cur:
             cur.execute(
                 """
-                select t.hpo_id, t."name" from phenopolis.individual i
+                select distinct t.hpo_id, t."name" from phenopolis.individual i
                 join phenopolis.individual_feature if2 on (i.id = if2.individual_id)
                 join hpo.term t on (t.id = if2.feature_id) and if2."type" = %s
                 and i.id = %s""",
@@ -376,7 +389,7 @@ def _get_genes_for_individual(individual: Union[Individual, dict]) -> List[Tuple
         with conn.cursor() as cur:
             cur.execute(
                 """
-            select g.hgnc_symbol from phenopolis.individual i
+            select distinct g.hgnc_symbol from phenopolis.individual i
             join phenopolis.individual_gene ig on i.id = ig.individual_id
             join ensembl.gene g on g.identifier = ig.gene_id
             and i.id = %s""",
@@ -440,7 +453,7 @@ def _fetch_all_individuals(db_session: Session, offset, limit) -> List[Dict]:
     with get_db() as conn:
         with conn.cursor() as cur:
             cur.execute(query, [session[USER]])
-            individuals = sorted(db.helpers.cursor2dict(cur), key=lambda i: i["id"])
+            individuals = sorted(cursor2dict(cur), key=lambda i: i["id"])
     if session[USER] != ADMIN_USER:
         for dd in individuals:
             dd["users"] = [session[USER]]
