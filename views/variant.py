@@ -2,14 +2,12 @@
 variant view
 """
 import requests
-from db.model import Variant
 from psycopg2 import sql
 from views import application, variant_file, phenoid_mapping
 from views.auth import requires_auth
 from views.autocomplete import CHROMOSOME_POS_REF_ALT_REGEX, ENSEMBL_GENE_REGEX, PATIENT_REGEX
 from views.postgres import get_db, session_scope
 from views.general import cache_on_browser, process_for_display
-from sqlalchemy import and_
 from flask import jsonify, Response
 from db.helpers import cursor2dict, query_user_config
 
@@ -29,16 +27,13 @@ def variant(variant_id, language="en") -> Response:
         )
         response.status_code = 400
         return response
-    # return _get_variant(chrom, pos, ref, alt, language)
-    vlist = _get_variants(variant_id)
-    if vlist:
-        variant = vlist[0]
-    else:
+    variants = _get_variants(variant_id)
+    if not variants:
         response = jsonify(message="Missing variant")
         response.status_code = 404
         return response
 
-    resp_variant = _config_variant(variant, language)
+    resp_variant = _config_variant(variants, language)
     return resp_variant
 
 
@@ -144,7 +139,6 @@ def _get_variants(target: str):
             cur.execute(sqlq)
             variants = cursor2dict(cur)
     for v in variants:
-        # v["variant_id"] = [{"display": f'{v["CHROM"]}-{v["POS"]}-{v["REF"]}-{v["ALT"]}'}]
         gs, gi = zip(*[x.split("@") for x in sorted(v["genes"])])
         v["gene_symbol"] = ",".join(gs)
         v["gene_id"] = ",".join(gi)
@@ -157,59 +151,34 @@ def _get_variants(target: str):
         v["AC"] = v["HET_COUNT"] + 2 * v["HOM_COUNT"]
         v["AN"] = (v["HET_COUNT"] + v["HOM_COUNT"]) * 2
         v["AF"] = v["AC"] / v["AN"]
-        v["af_hgvd"] = ""  # to be added
-        v["af_converge"] = ""  # to be added
-        v["af_jirdc"] = ""  # to be added
-        v["af_krgdb"] = ""  # to be added
-        v["af_tommo"] = ""  # to be added
+        v["af_hgvd"] = "TBA"  # to be added
+        v["af_converge"] = "TBA"  # to be added
+        v["af_jirdc"] = "TBA"  # to be added
+        v["af_krgdb"] = "TBA"  # to be added
+        v["af_tommo"] = "TBA"  # to be added
         # -------
-        v["ID"] = ""  # to be removed
-        v["MLEAC"] = ""  # to be removed
-        v["MLEAF"] = ""  # to be removed
+        v["ID"] = "TBR"  # to be removed
+        v["MLEAC"] = "TBR"  # to be removed
+        v["MLEAF"] = "TBR"  # to be removed
+        for x, y in v.items():
+            if y is None:
+                v[x] = "NA"
+
     return variants
 
 
-def _config_variant(variant, language):
+def _config_variant(variants, language):
     with session_scope() as db_session:
         # get the genotype information for this variant from the VCF
-        genotypes = _get_genotypes(variant["CHROM"], variant["POS"])
-        process_for_display(db_session, [variant])
+        genotypes = _get_genotypes(variants[0]["CHROM"], variants[0]["POS"])
+        process_for_display(db_session, variants)
         config = query_user_config(db_session=db_session, language=language, entity="variant")
-        config[0]["metadata"]["data"] = [variant]
-        config[0]["individuals"]["data"] = [variant]
-        config[0]["frequency"]["data"] = [variant]
-        config[0]["consequence"]["data"] = [variant]
+        config[0]["metadata"]["data"] = variants
+        config[0]["individuals"]["data"] = variants
+        config[0]["frequency"]["data"] = variants
+        config[0]["consequence"]["data"] = variants
         config[0]["genotypes"]["data"] = genotypes
     return jsonify(config)
-
-
-def _get_variant(chrom, pos, ref, alt, language):
-
-    with session_scope() as db_session:
-
-        variant = (
-            db_session.query(Variant)
-            .filter(and_(Variant.CHROM == chrom, Variant.POS == pos, Variant.REF == ref, Variant.ALT == alt))
-            .first()
-        )
-
-        if variant is None:
-            response = jsonify(message="Missing variant")
-            response.status_code = 404
-            return response
-
-        # get the genotype information for this variant from the VCF
-        genotypes = _get_genotypes(chrom, pos)
-
-        variant_dict = variant.as_dict()
-        process_for_display(db_session, [variant_dict])
-        config = query_user_config(db_session=db_session, language=language, entity="variant")
-        config[0]["metadata"]["data"] = [variant_dict]
-        config[0]["individuals"]["data"] = [variant_dict]
-        config[0]["frequency"]["data"] = [variant_dict]
-        config[0]["consequence"]["data"] = [variant_dict]
-        config[0]["genotypes"]["data"] = genotypes
-        return jsonify(config)
 
 
 def _get_preview(chrom, pos, ref, alt):
