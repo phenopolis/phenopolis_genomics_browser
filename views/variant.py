@@ -140,8 +140,8 @@ def _get_variants(target: str):
             variants = cursor2dict(cur)
     for v in variants:
         gs, gi = zip(*[x.split("@") for x in sorted(v["genes"])])
-        v["gene_symbol"] = ",".join(gs)
-        v["gene_id"] = ",".join(gi)
+        v["gene_symbol"] = ",".join([x for x in gs if x])
+        v["gene_id"] = ",".join([x for x in gi if x])
         if not v["HET"]:
             v["HET"] = []
         if not v["HOM"]:
