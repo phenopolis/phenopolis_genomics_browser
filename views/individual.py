@@ -4,12 +4,12 @@ Individual view
 import functools
 import operator
 from typing import Dict, List, Optional, Tuple, Union
-from sqlalchemy import func, and_, or_
+from sqlalchemy import and_, or_
 from psycopg2 import sql
 from sqlalchemy.orm import Session
 from collections import Counter
 from flask import session, jsonify, request
-from db.model import Individual, UserIndividual, Variant, HomozygousVariant, HeterozygousVariant, Sex
+from db.model import Individual, UserIndividual, Sex
 from views import HG_ASSEMBLY, application
 from views.auth import requires_auth, is_demo_user, USER, ADMIN_USER
 from views.exceptions import PhenopolisException
@@ -80,7 +80,7 @@ def get_individual_by_id(phenopolis_id, subset="all", language="en"):
             return response
 
         if subset == "preview":
-            individual_view = _individual_preview(db_session, config, individual)
+            individual_view = _individual_preview(config, individual)
         else:
             individual_view = _individual_complete_view(db_session, config, individual, subset)
     return jsonify(individual_view)
@@ -285,10 +285,29 @@ def _individual_complete_view(db_session: Session, config, individual: Individua
         return [{subset: y[subset]} for y in config]
 
 
-def _individual_preview(db_session: Session, config, individual: Individual):
-    hom_count = _count_homozygous_variants(db_session, individual)
-    het_count = _count_heterozygous_variants(db_session, individual)
-    comp_het_count = _count_compound_heterozygous_variants(db_session, individual)
+def _individual_preview(config, individual: Individual):
+    sql_zig = """select iv.zygosity,count(*) from phenopolis.variant v
+        join phenopolis.individual_variant iv on iv.variant_id = v.id
+        where iv.individual_id = %s
+        group by iv.zygosity"""
+    sql_comp = """select sum(c)::int as total from(
+        select count(v.*) as c
+        from phenopolis.variant_gene vg
+        join phenopolis.individual_variant iv on iv.variant_id = vg.variant_id
+        join phenopolis.variant v on v.id = iv.variant_id
+        where iv.individual_id = %s and iv.zygosity = 'HET'
+        group by vg.gene_id having count(v.*) > 1
+        ) as com"""
+    with get_db() as conn:
+        with conn.cursor() as cur:
+            cur.execute(sql_zig, [individual.id])
+            hh = dict(cur.fetchall())
+            cur.execute(sql_comp, [individual.id])
+            hc = cur.fetchone()[0] or 0
+
+    hom_count = hh.get("HOM", 0)
+    het_count = hh.get("HET", 0)
+    comp_het_count = hc
     # TODO: make a dict of this and not a list of lists
     config[0]["preview"] = [
         ["External_id", individual.external_id],
@@ -300,24 +319,6 @@ def _individual_preview(db_session: Session, config, individual: Individual):
         ["Number of het variants", het_count],
     ]
     return config
-
-
-def _count_compound_heterozygous_variants(db_session: Session, individual: Individual):
-    return (
-        _query_heterozygous_variants(db_session, individual)
-        .with_entities(Variant.gene_symbol)
-        .group_by(Variant.gene_symbol)
-        .having(func.count(Variant.gene_symbol) > 1)
-        .count()
-    )
-
-
-def _count_heterozygous_variants(db_session: Session, individual: Individual) -> int:
-    return _query_heterozygous_variants(db_session, individual).count()
-
-
-def _count_homozygous_variants(db_session: Session, individual: Individual) -> int:
-    return _query_homozygous_variants(db_session, individual).count()
 
 
 def _map_individual2output(config, individual: Individual):
@@ -357,28 +358,6 @@ def _get_feature_for_individual(
     return res
 
 
-def _get_ancestors_for_individual(individual: Individual) -> List[Tuple[str, str]]:
-    """
-    returns a list of tuples (ancestor_observed_features, ancestor_observed_features_name) for a given individual
-    e.g. [('HP:0000007', 'Autosomal recessive inheritance'), ('HP:0000505', 'Visual impairment')]
-    """
-    with get_db() as conn:
-        with conn.cursor() as cur:
-            cur.execute(
-                r"""
-            select t.hpo_id, name from hpo.term t where t.id in (
-                select distinct(regexp_split_to_table(path::text, '\.'))::int as ancestor
-                from phenopolis.individual_feature if1
-                join hpo.is_a_path tpath on if1.feature_id = tpath.term_id and if1.type = 'observed'
-                where  if1.individual_id = %s
-            )
-            order by t.id""",
-                [individual.id],
-            )
-            res = cur.fetchall()
-    return res
-
-
 def _get_genes_for_individual(individual: Union[Individual, dict]) -> List[Tuple[str]]:
     """returns e.g. [('TTLL5',)]"""
     if isinstance(individual, Individual):
@@ -397,50 +376,6 @@ def _get_genes_for_individual(individual: Union[Individual, dict]) -> List[Tuple
             )
             genes = cur.fetchall()
     return genes
-
-
-def _get_heterozygous_variants(db_session: Session, individual: Individual) -> List[Variant]:
-    return _query_heterozygous_variants(db_session, individual).all()
-
-
-def _query_heterozygous_variants(db_session: Session, individual):
-    return (
-        db_session.query(Variant)
-        .select_from(HeterozygousVariant)
-        .filter(HeterozygousVariant.individual == individual.phenopolis_id)
-        .join(
-            Variant,
-            and_(
-                HeterozygousVariant.CHROM == Variant.CHROM,
-                HeterozygousVariant.POS == Variant.POS,
-                HeterozygousVariant.REF == Variant.REF,
-                HeterozygousVariant.ALT == Variant.ALT,
-            ),
-        )
-        .with_entities(Variant)
-    )
-
-
-def _get_homozygous_variants(db_session: Session, individual: Individual) -> List[Variant]:
-    return _query_homozygous_variants(db_session, individual).all()
-
-
-def _query_homozygous_variants(db_session: Session, individual):
-    return (
-        db_session.query(Variant)
-        .select_from(HomozygousVariant)
-        .filter(HomozygousVariant.individual == individual.phenopolis_id)
-        .join(
-            Variant,
-            and_(
-                HomozygousVariant.CHROM == Variant.CHROM,
-                HomozygousVariant.POS == Variant.POS,
-                HomozygousVariant.REF == Variant.REF,
-                HomozygousVariant.ALT == Variant.ALT,
-            ),
-        )
-        .with_entities(Variant)
-    )
 
 
 def _fetch_all_individuals(db_session: Session, offset, limit) -> List[Dict]:
