@@ -31,8 +31,12 @@ create temp view t_iv as
 -- COPY 70
 
 -- get genes
-\copy (select * from ensembl.gene where hgnc_symbol = any('{TTLL5,DRAM2,GAST}') order by ensembl_gene_id) to 'for_demo/ensembl.gene.csv' csv header;
--- COPY 7
+\copy (select * from ensembl.gene where hgnc_symbol = any('{TTLL5,DRAM2,GAST,VPS13B}') order by ensembl_gene_id) to 'for_demo/ensembl.gene.csv' csv header;
+-- COPY 9
+
+-- get gene_synonym
+\copy (select * from ensembl.gene_synonym where gene = any('{29110,21302,41378,11191,19297,24177,15644,31437,3,43138,32811}') order by gene, external_synonym) to 'for_demo/ensembl.gene_synonym.csv' csv header;
+-- COPY 26
 
 -- get variant_gene
 \copy (select * from phenopolis.variant_gene where gene_id = any('{ENSG00000184502,ENSG00000156171,ENSG00000119685}') or variant_id in (select variant_id from t_iv) order by gene_id, variant_id) to 'for_demo/phenopolis.variant_gene.csv' csv header;
