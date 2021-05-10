@@ -1,14 +1,15 @@
 """
 Individual view
 """
-import db.helpers
+import functools
+import operator
 from typing import Dict, List, Optional, Tuple, Union
-from sqlalchemy import func, and_, or_
+from sqlalchemy import and_, or_
 from psycopg2 import sql
 from sqlalchemy.orm import Session
 from collections import Counter
 from flask import session, jsonify, request
-from db.model import Individual, UserIndividual, Variant, HomozygousVariant, HeterozygousVariant, Sex
+from db.model import Individual, UserIndividual, Sex
 from views import HG_ASSEMBLY, application
 from views.auth import requires_auth, is_demo_user, USER, ADMIN_USER
 from views.exceptions import PhenopolisException
@@ -16,6 +17,8 @@ from views.helpers import _get_json_payload
 from views.postgres import session_scope, get_db
 from bidict import bidict
 from views.general import process_for_display, cache_on_browser
+from db.helpers import cursor2dict, query_user_config
+from views.variant import _get_variants
 
 MAPPING_SEX_REPRESENTATIONS = bidict({"male": Sex.M, "female": Sex.F, "unknown": Sex.U})
 MAX_PAGE_SIZE = 100000
@@ -66,7 +69,7 @@ def get_all_individuals():
 @cache_on_browser()
 def get_individual_by_id(phenopolis_id, subset="all", language="en"):
     with session_scope() as db_session:
-        config = db.helpers.query_user_config(db_session=db_session, language=language, entity="individual")
+        config = query_user_config(db_session=db_session, language=language, entity="individual")
         individual = _fetch_authorized_individual(db_session, phenopolis_id)
         # unauthorized access to individual
         if not individual:
@@ -77,7 +80,7 @@ def get_individual_by_id(phenopolis_id, subset="all", language="en"):
             return response
 
         if subset == "preview":
-            individual_view = _individual_preview(db_session, config, individual)
+            individual_view = _individual_preview(config, individual)
         else:
             individual_view = _individual_complete_view(db_session, config, individual, subset)
     return jsonify(individual_view)
@@ -252,13 +255,23 @@ def _check_individual_valid(db_session: Session, new_individual: Individual):
 
 
 def _individual_complete_view(db_session: Session, config, individual: Individual, subset):
+    variants = _get_variants(individual.phenopolis_id)
+    hom_vars = [x for x in variants if "HOM" in x["zigosity"]]
+    het_vars = [x for x in variants if "HET" in x["zigosity"]]
     # hom variants
-    config[0]["rare_homs"]["data"] = [x.as_dict() for x in _get_homozygous_variants(db_session, individual)]
+    config[0]["rare_homs"]["data"] = hom_vars
     # rare variants
-    config[0]["rare_variants"]["data"] = [x.as_dict() for x in _get_heterozygous_variants(db_session, individual)]
+    config[0]["rare_variants"]["data"] = het_vars
     # rare_comp_hets
-    gene_counter = Counter([v["gene_symbol"] for v in config[0]["rare_variants"]["data"]])
-    rare_comp_hets_variants = [v for v in config[0]["rare_variants"]["data"] if gene_counter[v["gene_symbol"]] > 1]
+    genes: List[str] = functools.reduce(operator.iconcat, [v["gene_symbol"].split(",") for v in het_vars], [])
+    gene_counter = Counter(genes)
+    genes = [x for x, y in gene_counter.items() if y > 1 and x]
+    rare_comp_hets_variants = []
+    for v in het_vars:
+        if v["gene_symbol"]:
+            for g in v["gene_symbol"].split(","):
+                if g in genes:
+                    rare_comp_hets_variants.append(v)
     config[0]["rare_comp_hets"]["data"] = rare_comp_hets_variants
 
     if not config[0]["metadata"]["data"]:
@@ -272,10 +285,29 @@ def _individual_complete_view(db_session: Session, config, individual: Individua
         return [{subset: y[subset]} for y in config]
 
 
-def _individual_preview(db_session: Session, config, individual: Individual):
-    hom_count = _count_homozygous_variants(db_session, individual)
-    het_count = _count_heterozygous_variants(db_session, individual)
-    comp_het_count = _count_compound_heterozygous_variants(db_session, individual)
+def _individual_preview(config, individual: Individual):
+    sql_zig = """select iv.zygosity,count(*) from phenopolis.variant v
+        join phenopolis.individual_variant iv on iv.variant_id = v.id
+        where iv.individual_id = %s
+        group by iv.zygosity"""
+    sql_comp = """select sum(c)::int as total from(
+        select count(v.*) as c
+        from phenopolis.variant_gene vg
+        join phenopolis.individual_variant iv on iv.variant_id = vg.variant_id
+        join phenopolis.variant v on v.id = iv.variant_id
+        where iv.individual_id = %s and iv.zygosity = 'HET'
+        group by vg.gene_id having count(v.*) > 1
+        ) as com"""
+    with get_db() as conn:
+        with conn.cursor() as cur:
+            cur.execute(sql_zig, [individual.id])
+            hh = dict(cur.fetchall())
+            cur.execute(sql_comp, [individual.id])
+            hc = cur.fetchone()[0] or 0
+
+    hom_count = hh.get("HOM", 0)
+    het_count = hh.get("HET", 0)
+    comp_het_count = hc
     # TODO: make a dict of this and not a list of lists
     config[0]["preview"] = [
         ["External_id", individual.external_id],
@@ -287,24 +319,6 @@ def _individual_preview(db_session: Session, config, individual: Individual):
         ["Number of het variants", het_count],
     ]
     return config
-
-
-def _count_compound_heterozygous_variants(db_session: Session, individual: Individual):
-    return (
-        _query_heterozygous_variants(db_session, individual)
-        .with_entities(Variant.gene_symbol)
-        .group_by(Variant.gene_symbol)
-        .having(func.count(Variant.gene_symbol) > 1)
-        .count()
-    )
-
-
-def _count_heterozygous_variants(db_session: Session, individual: Individual) -> int:
-    return _query_heterozygous_variants(db_session, individual).count()
-
-
-def _count_homozygous_variants(db_session: Session, individual: Individual) -> int:
-    return _query_homozygous_variants(db_session, individual).count()
 
 
 def _map_individual2output(config, individual: Individual):
@@ -334,33 +348,11 @@ def _get_feature_for_individual(
         with conn.cursor() as cur:
             cur.execute(
                 """
-                select t.hpo_id, t."name" from phenopolis.individual i
+                select distinct t.hpo_id, t."name" from phenopolis.individual i
                 join phenopolis.individual_feature if2 on (i.id = if2.individual_id)
                 join hpo.term t on (t.id = if2.feature_id) and if2."type" = %s
                 and i.id = %s""",
                 (atype, ind_id),
-            )
-            res = cur.fetchall()
-    return res
-
-
-def _get_ancestors_for_individual(individual: Individual) -> List[Tuple[str, str]]:
-    """
-    returns a list of tuples (ancestor_observed_features, ancestor_observed_features_name) for a given individual
-    e.g. [('HP:0000007', 'Autosomal recessive inheritance'), ('HP:0000505', 'Visual impairment')]
-    """
-    with get_db() as conn:
-        with conn.cursor() as cur:
-            cur.execute(
-                r"""
-            select t.hpo_id, name from hpo.term t where t.id in (
-                select distinct(regexp_split_to_table(path::text, '\.'))::int as ancestor
-                from phenopolis.individual_feature if1
-                join hpo.is_a_path tpath on if1.feature_id = tpath.term_id and if1.type = 'observed'
-                where  if1.individual_id = %s
-            )
-            order by t.id""",
-                [individual.id],
             )
             res = cur.fetchall()
     return res
@@ -376,7 +368,7 @@ def _get_genes_for_individual(individual: Union[Individual, dict]) -> List[Tuple
         with conn.cursor() as cur:
             cur.execute(
                 """
-            select g.hgnc_symbol from phenopolis.individual i
+            select distinct g.hgnc_symbol from phenopolis.individual i
             join phenopolis.individual_gene ig on i.id = ig.individual_id
             join ensembl.gene g on g.identifier = ig.gene_id
             and i.id = %s""",
@@ -384,50 +376,6 @@ def _get_genes_for_individual(individual: Union[Individual, dict]) -> List[Tuple
             )
             genes = cur.fetchall()
     return genes
-
-
-def _get_heterozygous_variants(db_session: Session, individual: Individual) -> List[Variant]:
-    return _query_heterozygous_variants(db_session, individual).all()
-
-
-def _query_heterozygous_variants(db_session: Session, individual):
-    return (
-        db_session.query(Variant)
-        .select_from(HeterozygousVariant)
-        .filter(HeterozygousVariant.individual == individual.phenopolis_id)
-        .join(
-            Variant,
-            and_(
-                HeterozygousVariant.CHROM == Variant.CHROM,
-                HeterozygousVariant.POS == Variant.POS,
-                HeterozygousVariant.REF == Variant.REF,
-                HeterozygousVariant.ALT == Variant.ALT,
-            ),
-        )
-        .with_entities(Variant)
-    )
-
-
-def _get_homozygous_variants(db_session: Session, individual: Individual) -> List[Variant]:
-    return _query_homozygous_variants(db_session, individual).all()
-
-
-def _query_homozygous_variants(db_session: Session, individual):
-    return (
-        db_session.query(Variant)
-        .select_from(HomozygousVariant)
-        .filter(HomozygousVariant.individual == individual.phenopolis_id)
-        .join(
-            Variant,
-            and_(
-                HomozygousVariant.CHROM == Variant.CHROM,
-                HomozygousVariant.POS == Variant.POS,
-                HomozygousVariant.REF == Variant.REF,
-                HomozygousVariant.ALT == Variant.ALT,
-            ),
-        )
-        .with_entities(Variant)
-    )
 
 
 def _fetch_all_individuals(db_session: Session, offset, limit) -> List[Dict]:
@@ -440,7 +388,7 @@ def _fetch_all_individuals(db_session: Session, offset, limit) -> List[Dict]:
     with get_db() as conn:
         with conn.cursor() as cur:
             cur.execute(query, [session[USER]])
-            individuals = sorted(db.helpers.cursor2dict(cur), key=lambda i: i["id"])
+            individuals = sorted(cursor2dict(cur), key=lambda i: i["id"])
     if session[USER] != ADMIN_USER:
         for dd in individuals:
             dd["users"] = [session[USER]]
