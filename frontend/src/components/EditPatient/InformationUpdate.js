@@ -62,7 +62,7 @@ export default function InformationUpdate(props) {
     } else if (userInfo.sex === 'F') {
       setGender('female');
     } else {
-      setGender('U');
+      setGender('unknown');
     }
 
     setConsanguinity(userInfo.consanguinity);
@@ -217,7 +217,7 @@ export default function InformationUpdate(props) {
                   </Grid>
                   <Grid item xs={3}>
                     <FormControlLabel
-                      value="U"
+                      value="unknown"
                       control={<Radio color="primary" />}
                       label="Unknown"
                       labelPlacement="Unknown"
