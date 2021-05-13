@@ -123,10 +123,10 @@ def test_update_individual_with_admin_user(_admin_client):
     individual_id = "PH00008267"
     with session_scope() as db_session:
         individual = db_session.query(Individual).filter(Individual.phenopolis_id == individual_id).first()
-        sex = individual.sex
+        sex1 = individual.sex
 
         # update sex
-        new_sex_for_api = MAPPING_SEX_REPRESENTATIONS.inverse.get(sex)
+        new_sex_for_api = "unknown"
         response = _admin_client.post(
             f"/update_patient_data/{individual_id}",
             data=f"gender_edit[]={new_sex_for_api}&feature[]=Abnormality of body height"
@@ -139,7 +139,7 @@ def test_update_individual_with_admin_user(_admin_client):
         # confirm observed data
         db_session.refresh(individual)
         observed_sex = individual.sex
-        assert observed_sex == sex, "Update sex did not work"
+        assert observed_sex == MAPPING_SEX_REPRESENTATIONS.get(new_sex_for_api), "Update sex did not work"
         observed_hpo_names = [x[1] for x in vi._get_feature_for_individual(individual, atype="observed")]
         assert len(observed_hpo_names) == 3, "Update HPOs did not work"
         unobserved_hpo_names = [x[1] for x in vi._get_feature_for_individual(individual, atype="unobserved")]
@@ -152,6 +152,19 @@ def test_update_individual_with_admin_user(_admin_client):
         assert "HP:0000002" in observed_hpos, "Update HPOs did not work"
         assert "HP:0000003" in observed_hpos, "Update HPOs did not work"
         assert "HP:0000005" in observed_hpos, "Update HPOs did not work"
+
+        sex_org = MAPPING_SEX_REPRESENTATIONS.inverse.get(sex1)
+        response = _admin_client.post(
+            f"/update_patient_data/{individual_id}",
+            data=f"gender_edit[]={sex_org}&feature[]=Abnormality of body height"
+            "&feature[]=Multicystic kidney dysplasia"
+            "&feature[]=Mode of inheritance&genes[]=TTLL5&genes[]=GAST",
+            content_type="application/x-www-form-urlencoded",
+        )
+        assert response.status_code == 200
+        db_session.refresh(individual)
+        observed_sex = individual.sex
+        assert observed_sex == sex1, "Update sex did not work"
 
         individual_id = "PH00009999"
         response = _admin_client.post(
@@ -169,14 +182,15 @@ def test_create_individual_with_demo_user_fails(_demo_client):
     assert response.status_code == 405
 
 
-def test_create_individual_with_admin_user(_admin_client):
+@pytest.mark.parametrize(("sample", "sex"), (("for_test_Sample1", "U"), ("for_test_Sample2", "F")))
+def test_create_individual_with_admin_user(_admin_client, sample, sex):
     individual = Individual()
-    test_external_id = "for_test_Sample"
+    test_external_id = sample
     individual.external_id = test_external_id
     response = _admin_client.post("/individual", json=[individual.as_dict()], content_type="application/json")
     assert response.status_code == 400
     assert response.json == {"error": "Null individual", "success": False}, "Sex cannot be null"
-    individual.sex = "F"
+    individual.sex = sex
     individual.consanguinity = "unknown"
     individual.genes = "DRAM2"
     individual.observed_features = "HP:0000001"
