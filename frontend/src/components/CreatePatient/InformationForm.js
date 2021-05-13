@@ -224,7 +224,7 @@ export default function InformationForm() {
                     </Grid>
                     <Grid item xs={3}>
                       <FormControlLabel
-                        value="unknown"
+                        value="U"
                         control={<Radio color="primary" />}
                         label="Unknown"
                         labelPlacement="Unknown"
