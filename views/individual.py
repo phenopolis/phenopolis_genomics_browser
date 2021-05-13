@@ -111,7 +111,8 @@ def update_patient_data(phenopolis_id):
             features = ["All"]
 
         # TODO: simplify this gender translation
-        gender = MAPPING_SEX_REPRESENTATIONS.get(gender, "unknown")
+        unk_obj = MAPPING_SEX_REPRESENTATIONS.get("unknown")
+        gender = MAPPING_SEX_REPRESENTATIONS.get(gender, unk_obj)
         hpos = _get_hpos(features)
         _update_individual(consanguinity, gender, genes, hpos, individual)
     return jsonify({"success": True}), 200
@@ -490,7 +491,7 @@ def _fetch_authorized_individual(db_session: Session, phenopolis_id) -> Individu
     )
 
 
-def _update_individual(consanguinity, gender, genes, hpos: List[tuple], individual: Individual):
+def _update_individual(consanguinity, gender: Sex, genes, hpos: List[tuple], individual: Individual):
     """
     Updates tables:
         phenopolis.individual:         col(gender)
