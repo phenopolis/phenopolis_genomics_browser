@@ -55,7 +55,8 @@ const MetaData = (props) => {
                         </Grid>
 
                         <Grid item xs={8} md={10}>
-                          {typeof metadata.data[0][item.key] !== 'object' ? (
+                          {typeof metadata.data[0][item.key] !== 'object' ||
+                          metadata.data[0][item.key] === null ? (
                             <span>
                               {(item.key === 'start') | (item.key === 'stop')
                                 ? Number(metadata.data[0][item.key]).toLocaleString()
