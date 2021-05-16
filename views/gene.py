@@ -1,9 +1,9 @@
 """
 Gene view
 """
-from sqlalchemy.orm import Session
-
 import db.helpers
+from sqlalchemy.orm import Session
+from sqlalchemy import text
 from flask import jsonify
 from views import HG_ASSEMBLY, application
 from views.auth import requires_auth, is_demo_user
@@ -97,11 +97,21 @@ def query_gene(db_session: Session, gene_id):
     gene_id = gene_id.upper()
     if gene_id.startswith("ENSG"):
         # queries first by gene id if it looks like a gene id
-        data = db_session.query(Gene).filter(Gene.gene_id == gene_id).all()
+        data = db_session.query(Gene).filter(Gene.gene_id == gene_id).filter(text("chrom ~ '^X|^Y|^[0-9]{1,2}'")).all()
     else:
         # queries then by gene name on the field that stores gene names in upper case
-        data = db_session.query(Gene).filter(Gene.gene_name_upper == gene_id).all()
+        data = (
+            db_session.query(Gene)
+            .filter(Gene.gene_name_upper == gene_id)
+            .filter(text("chrom ~ '^X|^Y|^[0-9]{1,2}'"))
+            .all()
+        )
         if not data:
             # otherwise looks for synonyms ensuring complete match by appending quotes
-            data = db_session.query(Gene).filter(Gene.other_names.like(f"%{gene_id}%")).all()
+            data = (
+                db_session.query(Gene)
+                .filter(Gene.other_names.like(f"%{gene_id}%"))
+                .filter(text("chrom ~ '^X|^Y|^[0-9]{1,2}'"))
+                .all()
+            )
     return [p.as_dict() for p in data]
