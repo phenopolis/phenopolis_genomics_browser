@@ -101,7 +101,10 @@ def query_gene(db_session: Session, gene_id):
     else:
         # queries then by gene name on the field that stores gene names in upper case
         data = (
-            db_session.query(Gene).filter(Gene.gene_name_upper == gene_id).filter("chrom ~ '^X|^Y|^[0-9]{1,2}'").all()
+            db_session.query(Gene)
+            .filter(Gene.gene_name_upper == gene_id)
+            .filter(text("chrom ~ '^X|^Y|^[0-9]{1,2}'"))
+            .all()
         )
         if not data:
             # otherwise looks for synonyms ensuring complete match by appending quotes
