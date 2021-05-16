@@ -5,7 +5,7 @@ import re
 from typing import List
 
 from flask import jsonify, session, request
-from sqlalchemy import and_, asc, func, or_, Text, cast
+from sqlalchemy import and_, asc, func, or_, Text, cast, text
 from sqlalchemy.orm import Session
 
 from db.model import Individual, UserIndividual, HPO, Gene, Variant
@@ -164,6 +164,7 @@ def _search_genes(db_session: Session, query, limit):
                     Gene.canonical_transcript.ilike("%{}%".format(query_without_version)),
                 )
             )
+            .filter(text("chrom ~ '^X|^Y|^[0-9]{1,2}'"))
             .order_by(Gene.gene_id.asc())
             .limit(limit)
             .all()
@@ -173,6 +174,7 @@ def _search_genes(db_session: Session, query, limit):
         genes_by_gene_name = (
             db_session.query(Gene, Gene.gene_name.op("<->")(query).label("distance"))
             .filter(Gene.gene_name.op("%")(query))
+            .filter(text("chrom ~ '^X|^Y|^[0-9]{1,2}'"))
             .order_by("distance", asc(func.lower(Gene.gene_name)))
             .limit(limit)
             .all()
@@ -180,6 +182,7 @@ def _search_genes(db_session: Session, query, limit):
         genes_by_other_names = (
             db_session.query(Gene, Gene.other_names.op("<->")(query).label("distance"))
             .filter(Gene.other_names.op("%")(query))
+            .filter(text("chrom ~ '^X|^Y|^[0-9]{1,2}'"))
             .order_by("distance", asc(func.lower(Gene.gene_name)))
             .limit(limit)
             .all()
