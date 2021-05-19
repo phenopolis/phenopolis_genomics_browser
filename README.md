@@ -41,9 +41,12 @@ If you need to install new libraries in the frontend then you may need to run:
 ```bash
 docker-compose up --build 
 docker-compose run frontend /bin/bash 
+```
+The inside the container unr:
+```bash
 npm install 
 ```
-Then quit the contained and run:
+Then quit the container and run:
 
 ```bash 
 docker-compose up
