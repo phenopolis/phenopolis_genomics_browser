@@ -6,7 +6,7 @@ import { Grid, IconButton, Button, Tooltip } from '@material-ui/core';
 
 import svgImage3 from '../assets/image/404.svg';
 
-export default function NoFoundPage() {
+export default function NotFoundPage() {
   return (
     <Fragment>
       <div className="app-wrapper bg-white">
