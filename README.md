@@ -24,31 +24,38 @@ docker-compose up
 ```
 
 If an image has previously been built this may cause issues with *npm*.
-If this doesn't work you many to delete and rebuild your docker images:
+If this doesn't work you many to delete and rebuild your `frontend` docker image:
 
-Remove docker images:
+Remove `frontend` docker images:
+
 ```bash
-docker system prune -f
-docker volume prune -f
-docker image prune -f
+docker rm -f phenopolis_browser_frontend_1 # stop and remove container
+docker rmi phenopolis_frontend:latest # remove image
+docker-compose build --no-cache frontend # rebuild from scratch
 ```
+
 and rebuild:
+
 ```bash
 docker-compose up --build 
 ```
 
 If you need to install new libraries in the frontend then you may need to run:
+
 ```bash
 docker-compose up --build 
 docker-compose run frontend /bin/bash 
 ```
-The inside the container unr:
+
+The inside the container run:
+
 ```bash
 npm install 
 ```
+
 Then quit the container and run:
 
-```bash 
+```bash
 docker-compose up
 ```
 
