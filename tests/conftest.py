@@ -1,6 +1,6 @@
 import pytest
 from dotenv import load_dotenv
-from views import application, APP_ENV
+from views import application, APP_ENV, VERSION
 from views.auth import ADMIN_USER, USER, DEMO_USER
 
 NONDEMO_USER = "nondemo"
@@ -8,7 +8,7 @@ load_dotenv(dotenv_path="./private.env")
 
 
 def pytest_report_header(config):
-    return ">>> APP_ENV: " + APP_ENV
+    return f">>> Version: {VERSION}, APP_ENV: {APP_ENV}"
 
 
 @pytest.fixture

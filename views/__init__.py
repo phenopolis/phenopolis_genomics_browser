@@ -13,7 +13,9 @@ import logging
 from logging.config import dictConfig
 from flask.logging import default_handler
 from cyvcf2 import VCF
+from subprocess import Popen, STDOUT, PIPE
 import psycopg2
+
 
 # Options are: prod, dev, debug (default)
 APP_ENV = os.getenv("APP_ENV", "debug")
@@ -21,6 +23,10 @@ APP_ENV = os.getenv("APP_ENV", "debug")
 HG_ASSEMBLY = os.getenv("HG_ASSEMBLY", "GRCh37")
 
 MAIL_USERNAME = os.getenv("MAIL_USERNAME", "no-reply@phenopolis.com")
+
+VERSION = Popen("git describe --tags", shell=True, stderr=STDOUT, stdout=PIPE).communicate()[0][:-1].decode()
+if "command not found" in VERSION:
+    VERSION = "$Format:%H$"
 
 ENV_LOG_FLAG = True
 if APP_ENV in ["prod"]:

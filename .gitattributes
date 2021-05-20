@@ -1,2 +1,4 @@
 # Set default behaviour to automatically normalize line endings.
 * text=auto
+
+views/__init__.py export-subst
