@@ -26,7 +26,7 @@ MAIL_USERNAME = os.getenv("MAIL_USERNAME", "no-reply@phenopolis.com")
 
 VERSION = Popen("git describe --tags", shell=True, stderr=STDOUT, stdout=PIPE).communicate()[0][:-1].decode()
 if "command not found" in VERSION:
-    VERSION = "$Format:%H$"
+    VERSION = "$Format:%H$"[:7]
 
 ENV_LOG_FLAG = True
 if APP_ENV in ["prod"]:

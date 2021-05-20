@@ -9,7 +9,7 @@ from flask import jsonify, request, Response, session
 from flask_mail import Message
 from sqlalchemy.orm import Session
 from werkzeug.exceptions import HTTPException
-from views import MAIL_USERNAME, application, mail, APP_ENV
+from views import MAIL_USERNAME, VERSION, application, mail, APP_ENV
 from views.auth import USER
 from views.exceptions import PhenopolisException
 from datetime import datetime, timedelta
@@ -39,7 +39,8 @@ def after_request(response):
 @application.errorhandler(Exception)
 def exceptions(e):
     application.logger.error(
-        f"{request.remote_addr} {request.method} {request.scheme} {request.full_path} 5xx INTERNAL SERVER ERROR"
+        f"""{VERSION} {request.remote_addr} {request.method} {request.scheme} {request.full_path}
+ 5xx INTERNAL SERVER ERROR"""
     )
     application.logger.exception(e)
     response = Response()
@@ -64,6 +65,7 @@ def _build_response_from_exception(response, exception):
             "method": request.method,
             "scheme": request.scheme,
             "timestamp": strftime("[%Y-%b-%d %H:%M]"),
+            "version": VERSION,
         }
     )
     response.content_type = "application/json"
@@ -76,7 +78,7 @@ def _send_error_mail(code):
         sender=MAIL_USERNAME,
         recipients=[MAIL_USERNAME],
     )
-    msg.body = traceback.format_exc()
+    msg.body = f"Version: {VERSION}\n{traceback.format_exc()}"
     mail.send(msg)
 
 
