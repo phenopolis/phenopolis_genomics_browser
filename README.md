@@ -1,3 +1,5 @@
+[![Gitter chat](https://badges.gitter.im/gitterHQ/gitter.png)](https://gitter.im/phenopolis_browser/community)
+
 # Phenopolis Browser 2.0
 
 Note this is a new version of the code, the old version is here: https://github.com/phenopolis/phenopolis
