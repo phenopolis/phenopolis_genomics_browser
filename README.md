@@ -1,4 +1,8 @@
-# Phenopolis Browser
+# Phenopolis Browser 2.0
+
+Note this is a new version of the code, the old version is here: https://github.com/phenopolis/phenopolis
+
+If you use Phenopolis Browser please cite our paper: https://academic.oup.com/bioinformatics/article/33/15/2421/3072087
 
 A description of the code setup is available [here](code_setup.md).
 
