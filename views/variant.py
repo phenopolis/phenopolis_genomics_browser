@@ -59,7 +59,7 @@ def _get_variant(chrom, pos, ref, alt, language):
         )
 
         if variant is None:
-            response = jsonify(message="Missing variant")
+            response = jsonify(message="Variant not found")
             response.status_code = 404
             return response
 
