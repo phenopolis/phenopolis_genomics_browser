@@ -7,7 +7,7 @@ export const getHPO = (param) => {
     dispatch({ type: GET_HPO });
     Service.getHPO(param)
       .then((res) => {
-        if (Array.isArray(res.data)) {
+        if(Array.isArray(res.data)) {
           dispatch({ type: GET_HPO_SUCCESS, payload: { data: res.data } });
         } else {
           dispatch({
@@ -17,12 +17,12 @@ export const getHPO = (param) => {
         }
       })
       .catch((error) => {
-        if (error.response.status === 401) {
+        if(error.response.status === 401) {
           dispatch({
             type: SET_STATUS,
             payload: { code: 401, message: error.response.data.message },
           });
-        } else if (error.response.status === 500) {
+        } else if(error.response.status === 500) {
           dispatch({
             type: SET_STATUS,
             payload: { code: 404, message: 'HPO not exist.' },
