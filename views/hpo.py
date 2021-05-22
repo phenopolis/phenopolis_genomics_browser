@@ -53,8 +53,12 @@ def hpo(hpo_id="HP:0000001", subset="all", language="en"):
                 cur.execute(sqlq, [hpo_id])
                 res = cursor2dict(cur)
         application.logger.debug(res)
-        # NOTE: if not res ---> error 500 : HPO not exist.
-        d_hpo = [x for x in res if x[field] == hpo_id][0]
+        data = [x for x in res if x[field] == hpo_id]
+        if not data:
+            response = jsonify(message="HPO not found")
+            response.status_code = 404
+            return response
+        d_hpo = data[0]
         h_id = d_hpo["id"]
         hpo_id = d_hpo["hpo_id"]
         hpo_name = d_hpo["name"]
