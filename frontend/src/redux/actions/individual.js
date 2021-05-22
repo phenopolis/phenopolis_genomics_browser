@@ -14,7 +14,7 @@ export const getIndividualInformation = (param) => {
         dispatch({ type: INDIVIDUAL_INFO_REQUEST_SUCCESS, payload: { data: res.data } });
       })
       .catch((error) => {
-        if (error.response.status === 401) {
+        if(error.response.status === 401) {
           dispatch({
             type: SET_STATUS,
             payload: {
@@ -22,7 +22,7 @@ export const getIndividualInformation = (param) => {
               message: error.response.data.error,
             },
           });
-        } else if (error.response.status === 404) {
+        } else if(error.response.status === 404) {
           dispatch({
             type: SET_STATUS,
             payload: { code: 404, message: error.response.data.message },
