@@ -7,37 +7,23 @@ export const getVariant = (param) => {
     dispatch({ type: GET_VARIANT });
     Service.getVariant(param)
       .then((res) => {
-        if(Array.isArray(res.data)) {
-          dispatch({ type: GET_VARIANT_SUCCESS, payload: { data: res.data } });
-        } else {
-          dispatch({
-            type: SET_STATUS,
-            payload: { code: 404, message: 'Variant not exist.' },
-          });
-        }
+        dispatch({ type: GET_VARIANT_SUCCESS, payload: { data: res.data } });
       })
       .catch((error) => {
-        if(error.response.status === 401) {
+        if (error.response.status === 400) {
+          dispatch({
+            type: SET_STATUS,
+            payload: { code: 400, message: error.response.data.message },
+          });
+        } else if (error.response.status === 401) {
           dispatch({
             type: SET_STATUS,
             payload: { code: 401, message: error.response.data.error },
           });
-        } else if(error.response.status === 404) {
+        } else if (error.response.status === 404) {
           dispatch({
             type: SET_STATUS,
-            payload: {
-              code: 404,
-              message: 'Variant does not exist.',
-            },
-          });
-        } else if(error.response.status === 400) {
-          dispatch({
-            type: SET_STATUS,
-            payload: {
-              code: 404,
-              message:
-                'Wrong variant id. The variant id must follow the format chromosome-position-reference-alternate',
-            },
+            payload: { code: 404, message: error.response.data.message },
           });
         }
         dispatch({ type: GET_VARIANT_FAIL, payload: { error: error.response } });
