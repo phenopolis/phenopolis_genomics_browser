@@ -42,19 +42,11 @@ def test_hpo_web(_nondemo_client, query, subset, msg):
 @pytest.mark.parametrize(
     ("query", "subset", "msg"),
     (
-        (
-            "HP:0001",
-            "all",
-            {"type": "IndexError", "message": ["list index out of range"]},
-        ),  # HP:0001 does not exist in DB
-        (
-            "xyw2zkh",
-            "all",
-            {"type": "IndexError", "message": ["list index out of range"]},
-        ),  # xyw2zkh does not exist in DB
+        ("HP:0001", "all", "HPO not found"),  # HP:0001 does not exist in DB
+        ("xyw2zkh", "all", "HPO not found"),  # xyw2zkh does not exist in DB
     ),
 )
 def test_hpo_preview(_nondemo_client, query, subset, msg):
     resp = _nondemo_client.get(f"/hpo/{query}/{subset}")
-    assert resp.status_code == 500
-    assert resp.json.get("error") == msg
+    assert resp.status_code == 404
+    assert resp.json.get("message") == msg

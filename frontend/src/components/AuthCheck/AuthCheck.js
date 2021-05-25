@@ -53,8 +53,8 @@ const AuthCheck = () => {
       if (username !== '') {
         dispatch(userLogout({ relink: `/login?link=${window.location.pathname}` }));
       }
-    } else if (code === 404) {
-      // When API encounter 404 error, redirect to dashboard page.
+    } else if (code === 404 || code === 400) {
+      // When API encounter 404 or 400 error, redirect to dashboard page.
       dispatch(setSnack(message, 'warning'));
       history.push('/dashboard');
     }

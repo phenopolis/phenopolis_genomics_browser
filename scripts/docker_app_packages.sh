@@ -9,7 +9,7 @@ yum update -y
 
 yum install -y --setopt install_weak_deps=false \
     bzip2-devel gcc libcurl-devel make openssl-devel python3 python3-devel \
-    xz-devel zlib-devel
+    xz-devel zlib-devel git
 
 pip3 install --upgrade pip
 pip install -r requirements.txt

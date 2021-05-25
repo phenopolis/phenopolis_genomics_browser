@@ -36,10 +36,7 @@ def test_get_unauthorised_individual_by_id(_demo):
     """
     response = get_individual_by_id("PH00000001")
     assert response.status_code == 404
-    assert (
-        response.json.get("message")
-        == "Sorry, either the patient does not exist or you are not permitted to see this patient"
-    )
+    assert response.json.get("message") == "Patient not found"
 
 
 def test_get_individual_complete_view_by_id(_admin):
