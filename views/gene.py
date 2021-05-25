@@ -35,7 +35,6 @@ def gene(gene_id, subset="all", language="en"):
         gene_id = config[0]["metadata"]["data"][0]["gene_id"]
         gene_name = config[0]["metadata"]["data"][0]["gene_name"]
         for d in config[0]["metadata"]["data"]:
-            # d['pLI']=1
             d["external_services"] = [
                 {"display": "GnomAD Browser", "href": f"http://gnomad.broadinstitute.org/gene/{gene_id}"},
                 {"display": "GeneCards", "href": f"http://www.genecards.org/cgi-bin/carddisp.pl?gene={gene_name}"},
@@ -80,7 +79,6 @@ def gene(gene_id, subset="all", language="en"):
             if v["cadd_phred"] and v["cadd_phred"] != "NA" and float(v["cadd_phred"]) >= 20:
                 cadd_gt_20 += 1
         config[0]["preview"] = [
-            ["pLI", config[0]["metadata"]["data"][0].get("pLI", "")],
             ["Number of variants", config[0]["metadata"]["data"][0]["number_of_variants"]],
             ["CADD > 20", cadd_gt_20],
         ]

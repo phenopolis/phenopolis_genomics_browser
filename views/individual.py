@@ -73,9 +73,7 @@ def get_individual_by_id(phenopolis_id, subset="all", language="en"):
         individual = _fetch_authorized_individual(db_session, phenopolis_id)
         # unauthorized access to individual
         if not individual:
-            response = jsonify(
-                message="Sorry, either the patient does not exist or you are not permitted to see this patient"
-            )
+            response = jsonify(message="Patient not found")
             response.status_code = 404
             return response
 

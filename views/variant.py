@@ -22,14 +22,12 @@ def variant(variant_id, language="en") -> Response:
     chrom, pos, ref, alt = _parse_variant_id(variant_id)
     variant_id = f"{chrom}-{pos}-{ref}-{alt}"
     if chrom is None:
-        response = jsonify(
-            message="Wrong variant id. The variant id must follow the format " "chromosome-position-reference-alternate"
-        )
+        response = jsonify(message="Wrong variant id. Format must be CHROM-POS-REF-ALT")
         response.status_code = 400
         return response
     variants = _get_variants(variant_id)
     if not variants:
-        response = jsonify(message="Missing variant")
+        response = jsonify(message="Variant not found")
         response.status_code = 404
         return response
 
@@ -45,9 +43,7 @@ def variant_preview(variant_id) -> Response:
     # parse variant id
     chrom, pos, ref, alt = _parse_variant_id(variant_id)
     if chrom is None:
-        response = jsonify(
-            message="Wrong variant id. The variant id must follow the format " "chromosome-position-reference-alternate"
-        )
+        response = jsonify(message="Wrong variant id. Format must be CHROM-POS-REF-ALT")
         response.status_code = 400
         return response
 

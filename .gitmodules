@@ -1,0 +1,3 @@
+[submodule "nextflow-genome"]
+	path = nextflow-genome
+	url = https://github.com/phenopolis/nextflow-genome.git

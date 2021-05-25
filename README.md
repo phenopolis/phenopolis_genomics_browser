@@ -1,4 +1,11 @@
-# Phenopolis Browser
+[![Gitter chat](https://badges.gitter.im/gitterHQ/gitter.png)](https://gitter.im/phenopolis_browser/community)
+[![check_app_api](https://github.com/phenopolis/phenopolis_browser/actions/workflows/python-app.yml/badge.svg)](https://github.com/phenopolis/phenopolis_browser/actions/workflows/python-app.yml)
+
+# Phenopolis Genomics Browser 2.0
+
+Note this is a new version of the code, the old version is [here](https://github.com/phenopolis/phenopolis).
+
+If you use Phenopolis Genomics Browser please cite our [paper](https://academic.oup.com/bioinformatics/article/33/15/2421/3072087).
 
 A description of the code setup is available [here](code_setup.md).
 
