@@ -57,11 +57,13 @@ def enable_user(user_id, status):
             if user_id == ADMIN_USER:
                 raise PhenopolisException("Cannot change the status of Admin user!", 400)
             user = _get_user_by_id(db_session, user_id)
+            if not user:
+                return jsonify(message="User not found"), 404
             user.enabled = _parse_boolean_parameter(status)
             enabled_flag = user.enabled
         except PhenopolisException as e:
             return jsonify(success=False, message=str(e)), e.http_status
-    return jsonify(success=True, message="User enabled flag set to {}".format(enabled_flag)), 200
+    return jsonify(success=True, message=f"User enabled flag set to {enabled_flag}"), 200
 
 
 @application.route("/user", methods=["POST"])
@@ -106,6 +108,8 @@ def get_user(user_id):
     try:
         with session_scope() as db_session:
             user = _get_user_by_id(db_session, user_id)
+            if not user:
+                return jsonify(message="User not found"), 404
             user_individuals = db_session.query(UserIndividual).filter(UserIndividual.user == user.user).all()
             user_dict = user.as_dict()
             # removes the password hash from the endpoint we don't want/need this around
@@ -147,6 +151,34 @@ def confirm_user(token):
     return response
 
 
+@application.route("/user/<user_id>", methods=["DELETE"])
+@requires_auth
+def delete_user(user_id):
+    with session_scope() as db_session:
+        user = _get_user_by_id(db_session, user_id)
+        request_ok = True
+        http_status = 200
+        message = f"User {user_id} has been deleted."
+        if user:
+            try:
+                # user_individuals = db_session.query(UserIndividual).filter(UserIndividual.user == user_id).all()
+                # for ui in user_individuals:
+                #     db_session.delete(ui)
+                db_session.query(UserIndividual).filter(UserIndividual.user == user_id).delete()
+                db_session.query(UserConfig).filter(UserConfig.user_name == user_id).delete()
+                db_session.delete(user)
+            except Exception as e:
+                application.logger.exception(e)
+                request_ok = False
+                message = str(e)
+                http_status = e.http_status
+        else:
+            request_ok = False
+            message = f"User {user_id} does not exist."
+            http_status = 404
+    return jsonify(success=request_ok, message=message), http_status
+
+
 def _check_user_valid(new_user: User):
     if new_user.user is None or new_user.user == "":
         raise PhenopolisException("Missing user name", 400)
@@ -167,16 +199,12 @@ def _add_config_from_admin(db_session, new_user):
 
 
 def _get_user_by_id(db_session, user_id: str) -> User:
-    users = db_session.query(User).filter(User.user == user_id).all()
-    if len(users) == 0:
-        raise PhenopolisException(message="The user does not exist", http_status=404)
-    return users[0]
+    return db_session.query(User).filter(User.user == user_id).first()
 
 
 def _send_confirmation_email(user: User, confirmation_url: str):
     confirmation_token = generate_confirmation_token(user.email)
     m = Message("Confirm your registration into Phenopolis", sender=MAIL_USERNAME, recipients=[user.email],)
-    m.body = "Welcome to Phenopolis {user}, confirm your registration in the following link {url_base}/{token}".format(
-        user=user.user, url_base=confirmation_url, token=confirmation_token
-    )
+    m.body = f"""Welcome to Phenopolis {user.user}, confirm your registration in the following link:\n
+    {confirmation_url}/{confirmation_token}"""
     mail.send(m)
