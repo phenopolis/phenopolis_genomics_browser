@@ -152,18 +152,16 @@ def confirm_user(token):
 
 
 @application.route("/user/<user_id>", methods=["DELETE"])
-@requires_auth
 def delete_user(user_id):
     with session_scope() as db_session:
+        if not session.get(USER) in [ADMIN_USER, user_id]:
+            return jsonify(error="Only Admin or the own User can perform this operation"), 403
         user = _get_user_by_id(db_session, user_id)
         request_ok = True
         http_status = 200
         message = f"User {user_id} has been deleted."
         if user:
             try:
-                # user_individuals = db_session.query(UserIndividual).filter(UserIndividual.user == user_id).all()
-                # for ui in user_individuals:
-                #     db_session.delete(ui)
                 db_session.query(UserIndividual).filter(UserIndividual.user == user_id).delete()
                 db_session.query(UserConfig).filter(UserConfig.user_name == user_id).delete()
                 db_session.delete(user)

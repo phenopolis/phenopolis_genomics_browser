@@ -308,8 +308,6 @@ def test_delete_user(_admin_client):
         user.user = user_name
         user.argon_password = "blabla"
         user.email = "test_register6@phenopolis.org"
-        user.enabled = True
-        user.confirmed = True
         _assert_create_user(db_session, _admin_client, user)
 
         # deletes user
@@ -323,6 +321,32 @@ def test_delete_user(_admin_client):
         # try to delete non-existent user
         response = _admin_client.delete("/user/not_me", content_type="application/json")
         assert response.status_code == 404
+
+
+def test_delete_user_itself(_not_logged_in_client):
+    user_name = "temp_user"
+    with session_scope() as db_session:
+        user = User()
+        user.user = user_name
+        user.argon_password = "blabla"
+        user.email = "temp_user@phenopolis.org"
+        _assert_create_user(db_session, _not_logged_in_client, user)
+        confirmation_token = generate_confirmation_token(user.email)
+        response = _not_logged_in_client.get(f"/user/confirm/{confirmation_token}")
+        assert response.status_code == 200
+
+        # login with new user
+        resp = _not_logged_in_client.post("/login", json={"user": f"{user.user}", "password": f"{user.argon_password}"})
+        assert resp.status_code == 200
+        assert resp.json == {"success": "Authenticated", "username": f"{user.user}"}
+
+        # # try to delete another user
+        response = _not_logged_in_client.delete("/user/demo", content_type="application/json")
+        assert response.status_code == 403
+
+        # user deletes itself
+        response = _not_logged_in_client.delete(f"/user/{user_name}", content_type="application/json")
+        assert response.status_code == 200
 
 
 def _assert_create_user(db_session: Session, _client, user):
