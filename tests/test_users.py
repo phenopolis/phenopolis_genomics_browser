@@ -34,10 +34,15 @@ def test_delete_user_individual_without_permissions(_demo):
     _check_only_available_to_admin(res)
 
 
-def test_enable_user_without_permissions(_demo):
-    """res -> tuple(flask.wrappers.Response)"""
-    res = enable_user("my_user", "true")
-    _check_only_available_to_admin(res)
+def test_enable_user_special_permissions(_demo_client):
+    # try another user: not allowed
+    res = _demo_client.put("/user/nondemo/enabled/true")
+    assert res.status_code == 403
+    assert res.json == {"error": "Only Admin or the own User can perform this operation"}
+    # try itself: allowed
+    res = _demo_client.put("/user/demo/enabled/true")
+    assert res.status_code == 200
+    assert res.json == {"message": "User enabled flag set to 1", "success": True}
 
 
 def test_attempt_create_user_with_wrong_mimetype(_admin):
