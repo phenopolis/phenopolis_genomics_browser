@@ -1,7 +1,9 @@
+# Phenopolis Genomics Browser 2.0
+
+> An Online Platform for Genetic & Phenotype Data
+
 [![Gitter chat](https://badges.gitter.im/gitterHQ/gitter.png)](https://gitter.im/phenopolis_browser/community)
 [![check_app_api](https://github.com/phenopolis/phenopolis_browser/actions/workflows/python-app.yml/badge.svg)](https://github.com/phenopolis/phenopolis_browser/actions/workflows/python-app.yml)
-
-# Phenopolis Genomics Browser 2.0
 
 Note this is a new version of the code, the old version is [here](https://github.com/phenopolis/phenopolis).
 
@@ -38,6 +40,7 @@ Remove `frontend` docker images:
 ```bash
 docker rm -f phenopolis_browser_frontend_1 # stop and remove container
 docker rmi phenopolis_frontend:latest # remove image
+docker volume rm -f phenopolis_browser_node_modules # remove node_modules volume
 docker-compose build --no-cache frontend # rebuild from scratch
 ```
 
