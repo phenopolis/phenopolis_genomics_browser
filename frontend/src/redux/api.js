@@ -26,6 +26,7 @@ export default {
   FETCH_ALL_USER: API_URL + '/user',
   FETCH_ONE_USER: API_URL + '/user/',
   FETCH_ALL_PATIENT: API_URL + '/user/Admin',
+  DELETE_USER: API_URL + '/user/',
   // Below 2 API related to user_individual insert and delete
   ADD_USER_INDIVIDUAL: API_URL + '/user-individual',
   DELETE_USER_INDIVIDUAL: API_URL + '/user-individual',
