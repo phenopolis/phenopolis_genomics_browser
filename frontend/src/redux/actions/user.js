@@ -34,12 +34,18 @@ import {
   CONFIRM_REGISTRATION_SUCCESS,
   CONFIRM_REGISTRATION_FAIL,
   CONFIRM_REGISTRATION_RESET,
+  // Below are 4 reducers for delete user
+  DELETE_USER_REQUEST,
+  DELETE_USER_SUCCESS,
+  DELETE_USER_FAIL,
+  DELETE_USER_RESET,
 } from '../types/user';
 
 import { SET_STATUS } from '../types/status';
 import { SET_SNACK } from '../types/snacks';
 import { SET_DIALOG } from '../types/dialog';
 import Service from '../service';
+import { DELETE_USER_INIDIVIDUAL_REQUEST } from '../types/userIndividual';
 
 export const getAllUser = () => {
   return (dispatch) => {
@@ -231,5 +237,34 @@ export const confirmRegistration = (token) => {
 export const ResetConfirmRegistration = () => {
   return (dispatch) => {
     dispatch({ type: CONFIRM_REGISTRATION_RESET });
+  };
+};
+
+export const deleteUser = (param) => {
+  return (dispatch) => {
+    dispatch({ type: DELETE_USER_REQUEST });
+    Service.deleteUser(param)
+      .then((res) => {
+        dispatch({ type: DELETE_USER_SUCCESS, payload: { data: res.data } });
+      })
+      .catch((error) => {
+        console.log(error.response);
+        if (error.response.status === 401) {
+          dispatch({
+            type: SET_STATUS,
+            payload: { code: 401, message: 'UnAuthorised' },
+          });
+        }
+        dispatch({
+          type: DELETE_USER_FAIL,
+          payload: { error: error.response.data },
+        });
+      });
+  };
+};
+
+export const ResetDeleteUser = () => {
+  return (dispatch) => {
+    dispatch({ type: DELETE_USER_RESET });
   };
 };

@@ -34,6 +34,11 @@ import {
   CONFIRM_REGISTRATION_SUCCESS,
   CONFIRM_REGISTRATION_FAIL,
   CONFIRM_REGISTRATION_RESET,
+  // Below are 4 reducers for delete user
+  DELETE_USER_REQUEST,
+  DELETE_USER_SUCCESS,
+  DELETE_USER_FAIL,
+  DELETE_USER_RESET,
 } from '../types/user';
 
 const initialState = {
@@ -65,6 +70,10 @@ const initialState = {
   confirmResult: null,
   confirmLoaded: false,
   confirmError: false,
+  // Below are status for deleting user
+  deleteResult: null,
+  deleteLoaded: false,
+  deleteError: false,
 };
 
 const UserInformation = (state = initialState, action) => {
@@ -284,6 +293,37 @@ const UserInformation = (state = initialState, action) => {
         confirmResult: null,
         confirmLoaded: false,
         confirmError: false,
+      };
+    }
+    // Below are reducers to delete users
+    case DELETE_USER_REQUEST: {
+      return {
+        ...state,
+        deleteResult: null,
+        deleteLoaded: false,
+        deleteError: false,
+      };
+    }
+    case DELETE_USER_SUCCESS: {
+      return {
+        ...state,
+        deleteResult: action.payload.data,
+        deleteLoaded: true,
+      };
+    }
+    case DELETE_USER_FAIL: {
+      return {
+        ...state,
+        deleteLoaded: false,
+        deleteError: action.payload.error,
+      };
+    }
+    case DELETE_USER_RESET: {
+      return {
+        ...state,
+        deleteResult: null,
+        deleteLoaded: false,
+        deleteError: false,
       };
     }
     default:

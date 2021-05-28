@@ -2,9 +2,28 @@ import React, { Fragment, useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
 
 import { useDispatch, useSelector } from 'react-redux';
-import { getOneUser, enableUser, ResetEnableUser } from '../../redux/actions/user';
+import {
+  getOneUser,
+  enableUser,
+  ResetEnableUser,
+  deleteUser,
+  ResetDeleteUser,
+} from '../../redux/actions/user';
 
-import { Grid, Card, Tooltip, Tabs, Tab, Typography } from '@material-ui/core';
+import {
+  Grid,
+  Card,
+  Tooltip,
+  Tabs,
+  Tab,
+  Typography,
+  Dialog,
+  DialogActions,
+  DialogTitle,
+  DialogContent,
+  DialogContentText,
+  Button,
+} from '@material-ui/core';
 
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faUserNurse, faCheckCircle, faTimesCircle } from '@fortawesome/pro-solid-svg-icons';
@@ -25,7 +44,8 @@ TabContainer.propTypes = {
 
 export default function UserProfile(props) {
   const dispatch = useDispatch();
-  const [value, setValue] = React.useState(0);
+  const [value, setValue] = useState(0);
+  const [openConfirm, setOpenConfirm] = useState(false);
 
   const listItems = [
     { name: 'Email', key: 'email' },
@@ -36,10 +56,11 @@ export default function UserProfile(props) {
     { name: 'Confirmed On', key: 'confirmed_on' },
   ];
 
-  const { oneUserInfo, fetchOneLoaded, enableUserLoaded } = useSelector((state) => ({
+  const { oneUserInfo, fetchOneLoaded, enableUserLoaded, deleteLoaded } = useSelector((state) => ({
     oneUserInfo: state.User.oneUserInfo,
     fetchOneLoaded: state.User.fetchOneLoaded,
     enableUserLoaded: state.User.enableUserLoaded,
+    deleteLoaded: state.User.deleteLoaded,
   }));
 
   const { addUserIndividualLoaded, deleteUserIndividualLoaded } = useSelector((state) => ({
@@ -66,12 +87,33 @@ export default function UserProfile(props) {
     }
   }, [props.id]);
 
+  useEffect(() => {
+    // window.location.reload();
+    if (deleteLoaded) {
+      dispatch(ResetDeleteUser());
+      window.location.reload();
+    }
+  }, [deleteLoaded]);
+
   const handleChange = (event, newValue) => {
     setValue(newValue);
   };
 
   const handleEnableUser = () => {
     dispatch(enableUser({ id: props.id, status: !oneUserInfo.enabled }));
+  };
+
+  const handleDeleteUser = () => {
+    setOpenConfirm(true);
+  };
+
+  const handleCloseDialog = () => {
+    setOpenConfirm(false);
+  };
+
+  const handleConfirmDelete = () => {
+    dispatch(deleteUser(props.id));
+    setOpenConfirm(false);
   };
 
   return (
@@ -110,7 +152,7 @@ export default function UserProfile(props) {
                         </Tooltip>
                       )}
                     </div>
-                    <div style={{ marginLeft: '10px' }}>
+                    <div style={{ marginRight: '10px' }}>
                       {oneUserInfo.confirmed ? (
                         <span className="mt-2 text-success font-size-md px-4 py-1 h-auto badge badge-neutral-success">
                           Confirmed
@@ -120,6 +162,16 @@ export default function UserProfile(props) {
                           Unconfirmed
                         </span>
                       )}
+                    </div>
+                    <div>
+                      <Tooltip title="Click to DELETE this user.">
+                        <span
+                          className="mt-2 text-danger font-size-md px-4 py-1 h-auto badge badge-neutral-danger"
+                          onClick={handleDeleteUser}
+                          style={{ cursor: 'pointer' }}>
+                          &nbsp;Delete&nbsp;
+                        </span>
+                      </Tooltip>
                     </div>
                   </Grid>
                 </div>
@@ -184,6 +236,28 @@ export default function UserProfile(props) {
           </span>
         </Grid>
       )}
+
+      <Dialog
+        open={openConfirm}
+        onClose={handleCloseDialog}
+        aria-labelledby="alert-dialog-title"
+        aria-describedby="alert-dialog-description">
+        <DialogTitle id="alert-dialog-title">{'DANGER: Are you sure?'}</DialogTitle>
+        <DialogContent>
+          <DialogContentText id="alert-dialog-description">
+            Are you sure you want to completely remove this user's information out of DB, this is
+            un-recoverable.
+          </DialogContentText>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={handleCloseDialog} color="primary">
+            Disagree
+          </Button>
+          <Button onClick={handleConfirmDelete} color="primary" autoFocus>
+            Confirm
+          </Button>
+        </DialogActions>
+      </Dialog>
     </Fragment>
   );
 }
