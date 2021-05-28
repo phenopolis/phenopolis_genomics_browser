@@ -1,4 +1,8 @@
-import { INDIVIDUAL_INFO_REQUEST, INDIVIDUAL_INFO_REQUEST_FAIL, INDIVIDUAL_INFO_REQUEST_SUCCESS } from '../types/individual';
+import {
+  INDIVIDUAL_INFO_REQUEST,
+  INDIVIDUAL_INFO_REQUEST_FAIL,
+  INDIVIDUAL_INFO_REQUEST_SUCCESS,
+} from '../types/individual';
 import { SET_STATUS } from '../types/status';
 import Service from '../service';
 

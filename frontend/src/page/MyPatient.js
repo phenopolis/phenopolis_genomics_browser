@@ -1,7 +1,12 @@
 import React, { useEffect } from 'react';
-import { CssBaseline, Container } from '@material-ui/core';
+import { CssBaseline, Container, Typography, Box, Button } from '@material-ui/core';
 import Loading from '../components/General/Loading';
+import { Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
+
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faPlusSquare } from '@fortawesome/pro-solid-svg-icons';
+
 import { useDispatch, useSelector } from 'react-redux';
 import { getHPO } from '../redux/actions/hpo';
 
@@ -27,19 +32,27 @@ const MyPatient = () => {
           <CssBaseline />
           <div className="myPatients-container">
             <Container maxWidth="xl">
-              <VersatileTable
-                tableData={hpoInfo.individuals}
-                title={
-                  t('MyPatient.My_Patients') +
-                  ' (' +
-                  t('MyPatient.Total') +
-                  ' ' +
-                  hpoInfo.preview[0][1] +
-                  ')'
-                }
-                subtitle=" "
-                genomePlot={false}
-              />
+              <Typography component="div">
+                <Box fontWeight="900" fontSize="h4.fontSize" mb={0}>
+                  {t('MyPatient.My_Patients') +
+                    ' (' +
+                    t('MyPatient.Total') +
+                    ' ' +
+                    hpoInfo.preview[0][1] +
+                    ')'}
+                </Box>
+              </Typography>
+              <Button
+                variant="contained"
+                color="primary"
+                startIcon={<FontAwesomeIcon icon={faPlusSquare} />}
+                style={{ backgroundColor: 'orange' }}
+                component={Link}
+                to="/create_patient">
+                Create New Patient
+              </Button>
+
+              <VersatileTable tableData={hpoInfo.individuals} genomePlot={false} />
             </Container>
           </div>
         </React.Fragment>
