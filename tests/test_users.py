@@ -53,11 +53,11 @@ def test_get_user(_admin):
     assert status == 200
     user_dict = response.json
     assert isinstance(user_dict, dict)
-    assert user_dict.get("user") == "Admin", "user_dict={}".format(user_dict)
-    assert user_dict.get("argon_password") is None, "user_dict={}".format(user_dict)
+    assert user_dict.get("user") == "Admin", f"user_dict={user_dict}"
+    assert user_dict.get("argon_password") is None, f"user_dict={user_dict}"
     individual_ids = user_dict.get("individuals")
-    assert isinstance(individual_ids, list), "user_dict={}".format(user_dict)
-    assert len(individual_ids) > 0, "user_dict={}".format(user_dict)
+    assert isinstance(individual_ids, list), f"user_dict={user_dict}"
+    assert len(individual_ids) > 0, f"user_dict={user_dict}"
 
 
 def test_get_non_existing_user(_admin):
@@ -71,8 +71,8 @@ def test_get_users(_admin):
     response, status = get_users()
     assert status == 200
     users = response.json
-    assert isinstance(users, list), "users={}".format(users)
-    assert len(users) >= 2, "users={}".format(users)
+    assert isinstance(users, list), f"users={users}"
+    assert len(users) >= 2, f"users={users}"
     assert "Admin" in users
     assert "demo" in users
 
@@ -147,7 +147,7 @@ def test_create_and_confirm_user(_not_logged_in_client):
             _assert_create_user(db_session, _not_logged_in_client, user)
             # confirms the user
             confirmation_token = generate_confirmation_token(user.email)
-            response = _not_logged_in_client.get("/user/confirm/{}".format(confirmation_token))
+            response = _not_logged_in_client.get(f"/user/confirm/{confirmation_token}")
             assert response.status_code == 200
             observed_user = db_session.query(User).filter(User.user == user.user).first()
             assert observed_user.user == user.user
@@ -162,7 +162,7 @@ def test_create_and_confirm_user(_not_logged_in_client):
 def test_confirm_user_with_token_with_unexisting_email(_not_logged_in_client):
     # tries to confirm an email not in the database
     confirmation_token = generate_confirmation_token("nottherightemail@phenopolis.org")
-    response = _not_logged_in_client.get("/user/confirm/{}".format(confirmation_token))
+    response = _not_logged_in_client.get(f"/user/confirm/{confirmation_token}")
     assert response.status_code == 404
 
 
@@ -174,7 +174,7 @@ def test_confirm_user_with_bad_token(_not_logged_in_client):
 def test_confirm_user_already_confirmed(_not_logged_in_client):
     # tries to confirm an email not in the database
     confirmation_token = generate_confirmation_token("demo@phenopolis.org")
-    response = _not_logged_in_client.get("/user/confirm/{}".format(confirmation_token))
+    response = _not_logged_in_client.get(f"/user/confirm/{confirmation_token}")
     assert response.status_code == 200
 
 
@@ -299,6 +299,54 @@ def test_change_password(_nondemo_client):
         # checks that the old_password is back
         observed_user = db_session.query(User).filter(User.user == NONDEMO_USER).first()
         assert argon2.verify(old_password, observed_user.argon_password)
+
+
+def test_delete_user(_admin_client):
+    user_name = "test_register6"
+    with session_scope() as db_session:
+        user = User()
+        user.user = user_name
+        user.argon_password = "blabla"
+        user.email = "test_register6@phenopolis.org"
+        _assert_create_user(db_session, _admin_client, user)
+
+        # deletes user
+        response = _admin_client.delete(f"/user/{user_name}", content_type="application/json")
+        assert response.status_code == 200
+
+        # confirms it does not exist
+        o_user = db_session.query(User).filter(User.user == user_name).first()
+        assert o_user is None, "Deletion was not successful"
+
+        # try to delete non-existent user
+        response = _admin_client.delete("/user/not_me", content_type="application/json")
+        assert response.status_code == 404
+
+
+def test_delete_user_itself(_not_logged_in_client):
+    user_name = "temp_user"
+    with session_scope() as db_session:
+        user = User()
+        user.user = user_name
+        user.argon_password = "blabla"
+        user.email = "temp_user@phenopolis.org"
+        _assert_create_user(db_session, _not_logged_in_client, user)
+        confirmation_token = generate_confirmation_token(user.email)
+        response = _not_logged_in_client.get(f"/user/confirm/{confirmation_token}")
+        assert response.status_code == 200
+
+        # login with new user
+        resp = _not_logged_in_client.post("/login", json={"user": f"{user.user}", "password": f"{user.argon_password}"})
+        assert resp.status_code == 200
+        assert resp.json == {"success": "Authenticated", "username": f"{user.user}"}
+
+        # # try to delete another user
+        response = _not_logged_in_client.delete("/user/demo", content_type="application/json")
+        assert response.status_code == 403
+
+        # user deletes itself
+        response = _not_logged_in_client.delete(f"/user/{user_name}", content_type="application/json")
+        assert response.status_code == 200
 
 
 def _assert_create_user(db_session: Session, _client, user):

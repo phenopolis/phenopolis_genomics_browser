@@ -132,6 +132,12 @@ function createUser(data) {
   });
 }
 
+function deleteUser(param) {
+  return axios.delete(api.DELETE_USER + param, {
+    withCredentials: true,
+  });
+}
+
 function addUserIndividual(data) {
   return axios.post(api.ADD_USER_INDIVIDUAL, data, {
     withCredentials: true,
@@ -209,6 +215,7 @@ export default {
   getOneUser,
   getAllPatients,
   createUser,
+  deleteUser,
   addUserIndividual,
   deleteUserIndividual,
   enableUser,
