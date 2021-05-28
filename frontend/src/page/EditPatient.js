@@ -5,6 +5,7 @@ import Skeleton from '@material-ui/lab/Skeleton';
 
 import { useLocation } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
+import { useHistory } from 'react-router-dom';
 import { getIndividualInformation } from '../redux/actions/individual';
 
 import InformationUpdate from '../components/EditPatient/InformationUpdate';
@@ -15,6 +16,7 @@ const EditPatient = (props) => {
   const classes = useStyles();
   const dispatch = useDispatch();
   const location = useLocation();
+  const history = useHistory();
 
   useEffect(() => {
     dispatch(getIndividualInformation(props.match.params.individualId));
@@ -33,7 +35,11 @@ const EditPatient = (props) => {
   }, [loaded]);
 
   const handleActionSuccess = (action) => {
-    dispatch(getIndividualInformation(props.match.params.individualId));
+    if (action === 'update') {
+      dispatch(getIndividualInformation(props.match.params.individualId));
+    } else if (action === 'delete') {
+      history.push('/dashboard');
+    }
   };
 
   return (
@@ -52,14 +58,14 @@ const EditPatient = (props) => {
             <div id="info">
               <InformationUpdate
                 userInfo={individualInfo.metadata.data[0]}
-                actionSuccess={handleActionSuccess}
+                actionSuccess={(action) => handleActionSuccess(action)}
               />
               <div className="mt-5 mb-5" id="file" />
               <FileUpload Patient_ID={props.match.params.individualId} />
               <div className="mt-5 mb-5" id="delete" />
               <PatientDelete
                 Patient_ID={props.match.params.individualId}
-                actionSuccess={handleActionSuccess}
+                actionSuccess={(action) => handleActionSuccess(action)}
               />
             </div>
           ) : (

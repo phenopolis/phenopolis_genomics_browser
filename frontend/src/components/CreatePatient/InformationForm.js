@@ -26,9 +26,8 @@ import { setSnack } from '../../redux/actions/snacks';
 
 export default function InformationForm() {
   const dispatch = useDispatch();
-  const { newPatientInfo, error, username } = useSelector((state) => ({
+  const { newPatientInfo, username } = useSelector((state) => ({
     newPatientInfo: state.Individuals.newPatientInfo,
-    error: state.Individuals.error,
     username: state.Auth.username,
   }));
 
@@ -40,12 +39,6 @@ export default function InformationForm() {
       ResetValue();
     }
   }, [newPatientInfo, dispatch]);
-
-  useEffect(() => {
-    if (error) {
-      dispatch(setSnack(error, 'error'));
-    }
-  }, [error, dispatch]);
 
   const [externalID, setExternalID] = useState('');
   const [gender, setGender] = useState(null);

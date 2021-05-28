@@ -31,6 +31,11 @@ export const createIndividual = (data) => {
             type: SET_STATUS,
             payload: { code: 401, message: 'UnAuthorised' },
           });
+        } else if (error.response.status === 405) {
+          dispatch({
+            type: SET_STATUS,
+            payload: { code: 404, message: error.response.data.error },
+          });
         }
         dispatch({ type: CREATE_INDIVIDUA_FAIL, payload: { error: error.response.data.error } });
       });
@@ -42,7 +47,6 @@ export const getAllIndividual = () => {
     dispatch({ type: FETCH_INDIVIDUA_REQUEST });
     Service.getAllIndividual()
       .then((res) => {
-        console.log(res);
         dispatch({ type: FETCH_INDIVIDUA_SUCCESS, payload: { data: res.data } });
       })
       .catch((error) => {
@@ -92,11 +96,10 @@ export const deleteOneIndividual = (data) => {
     dispatch({ type: DELETE_INDIVIDUA_REQUEST });
     Service.deleteOneIndividual(data)
       .then((res) => {
-        // console.log(res);
-        // dispatch({
-        //   type: SET_SNACK,
-        //   payload: { newMessage: data.patient_id + ' Updated Success.', newVariant: 'success' },
-        // });
+        dispatch({
+          type: SET_SNACK,
+          payload: { newMessage: res.data.message, newVariant: 'success' },
+        });
 
         dispatch({ type: DELETE_INDIVIDUA_SUCCESS, payload: { data: res.data } });
       })
