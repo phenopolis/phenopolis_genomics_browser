@@ -140,10 +140,6 @@ const LoginBar = (props) => {
                   onClick={handletoggleDrawer}
                 />
 
-                <Drawer anchor="top" open={openSearchDrawer} onClose={handletoggleDrawer}>
-                  <DrawerSearch onRequestClose={handletoggleDrawer} />
-                </Drawer>
-
                 <BottomNavigationAction
                   className="appBar-navigationbutton"
                   label={username}
@@ -180,6 +176,10 @@ const LoginBar = (props) => {
                 </Menu>
               </div>
             </Hidden>
+
+            <Drawer anchor="top" open={openSearchDrawer} onClose={handletoggleDrawer}>
+              <DrawerSearch onRequestClose={handletoggleDrawer} />
+            </Drawer>
           </Grid>
         </Toolbar>
       </AppBar>
