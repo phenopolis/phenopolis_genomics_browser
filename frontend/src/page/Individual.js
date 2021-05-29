@@ -81,14 +81,32 @@ const Individual = (props) => {
                 })}
               </span>
             ) : (
-              <Skeleton
-                animation={'wave'}
-                variant={'circle'}
-                height={50}
-                width={50}
-                style={{ top: 125 }}
-                className="individual-fab"
-              />
+              <>
+                <Skeleton
+                  animation={'wave'}
+                  variant={'circle'}
+                  height={50}
+                  width={50}
+                  style={{ top: 125 }}
+                  className="individual-fab"
+                />
+                <Skeleton
+                  animation={'wave'}
+                  variant={'circle'}
+                  height={50}
+                  width={50}
+                  style={{ top: 125, right: 180 }}
+                  className="individual-fab"
+                />
+                <Skeleton
+                  animation={'wave'}
+                  variant={'circle'}
+                  height={50}
+                  width={50}
+                  style={{ top: 125, right: 240 }}
+                  className="individual-fab"
+                />
+              </>
             )}
           </Container>
           {loaded ? (
@@ -156,7 +174,12 @@ const Individual = (props) => {
               </SwipeableViews>
             </>
           ) : (
-            <Skeleton height={550} />
+            <>
+              <div className="mt-4 mb-4" />
+              <Skeleton variant="rect" height={150} />
+              <div className="mt-4 mb-4" />
+              <Skeleton variant="rect" height={450} />
+            </>
           )}
         </div>
       </React.Fragment>

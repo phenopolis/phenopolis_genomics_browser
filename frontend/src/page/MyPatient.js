@@ -1,5 +1,6 @@
 import React, { useEffect } from 'react';
 import { CssBaseline, Container, Typography, Box, Button } from '@material-ui/core';
+import Skeleton from '@material-ui/lab/Skeleton';
 import Loading from '../components/General/Loading';
 import { Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
@@ -26,40 +27,52 @@ const MyPatient = () => {
   }, [dispatch]);
 
   return (
-    <>
-      {loaded ? (
-        <React.Fragment>
-          <CssBaseline />
-          <div className="myPatients-container">
-            <Container maxWidth="xl">
-              <Typography component="div">
-                <Box fontWeight="900" fontSize="h4.fontSize" mb={0}>
-                  {t('MyPatient.My_Patients') +
-                    ' (' +
-                    t('MyPatient.Total') +
-                    ' ' +
-                    hpoInfo.preview[0][1] +
-                    ')'}
-                </Box>
-              </Typography>
-              <Button
-                variant="contained"
-                color="primary"
-                startIcon={<FontAwesomeIcon icon={faPlusSquare} />}
-                style={{ backgroundColor: 'orange' }}
-                component={Link}
-                to="/create_patient">
-                Create New Patient
-              </Button>
+    <React.Fragment>
+      <CssBaseline />
+      <div className="myPatients-container">
+        <Container maxWidth="xl">
+          {loaded ? (
+            <Typography component="div">
+              <Box fontWeight="900" fontSize="h4.fontSize" mb={0}>
+                {t('MyPatient.My_Patients') +
+                  ' (' +
+                  t('MyPatient.Total') +
+                  ' ' +
+                  hpoInfo.preview[0][1] +
+                  ')'}
+              </Box>
+            </Typography>
+          ) : (
+            <Skeleton height={50} width={200} />
+          )}
 
-              <VersatileTable tableData={hpoInfo.individuals} genomePlot={false} />
-            </Container>
-          </div>
-        </React.Fragment>
-      ) : (
-        <Loading message={t('MyPatient.message')} />
-      )}
-    </>
+          {loaded ? (
+            <Button
+              variant="contained"
+              color="primary"
+              startIcon={<FontAwesomeIcon icon={faPlusSquare} />}
+              style={{ backgroundColor: 'orange' }}
+              component={Link}
+              to="/create_patient">
+              Create New Patient
+            </Button>
+          ) : (
+            <Skeleton height={30} width={200} />
+          )}
+
+          {loaded ? (
+            <VersatileTable tableData={hpoInfo.individuals} genomePlot={false} />
+          ) : (
+            <>
+              <div className="mt-4 mb-4" />
+              <Skeleton variant="rect" height={150} />
+              <div className="mt-4 mb-4" />
+              <Skeleton variant="rect" height={450} />
+            </>
+          )}
+        </Container>
+      </div>
+    </React.Fragment>
   );
 };
 

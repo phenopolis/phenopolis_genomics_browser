@@ -2,7 +2,7 @@ import React, { useEffect } from 'react';
 import { useLocation } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import { CssBaseline, Container } from '@material-ui/core';
-import Loading from '../components/General/Loading';
+import Skeleton from '@material-ui/lab/Skeleton';
 import { useTranslation } from 'react-i18next';
 import { getGene } from '../redux/actions/gene';
 
@@ -28,33 +28,39 @@ const Gene = (props) => {
   }, []);
 
   return (
-    <>
-      {loaded ? (
-        <React.Fragment>
-          <CssBaseline />
-          <div className="myPatients-container">
-            <MetaData
-              metadata={geneInfo.metadata}
-              name={
-                geneInfo.metadata.data[0].gene_name +
-                ' - ' +
-                geneInfo.metadata.data[0].full_gene_name
-              }
+    <React.Fragment>
+      <CssBaseline />
+      <div className="myPatients-container">
+        {loaded ? (
+          <MetaData
+            metadata={geneInfo.metadata}
+            name={
+              geneInfo.metadata.data[0].gene_name + ' - ' + geneInfo.metadata.data[0].full_gene_name
+            }
+          />
+        ) : (
+          <Skeleton height={145} />
+        )}
+
+        {loaded ? (
+          <Container maxWidth="xl">
+            <VersatileTable
+              title={t('Gene.Variants_Analysis')}
+              subtitle={t('Gene.Variants Analysis_subtitle')}
+              tableData={geneInfo.variants}
+              genomePlot={true}
             />
-            <Container maxWidth="xl">
-              <VersatileTable
-                title={t('Gene.Variants_Analysis')}
-                subtitle={t('Gene.Variants Analysis_subtitle')}
-                tableData={geneInfo.variants}
-                genomePlot={true}
-              />
-            </Container>
-          </div>
-        </React.Fragment>
-      ) : (
-        <Loading message={t('Gene.message')} />
-      )}
-    </>
+          </Container>
+        ) : (
+          <>
+            <div className="mt-4 mb-4" />
+            <Skeleton variant="rect" height={150} />
+            <div className="mt-4 mb-4" />
+            <Skeleton variant="rect" height={450} />
+          </>
+        )}
+      </div>
+    </React.Fragment>
   );
 };
 

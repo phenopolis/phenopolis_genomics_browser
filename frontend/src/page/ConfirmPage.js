@@ -4,8 +4,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { confirmRegistration, ResetConfirmRegistration } from '../redux/actions/user';
 
 import { Container, Paper, Typography, Box } from '@material-ui/core';
-
-import Loading from '../components/General/Loading';
+import Skeleton from '@material-ui/lab/Skeleton';
 
 export default function ConfirmPage() {
   const dispatch = useDispatch();
@@ -39,9 +38,9 @@ export default function ConfirmPage() {
 
   return (
     <Fragment>
-      {status !== null ? (
-        <div className={'login-root'}>
-          <Container maxWidth="md">
+      <div className={'login-root'}>
+        <Container maxWidth="md">
+          {status !== null ? (
             <Paper className={'login-paper2'}>
               <Typography component="div">
                 <Box fontWeight="900" fontSize="h4.fontSize" m={1}>
@@ -52,11 +51,11 @@ export default function ConfirmPage() {
                 </Box>
               </Typography>
             </Paper>
-          </Container>
-        </div>
-      ) : (
-        <Loading message={'Confirming User Registration'} />
-      )}
+          ) : (
+            <Skeleton height={300} />
+          )}
+        </Container>
+      </div>
     </Fragment>
   );
 }
