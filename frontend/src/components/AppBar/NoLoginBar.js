@@ -98,13 +98,6 @@ const NoLoginBar = (props) => {
                 />
                 <BottomNavigationAction
                   className={'noLoginBar-navigationbutton'}
-                  label={t('AppBar.NoLoginBar.Label_Language')}
-                  showLabel
-                  icon={<TranslateIcon />}
-                  onClick={(event) => handleLanClick(event)}
-                />
-                <BottomNavigationAction
-                  className={'noLoginBar-navigationbutton'}
                   label={'Login/Register'}
                   showLabel
                   icon={<AccountCircleIcon />}
@@ -113,50 +106,6 @@ const NoLoginBar = (props) => {
               </div>
             </Hidden>
           </Grid>
-          <Menu
-            id="simple-menu"
-            anchorEl={anchorEl}
-            keepMounted
-            open={Boolean(openLan)}
-            style={{ top: '3em' }}
-            onClose={() => setOpenLan(!openLan)}>
-            <MenuItem onClick={() => changeLanguage('en')}>
-              <ListItemIcon>
-                <img className={'appBar-imageIcon'} src={GB} alt="English" />
-              </ListItemIcon>
-              <ListItemText classes={{ primary: 'noLoginBar-listItemText' }} primary="English" />
-            </MenuItem>
-            <MenuItem onClick={() => changeLanguage('cn')}>
-              <ListItemIcon>
-                <img className={'appBar-imageIcon'} src={CN} alt="中文" />
-              </ListItemIcon>
-              <ListItemText classes={{ primary: 'noLoginBar-listItemText' }} primary="中文" />
-            </MenuItem>
-            <MenuItem onClick={() => changeLanguage('ja')}>
-              <ListItemIcon>
-                <img className={'appBar-imageIcon'} src={JP} alt="日本語" />
-              </ListItemIcon>
-              <ListItemText classes={{ primary: 'noLoginBar-listItemText' }} primary="日本語" />
-            </MenuItem>
-            <MenuItem onClick={() => changeLanguage('de')}>
-              <ListItemIcon>
-                <img className={'appBar-imageIcon'} src={DE} alt="Deutsch" />
-              </ListItemIcon>
-              <ListItemText classes={{ primary: 'noLoginBar-listItemText' }} primary="Deutsch" />
-            </MenuItem>
-            <MenuItem onClick={() => changeLanguage('gr')}>
-              <ListItemIcon>
-                <img className={'appBar-imageIcon'} src={GR} alt="Ελληνικά" />
-              </ListItemIcon>
-              <ListItemText classes={{ primary: 'noLoginBar-listItemText' }} primary="Ελληνικά" />
-            </MenuItem>
-            <MenuItem onClick={() => changeLanguage('es')}>
-              <ListItemIcon>
-                <img className={'appBar-imageIcon'} src={ES} alt="Español" />
-              </ListItemIcon>
-              <ListItemText classes={{ primary: 'noLoginBar-listItemText' }} primary="Español" />
-            </MenuItem>
-          </Menu>
 
           <Drawer open={openSideBar} onClose={() => setOpenSideBar(!openSideBar)}>
             {/* <NoSidebar

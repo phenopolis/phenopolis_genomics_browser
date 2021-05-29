@@ -146,13 +146,6 @@ const LoginBar = (props) => {
 
                 <BottomNavigationAction
                   className="appBar-navigationbutton"
-                  label={t('AppBar.LoginBar.Label_Language')}
-                  showLabel
-                  icon={<TranslateIcon />}
-                  onClick={(event) => handleLanClick(event)}
-                />
-                <BottomNavigationAction
-                  className="appBar-navigationbutton"
                   label={username}
                   showLabel
                   icon={<AccountCircleIcon />}
@@ -183,51 +176,6 @@ const LoginBar = (props) => {
                       classes={{ primary: 'appBar-listItemText' }}
                       primary={t('AppBar.LoginBar.Label_Logout')}
                     />
-                  </MenuItem>
-                </Menu>
-
-                <Menu
-                  id="simple-menu"
-                  anchorEl={anchorLan}
-                  keepMounted
-                  open={Boolean(openLan)}
-                  style={{ top: '3em' }}
-                  onClose={() => OpenLan()}>
-                  <MenuItem onClick={() => changeLanguage('en')}>
-                    <ListItemIcon>
-                      <img className="imageIcon" src={GB} alt="English" />
-                    </ListItemIcon>
-                    <ListItemText classes={{ primary: 'appBar-listItemText' }} primary="English" />
-                  </MenuItem>
-                  <MenuItem onClick={() => changeLanguage('cn')}>
-                    <ListItemIcon>
-                      <img className="imageIcon" src={CN} alt="中文" />
-                    </ListItemIcon>
-                    <ListItemText classes={{ primary: 'appBar-listItemText' }} primary="中文" />
-                  </MenuItem>
-                  <MenuItem onClick={() => changeLanguage('ja')}>
-                    <ListItemIcon>
-                      <img className="imageIcon" src={JP} alt="日本語" />
-                    </ListItemIcon>
-                    <ListItemText classes={{ primary: 'appBar-listItemText' }} primary="日本語" />
-                  </MenuItem>
-                  <MenuItem onClick={() => changeLanguage('de')}>
-                    <ListItemIcon>
-                      <img className="imageIcon" src={DE} alt="Deutsch" />
-                    </ListItemIcon>
-                    <ListItemText classes={{ primary: 'appBar-listItemText' }} primary="Deutsch" />
-                  </MenuItem>
-                  <MenuItem onClick={() => changeLanguage('gr')}>
-                    <ListItemIcon>
-                      <img className="imageIcon" src={GR} alt="Ελληνικά" />
-                    </ListItemIcon>
-                    <ListItemText classes={{ primary: 'appBar-listItemText' }} primary="Ελληνικά" />
-                  </MenuItem>
-                  <MenuItem onClick={() => changeLanguage('es')}>
-                    <ListItemIcon>
-                      <img className="imageIcon" src={ES} alt="Español" />
-                    </ListItemIcon>
-                    <ListItemText classes={{ primary: 'appBar-listItemText' }} primary="Español" />
                   </MenuItem>
                 </Menu>
               </div>
