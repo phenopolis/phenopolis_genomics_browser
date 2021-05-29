@@ -1,6 +1,6 @@
 import React from 'react';
 import { makeStyles } from '@material-ui/core/styles';
-import { Toolbar, Typography, Box, IconButton } from '@material-ui/core';
+import { Toolbar, Typography, Box, IconButton, Tooltip } from '@material-ui/core';
 import CountUp from 'react-countup';
 
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
@@ -41,13 +41,21 @@ const TableTitle = (props) => {
           <CountUp end={props.columnLength} />
         </b>
         &nbsp;columns selected
-        <IconButton
-          color="primary"
-          aria-label="GridStyle"
-          style={{ marginLeft: '5px', marginBottom: '3px' }}
-          onClick={handleCompactVersionChange}>
-          <FontAwesomeIcon icon={compact ? faTh : faBars} style={{ fontSize: '15px' }} />
-        </IconButton>
+        <Tooltip
+          title={
+            <Typography variant="body2">
+              {'Change to ' + (compact ? 'Normal' : 'Compact') + ' view'}
+            </Typography>
+          }
+          placement="top">
+          <IconButton
+            color="primary"
+            aria-label="GridStyle"
+            style={{ marginLeft: '5px', marginBottom: '3px' }}
+            onClick={handleCompactVersionChange}>
+            <FontAwesomeIcon icon={compact ? faTh : faBars} style={{ fontSize: '15px' }} />
+          </IconButton>
+        </Tooltip>
       </div>
     </Toolbar>
   );
