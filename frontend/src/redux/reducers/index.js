@@ -14,6 +14,7 @@ import User from './user';
 import UserIndividual from './userIndividual';
 import Dialog from './dialog';
 import Files from './files';
+import TableStatus from './tableStatus';
 
 export default combineReducers({
   Auth,
@@ -31,4 +32,5 @@ export default combineReducers({
   User,
   UserIndividual,
   Dialog,
+  TableStatus,
 });

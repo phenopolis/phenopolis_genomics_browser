@@ -121,6 +121,7 @@ export const CreateColumns = (mycolumns, myrows, onActionFunction) => {
         chips: tmpChip,
         show: tmpShow,
         des: tmpDes,
+        columnType: 'action',
       });
       continue;
     }
@@ -136,12 +137,15 @@ export const CreateColumns = (mycolumns, myrows, onActionFunction) => {
         resizable: true,
         align: Column.Alignment.CENTER,
         sortable: true,
-        cellRenderer: ({ cellData, column }) => <ChipList chips={cellData} colName={column} />,
+        cellRenderer: ({ cellData, column }) => (
+          <ChipList chips={cellData} colName={column} compact={false} />
+        ),
         headerRenderer: ({ column }) => <HeaderCell colName={column} />,
         type: tmpType,
         chips: tmpChip,
         show: tmpShow,
         des: tmpDes,
+        columnType: 'links',
       });
     } else {
       tmpColnames.push({
@@ -158,6 +162,7 @@ export const CreateColumns = (mycolumns, myrows, onActionFunction) => {
         chips: tmpChip,
         show: tmpShow,
         des: tmpDes,
+        columnType: 'text',
       });
     }
   }
