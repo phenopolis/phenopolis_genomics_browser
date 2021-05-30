@@ -1,10 +1,26 @@
 import React from 'react';
 import { makeStyles } from '@material-ui/core/styles';
-import { Toolbar, Typography, Box } from '@material-ui/core';
+import { Toolbar, Typography, Box, IconButton, Tooltip } from '@material-ui/core';
 import CountUp from 'react-countup';
+
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faBars, faTh } from '@fortawesome/pro-solid-svg-icons';
+
+import { useDispatch, useSelector } from 'react-redux';
+import { setCompact } from '../../redux/actions/tableStatus';
 
 const TableTitle = (props) => {
   const classes = useStyles();
+  const dispatch = useDispatch();
+
+  const { compact } = useSelector((state) => ({
+    compact: state.TableStatus.compact,
+  }));
+
+  const handleCompactVersionChange = () => {
+    dispatch(setCompact());
+    // props.onCompactVersionChange()
+  };
 
   return (
     <Toolbar className={classes.toolbar}>
@@ -25,6 +41,21 @@ const TableTitle = (props) => {
           <CountUp end={props.columnLength} />
         </b>
         &nbsp;columns selected
+        <Tooltip
+          title={
+            <Typography variant="body2">
+              {'Change to ' + (compact ? 'Normal' : 'Compact') + ' view'}
+            </Typography>
+          }
+          placement="top">
+          <IconButton
+            color="primary"
+            aria-label="GridStyle"
+            style={{ marginLeft: '5px', marginBottom: '3px' }}
+            onClick={handleCompactVersionChange}>
+            <FontAwesomeIcon icon={compact ? faTh : faBars} style={{ fontSize: '15px' }} />
+          </IconButton>
+        </Tooltip>
       </div>
     </Toolbar>
   );

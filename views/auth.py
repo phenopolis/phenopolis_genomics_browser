@@ -70,6 +70,17 @@ def requires_admin(f):
     return decorated
 
 
+def requires_admin_or_user(f):
+    @wraps(f)
+    def decorated(*args, **kwargs):
+        user_id = kwargs.get("user_id")
+        if session.get(USER) in [ADMIN_USER, user_id]:
+            return f(*args, **kwargs)
+        return jsonify(error="Only Admin or the own User can perform this operation"), 403
+
+    return decorated
+
+
 @application.route("/<language>/login", methods=["POST"])
 @application.route("/login", methods=["POST"])
 def login():

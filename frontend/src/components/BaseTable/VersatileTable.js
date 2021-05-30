@@ -22,6 +22,7 @@ const VersatileTable = (props) => {
 
   const [sortBy, setSortBy] = useState(null);
   const [tableColumn, setTableColumn] = useState([]);
+  const [compactColumns, setCompactColumns] = useState([]);
 
   const [filters, setFilter] = useState([]);
   const [visibleRows, setVisiableRows] = useState([0, 10]);
@@ -51,16 +52,17 @@ const VersatileTable = (props) => {
   }, [tableColumn]);
 
   const modifyData = (tableData) => {
-    const tmpData = tableData.data.map((row, rowIndex) => {
+    let tmpData = tableData.data.map((row, rowIndex) => {
       return {
         ...row,
         id: rowIndex,
       };
     });
 
-    const tmpColnames = CreateColumns(tableData.colNames, tableData.data, props.onActionClick);
+    let tmpColnames = CreateColumns(tableData.colNames, tableData.data, props.onActionClick);
 
     setTableColumn(tmpColnames);
+
     setTableData(tmpData);
     setFilteredData(tmpData);
     setSortBy({ key: 'CHROM', order: 'asc' });

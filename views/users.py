@@ -7,7 +7,7 @@ from passlib.handlers.argon2 import argon2
 from sqlalchemy import func
 from db.model import User, UserIndividual, UserConfig
 from views import MAIL_USERNAME, application, mail
-from views.auth import requires_auth, check_auth, requires_admin, is_demo_user, USER, ADMIN_USER
+from views.auth import requires_admin_or_user, requires_auth, check_auth, requires_admin, is_demo_user, USER, ADMIN_USER
 from views.exceptions import PhenopolisException
 from views.general import _parse_boolean_parameter
 from views.helpers import _get_json_payload
@@ -50,7 +50,7 @@ def change_password():
 
 
 @application.route("/user/<user_id>/enabled/<status>", methods=["PUT"])
-@requires_admin
+@requires_admin_or_user
 def enable_user(user_id, status):
     with session_scope() as db_session:
         try:
@@ -152,10 +152,9 @@ def confirm_user(token):
 
 
 @application.route("/user/<user_id>", methods=["DELETE"])
+@requires_admin_or_user
 def delete_user(user_id):
     with session_scope() as db_session:
-        if not session.get(USER) in [ADMIN_USER, user_id]:
-            return jsonify(error="Only Admin or the own User can perform this operation"), 403
         user = _get_user_by_id(db_session, user_id)
         request_ok = True
         http_status = 200

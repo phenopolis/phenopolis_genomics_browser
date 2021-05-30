@@ -3,9 +3,8 @@ import CssBaseline from '@material-ui/core/CssBaseline';
 import { useDispatch, useSelector } from 'react-redux';
 import { getAllUser } from '../redux/actions/user';
 
-import { Container, Dialog } from '@material-ui/core';
-
-import Loading from '../components/General/Loading';
+import { Container, Grid } from '@material-ui/core';
+import Skeleton from '@material-ui/lab/Skeleton';
 import UserList from '../components/ManageUser/UserList';
 
 const ManageUser = () => {
@@ -38,7 +37,16 @@ const ManageUser = () => {
             </Container>
           </>
         ) : (
-          <Loading message={"Fetching all User' information..."} />
+          <Grid container spacing={4}>
+            <Grid item xs={12} lg={4}>
+              <Skeleton height={50} width={200} />
+              <Skeleton height={30} width={200} />
+              <Skeleton variant="rect" height={550} />
+            </Grid>
+            <Grid item xs={12} lg={8}>
+              <Skeleton variant="rect" height={550} />
+            </Grid>
+          </Grid>
         )}
       </div>
     </>

@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import CssBaseline from '@material-ui/core/CssBaseline';
+import Skeleton from '@material-ui/lab/Skeleton';
 import { useDispatch, useSelector } from 'react-redux';
 import { Link } from 'react-router-dom';
 import { useHistory } from 'react-router-dom';
@@ -9,8 +10,6 @@ import { Container, Dialog, Button, Typography, Box } from '@material-ui/core';
 
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faPlusSquare } from '@fortawesome/pro-solid-svg-icons';
-
-import Loading from '../components/General/Loading';
 
 const VersatileTable = React.lazy(() => import('../components/BaseTable/VersatileTable'));
 
@@ -115,37 +114,49 @@ const ManagePatient = () => {
     <>
       <CssBaseline />
       <div className="myPatients-container">
-        {DataReady ? (
-          <>
-            <Container maxWidth="xl">
-              <Typography component="div">
-                <Box fontWeight="900" fontSize="h4.fontSize" mb={0}>
-                  Manage All Patient Here
-                </Box>
-                <Box fontWeight="fontWeightLight" mb={2}>
-                  Here you can create/update/delete patient.
-                </Box>
-              </Typography>
-              <Button
-                variant="contained"
-                color="primary"
-                startIcon={<FontAwesomeIcon icon={faPlusSquare} />}
-                style={{ backgroundColor: 'orange' }}
-                component={Link}
-                to="/create_patient">
-                Create New Patient
-              </Button>
+        <Container maxWidth="xl">
+          {DataReady ? (
+            <Typography component="div">
+              <Box fontWeight="900" fontSize="h4.fontSize" mb={0}>
+                Manage All Patient Here
+              </Box>
+              <Box fontWeight="fontWeightLight" mb={2}>
+                Here you can create/update/delete patient.
+              </Box>
+            </Typography>
+          ) : (
+            <Skeleton height={50} width={200} />
+          )}
 
-              <VersatileTable
-                tableData={PatientData}
-                genomePlot={false}
-                // onActionClick={handleActionClick}
-              />
-            </Container>
-          </>
-        ) : (
-          <Loading message={"Fetching all Patients' information..."} />
-        )}
+          {DataReady ? (
+            <Button
+              variant="contained"
+              color="primary"
+              startIcon={<FontAwesomeIcon icon={faPlusSquare} />}
+              style={{ backgroundColor: 'orange' }}
+              component={Link}
+              to="/create_patient">
+              Create New Patient
+            </Button>
+          ) : (
+            <Skeleton height={30} width={200} />
+          )}
+
+          {DataReady ? (
+            <VersatileTable
+              tableData={PatientData}
+              genomePlot={false}
+              // onActionClick={handleActionClick}
+            />
+          ) : (
+            <>
+              <div className="mt-4 mb-4" />
+              <Skeleton variant="rect" height={150} />
+              <div className="mt-4 mb-4" />
+              <Skeleton variant="rect" height={450} />
+            </>
+          )}
+        </Container>
       </div>
     </>
   );
