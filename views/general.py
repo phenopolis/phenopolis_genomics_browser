@@ -21,6 +21,11 @@ def check_health():
     return jsonify(health="ok"), 200
 
 
+@application.route("/version")
+def get_version():
+    return jsonify(version=VERSION), 200
+
+
 @application.after_request
 def after_request(response):
     application.logger.info(
