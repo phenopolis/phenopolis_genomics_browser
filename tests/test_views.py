@@ -52,6 +52,12 @@ def test_exceptions(_demo):
     assert res.status_code == 400
 
 
+def test_version(_not_logged_in_client):
+    res = _not_logged_in_client.get("/version")
+    assert res.status_code == 200
+    assert res.json.get("version")
+
+
 def _check_only_available_to_admin(res):
     assert res[0].status_code == 200
     assert res[0].data == b'{"error":"Admin permissions required to perform this operation"}\n'
