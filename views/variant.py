@@ -4,12 +4,12 @@ variant view
 import requests
 from db.model import Variant
 from views import application, variant_file, phenoid_mapping
-from views.auth import requires_auth
+from views.auth import DEMO_USER, USER, requires_auth
 from views.autocomplete import CHROMOSOME_POS_REF_ALT_REGEX
 from views.postgres import session_scope
 from views.general import cache_on_browser, process_for_display
 from sqlalchemy import and_
-from flask import jsonify, Response
+from flask import jsonify, Response, session
 from db.helpers import query_user_config
 
 
@@ -60,7 +60,10 @@ def _get_variant(chrom, pos, ref, alt, language):
             return response
 
         # get the genotype information for this variant from the VCF
-        genotypes = _get_genotypes(chrom, pos)
+        if session[USER] == DEMO_USER:
+            genotypes = []
+        else:
+            genotypes = _get_genotypes(chrom, pos)
 
         variant_dict = variant.as_dict()
         process_for_display(db_session, [variant_dict])
