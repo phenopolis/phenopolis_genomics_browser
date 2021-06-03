@@ -22,7 +22,6 @@ npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
 _redirects
-yarn.lock
 .idea/
 # Local Netlify folder
 .netlify
