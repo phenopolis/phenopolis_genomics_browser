@@ -1,7 +1,6 @@
 import React from 'react';
 import { Grid, Box, Container, CssBaseline, Typography } from '@material-ui/core';
-import { Link } from 'react-router-dom';
-import { useLocation } from 'react-router';
+import { Link, useLocation } from 'react-router-dom';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faTwitterSquare, faGithubSquare } from '@fortawesome/free-brands-svg-icons';
 
