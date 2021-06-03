@@ -5,7 +5,7 @@ import random
 
 def test_create_classification_with_admin_user(_admin_client):
     classification = IndividualVariantClassification()
-    classification.variant_id = 2105
+    classification.variant_id = 8090
     classification.individual_id = 8258
     classification.classification = "pathogenic"
     classification.notes = "".join(["bla" for _ in range(random.randint(10, 100))])
@@ -15,7 +15,7 @@ def test_create_classification_with_admin_user(_admin_client):
 
 def test_create_classification_with_demo_user(_demo_client):
     classification = IndividualVariantClassification()
-    classification.variant_id = 2105
+    classification.variant_id = 8090
     classification.individual_id = 8258
     classification.classification = "pathogenic"
     classification.notes = "".join(["bla" for _ in range(random.randint(10, 100))])
@@ -130,23 +130,23 @@ def test_get_classifications_by_individual(_admin_client):
     phenopolis_id = "PH00008258"
     individual_id = int(phenopolis_id.replace("PH", ""))
     classification1 = IndividualVariantClassification()
-    classification1.variant_id = 2105
+    classification1.variant_id = 8090
     classification1.individual_id = individual_id
     classification1.classification = "pathogenic"
     _assert_variant_classification(_admin_client, classification1, "Admin")
     classification2 = IndividualVariantClassification()
-    classification2.variant_id = 2100
+    classification2.variant_id = 13309
     classification2.individual_id = individual_id
     classification2.classification = "pathogenic"
     _assert_variant_classification(_admin_client, classification2, "Admin")
     classification3 = IndividualVariantClassification()
-    classification3.variant_id = 2101
+    classification3.variant_id = 22678
     classification3.individual_id = individual_id
     classification3.classification = "pathogenic"
     _assert_variant_classification(_admin_client, classification3, "Admin")
     # creates this one just to check it does not come in the output
     classification4 = IndividualVariantClassification()
-    classification4.variant_id = 2099
+    classification4.variant_id = 3491
     classification4.individual_id = 8256
     classification4.classification = "pathogenic"
     _assert_variant_classification(_admin_client, classification4, "Admin")
@@ -156,10 +156,10 @@ def test_get_classifications_by_individual(_admin_client):
     classifications = response.json
     assert len(classifications) >= 3
     observed_variant_ids = [c.get("variant_id") for c in classifications]
-    assert 2105 in observed_variant_ids
-    assert 2100 in observed_variant_ids
-    assert 2101 in observed_variant_ids
-    assert 2099 not in observed_variant_ids
+    assert 8090 in observed_variant_ids
+    assert 13309 in observed_variant_ids
+    assert 22678 in observed_variant_ids
+    assert 3491 not in observed_variant_ids
     observed_individual_ids = set([c.get("individual_id") for c in classifications])
     assert individual_id in observed_individual_ids
     assert len(observed_individual_ids) == 1

@@ -1,6 +1,10 @@
 identifier,ensembl_gene_id,version,description,chromosome,start,end,strand,band,biotype,hgnc_id,hgnc_symbol,percentage_gene_gc_content,assembly
-3,ENSG00000260334,1,gastrin,HG185_PATCH,39868578,39872221,1,q21.2,protein_coding,4164.0,GAST,49.73,GRCh37
-19297,ENSG00000156171,10,DNA-damage regulated autophagy modulator 2,1,111659955,111682838,-1,p13.3,protein_coding,28769.0,DRAM2,37.94,GRCh37
+29110,ENSG00000119685,20,tubulin tyrosine ligase like 5,14,75633625,75955079,1,q24.3,protein_coding,HGNC:19963,TTLL5,40.03,GRCh38
 21302,ENSG00000119685,15,"tubulin tyrosine ligase-like family, member 5",14,76099968,76421421,1,q24.3,protein_coding,19963.0,TTLL5,40.03,GRCh37
-32811,ENSG00000119685,20,tubulin tyrosine ligase like 5,14,75633625,75955079,1,q24.3,protein_coding,HGNC:19963,TTLL5,40.03,GRCh38
-43138,ENSG00000156171,15,DNA damage regulated autophagy modulator 2,1,111117163,111140203,-1,p13.3,protein_coding,HGNC:28769,DRAM2,37.87,GRCh38
+41378,ENSG00000132549,18,vacuolar protein sorting 13 homolog B,8,99013266,99877580,1,q22.2,protein_coding,HGNC:2183,VPS13B,36.65,GRCh38
+11191,ENSG00000132549,14,vacuolar protein sorting 13 homolog B (yeast),8,100025494,100889808,1,q22.2,protein_coding,2183.0,VPS13B,36.65,GRCh37
+19297,ENSG00000156171,10,DNA-damage regulated autophagy modulator 2,1,111659955,111682838,-1,p13.3,protein_coding,28769.0,DRAM2,37.94,GRCh37
+24177,ENSG00000156171,14,DNA damage regulated autophagy modulator 2,1,111117333,111140216,-1,p13.3,protein_coding,HGNC:28769,DRAM2,37.94,GRCh38
+15644,ENSG00000184502,3,gastrin,17,39868578,39872221,1,q21.2,protein_coding,4164.0,GAST,49.73,GRCh37
+31437,ENSG00000184502,4,gastrin,17,41712331,41715969,1,q21.2,protein_coding,HGNC:4164,GAST,49.71,GRCh38
+3,ENSG00000260334,1,gastrin,HG185_PATCH,39868578,39872221,1,q21.2,protein_coding,4164.0,GAST,49.73,GRCh37
