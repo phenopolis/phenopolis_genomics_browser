@@ -1,3 +1,5 @@
+@use "sass:math";
+
 //  Variables
 
-$nav-logo-font-size:        $font-size-lg / 1.1;
+$nav-logo-font-size:        math.div($font-size-lg, 1.1);

@@ -1,3 +1,5 @@
+@use "sass:math";
+
 // Color swatches
 
 .color-swatch {
@@ -16,7 +18,7 @@
     border: $gray-400 solid 1px;
     @include border-bottom-right-radius($border-radius-lg * 2);
     @include border-bottom-left-radius($border-radius-lg);
-    padding: ($spacer / 1.5) $spacer;
+    padding: math.div($spacer, 1.5) $spacer;
     text-align: center;
     color: $gray-700;
   }
@@ -26,7 +28,7 @@
 
 .heading-3 {
   text-transform: uppercase;
-  font-size: $font-size-base / 1.1;
+  font-size: math.div($font-size-base, 1.1);
   font-weight: bold;
   margin: 0 0 1rem;
   padding: 0;

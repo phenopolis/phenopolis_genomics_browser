@@ -1,3 +1,5 @@
+@use "sass:math";
+
 //  Core
 
 .app-page-title {
@@ -49,7 +51,7 @@
     }
 
     h1 {
-      font-size: $display4-size / 1.1;
+      font-size: math.div($display4-size, 1.1);
       font-weight: 700;
       margin: 0;
     }
@@ -73,7 +75,7 @@
   }
 
   &--description {
-    margin: ($spacer / 2) 0 0;
+    margin: math.div($spacer, 2) 0 0;
     font-size: $font-size-base * 1.1;
     opacity: .6;
     font-weight: normal;
@@ -100,14 +102,14 @@
       overflow: hidden;
       text-overflow: ellipsis;
       white-space: nowrap;
-      margin: 0 0 0 ($spacer / 2);
+      margin: 0 0 0 math.div($spacer, 2);
       font-size: $font-size-base;
     }
 
     .app-page-title--iconbox {
       box-shadow: none;
       background: none;
-      margin-right: ($spacer / 2);
+      margin-right: math.div($spacer, 2);
 
       width: 32px !important;
       height: 32px !important;
@@ -135,7 +137,7 @@
 
   &.app-page-title-alt-3 {
     margin: 0 0 $layout-spacer;
-    padding: ($layout-spacer / 1.5) $layout-spacer;
+    padding: math.div($layout-spacer, 1.5) $layout-spacer;
     @include border-radius($border-radius);
 
     .app-page-title--iconbox {

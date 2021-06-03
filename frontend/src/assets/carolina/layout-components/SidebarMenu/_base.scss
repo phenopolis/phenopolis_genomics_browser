@@ -1,8 +1,10 @@
+@use "sass:math";
+
 // Core
 
 body {
   .app-sidebar-heading {
-    padding: $spacer $spacer ($spacer / 1.1);
+    padding: $spacer $spacer math.div($spacer, 1.1);
     font-weight: bold;
     color: $blue;
     text-transform: uppercase;
@@ -19,9 +21,9 @@ body {
   }
 
   .app-sidebar-button {
-    padding-top: $spacer / 2.4;
-    padding-bottom: $spacer / 2.4;
-    padding-right: ($spacer / 2);
+    padding-top: math.div($spacer, 2.4);
+    padding-bottom: math.div($spacer, 2.4);
+    padding-right: math.div($spacer, 2);
     justify-content: flex-start;
     text-transform: none;
     border-radius: 0 22px 22px 0;

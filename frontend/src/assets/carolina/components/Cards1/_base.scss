@@ -1,3 +1,5 @@
+@use "sass:math";
+
 //  Core
 
 .card {
@@ -84,7 +86,7 @@ button.card {
       font-weight: bold;
 
       & + b {
-        padding-top: ($spacer / 4);
+        padding-top: math.div($spacer, 4);
       }
     }
   }
@@ -151,7 +153,7 @@ button.card {
       position: relative;
       opacity: 1;
       border: 0;
-      padding: ($spacer / 1.2) ($spacer * 2);
+      padding: math.div($spacer, 1.2) ($spacer * 2);
       @include border-radius($border-radius-lg * 2);
       border-top-left-radius: $border-radius-sm;
       max-width: 50%;
@@ -159,7 +161,7 @@ button.card {
       font-size: $font-size-sm;
 
       p {
-        margin-bottom: ($spacer / 3);
+        margin-bottom: math.div($spacer, 3);
       }
 
       p:last-child {
@@ -168,7 +170,7 @@ button.card {
     }
 
     .avatar-icon-wrapper {
-      margin-right: ($spacer / 2);
+      margin-right: math.div($spacer, 2);
     }
   }
 
@@ -179,7 +181,7 @@ button.card {
     }
 
     .avatar-icon-wrapper {
-      margin-left: ($spacer / 2);
+      margin-left: math.div($spacer, 2);
       margin-right: 0;
     }
   }
@@ -212,8 +214,8 @@ button.card {
   top: ($spacer);
 
   &.card-tr-actions-sm {
-    right: ($spacer / 4);
-    top: ($spacer / 4);
+    right: math.div($spacer, 4);
+    top: math.div($spacer, 4);
   }
 }
 

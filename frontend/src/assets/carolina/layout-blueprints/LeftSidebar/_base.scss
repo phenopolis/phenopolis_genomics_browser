@@ -1,3 +1,5 @@
+@use "sass:math";
+
 //  Core
 
 html,
@@ -34,7 +36,7 @@ body {
   padding-top: $header-height;
 
   &--inner {
-    padding: $layout-spacer $layout-spacer ($layout-spacer / 2);
+    padding: $layout-spacer $layout-spacer math.div($layout-spacer, 2);
     display: flex;
     flex: 1;
 
@@ -63,6 +65,6 @@ body {
 }
 .app-content-sidebar-collapsed {
   @include media-breakpoint-up(lg) {
-    padding-left: $sidebar-width-collapsed / 8;
+    padding-left: math.div($sidebar-width-collapsed, 8);
   }
 }

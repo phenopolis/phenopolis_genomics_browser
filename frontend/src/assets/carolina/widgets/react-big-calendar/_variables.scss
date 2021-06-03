@@ -1,3 +1,5 @@
+@use "sass:math";
+
 
 $out-of-range-color: $gray-400 !default;
 $out-of-range-bg-color: $gray-200 !default;
@@ -7,7 +9,7 @@ $cell-border: $table-border-color !default;
 
 $border-color: $table-border-color !default;
 
-$segment-width: percentage(1 / 7) !default;
+$segment-width: percentage(math.div(1, 7)) !default;
 
 $time-selection-color: $white !default;
 $time-selection-bg-color: transparentize($black, .5) !default;

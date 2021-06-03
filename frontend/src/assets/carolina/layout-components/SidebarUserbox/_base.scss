@@ -1,3 +1,5 @@
+@use "sass:math";
+
 // Core
 body {
   .app-sidebar-userbox {
@@ -16,7 +18,7 @@ body {
       height: 55px;
       margin-left: auto;
       margin-right: auto;
-      margin-bottom: $spacer / 2;
+      margin-bottom: math.div($spacer, 2);
       transition: $transition-base;
       background-color: white;
     }
@@ -30,7 +32,7 @@ body {
 
     .app-sidebar-userbox-description {
       opacity: .7;
-      margin-bottom: $spacer / 2;
+      margin-bottom: math.div($spacer, 2);
     }
 
     .app-sidebar-userbox-btn {

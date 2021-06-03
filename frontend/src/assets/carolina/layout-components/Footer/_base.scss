@@ -1,3 +1,5 @@
+@use "sass:math";
+
 //  Core
 body {
   .app-footer {
@@ -29,7 +31,7 @@ body {
         }
 
         height: auto;
-        padding: ($spacer / 3) ($spacer / 2) ($spacer / 2);
+        padding: math.div($spacer, 3) math.div($spacer, 2) math.div($spacer, 2);
       }
     }
 
@@ -46,7 +48,7 @@ body {
       }
 
       height: auto;
-      padding: ($spacer / 3) ($spacer / 2) ($spacer / 2);
+      padding: math.div($spacer, 3) math.div($spacer, 2) math.div($spacer, 2);
     }
 
     &:hover {
@@ -57,7 +59,7 @@ body {
       &--second {
         span:first-child {
           display: block;
-          margin-bottom: ($spacer / 2);
+          margin-bottom: math.div($spacer, 2);
         }
       }
     }
@@ -78,7 +80,7 @@ body {
 
     &.app-footer--fixed__collapsed {
       @include media-breakpoint-up(lg) {
-        padding-left: $sidebar-width-collapsed / 8;
+        padding-left: math.div($sidebar-width-collapsed, 8);
       }
     }
   }

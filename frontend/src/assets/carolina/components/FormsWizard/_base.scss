@@ -1,3 +1,5 @@
+@use "sass:math";
+
 //  Core
 
 .wizard {
@@ -40,7 +42,7 @@
         }
 
         .label {
-          padding: 0 ($spacer / 1.5);
+          padding: 0 math.div($spacer, 1.5);
           color: $gray-700;
           transition: $transition-base;
           font-size: $font-size-base;
@@ -144,7 +146,7 @@
         transform: rotate(90deg);
         right: auto;
         left: 11px;
-        bottom: ($spacer / 1.1);
+        bottom: math.div($spacer, 1.1);
         top: auto;
       }
 

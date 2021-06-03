@@ -1,3 +1,5 @@
+@use "sass:math";
+
 // .modal-open      - body class for killing the scroll
 // .modal           - container to scroll within
 // .modal-dialog    - positioning shell for the actual modal
@@ -174,7 +176,7 @@
   flex-wrap: wrap;
   align-items: center; // vertically center
   justify-content: flex-end; // Right align buttons with flex property because text-align doesn't work on flex items
-  padding: $modal-inner-padding - $modal-footer-margin-between / 2;
+  padding: $modal-inner-padding - math.div($modal-footer-margin-between, 2);
   border-top: $modal-footer-border-width solid $modal-footer-border-color;
   @include border-bottom-radius($modal-content-inner-border-radius);
 
@@ -183,7 +185,7 @@
   // but is needed to fix https://github.com/twbs/bootstrap/issues/24800
   // stylelint-disable-next-line selector-max-universal
   > * {
-    margin: $modal-footer-margin-between / 2;
+    margin: math.div($modal-footer-margin-between, 2);
   }
 }
 

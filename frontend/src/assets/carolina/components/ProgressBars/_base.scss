@@ -1,7 +1,9 @@
+@use "sass:math";
+
 //  Core
 
 .gauge-wrapper {
   max-width: 160px;
   margin: 0 auto;
-  padding: ($spacer / 2);
+  padding: math.div($spacer, 2);
 }
