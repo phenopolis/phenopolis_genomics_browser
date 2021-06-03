@@ -5,7 +5,7 @@ from views.hpo import hpo
 @pytest.mark.parametrize(
     ("query", "subset", "msg"),
     (
-        ("HP:0000001", "all", '{"display":"GAST"},{"display":"TTLL5"}'),
+        ("HP:0000001", "all", '{"display":"GAST"}'),
         ("HP:0000478", "all", "Phenotypic abnormality"),
         ("Conductive hearing impairment", "all", "HP:0000405"),
         ("HP:0000478", "preview", '[{"preview":[["Number of Individuals"'),

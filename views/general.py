@@ -10,7 +10,7 @@ from flask_mail import Message
 from sqlalchemy.orm import Session
 from werkzeug.exceptions import HTTPException
 from views import MAIL_USERNAME, VERSION, application, mail, APP_ENV
-from views.auth import USER
+from views.auth import DEMO_USER, USER
 from views.exceptions import PhenopolisException
 from datetime import datetime, timedelta
 from functools import wraps
@@ -105,12 +105,20 @@ def process_for_display(db_session: Session, data):
             x2["gene_symbol"] = [{"display": x3} for x3 in x2["gene_symbol"].split(",") if x3]
         if x2.get("HET"):
             x2["HET"] = [
-                {"display": "my:" + x3, "end_href": x3} if x3 in my_patients else {"display": x3, "end_href": x3}
+                {"display": "my:" + x3, "end_href": x3}
+                if x3 in my_patients
+                else {}
+                if session[USER] == DEMO_USER
+                else {"display": x3, "end_href": x3}
                 for x3 in x2["HET"]
             ]
         if x2.get("HOM"):
             x2["HOM"] = [
-                {"display": "my:" + x3, "end_href": x3} if x3 in my_patients else {"display": x3, "end_href": x3}
+                {"display": "my:" + x3, "end_href": x3}
+                if x3 in my_patients
+                else {}
+                if session[USER] == DEMO_USER
+                else {"display": x3, "end_href": x3}
                 for x3 in x2["HOM"]
             ]
         # NOTE: nowhere in the project is using the lines below, I'm commenting them out @alan

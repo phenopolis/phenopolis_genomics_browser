@@ -1,10 +1,11 @@
 """
 variant view
 """
+from flask.globals import session
 import requests
 from psycopg2 import sql
 from views import application, variant_file, phenoid_mapping
-from views.auth import requires_auth
+from views.auth import DEMO_USER, USER, requires_auth
 from views.autocomplete import CHROMOSOME_POS_REF_ALT_REGEX, ENSEMBL_GENE_REGEX, PATIENT_REGEX
 from views.postgres import get_db, session_scope
 from views.general import cache_on_browser, process_for_display
@@ -166,7 +167,10 @@ def _get_variants(target: str):
 def _config_variant(variants, language):
     with session_scope() as db_session:
         # get the genotype information for this variant from the VCF
-        genotypes = _get_genotypes(variants[0]["CHROM"], variants[0]["POS"])
+        if session[USER] == DEMO_USER:
+            genotypes = []
+        else:
+            genotypes = _get_genotypes(variants[0]["CHROM"], variants[0]["POS"])
         process_for_display(db_session, variants)
         config = query_user_config(db_session=db_session, language=language, entity="variant")
         config[0]["metadata"]["data"] = variants
