@@ -1,8 +1,8 @@
 [build]
   base = "frontend/"
   publish = "build"
-  command = "yarn global add react-scripts && yarn run build && cp _redirects_dev build/_redirects"
+  command = "yarn add react-scripts && yarn run build && cp _redirects_dev build/_redirects"
   ignore = "git diff --quiet $CACHED_COMMIT_REF $COMMIT_REF ."
 
 [context.prod-live]
-  command = "yarn global add react-scripts && yarn run build && cp _redirects_live build/_redirects"
+  command = "yarn add react-scripts && yarn run build && cp _redirects_live build/_redirects"
