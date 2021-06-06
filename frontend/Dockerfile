@@ -4,10 +4,8 @@ WORKDIR /app
 
 RUN npm install -g netlify-cli react-scripts
 
-COPY package.json yarn.lock .yarnrc.yml ./
-COPY .yarn/releases/ ./.yarn/releases
+COPY package.json yarn.lock .yarnrc.yml .pnp.cjs ./
+COPY .yarn/ ./.yarn/
 RUN yarn install
-
-ENV PATH /app/node_modules/.bin:$PATH
 
 CMD ["netlify", "dev"]
