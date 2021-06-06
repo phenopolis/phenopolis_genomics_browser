@@ -74,6 +74,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["npm-watch", "npm:0.9.0"],
             ["pe7-icon", "npm:1.0.4"],
             ["prettier", "npm:2.3.0"],
+            ["prop-types", "npm:15.7.2"],
             ["react", "npm:17.0.2"],
             ["react-base-table", "virtual:f062f5380cd2fe42550ef0398c180026a3f05b7dbaed645649493b96e50e4db4e23e123b9bfb05b0f45694da0c373dc5573a4197fd108dd87076b53a16ef5ecb#npm:1.12.0"],
             ["react-collapse", "virtual:f062f5380cd2fe42550ef0398c180026a3f05b7dbaed645649493b96e50e4db4e23e123b9bfb05b0f45694da0c373dc5573a4197fd108dd87076b53a16ef5ecb#npm:5.1.0"],
@@ -10665,7 +10666,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["@types/react", null],
             ["echarts", "npm:4.9.0"],
             ["fast-deep-equal", "npm:2.0.1"],
-            ["prop-types", null],
+            ["prop-types", "npm:15.7.2"],
             ["react", "npm:17.0.2"],
             ["size-sensor", "npm:1.0.1"]
           ],
@@ -17446,6 +17447,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["npm-watch", "npm:0.9.0"],
             ["pe7-icon", "npm:1.0.4"],
             ["prettier", "npm:2.3.0"],
+            ["prop-types", "npm:15.7.2"],
             ["react", "npm:17.0.2"],
             ["react-base-table", "virtual:f062f5380cd2fe42550ef0398c180026a3f05b7dbaed645649493b96e50e4db4e23e123b9bfb05b0f45694da0c373dc5573a4197fd108dd87076b53a16ef5ecb#npm:1.12.0"],
             ["react-collapse", "virtual:f062f5380cd2fe42550ef0398c180026a3f05b7dbaed645649493b96e50e4db4e23e123b9bfb05b0f45694da0c373dc5573a4197fd108dd87076b53a16ef5ecb#npm:5.1.0"],
@@ -19623,6 +19625,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             "@types/prop-types",
             "@types/react-dom",
             "@types/react",
+            "prop-types",
             "react-dom",
             "react"
           ],

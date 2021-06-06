@@ -12655,6 +12655,7 @@ fsevents@^1.2.7:
     npm-watch: ^0.9.0
     pe7-icon: ^1.0.4
     prettier: ^2.3.0
+    prop-types: ^15.7.2
     react: ^17.0.2
     react-base-table: ^1.12.0
     react-collapse: ^5.1.0

@@ -34,6 +34,7 @@
     "ms": "^2.1.3",
     "node-sass": "npm:sass@^1.34.1",
     "pe7-icon": "^1.0.4",
+    "prop-types": "^15.7.2",
     "react": "^17.0.2",
     "react-base-table": "^1.12.0",
     "react-collapse": "^5.1.0",
