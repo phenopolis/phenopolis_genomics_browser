@@ -9,5 +9,6 @@
     "titleBar.activeBackground": "#FCFC62",
     "titleBar.inactiveBackground": "#FCFC62",
     "titleBar.activeForeground": "#000"
-  }
+  },
+  "peacock.color": "#FCFC62"
 }

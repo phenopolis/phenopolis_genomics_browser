@@ -1,3 +1,5 @@
+@use "sass:math";
+
 //  Core
 
 // Ribbon mixin
@@ -22,11 +24,11 @@
     position: absolute;
     display: block;
     width: 100%;
-    padding: ($spacer / 4);
+    padding: math.div($spacer, 4);
     text-align: center;
     text-transform: uppercase;
     font-weight: bold;
-    font-size: $font-size-xs / 1.3;
+    font-size: math.div($font-size-xs, 1.3);
   }
 
   &--top-right {

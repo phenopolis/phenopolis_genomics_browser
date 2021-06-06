@@ -1,3 +1,5 @@
+@use "sass:math";
+
 //  Core
 
 body {
@@ -23,7 +25,7 @@ body {
     transform: scale(1);
     visibility: visible;
     transition-delay: .2s;
-    margin-left: ($spacer / 2);
+    margin-left: math.div($spacer, 2);
 
     @include media-breakpoint-down(md) {
       display: none;

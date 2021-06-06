@@ -1,3 +1,5 @@
+@use "sass:math";
+
 @import 'variables';
 
 .rbc-row {
@@ -74,8 +76,8 @@
 .rbc-date-cell {
   flex: 1 1 0;
   min-width: 0;
-  padding-right: $spacer / 2;
-  padding-top: $spacer / 3;
+  padding-right: math.div($spacer, 2);
+  padding-top: math.div($spacer, 3);
   text-align: right;
   font-size: $font-size-base * 1.1;
 

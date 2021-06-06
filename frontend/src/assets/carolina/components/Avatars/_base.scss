@@ -1,8 +1,10 @@
+@use "sass:math";
+
 //  Core
 
 .avatar-icon-wrapper {
   display: inline-block;
-  margin-right: ($spacer / 4);
+  margin-right: math.div($spacer, 4);
   position: relative;
   font-size: 1.2rem;
 

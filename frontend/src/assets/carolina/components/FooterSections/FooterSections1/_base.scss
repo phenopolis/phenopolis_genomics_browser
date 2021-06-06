@@ -1,3 +1,5 @@
+@use "sass:math";
+
 //  Core
 
 .nav-logo {
@@ -20,7 +22,7 @@
       display: flex;
       align-items: center;
       @include border-radius($border-radius);
-      margin: 0 ($layout-spacer / 2.5) 0 0;
+      margin: 0 math.div($layout-spacer, 2.5) 0 0;
       position: relative;
       left: 0;
       transition: $transition-base;

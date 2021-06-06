@@ -1,8 +1,8 @@
 [build]
   base = "frontend/"
   publish = "build"
-  command = "npm run build; cp _redirects_dev build/_redirects"
-  ignore = "git diff --quiet HEAD^ HEAD ."
+  command = "yarn run build && cp _redirects_dev build/_redirects"
+  ignore = "git diff --quiet $CACHED_COMMIT_REF $COMMIT_REF ."
 
 [context.prod-live]
-  command = "npm run build; cp _redirects_live build/_redirects"
+  command = "yarn run build && cp _redirects_live build/_redirects"

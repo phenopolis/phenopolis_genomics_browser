@@ -1,3 +1,5 @@
+@use "sass:math";
+
 // Form control focus state
 //
 // Generate a customized focus state and for any input with the specified color,
@@ -107,7 +109,7 @@
 
       @if $enable-validation-icons {
         padding-right: $custom-select-feedback-icon-padding-right;
-        background: $custom-select-background, escape-svg($icon) $custom-select-bg no-repeat $custom-select-feedback-icon-position / $custom-select-feedback-icon-size;
+        background: $custom-select-background, escape-svg($icon) $custom-select-bg no-repeat math.div($custom-select-feedback-icon-position, $custom-select-feedback-icon-size);
       }
 
       &:focus {

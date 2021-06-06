@@ -1,9 +1,11 @@
+@use "sass:math";
+
 //  Core
 
 .ribbon-vertical {
   position: absolute;
   width: 60px;
-  padding: ($spacer / 1.5) 0 ($spacer / 2);
+  padding: math.div($spacer, 1.5) 0 math.div($spacer, 2);
   top: -6px;
   left: ($spacer * 1.5);
   text-align: center;

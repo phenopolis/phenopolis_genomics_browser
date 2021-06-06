@@ -78,3 +78,4 @@ private.env
 
 dc_dev.yml
 /.mypy_cache/
+*tbi

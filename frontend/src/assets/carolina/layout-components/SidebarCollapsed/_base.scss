@@ -1,3 +1,5 @@
+@use "sass:math";
+
 // Core
 
 .app-sidebar-collapsed-wrapper {
@@ -16,7 +18,7 @@
 
   .app-sidebar--content ul li {
     text-align: center;
-    padding: ($spacer / 2) $spacer;
+    padding: math.div($spacer, 2) $spacer;
   }
 }
 

@@ -1,3 +1,5 @@
+@use "sass:math";
+
 //  Core
 
 .timeline-list {
@@ -28,7 +30,7 @@
 
   .timeline-item {
     position: relative;
-    padding: ($spacer / 3) 0 ($spacer / 3) 36px;
+    padding: math.div($spacer, 3) 0 math.div($spacer, 3) 36px;
     margin: 0 0 ($spacer);
 
     p {
@@ -37,7 +39,7 @@
   }
 
   .timeline-item-icon {
-    padding: ($spacer / 2) 0 ($spacer / 2) 46px;
+    padding: math.div($spacer, 2) 0 math.div($spacer, 2) 46px;
   }
 
   .timeline-item--icon {

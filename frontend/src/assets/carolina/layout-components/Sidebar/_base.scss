@@ -1,3 +1,5 @@
+@use "sass:math";
+
 // Core
 
 body {
@@ -31,7 +33,7 @@ body {
   }
 
   .app-sidebar-wrapper-close {
-    width: $sidebar-width-collapsed / 8;
+    width: math.div($sidebar-width-collapsed, 8);
 
     .sidebar-menu-children {
       display: none;

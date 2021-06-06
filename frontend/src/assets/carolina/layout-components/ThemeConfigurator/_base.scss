@@ -1,3 +1,5 @@
+@use "sass:math";
+
 //  Core
 
 body {
@@ -18,7 +20,7 @@ body {
 
       &--heading {
         font-size: $theme-configurator-heading-font-size;
-        padding: ($spacer / 1.5) ($spacer);
+        padding: math.div($spacer, 1.5) ($spacer);
         background: $theme-configurator-heading-bg;
         border-color: $theme-configurator-heading-border-color;
         border-width: 1px 0;
@@ -47,7 +49,7 @@ body {
         }
 
         &__heading {
-          padding-left: ($spacer / 2);
+          padding-left: math.div($spacer, 2);
 
           span {
             display: block;
@@ -69,12 +71,12 @@ body {
 
       &--swatches {
         text-align: center;
-        padding: ($spacer / 2);
+        padding: math.div($spacer, 2);
 
         .theme-config-swatch {
           width: 32px;
           height: 32px;
-          margin: ($spacer / 2);
+          margin: math.div($spacer, 2);
           @include border-radius($border-radius-sm);
           display: inline-block;
           opacity: .7;

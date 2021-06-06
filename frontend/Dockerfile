@@ -1,14 +1,11 @@
-FROM node:14.4.0
+FROM node:16.2.0
 
 WORKDIR /app
 
-RUN npm install -g npm
-RUN npm install --global netlify-cli
-COPY package.json package-lock.json .npmrc ./
-RUN npm install
-RUN nodejs node_modules/node-sass/scripts/install.js
-# RUN npm rebuild node-sass
+RUN yarn global add netlify-cli
 
-ENV PATH /app/node_modules/.bin:$PATH
+COPY package.json yarn.lock .yarnrc.yml .pnp.cjs ./
+COPY .yarn/ ./.yarn/
+RUN yarn install
 
 CMD ["netlify", "dev"]

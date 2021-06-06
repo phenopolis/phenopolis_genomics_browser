@@ -1,3 +1,5 @@
+@use "sass:math";
+
 //  Core
 
 .btn-default {
@@ -16,14 +18,14 @@
 }
 
 .btn-wrapper--label:not(:first-child) {
-  margin-left: ($spacer / 2);
+  margin-left: math.div($spacer, 2);
 }
 
 .btn-wrapper--label {
   display: inline-block;
 
   & + .btn-wrapper--icon {
-    margin-left: ($spacer / 2);
+    margin-left: math.div($spacer, 2);
   }
 }
 
