@@ -1,8 +1,8 @@
 """
 variant view
 """
-from flask.globals import session
 import requests
+from flask.globals import session
 from psycopg2 import sql
 from views import application, variant_file, phenoid_mapping
 from views.auth import DEMO_USER, USER, requires_auth
