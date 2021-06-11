@@ -6,6 +6,5 @@ RUN yarn global add netlify-cli
 
 COPY package.json yarn.lock .yarnrc.yml .pnp.cjs ./
 COPY .yarn/ ./.yarn/
-RUN yarn install
 
 CMD ["netlify", "dev"]
