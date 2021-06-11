@@ -68,7 +68,7 @@ def count_genes(individuals: List[Individual]):
             cur.execute(
                 """
                 select distinct gene_id from phenopolis.individual_gene ig
-                join ensembl.gene g on g.identifier = ig.gene_id 
+                join ensembl.gene g on g.identifier = ig.gene_id
                 where g.assembly = 'GRCh37' and g.chromosome ~ '^X|^Y|^[0-9]{1,2}'
                 and ig.individual_id = any(%s)
                 """,
