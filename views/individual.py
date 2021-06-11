@@ -10,18 +10,17 @@ from sqlalchemy.orm import Session
 from collections import Counter
 from flask import session, jsonify, request
 from db.model import Individual, UserIndividual, Sex
-from views import HG_ASSEMBLY, application
+from views import HG_ASSEMBLY, MAX_PAGE_SIZE, application
 from views.auth import requires_auth, is_demo_user, USER, ADMIN_USER
 from views.exceptions import PhenopolisException
 from views.helpers import _get_json_payload
 from views.postgres import session_scope, get_db
 from bidict import bidict
-from views.general import process_for_display, cache_on_browser
+from views.general import _get_pagination_parameters, process_for_display, cache_on_browser
 from db.helpers import cursor2dict, query_user_config
 from views.variant import _get_variants
 
 MAPPING_SEX_REPRESENTATIONS = bidict({"male": Sex.M, "female": Sex.F, "unknown": Sex.U})
-MAX_PAGE_SIZE = 100000
 
 
 @application.route("/individual")
@@ -222,15 +221,6 @@ def delete_individual(phenopolis_id):
             message = f"Patient {phenopolis_id} does not exist."
             http_status = 404
     return jsonify(success=request_ok, message=message), http_status
-
-
-def _get_pagination_parameters():
-    try:
-        offset = int(request.args.get("offset", 0))
-        limit = int(request.args.get("limit", 10))
-    except ValueError as e:
-        raise PhenopolisException(str(e), 500)
-    return limit, offset
 
 
 def _check_individual_valid(db_session: Session, new_individual: Individual):

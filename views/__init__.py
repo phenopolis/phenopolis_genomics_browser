@@ -24,6 +24,8 @@ HG_ASSEMBLY = os.getenv("HG_ASSEMBLY", "GRCh37")
 
 MAIL_USERNAME = os.getenv("MAIL_USERNAME", "no-reply@phenopolis.com")
 
+MAX_PAGE_SIZE = 100000
+
 VERSION = Popen("git describe --tags --always", shell=True, stderr=STDOUT, stdout=PIPE).communicate()[0][:-1].decode()
 if "command not found" in VERSION:
     VERSION = "$Format:%H$"[:7]
