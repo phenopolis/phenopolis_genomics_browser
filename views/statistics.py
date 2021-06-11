@@ -7,7 +7,7 @@ from flask import jsonify, session
 from sqlalchemy import and_
 
 from db.model import Variant, Sex, HeterozygousVariant, Individual, HomozygousVariant, UserIndividual
-from views import application
+from views import VERSION, application
 from views.auth import requires_auth, USER
 from views.individual import _count_all_individuals, _count_all_individuals_by_sex, _get_authorized_individuals
 from views.postgres import session_scope, get_db
@@ -34,6 +34,9 @@ def phenopolis_statistics():
         individuals = _get_authorized_individuals(db_session)
         count_observed_features, count_unobserved_features = count_hpos(individuals)
 
+        # counts genes
+        total_genes = count_genes(individuals)
+
     return jsonify(
         exomes=total_patients,
         males=male_patients,
@@ -42,7 +45,8 @@ def phenopolis_statistics():
         total_variants=total_variants,
         observed_features=count_observed_features,
         unobserved_features=count_unobserved_features,
-        version_number=0,
+        total_genes=total_genes,
+        version_number=VERSION,
     )
 
 
@@ -56,6 +60,19 @@ def count_hpos(individuals: List[Individual]):
             )
             res = dict(cur.fetchall())
     return res.get("observed", 0), res.get("unobserved", 0)
+
+
+def count_genes(individuals: List[Individual]):
+    with get_db() as conn:
+        with conn.cursor() as cur:
+            cur.execute(
+                """
+                select distinct gene_id from phenopolis.individual_gene ig
+                where ig.individual_id = any(%s)
+                """,
+                [[x.id for x in individuals]],
+            )
+    return cur.rowcount
 
 
 def count_variants(db_session, additional_filter=None):
