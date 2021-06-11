@@ -5,13 +5,11 @@ from views.variant import _get_variants
 from psycopg2 import sql
 from db.helpers import query_user_config, cursor2dict
 from sqlalchemy.orm import Session
-from sqlalchemy import text
 from flask import jsonify
 from views import HG_ASSEMBLY, application
 from views.auth import requires_auth, is_demo_user
 from views.postgres import get_db, session_scope
 from views.general import process_for_display, cache_on_browser
-from db.model import Gene
 
 
 @application.route("/<language>/gene/<gene_id>")
@@ -95,27 +93,46 @@ def gene(gene_id, subset="all", language="en"):
 
 
 def query_gene(db_session: Session, gene_id):
-    gene_id = gene_id.upper()
-    if gene_id.startswith("ENSG"):
-        # queries first by gene id if it looks like a gene id
-        data = db_session.query(Gene).filter(Gene.gene_id == gene_id).filter(text("chrom ~ '^X|^Y|^[0-9]{1,2}'")).all()
-    else:
-        # queries then by gene name on the field that stores gene names in upper case
-        data = (
-            db_session.query(Gene)
-            .filter(Gene.gene_name_upper == gene_id)
-            .filter(text("chrom ~ '^X|^Y|^[0-9]{1,2}'"))
-            .all()
-        )
-        if not data:
-            # otherwise looks for synonyms ensuring complete match by appending quotes
-            data = (
-                db_session.query(Gene)
-                .filter(Gene.other_names.like(f"%{gene_id}%"))
-                .filter(text("chrom ~ '^X|^Y|^[0-9]{1,2}'"))
-                .all()
-            )
-    return [p.as_dict() for p in data]
+    g_id = gene_id.upper()
+    sqlq_main = sql.SQL(
+        """select distinct
+    (
+        select array_agg(distinct tu.uniprotswissprot order by tu.uniprotswissprot)
+        from ensembl.transcript_uniprot tu
+        join ensembl.transcript t on tu.transcript = t.identifier
+        where t.ensembl_gene_id = g.ensembl_gene_id
+    ) AS uniprot,
+    (
+        select array_agg(distinct concat(t.ensembl_transcript_id,'@', t.ensembl_peptide_id))
+        from ensembl.transcript t where t.ensembl_gene_id = g.ensembl_gene_id
+        and t.assembly = g.assembly
+    ) AS transcripts,
+    (
+        select array_agg(distinct gs.external_synonym order by gs.external_synonym)
+        from ensembl.gene_synonym gs
+        where gs.gene = g.identifier
+    ) AS other_names,
+    g.ensembl_gene_id as gene_id, g."version", g.description, g.chromosome as chrom, g."start", g."end" as "stop"
+    , g.strand, g.band, g.biotype, g.hgnc_id, g.hgnc_symbol as gene_name, g.percentage_gene_gc_content, g.assembly
+    from ensembl.gene g
+    join ensembl.gene_synonym gs on gs.gene = g.identifier
+    where g.assembly = 'GRCh37'
+    and g.chromosome ~ '^X|^Y|^[0-9]{1,2}'
+    """
+    )
+    sqlq_end = sql.SQL("and (g.ensembl_gene_id = %(g_id)s or upper(g.hgnc_symbol) = %(g_id)s)")
+    sqlq = sqlq_main + sqlq_end
+    with get_db() as conn:
+        with conn.cursor() as cur:
+            cur.execute(sqlq, {"g_id": g_id})
+            data = cursor2dict(cur)
+            if not data:
+                application.logger.info("Using gene_synonym")
+                sqlq_end = sql.SQL("and upper(gs.external_synonym) = %(g_id)s")
+                sqlq = sqlq_main + sqlq_end
+                cur.execute(sqlq, {"g_id": g_id})
+                data = cursor2dict(cur)
+    return data
 
 
 def _get_variants_by_gene(gene_id):
