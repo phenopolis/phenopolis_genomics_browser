@@ -26,6 +26,16 @@ def gene(gene_id, subset="all", language="en"):
             response = jsonify(message="Gene not found")
             response.status_code = 404
             return response
+        for gd in data:
+            ets, eps, cf = zip(*[x.split("@") for x in sorted(gd["transcripts"])])
+            gd["transcript_ids"] = ets
+            gd["peptide_id"] = eps
+            gd["canonical_transcript"] = ""
+            gd["canonical_peptide"] = ""
+            if "t" in cf:
+                idx = cf.index("t")
+                gd["canonical_transcript"] = ets[idx]
+                gd["canonical_peptide"] = eps[idx]
         config[0]["metadata"]["data"] = data
         chrom = config[0]["metadata"]["data"][0]["chrom"]
         start = config[0]["metadata"]["data"][0]["start"]
@@ -103,7 +113,7 @@ def query_gene(db_session: Session, gene_id):
         where t.ensembl_gene_id = g.ensembl_gene_id
     ) AS uniprot,
     (
-        select array_agg(distinct concat(t.ensembl_transcript_id,'@', t.ensembl_peptide_id))
+        select array_agg(distinct concat(t.ensembl_transcript_id,'@',t.ensembl_peptide_id,'@',t.canonical))
         from ensembl.transcript t where t.ensembl_gene_id = g.ensembl_gene_id
         and t.assembly = g.assembly
     ) AS transcripts,
@@ -112,8 +122,9 @@ def query_gene(db_session: Session, gene_id):
         from ensembl.gene_synonym gs
         where gs.gene = g.identifier
     ) AS other_names,
-    g.ensembl_gene_id as gene_id, g."version", g.description, g.chromosome as chrom, g."start", g."end" as "stop"
-    , g.strand, g.band, g.biotype, g.hgnc_id, g.hgnc_symbol as gene_name, g.percentage_gene_gc_content, g.assembly
+    g.ensembl_gene_id as gene_id, g."version", g.description as full_gene_name, g.chromosome as chrom, g."start",
+    g."end" as "stop", g.strand, g.band, g.biotype, g.hgnc_id, g.hgnc_symbol as gene_name,
+    g.percentage_gene_gc_content, g.assembly
     from ensembl.gene g
     join ensembl.gene_synonym gs on gs.gene = g.identifier
     where g.assembly = 'GRCh37'
