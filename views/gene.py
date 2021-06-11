@@ -62,9 +62,11 @@ def gene(gene_id, subset="all", language="en"):
         gene_id = config[0]["metadata"]["data"][0]["gene_id"]
         gene_name = config[0]["metadata"]["data"][0]["gene_name"]
         for d in config[0]["metadata"]["data"]:
-            ets, eps, cf = zip(*[x.split("@") for x in sorted(d["transcripts"])])
-            d["transcript_ids"] = ets
-            d["peptide_id"] = eps
+            ets, eps, cf = [], [], []
+            if d["transcripts"]:
+                ets, eps, cf = zip(*[x.split("@") for x in sorted(d["transcripts"])])
+            d["transcript_ids"] = ",".join(ets)
+            d["peptide_id"] = ",".join(eps)
             d["canonical_transcript"] = ""
             d["canonical_peptide"] = ""
             if "t" in cf:
