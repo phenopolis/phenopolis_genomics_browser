@@ -4,6 +4,8 @@
 \copy phenopolis.variant_gene FROM '/app/schema/seed/phenopolis.variant_gene.csv' delimiter ',' CSV HEADER;
 \copy ensembl.gene FROM '/app/schema/seed/ensembl.gene.csv' delimiter ',' CSV HEADER;
 \copy ensembl.gene_synonym FROM '/app/schema/seed/ensembl.gene_synonym.csv' delimiter ',' CSV HEADER;
+\copy ensembl.transcript FROM '/app/schema/seed/ensembl.transcript.csv' delimiter ',' CSV HEADER;
+\copy ensembl.transcript_uniprot FROM '/app/schema/seed/ensembl.transcript_uniprot.csv' delimiter ',' CSV HEADER;
 \copy hpo.term FROM '/app/schema/seed/hpo.term.csv' delimiter ',' CSV HEADER;
 \copy hpo.is_a FROM '/app/schema/seed/hpo.is_a.csv' delimiter ',' CSV HEADER;
 \copy phenopolis.individual FROM '/app/schema/seed/phenopolis.individual.csv' delimiter ',' CSV HEADER;

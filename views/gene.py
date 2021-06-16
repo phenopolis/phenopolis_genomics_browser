@@ -12,6 +12,7 @@ from views.auth import USER, requires_auth, is_demo_user
 from views.postgres import get_db, session_scope
 from views.general import _get_pagination_parameters, process_for_display, cache_on_browser
 
+# NOTE: using tables: ensembl.gene, ensembl.gene_synonym, ensembl.transcript, ensembl.transcript_uniprot
 sqlq_main = sql.SQL(
     """select distinct
 (
