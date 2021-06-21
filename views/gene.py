@@ -32,7 +32,7 @@ sqlq_main = sql.SQL(
     where gs.gene = g.identifier
 ) AS other_names,
 g.ensembl_gene_id as gene_id, g."version", g.description as full_gene_name, g.chromosome as chrom, g."start",
-g."end" as "stop", g.strand, g.band, g.biotype, g.hgnc_id, g.hgnc_symbol as gene_name,
+g."end" as "stop", g.strand, g.band, g.biotype, g.hgnc_id, g.hgnc_symbol as gene_symbol,
 g.percentage_gene_gc_content, g.assembly
 from ensembl.gene g
 left outer join ensembl.gene_synonym gs on gs.gene = g.identifier
@@ -56,12 +56,13 @@ def gene(gene_id, subset="all", language="en"):
             response = jsonify(message="Gene not found")
             response.status_code = 404
             return response
+        gene[0]["gene_name"] = gene[0]["gene_symbol"]
         config[0]["metadata"]["data"] = gene
         chrom = config[0]["metadata"]["data"][0]["chrom"]
         start = config[0]["metadata"]["data"][0]["start"]
         stop = config[0]["metadata"]["data"][0]["stop"]
         gene_id = config[0]["metadata"]["data"][0]["gene_id"]
-        gene_name = config[0]["metadata"]["data"][0]["gene_name"]
+        gene_name = config[0]["metadata"]["data"][0]["gene_symbol"]
         for d in config[0]["metadata"]["data"]:
             ets, eps, cf = [], [], []
             if d["transcripts"]:
@@ -148,7 +149,7 @@ def _get_gene(db_session: Session, gene_id):
 @application.route("/my_genes")
 @requires_auth
 def get_all_genes():
-    with session_scope():
+    with session_scope() as db_session:
         try:
             limit, offset = _get_pagination_parameters()
             if limit > MAX_PAGE_SIZE:
@@ -170,6 +171,7 @@ def get_all_genes():
                 with conn.cursor() as cur:
                     cur.execute(sqlq, [session[USER]])
                     genes = cursor2dict(cur)
+            process_for_display(db_session, genes)
         except PhenopolisException as e:
             return jsonify(success=False, message=str(e)), e.http_status
     return jsonify(genes), 200
