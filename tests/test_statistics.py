@@ -1,8 +1,4 @@
-from views.postgres import session_scope
-from flask import session
-from views.auth import ADMIN_USER, USER
-from db.model import Variant
-from views.statistics import count_variants, phenopolis_statistics
+from views.statistics import phenopolis_statistics
 
 
 def test_statistics_api(_demo):
@@ -19,9 +15,10 @@ def test_statistics(_admin_client):
     assert data.get("females") == 1
     assert data.get("males") == 2
     assert data.get("unknowns") == 1
-    assert data.get("total_variants") == 8
+    assert data.get("total_variants") == 4099
     assert data.get("observed_features") == 7
     assert data.get("unobserved_features") == 17
+    assert data.get("total_genes") == 3
 
 
 def test_statistics_with_demo_user(_demo_client):
@@ -32,9 +29,10 @@ def test_statistics_with_demo_user(_demo_client):
     assert data.get("females") == 1
     assert data.get("males") == 2
     assert data.get("unknowns") == 1
-    assert data.get("total_variants") == 8
+    assert data.get("total_variants") == 4099
     assert data.get("observed_features") == 7
     assert data.get("unobserved_features") == 17
+    assert data.get("total_genes") == 3
 
 
 def test_statistics_with_nondemo_user(_nondemo_client):
@@ -45,15 +43,7 @@ def test_statistics_with_nondemo_user(_nondemo_client):
     assert data.get("females") == 0
     assert data.get("males") == 1
     assert data.get("unknowns") == 0
-    assert data.get("total_variants") == 1
+    assert data.get("total_variants") == 1406
     assert data.get("observed_features") == 3
     assert data.get("unobserved_features") == 0
-
-
-def test_additional_filter(_admin):
-    # arg: additional_filter is not actively used so far in statistics
-    # it is here for completeness coverage
-    session[USER] = ADMIN_USER
-    with session_scope() as db_session:
-        tcvg = count_variants(db_session, additional_filter=Variant.gene_id == "ENSG00000119685")
-    assert tcvg == 5
+    assert data.get("total_genes") == 1

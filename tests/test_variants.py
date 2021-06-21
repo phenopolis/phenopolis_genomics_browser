@@ -54,3 +54,9 @@ def test_variant_preview(_demo):
 def test_wrong_variant_preview(_demo):
     response = variant_preview("something-else")
     assert response.status_code == 400
+
+
+def test_my_variants(_demo_client):
+    resp = _demo_client.get("/my_variants?limit=10000")
+    assert len(resp.json) == 4099
+    assert "'variant_id': [{'display': '14-95236097-C-A'" in str(resp.json)
