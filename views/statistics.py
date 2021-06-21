@@ -2,15 +2,13 @@
 Statistics view
 """
 from typing import List
-
 from flask import jsonify, session
-from sqlalchemy import and_
-
-from db.model import Variant, Sex, HeterozygousVariant, Individual, HomozygousVariant, UserIndividual
+from db.model import Sex, Individual
 from views import VERSION, application
 from views.auth import requires_auth, USER
 from views.individual import _count_all_individuals, _count_all_individuals_by_sex, _get_authorized_individuals
 from views.postgres import session_scope, get_db
+from views.variant import sqlq_all_variants
 
 COMMON_VARIANTS_THRESHOLD = 0.05
 RARE_VARIANTS_THRESHOLD = 0.01
@@ -28,7 +26,7 @@ def phenopolis_statistics():
         unknown_patients = _count_all_individuals_by_sex(Sex.U)
 
         # counts variants
-        total_variants = count_variants(db_session)
+        total_variants = count_variants()
 
         # counts HPOs
         individuals = _get_authorized_individuals(db_session)
@@ -77,30 +75,8 @@ def count_genes(individuals: List[Individual]):
     return cur.rowcount
 
 
-def count_variants(db_session, additional_filter=None):
-    query_hom_variants = query_variants_by_zygosity(db_session, HomozygousVariant, additional_filter)
-    query_het_variants = query_variants_by_zygosity(db_session, HeterozygousVariant, additional_filter)
-    return query_hom_variants.count() + query_het_variants.count()
-
-
-def query_variants_by_zygosity(db_session, klass, additional_filter=None):
-    """
-    this method is used to query both HomozygousVariants and HeterozygousVariants which have an equivalent structure
-    """
-    query_hom_variants = (
-        db_session.query(klass, UserIndividual, Variant)
-        .join(UserIndividual, UserIndividual.internal_id == klass.individual)
-        .filter(UserIndividual.user == session[USER])
-        .join(
-            Variant,
-            and_(
-                klass.CHROM == Variant.CHROM,
-                klass.POS == Variant.POS,
-                klass.REF == Variant.REF,
-                klass.ALT == Variant.ALT,
-            ),
-        )
-    )
-    if additional_filter is not None:
-        query_hom_variants = query_hom_variants.filter(additional_filter)
-    return query_hom_variants
+def count_variants():
+    with get_db() as conn:
+        with conn.cursor() as cur:
+            cur.execute(sqlq_all_variants, [session[USER]])
+    return cur.rowcount
