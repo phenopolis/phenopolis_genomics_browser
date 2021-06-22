@@ -42,4 +42,12 @@ create temp view t_iv as
 \copy (select * from phenopolis.variant_gene where gene_id = any('{ENSG00000184502,ENSG00000156171,ENSG00000119685}') or variant_id in (select variant_id from t_iv) order by gene_id, variant_id) to 'for_demo/phenopolis.variant_gene.csv' csv header;
 -- COPY 305
 
+-- get ensembl.transcript
+\copy (select * from ensembl.transcript where ensembl_gene_id = any('{ENSG00000184502,ENSG00000156171,ENSG00000119685}') order by identifier) to 'for_demo/ensembl.transcript.csv' csv header;
+-- COPY 18
+
+-- get ensembl.transcript_uniprot
+\copy (select * from ensembl.transcript_uniprot where transcript in (select identifier from ensembl.transcript where ensembl_gene_id = any('{ENSG00000184502,ENSG00000156171,ENSG00000119685}')) order by transcript) to 'for_demo/ensembl.transcript_uniprot.csv' csv header;
+-- COPY 12
+
 drop view t_iv;

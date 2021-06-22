@@ -1,17 +1,45 @@
 """
 Gene view
 """
+from views.exceptions import PhenopolisException
 from views.variant import _get_variants
 from psycopg2 import sql
 from db.helpers import query_user_config, cursor2dict
 from sqlalchemy.orm import Session
-from sqlalchemy import text
-from flask import jsonify
-from views import HG_ASSEMBLY, application
-from views.auth import requires_auth, is_demo_user
+from flask import jsonify, session
+from views import HG_ASSEMBLY, MAX_PAGE_SIZE, application
+from views.auth import USER, requires_auth, is_demo_user
 from views.postgres import get_db, session_scope
-from views.general import process_for_display, cache_on_browser
-from db.model import Gene
+from views.general import _get_pagination_parameters, process_for_display, cache_on_browser
+
+# NOTE: using tables: ensembl.gene, ensembl.gene_synonym, ensembl.transcript, ensembl.transcript_uniprot
+sqlq_main = sql.SQL(
+    """select distinct
+(
+    select array_agg(distinct tu.uniprotswissprot order by tu.uniprotswissprot)
+    from ensembl.transcript_uniprot tu
+    join ensembl.transcript t on tu.transcript = t.identifier
+    where t.ensembl_gene_id = g.ensembl_gene_id
+) AS uniprot,
+(
+    select array_agg(distinct concat(t.ensembl_transcript_id,'@',t.ensembl_peptide_id,'@',t.canonical))
+    from ensembl.transcript t where t.ensembl_gene_id = g.ensembl_gene_id
+    and t.assembly = g.assembly
+) AS transcripts,
+(
+    select array_agg(distinct gs.external_synonym order by gs.external_synonym)
+    from ensembl.gene_synonym gs
+    where gs.gene = g.identifier
+) AS other_names,
+g.ensembl_gene_id as gene_id, g."version", g.description as full_gene_name, g.chromosome as chrom, g."start",
+g."end" as "stop", g.strand, g.band, g.biotype, g.hgnc_id, g.hgnc_symbol as gene_symbol,
+g.percentage_gene_gc_content, g.assembly
+from ensembl.gene g
+left outer join ensembl.gene_synonym gs on gs.gene = g.identifier
+where g.assembly = 'GRCh37'
+and g.chromosome ~ '^X|^Y|^[0-9]{1,2}'
+"""
+)
 
 
 @application.route("/<language>/gene/<gene_id>")
@@ -23,18 +51,30 @@ from db.model import Gene
 def gene(gene_id, subset="all", language="en"):
     with session_scope() as db_session:
         config = query_user_config(db_session=db_session, language=language, entity="gene")
-        data = query_gene(db_session, gene_id)
-        if not data:
+        gene = _get_gene(db_session, gene_id)
+        if not gene:
             response = jsonify(message="Gene not found")
             response.status_code = 404
             return response
-        config[0]["metadata"]["data"] = data
+        gene[0]["gene_name"] = gene[0]["gene_symbol"]
+        config[0]["metadata"]["data"] = gene
         chrom = config[0]["metadata"]["data"][0]["chrom"]
         start = config[0]["metadata"]["data"][0]["start"]
         stop = config[0]["metadata"]["data"][0]["stop"]
         gene_id = config[0]["metadata"]["data"][0]["gene_id"]
-        gene_name = config[0]["metadata"]["data"][0]["gene_name"]
+        gene_name = config[0]["metadata"]["data"][0]["gene_symbol"]
         for d in config[0]["metadata"]["data"]:
+            ets, eps, cf = [], [], []
+            if d["transcripts"]:
+                ets, eps, cf = zip(*[x.split("@") for x in sorted(d["transcripts"])])
+            d["transcript_ids"] = ",".join(ets)
+            d["peptide_id"] = ",".join(eps)
+            d["canonical_transcript"] = ""
+            d["canonical_peptide"] = ""
+            if "t" in cf:
+                idx = cf.index("t")
+                d["canonical_transcript"] = ets[idx]
+                d["canonical_peptide"] = eps[idx]
             d["external_services"] = [
                 {"display": "GnomAD Browser", "href": f"http://gnomad.broadinstitute.org/gene/{gene_id}"},
                 {"display": "GeneCards", "href": f"http://www.genecards.org/cgi-bin/carddisp.pl?gene={gene_name}"},
@@ -67,12 +107,7 @@ def gene(gene_id, subset="all", language="en"):
             #             ).fetchall()
             #         ]
             d["related_hpo"] = []
-        # c.execute("select * from variants where gene_symbol='%s'"%(x[0]['metadata']['data'][0]['gene_name'],))
-        # gene_id = config[0]["metadata"]["data"][0]["gene_id"]
-        # data = db_session.query(Gene).filter(Gene.gene_id == gene_id).first().variants
-        # config[0]["variants"]["data"] = [p.as_dict() for p in data]
         config[0]["variants"]["data"] = _get_variants(gene_id)
-        # config[0]["variants"]["data"] = _get_variants_by_gene(gene_id)
         config[0]["metadata"]["data"][0]["number_of_variants"] = len(config[0]["variants"]["data"])
         cadd_gt_20 = 0
         for v in config[0]["variants"]["data"]:
@@ -94,93 +129,49 @@ def gene(gene_id, subset="all", language="en"):
     return jsonify([{subset: y[subset]} for y in config])
 
 
-def query_gene(db_session: Session, gene_id):
-    gene_id = gene_id.upper()
-    if gene_id.startswith("ENSG"):
-        # queries first by gene id if it looks like a gene id
-        data = db_session.query(Gene).filter(Gene.gene_id == gene_id).filter(text("chrom ~ '^X|^Y|^[0-9]{1,2}'")).all()
-    else:
-        # queries then by gene name on the field that stores gene names in upper case
-        data = (
-            db_session.query(Gene)
-            .filter(Gene.gene_name_upper == gene_id)
-            .filter(text("chrom ~ '^X|^Y|^[0-9]{1,2}'"))
-            .all()
-        )
-        if not data:
-            # otherwise looks for synonyms ensuring complete match by appending quotes
-            data = (
-                db_session.query(Gene)
-                .filter(Gene.other_names.like(f"%{gene_id}%"))
-                .filter(text("chrom ~ '^X|^Y|^[0-9]{1,2}'"))
-                .all()
-            )
-    return [p.as_dict() for p in data]
-
-
-def _get_variants_by_gene(gene_id):
-    sqlq = sql.SQL(
-        """
-        select distinct v.chrom as "CHROM", v.pos as "POS", v."ref" as "REF", v.alt as "ALT", v.cadd_phred, v.dann,
-        v.fathmm_score, v.revel, -- new added
-        -- removed: v.id
-        vg.most_severe_consequence, vg.hgvs_c as hgvsc, vg.hgvs_p as hgvsp, -- via variant_gene
-        iv.dp as "DP", iv."fs" as "FS", iv.mq as "MQ", iv."filter" as "FILTER", -- via individual_variant
-        (
-            select array_agg(i.phenopolis_id)
-            from phenopolis.individual i
-            join phenopolis.individual_variant iv2 on iv2.individual_id = i.id and iv2.zygosity = 'HOM'
-            where vg.variant_id = iv2.variant_id
-        ) as "HOM",
-        (
-            select array_agg(i.phenopolis_id)
-            from phenopolis.individual i
-            join phenopolis.individual_variant iv2 on iv2.individual_id = i.id and iv2.zygosity = 'HET'
-            where vg.variant_id = iv2.variant_id
-        ) as "HET",
-        (
-            select distinct on (ah.chrom,ah.pos,ah."ref",ah.alt) ah.af from kaviar.annotation_hg19 ah
-            where ah.chrom = v.chrom and ah.pos = v.pos and ah."ref" = v."ref" and ah.alt = v.alt
-            order by ah.chrom,ah.pos,ah."ref",ah.alt,ah.ac desc
-        ) as af_kaviar,
-        av.af as af_gnomad_genomes -- gnomad
-        -- deprecated: MLEAF, MLEAC
-        -- not used: gene_symbol, gene_id
-        -- need to be added (by Daniele): af_converge, af_hgvd, af_jirdc, af_krgdb, af_tommo,
-        from phenopolis.variant v
-        join phenopolis.variant_gene vg on vg.variant_id = v.id
-        join phenopolis.individual_variant iv on iv.variant_id = vg.variant_id
-        left outer join gnomad.annotation_v3 av
-            on av.chrom = v.chrom and av.pos = v.pos and av."ref" = v."ref" and av.alt = v.alt
-        where vg.gene_id = %s
-        order by v.chrom, v.pos, v."ref", v.alt
-    """
-    )
+def _get_gene(db_session: Session, gene_id):
+    g_id = gene_id.upper()
+    sqlq_end = sql.SQL("and (g.ensembl_gene_id = %(g_id)s or upper(g.hgnc_symbol) = %(g_id)s)")
+    sqlq = sqlq_main + sqlq_end
     with get_db() as conn:
         with conn.cursor() as cur:
-            cur.execute(sqlq, [gene_id])
-            variants = cursor2dict(cur)
-    for v in variants:
-        v["variant_id"] = [{"display": f'{v["CHROM"]}-{v["POS"]}-{v["REF"]}-{v["ALT"]}'}]
-        if not v["HET"]:
-            v["HET"] = []
-        if not v["HOM"]:
-            v["HOM"] = []
-        v["HET_COUNT"] = len(v["HET"])
-        v["HOM_COUNT"] = len(v["HOM"])
-        v["AC"] = v["HET_COUNT"] + 2 * v["HOM_COUNT"]
-        v["AN"] = (v["HET_COUNT"] + v["HOM_COUNT"]) * 2
-        v["AF"] = v["AC"] / v["AN"]
-        v["af_hgvd"] = ""  # to be added
-        v["af_converge"] = ""  # to be added
-        v["af_jirdc"] = ""  # to be added
-        v["af_krgdb"] = ""  # to be added
-        v["af_tommo"] = ""  # to be added
-        # -------
-        v["ID"] = ""  # to be removed
-        v["MLEAC"] = ""  # to be removed
-        v["MLEAF"] = ""  # to be removed
-        v["gene_symbol"] = ""  # to be removed
-        v["gene_id"] = ""  # to be removed
+            cur.execute(sqlq, {"g_id": g_id})
+            gene = cursor2dict(cur)
+            if not gene:
+                application.logger.info("Using gene_synonym")
+                sqlq_end = sql.SQL("and upper(gs.external_synonym) = %(g_id)s")
+                sqlq = sqlq_main + sqlq_end
+                cur.execute(sqlq, {"g_id": g_id})
+                gene = cursor2dict(cur)
+    return gene
 
-    return variants
+
+@application.route("/my_genes")
+@requires_auth
+def get_all_genes():
+    with session_scope() as db_session:
+        try:
+            limit, offset = _get_pagination_parameters()
+            if limit > MAX_PAGE_SIZE:
+                return (
+                    jsonify(message="The maximum page size for genes is {}".format(MAX_PAGE_SIZE)),
+                    400,
+                )
+            sqlq_end = sql.SQL(
+                """
+            and exists (
+                select 1 from public.users_individuals ui
+                join phenopolis.individual i on i.phenopolis_id = ui.internal_id
+                join phenopolis.individual_gene ig on i.id = ig.individual_id and ig.gene_id = g.identifier
+                where ui."user" = %s)
+            """
+            )
+            sqlq = sqlq_main + sqlq_end + sql.SQL("limit {} offset {}".format(limit, offset))
+            with get_db() as conn:
+                with conn.cursor() as cur:
+                    cur.execute(sqlq, [session[USER]])
+                    genes = cursor2dict(cur)
+            process_for_display(db_session, genes)
+        except PhenopolisException as e:
+            return jsonify(success=False, message=str(e)), e.http_status
+    return jsonify(genes), 200

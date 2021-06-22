@@ -1,16 +1,33 @@
 """
 variant view
 """
-from flask.globals import session
+from views.exceptions import PhenopolisException
 import requests
+from flask.globals import session
 from psycopg2 import sql
-from views import application, variant_file, phenoid_mapping
+from views import MAX_PAGE_SIZE, application, variant_file, phenoid_mapping
 from views.auth import DEMO_USER, USER, requires_auth
 from views.autocomplete import CHROMOSOME_POS_REF_ALT_REGEX, ENSEMBL_GENE_REGEX, PATIENT_REGEX
 from views.postgres import get_db, session_scope
-from views.general import cache_on_browser, process_for_display
+from views.general import _get_pagination_parameters, cache_on_browser, process_for_display
 from flask import jsonify, Response
 from db.helpers import cursor2dict, query_user_config
+
+msg_var = "Wrong variant id. Format must be chrom-pos-ref-alt"
+
+# NOTE: simplified version for statistics and 'my_variants'
+sqlq_all_variants = sql.SQL(
+    """select distinct
+v.chrom as "CHROM", v.pos as "POS", v."ref" as "REF", v.alt as "ALT",
+v.dbsnp, v.variant_class, v.dann, v.cadd_phred, v.revel, v.fathmm_score
+--,iv.status, iv.clinvar_id, iv.pubmed_id, iv."comment", iv.dp, iv."fs", iv.mq, iv.qd, iv."filter"
+from phenopolis.individual_variant iv
+join phenopolis.individual i on i.id = iv.individual_id
+join public.users_individuals ui on ui.internal_id = i.phenopolis_id
+join phenopolis.variant v on v.id = iv.variant_id
+where ui."user" = %s
+"""
+)
 
 
 @application.route("/<language>/variant/<variant_id>")
@@ -23,7 +40,7 @@ def variant(variant_id, language="en") -> Response:
     chrom, pos, ref, alt = _parse_variant_id(variant_id)
     variant_id = f"{chrom}-{pos}-{ref}-{alt}"
     if chrom is None:
-        response = jsonify(message="Wrong variant id. Format must be CHROM-POS-REF-ALT")
+        response = jsonify(message=msg_var)
         response.status_code = 400
         return response
     variants = _get_variants(variant_id)
@@ -44,7 +61,7 @@ def variant_preview(variant_id) -> Response:
     # parse variant id
     chrom, pos, ref, alt = _parse_variant_id(variant_id)
     if chrom is None:
-        response = jsonify(message="Wrong variant id. Format must be CHROM-POS-REF-ALT")
+        response = jsonify(message=msg_var)
         response.status_code = 400
         return response
 
@@ -240,3 +257,25 @@ def _parse_variant_id(variant_id):
         ref = match.group(3)
         alt = match.group(4)
     return chrom, pos, ref, alt
+
+
+@application.route("/my_variants")
+@requires_auth
+def get_all_variants():
+    with session_scope() as db_session:
+        try:
+            limit, offset = _get_pagination_parameters()
+            if limit > MAX_PAGE_SIZE:
+                return (
+                    jsonify(message="The maximum page size for variants is {}".format(MAX_PAGE_SIZE)),
+                    400,
+                )
+            sqlq = sqlq_all_variants + sql.SQL("limit {} offset {}".format(limit, offset))
+            with get_db() as conn:
+                with conn.cursor() as cur:
+                    cur.execute(sqlq, [session[USER]])
+                    variants = cursor2dict(cur)
+            process_for_display(db_session, variants)
+        except PhenopolisException as e:
+            return jsonify(success=False, message=str(e)), e.http_status
+    return jsonify(variants), 200

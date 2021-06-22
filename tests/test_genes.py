@@ -11,7 +11,6 @@ from views.gene import gene
         ("ENSG00000119685", "variants", "variant_id"),
         ("KIAA0998", "all", "tubulin tyrosine ligase-like family, member 5"),
         ("STAMP", "all", "tubulin tyrosine ligase-like family, member 5"),
-        ("NOTREAL", "all", "mockup gene for test"),
     ),
 )
 def test_gene(_demo, query, subset, full_gene_name):
@@ -34,3 +33,19 @@ def test_gene_not_having_duplicated_keys(_demo):
     column_names = [c["key"] for c in gene_results[0]["variants"]["colNames"]]
     assert len(column_names) == len(set(column_names)), "There are duplicated column names in the variants"
     assert "#CHROM" not in column_names
+
+
+@pytest.mark.parametrize(
+    ("query", "subset", "msg"),
+    (
+        ("ENSG00000119685", "all", "'canonical_peptide': 'ENSP00000450713',"),
+        ("TTLL5", "all", "'canonical_transcript': 'ENST00000557636',"),
+        ("STAMP", "all", "'uniprot': ['Q6EMB2'],"),
+        ("GAST", "all", "'stop': 39872221,"),
+        ("DRAM2", "preview", "[{'preview': [['Number of variants', 75], ['CADD > 20', 2]]}]"),
+    ),
+)
+def test_gene_web(_demo_client, query, subset, msg):
+    resp = _demo_client.get(f"/gene/{query}/{subset}")
+    assert resp.status_code == 200
+    assert msg in str(resp.json)
