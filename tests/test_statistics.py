@@ -47,3 +47,15 @@ def test_statistics_with_nondemo_user(_nondemo_client):
     assert data.get("observed_features") == 3
     assert data.get("unobserved_features") == 0
     assert data.get("total_genes") == 1
+
+
+def test_my_variants(_demo_client):
+    resp = _demo_client.get("/my_variants?limit=10000")
+    assert len(resp.json) == 4099
+    assert "'variant_id': [{'display': '14-95236097-C-A'" in str(resp.json)
+
+
+def test_my_genes(_demo_client):
+    resp = _demo_client.get("/my_genes")
+    assert len(resp.json) == 3
+    assert "'percentage_gene_gc_content': 49.73" in str(resp.json)

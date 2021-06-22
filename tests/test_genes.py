@@ -49,9 +49,3 @@ def test_gene_web(_demo_client, query, subset, msg):
     resp = _demo_client.get(f"/gene/{query}/{subset}")
     assert resp.status_code == 200
     assert msg in str(resp.json)
-
-
-def test_my_genes(_demo_client):
-    resp = _demo_client.get("/my_genes")
-    assert len(resp.json) == 3
-    assert "'percentage_gene_gc_content': 49.73" in str(resp.json)
