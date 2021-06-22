@@ -3,7 +3,7 @@
 > An Online Platform for Genetic & Phenotype Data
 
 [![Gitter chat](https://badges.gitter.im/gitterHQ/gitter.png)](https://gitter.im/phenopolis_browser/community)
-[![check_app_api](https://github.com/phenopolis/phenopolis_browser/actions/workflows/python-app.yml/badge.svg)](https://github.com/phenopolis/phenopolis_browser/actions/workflows/python-app.yml)
+[![check_app_api2](https://github.com/phenopolis/phenopolis_browser/actions/workflows/python-app.yml/badge.svg)](https://github.com/phenopolis/phenopolis_browser/actions/workflows/python-app.yml)
 
 Note this is a new version of the code, the old version is [here](https://github.com/phenopolis/phenopolis).
 
