@@ -1,6 +1,7 @@
 """
 Autocomplete view
 """
+from db.helpers import cursor2dict
 import re
 from typing import List
 
@@ -8,10 +9,11 @@ from flask import jsonify, session, request
 from sqlalchemy import and_, asc, func, or_, Text, cast, text
 from sqlalchemy.orm import Session
 
-from db.model import Individual, UserIndividual, HPO, Gene, Variant
+from db.model import Individual, UserIndividual, Gene, Variant
 from views import application
 from views.auth import requires_auth, USER
-from views.postgres import session_scope
+from views.postgres import get_db, session_scope
+from psycopg2 import sql
 
 CHROMOSOME_POS_REGEX = re.compile(r"^(\w+)[-:](\d+)$")
 CHROMOSOME_POS_REF_REGEX = re.compile(r"^(\w+)[-:](\d+)[-:]([ACGT\*]+)$", re.IGNORECASE)
@@ -112,29 +114,39 @@ def _search_patients(db_session: Session, query, limit):
 def _search_phenotypes(db_session: Session, query, limit):
     r"""
     A user may search for things like 'Abnormality of body height' or for an HPO id as HP:1234567 (ie: HP:\d{7})
+    or just a seq of numbers like '1234'
     """
     if HPO_REGEX.match(query) or NUMERIC_REGEX.match(query):
-        phenotypes = (
-            db_session.query(HPO)
-            .filter(HPO.hpo_id.ilike("%{}%".format(query)))
-            .order_by(HPO.hpo_id.asc())
-            .limit(limit)
-            .all()
+        sqlq = sql.SQL(
+            """
+            select t.hpo_id, t."name" from hpo.term t where t.hpo_id ~ %(query)s order by t.id limit %(limit)s
+            """
         )
     else:
         # TODO: search also over synonyms
         # TODO: return the distance so the frontend have greater flexibility
         # NOTE: order results by similarity and then by hpo_name (case insensitive)
-        phenotypes_and_distances = (
-            db_session.query(HPO, HPO.hpo_name.op("<->")(query).label("distance"))
-            .filter(HPO.hpo_name.op("%")(query))
-            .order_by("distance", asc(func.lower(HPO.hpo_name)))
-            .limit(limit)
-            .all()
+        sqlq = sql.SQL(
+            """
+            select
+                t.hpo_id,
+                t."name" ,
+                t."name" <-> %(query)s as distance
+            from
+                hpo.term t
+            where
+                t."name" %% %(query)s
+            order by
+                distance,
+                lower(t."name") asc
+            limit %(limit)s
+        """
         )
-        phenotypes = [p for p, _ in phenotypes_and_distances]
-
-    return [f"hpo::{x.hpo_name}::{x.hpo_id}" for x in phenotypes]
+    with get_db() as conn:
+        with conn.cursor() as cur:
+            cur.execute(sqlq, {"query": query, "limit": limit})
+            phenotypes = cursor2dict(cur)
+    return [f"hpo::{x.get('name')}::{x.get('hpo_id')}" for x in phenotypes]
 
 
 def _search_genes(db_session: Session, query, limit):
