@@ -6,10 +6,10 @@ import re
 from typing import List
 
 from flask import jsonify, session, request
-from sqlalchemy import and_, asc, func, or_, Text, cast, text
+from sqlalchemy import and_, Text, cast
 from sqlalchemy.orm import Session
 
-from db.model import Individual, UserIndividual, Gene, Variant
+from db.model import Individual, UserIndividual, Variant
 from views import application
 from views.auth import requires_auth, USER
 from views.postgres import get_db, session_scope
@@ -138,7 +138,7 @@ def _search_phenotypes(db_session: Session, query, limit):
                 t."name" %% %(query)s
             order by
                 distance,
-                lower(t."name") asc
+                lower(t."name")
             limit %(limit)s
         """
         )
@@ -153,7 +153,8 @@ def _search_genes(db_session: Session, query, limit):
     """
     Either search for:
     - a gene id like 'ENSG000...'
-    - a transcript id like 'ENST000...'
+    - a transcript id like 'ENST000...' not only canonical
+    - a protein id like 'ENSP000...' not only canonical
     - a numeric id without any qualifier like '12345'
     - a gene name like 'TTLL...'
     - a gene synonym like 'asd...'
@@ -161,47 +162,75 @@ def _search_genes(db_session: Session, query, limit):
     The order of results is sorted by gene identifier for the 3 searches by identifier; and it is sorted by similarity
     for gene name and gene synonym searches
     """
-    # TODO: add search by all Ensembl transcipts (ie: not only canonical) if we add those to the genes table
-    # TODO: add search by Ensembl protein if we add a column to the genes table
     is_identifier_query = (
-        ENSEMBL_GENE_REGEX.match(query) or ENSEMBL_TRANSCRIPT_REGEX.match(query) or NUMERIC_REGEX.match(query)
+        ENSEMBL_GENE_REGEX.match(query)
+        or ENSEMBL_TRANSCRIPT_REGEX.match(query)
+        or NUMERIC_REGEX.match(query)
+        or ENSEMBL_PROTEIN_REGEX.match(query)
     )
     if is_identifier_query:
-        query_without_version = remove_version_from_id(query)
-        genes = (
-            db_session.query(Gene)
-            .filter(
-                or_(
-                    Gene.gene_id.ilike("%{}%".format(query_without_version)),
-                    Gene.canonical_transcript.ilike("%{}%".format(query_without_version)),
+        query = remove_version_from_id(query)
+        sqlq = sql.SQL(
+            """
+            select distinct g.hgnc_symbol, g.ensembl_gene_id
+            from ensembl.gene g
+            left outer join ensembl.transcript t on g.ensembl_gene_id = t.ensembl_gene_id
+            where g.assembly = 'GRCh37'
+            and g.chromosome ~ '^X|^Y|^[0-9]{1,2}'
+            and (
+                g.ensembl_gene_id ~* %(query)s or
+                t.ensembl_transcript_id ~* %(query)s or
+                t.ensembl_peptide_id ~* %(query)s
                 )
-            )
-            .filter(text("chrom ~ '^X|^Y|^[0-9]{1,2}'"))
-            .order_by(Gene.gene_id.asc())
-            .limit(limit)
-            .all()
+            order by g.ensembl_gene_id
+            limit %(limit)s
+            """
         )
     else:
-        # NOTE: makes two queries by gene name and by other names and returns only the closest results
-        genes_by_gene_name = (
-            db_session.query(Gene, Gene.gene_name.op("<->")(query).label("distance"))
-            .filter(Gene.gene_name.op("%")(query))
-            .filter(text("chrom ~ '^X|^Y|^[0-9]{1,2}'"))
-            .order_by("distance", asc(func.lower(Gene.gene_name)))
-            .limit(limit)
-            .all()
+        sqlq = sql.SQL(
+            """
+            select
+                g.hgnc_symbol,
+                g.ensembl_gene_id ,
+                g.hgnc_symbol <-> %(query)s as distance
+            from
+                ensembl.gene g
+            where g.assembly = 'GRCh37'
+            and g.chromosome ~ '^X|^Y|^[0-9]{1,2}'
+            and g.hgnc_symbol %% %(query)s
+            order by
+                distance,
+                lower(g.hgnc_symbol)
+            limit %(limit)s
+            """
         )
-        genes_by_other_names = (
-            db_session.query(Gene, Gene.other_names.op("<->")(query).label("distance"))
-            .filter(Gene.other_names.op("%")(query))
-            .filter(text("chrom ~ '^X|^Y|^[0-9]{1,2}'"))
-            .order_by("distance", asc(func.lower(Gene.gene_name)))
-            .limit(limit)
-            .all()
-        )
-        genes = [g for g, _ in sorted(genes_by_gene_name + genes_by_other_names, key=lambda x: x[1])[0:limit]]
-    # while the search is performed on the upper cased gene name, it returns the original gene name
-    return [f"gene::{x.gene_name}::{x.gene_id}" for x in genes]
+    with get_db() as conn:
+        with conn.cursor() as cur:
+            cur.execute(sqlq, {"query": query, "limit": limit})
+            genes = cursor2dict(cur)
+            if not genes:
+                sqlq = sql.SQL(
+                    """
+                    select
+                        g.hgnc_symbol,
+                        g.ensembl_gene_id ,
+                        gs.external_synonym <-> %(query)s as distance
+                    from
+                        ensembl.gene g
+                    join ensembl.gene_synonym gs on gs.gene = g.identifier
+                    where g.assembly = 'GRCh37'
+                    and g.chromosome ~ '^X|^Y|^[0-9]{1,2}'
+                    and gs.external_synonym %% %(query)s
+                    order by
+                        distance,
+                        lower(gs.external_synonym)
+                    limit %(limit)s
+                    """
+                )
+                cur.execute(sqlq, {"query": query, "limit": limit})
+                genes = cursor2dict(cur)
+
+    return [f"gene::{x.get('hgnc_symbol')}::{x.get('ensembl_gene_id')}" for x in genes]
 
 
 def _search_variants(db_session: Session, query, limit):
