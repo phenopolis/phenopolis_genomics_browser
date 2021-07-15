@@ -9,7 +9,7 @@ from flask import jsonify, session, request
 from sqlalchemy import and_, Text, cast
 from sqlalchemy.orm import Session
 
-from db.model import Individual, UserIndividual, Variant
+from db.model import Individual, NewVariant, UserIndividual, Variant
 from views import application
 from views.auth import requires_auth, USER
 from views.postgres import get_db, session_scope
@@ -242,13 +242,14 @@ def _search_variants(db_session: Session, query, limit):
         variants = _search_variants_by_region(db_session, chromosome_from_region, start, end, limit)
     elif chromosome_from_variant is not None:
         variants = _search_variants_by_coordinates(db_session, chromosome_from_variant, pos, ref, alt, limit)
-    elif hgvs_type is not None:
-        variants = _search_variants_by_hgvs(db_session, hgvs_type, entity, hgvs, limit)
+    # TODO: still old schema
+    # elif hgvs_type is not None:
+    #     variants = _search_variants_by_hgvs(db_session, hgvs_type, entity, hgvs, limit)
 
-    return [f"variant::{v.CHROM}-{v.POS}-{v.REF}-{v.ALT}::{v.CHROM}-{v.POS}-{v.REF}-{v.ALT}" for v in variants]
+    return [f"variant::{v.chrom}-{v.pos}-{v.ref}-{v.alt}::{v.chrom}-{v.pos}-{v.ref}-{v.alt}" for v in variants]
 
 
-def _search_variants_by_coordinates(db_session: Session, chrom, pos, ref, alt, limit) -> List[Variant]:
+def _search_variants_by_coordinates(db_session: Session, chrom, pos, ref, alt, limit) -> List[NewVariant]:
     """
     Assuming a user is searching for 22-38212762-A-G or 22-16269829-T-*
     22-382
@@ -259,52 +260,57 @@ def _search_variants_by_coordinates(db_session: Session, chrom, pos, ref, alt, l
     """
     if chrom is not None and ref is not None and alt is not None:
         variants = (
-            db_session.query(Variant)
+            db_session.query(NewVariant)
             .filter(
                 and_(
-                    Variant.CHROM == chrom,
-                    cast(Variant.POS, Text).like("{}%".format(pos)),
-                    Variant.REF == ref,
-                    Variant.ALT == alt,
+                    NewVariant.chrom == chrom,
+                    cast(NewVariant.pos, Text).like("{}%".format(pos)),
+                    NewVariant.ref == ref,
+                    NewVariant.alt == alt,
                 )
             )
-            .order_by(Variant.CHROM.asc(), Variant.POS.asc())
+            .order_by(NewVariant.chrom.asc(), NewVariant.pos.asc())
             .limit(limit)
             .all()
         )
     elif chrom is not None and ref is not None and alt is None:
         variants = (
-            db_session.query(Variant)
-            .filter(and_(Variant.CHROM == chrom, cast(Variant.POS, Text).like("{}%".format(pos)), Variant.REF == ref))
-            .order_by(Variant.CHROM.asc(), Variant.POS.asc())
+            db_session.query(NewVariant)
+            .filter(
+                and_(
+                    NewVariant.chrom == chrom, cast(NewVariant.pos, Text).like("{}%".format(pos)), NewVariant.ref == ref
+                )
+            )
+            .order_by(NewVariant.chrom.asc(), NewVariant.pos.asc())
             .limit(limit)
             .all()
         )
     elif chrom is not None and ref is None:
         variants = (
-            db_session.query(Variant)
-            .filter(and_(Variant.CHROM == chrom, cast(Variant.POS, Text).like("{}%".format(pos))))
-            .order_by(Variant.CHROM.asc(), Variant.POS.asc())
+            db_session.query(NewVariant)
+            .filter(and_(NewVariant.chrom == chrom, cast(NewVariant.pos, Text).like("{}%".format(pos))))
+            .order_by(NewVariant.chrom.asc(), NewVariant.pos.asc())
             .limit(limit)
             .all()
         )
     return variants
 
 
-def _search_variants_by_region(db_session: Session, chrom, start, end, limit) -> List[Variant]:
+def _search_variants_by_region(db_session: Session, chrom, start, end, limit) -> List[NewVariant]:
     """
     Assuming a user is searching for 22:10000-20000 it will return all variants within that region
     """
     variants = (
-        db_session.query(Variant)
-        .filter(and_(Variant.CHROM == chrom, Variant.POS >= start, Variant.POS <= end,))
-        .order_by(Variant.CHROM.asc(), Variant.POS.asc())
+        db_session.query(NewVariant)
+        .filter(and_(NewVariant.chrom == chrom, NewVariant.pos >= start, NewVariant.pos <= end,))
+        .order_by(NewVariant.chrom.asc(), NewVariant.pos.asc())
         .limit(limit)
         .all()
     )
     return variants
 
 
+# TODO: still old schema
 def _search_variants_by_hgvs(db_session: Session, hgvs_type, entity, hgvs, limit) -> List[Variant]:
     """
     Assuming a user is searching for ENSP00000451572.1:p.His383Tyr, ENST00000355467.4:c.30C>T or
