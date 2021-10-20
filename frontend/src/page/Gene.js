@@ -20,8 +20,8 @@ const Gene = (props) => {
   }));
 
   useEffect(() => {
-    console.log(ready)
-  }, [ready])
+    console.log(ready);
+  }, [ready]);
 
   useEffect(() => {
     dispatch(getGene(props.match.params.geneId));

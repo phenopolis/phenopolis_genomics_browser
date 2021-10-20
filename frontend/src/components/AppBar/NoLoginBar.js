@@ -56,14 +56,14 @@ const NoLoginBar = (props) => {
   };
 
   useEffect(() => {
-    console.log(ready)
-  }, [ready])
+    console.log(ready);
+  }, [ready]);
 
   const handleTriggerDialog = (dialogName) => {
     dispatch(setDialog(dialogName));
   };
 
-  if(ready === true) {
+  if (ready === true) {
     return (
       <div>
         <CssBaseline />
@@ -125,14 +125,14 @@ const NoLoginBar = (props) => {
           <Footer />
         </main>
       </div>
-    )
+    );
   } else {
     return (
       <div>
         <h1> Loading Translation </h1>
       </div>
-    )
-  };
+    );
+  }
 };
 
 // NoLoginBar.propTypes = {

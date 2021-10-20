@@ -46,7 +46,7 @@ import DE from '../../assets/svg/de.svg';
 import GR from '../../assets/svg/gr.svg';
 import ES from '../../assets/svg/es.svg';
 // const ActionBar = React.lazy(() => import('./ActionBar'));
-import ActionBar from "./ActionBar"
+import ActionBar from './ActionBar';
 
 const LoginBar = (props) => {
   const { t, ready } = useTranslation();
@@ -66,7 +66,7 @@ const LoginBar = (props) => {
   const changeLanguage = (lng) => {
     i18next.changeLanguage(lng);
     OpenLan();
-    if(
+    if (
       (window.location.pathname !== '/') &
       (window.location.pathname !== '/publications') &
       (window.location.pathname !== '/login') &
@@ -106,7 +106,7 @@ const LoginBar = (props) => {
   const handletoggleDrawer = () => {
     setOpenSearchDrawer(!openSearchDrawer);
   };
-  if(ready === true) {
+  if (ready === true) {
     return (
       <div className="loginBar-container">
         <CssBaseline />
@@ -243,14 +243,14 @@ const LoginBar = (props) => {
           <Footer />
         </main>
       </div>
-    )
+    );
   } else {
     return (
       <div>
         <h1> Loading Translation </h1>
       </div>
-    )
-  };
+    );
+  }
 };
 
 export default LoginBar;

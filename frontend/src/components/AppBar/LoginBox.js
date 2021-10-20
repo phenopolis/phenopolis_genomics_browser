@@ -22,8 +22,8 @@ const LoginBox = (props) => {
   const [password, setPassword] = useState('');
 
   useEffect(() => {
-    console.log(ready)
-  }, [ready])
+    console.log(ready);
+  }, [ready]);
 
   const handleSubmit = (event) => {
     event.preventDefault();
@@ -53,7 +53,7 @@ const LoginBox = (props) => {
   const handleCloseDialog = () => {
     props.onClose();
   };
-  if(ready === true) {
+  if (ready === true) {
     return (
       <Container component="main" maxWidth="xs">
         <CssBaseline />
@@ -122,14 +122,14 @@ const LoginBox = (props) => {
           </form>
         </div>
       </Container>
-    )
+    );
   } else {
     return (
       <div>
         <h1> Loading Translation </h1>
       </div>
-    )
-  };
+    );
+  }
 };
 
 export default LoginBox;

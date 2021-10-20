@@ -20,8 +20,8 @@ const HomeMainPart = () => {
   const variants = '8,000,000';
 
   useEffect(() => {
-    console.log(ready)
-  }, [ready])
+    console.log(ready);
+  }, [ready]);
 
   // const dispatch = useDispatch();
   // const { error, loading, exomes, variants } = useSelector((state) => ({
@@ -37,7 +37,7 @@ const HomeMainPart = () => {
   //     dispatch(setSnack(error, 'error'));
   //   }
   // }, [dispatch, error]);
-  if(ready === true) {
+  if (ready === true) {
     return (
       <div>
         <Grid container className={'home-root'}>
@@ -102,15 +102,19 @@ const HomeMainPart = () => {
           <Grid container justify="center">
             <Grid item xs={12} md={8} className={'home-gridpaper2'}>
               <Paper elevation={0} className={'home-paper2'}>
-                <FontAwesomeIcon icon={faUsers} color="#2E84CF" className={'home-fontawesomeicon'} />
+                <FontAwesomeIcon
+                  icon={faUsers}
+                  color="#2E84CF"
+                  className={'home-fontawesomeicon'}
+                />
                 <Typography component="div">
                   <Box fontWeight="900" fontSize="h4.fontSize" m={1}>
                     {t('HomePage.HomeMainPart.statistic.title')}
                   </Box>
                   <Box fontWeight="fontWeightLight" fontSize="h6.fontSize" m={1}>
                     <Trans i18nKey="HomePage.HomeMainPart.statistic.description">
-                      Phenopolis includes data from {{ exomes }} exomes representing a total number of{' '}
-                      {{ variants }} variants.
+                      Phenopolis includes data from {{ exomes }} exomes representing a total number
+                      of {{ variants }} variants.
                     </Trans>
                   </Box>
                 </Typography>
@@ -147,14 +151,14 @@ const HomeMainPart = () => {
           </Grid>
         </Grid>
       </div>
-    )
+    );
   } else {
     return (
       <div>
         <h1> Loading Translation </h1>
       </div>
-    )
-  };
+    );
+  }
 };
 
 export default HomeMainPart;

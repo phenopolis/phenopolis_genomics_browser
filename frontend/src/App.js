@@ -62,7 +62,7 @@ const ProtectedRoute = ({ component: Component, ...rest }) => {
   );
 };
 
-function App () {
+function App() {
   return (
     <CookiesProvider>
       {/* <Suspense fallback={<Loading message={'Loading Translation...'} />}> */}

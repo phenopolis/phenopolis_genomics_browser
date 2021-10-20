@@ -15,8 +15,8 @@ const HomeBanner = (props) => {
   }));
 
   useEffect(() => {
-    console.log(ready)
-  }, [ready])
+    console.log(ready);
+  }, [ready]);
 
   const handleTriggerDialog = (dialogName) => {
     dispatch(setDialog(dialogName));
@@ -58,8 +58,8 @@ const HomeBanner = (props) => {
                       color="inherit"
                       size="large"
                       className="banner-button"
-                    // component={Link}
-                    // to='/search'
+                      // component={Link}
+                      // to='/search'
                     >
                       Dashboard
                     </Button>

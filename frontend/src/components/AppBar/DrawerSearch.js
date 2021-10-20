@@ -30,7 +30,7 @@ import { useHistory } from 'react-router-dom';
 import clsx from 'clsx';
 import { getSearchAutocomplete } from '../../redux/actions/search';
 
-function TabPanel (props) {
+function TabPanel(props) {
   const { children } = props;
 
   return <Container style={{ padding: '1em' }}>{children}</Container>;
@@ -40,10 +40,10 @@ TabPanel.propTypes = {
   children: PropTypes.node,
 };
 
-function a11yProps (index) {
+function a11yProps(index) {
   return {
-    id: `vertical-tab-${ index }`,
-    'aria-controls': `vertical-tabpanel-${ index }`,
+    id: `vertical-tab-${index}`,
+    'aria-controls': `vertical-tabpanel-${index}`,
   };
 }
 
@@ -55,7 +55,7 @@ const useStyles = makeStyles((theme) => ({
   tabs: {
     marginTop: '1em',
     height: '250px',
-    borderRight: `1px solid ${ theme.palette.divider }`,
+    borderRight: `1px solid ${theme.palette.divider}`,
   },
 }));
 
@@ -103,7 +103,7 @@ const DrawerSearch = (props) => {
   };
 
   useEffect(() => {
-    if(searchContent !== '') autocomplete(searchContent);
+    if (searchContent !== '') autocomplete(searchContent);
   }, [type]);
 
   const handleSearchChange = (event) => {
@@ -113,13 +113,13 @@ const DrawerSearch = (props) => {
   useEffect(() => {
     setTyping(true);
     const timeout = setTimeout(() => {
-      if(searchContent !== '') autocomplete(searchContent);
+      if (searchContent !== '') autocomplete(searchContent);
     }, 500);
     return () => clearTimeout(timeout);
   }, [searchContent]);
 
   useEffect(() => {
-    if(keySearch & loaded & (data !== null) & (data.length > 0)) {
+    if (keySearch & loaded & (data !== null) & (data.length > 0)) {
       let itemInfo = data[0].split('::');
       let turnURL = '/' + itemInfo[0] + '/' + itemInfo[2];
       history.push(turnURL);
@@ -144,14 +144,14 @@ const DrawerSearch = (props) => {
   };
 
   const handleKeyDown = (event) => {
-    if(event.key === 'Enter') {
-      if(searchContent !== '') {
+    if (event.key === 'Enter') {
+      if (searchContent !== '') {
         setKeySearch(true);
         autocomplete(searchContent);
       }
     }
   };
-  if(ready === true) {
+  if (ready === true) {
     return (
       <Fragment>
         <Container maxWidth="lg" className="py-2">
@@ -316,13 +316,13 @@ const DrawerSearch = (props) => {
           </div>
         </Container>
       </Fragment>
-    )
+    );
   } else {
     return (
       <div>
         <h1> Loading Translation </h1>
       </div>
-    )
-  };
+    );
+  }
 };
 export default DrawerSearch;

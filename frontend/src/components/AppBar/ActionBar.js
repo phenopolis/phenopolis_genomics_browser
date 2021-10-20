@@ -51,14 +51,14 @@ const ActionBar = (props) => {
   const { t, i18n, ready } = useTranslation();
 
   useEffect(() => {
-    console.log(ready)
-  }, [ready])
+    console.log(ready);
+  }, [ready]);
 
   const changeLanguage = (lng) => {
     i18n.changeLanguage(lng);
     setLanguageOpen(!languageOpen);
   };
-  if(ready === true) {
+  if (ready === true) {
     return (
       <div className={'actionbar-list'} role="presentation">
         <List style={{ padding: '0px' }}>
@@ -246,7 +246,9 @@ const ActionBar = (props) => {
               <Tooltip
                 disableHoverListener={props.expended}
                 title={
-                  <Typography variant="body2">{t('AppBar.SideBar.Label_Change_Password')}</Typography>
+                  <Typography variant="body2">
+                    {t('AppBar.SideBar.Label_Change_Password')}
+                  </Typography>
                 }
                 placement="right">
                 <ListItem
@@ -284,14 +286,14 @@ const ActionBar = (props) => {
           </Collapse>
         </List>
       </div>
-    )
+    );
   } else {
     return (
       <div>
         <h1> Loading Translation </h1>
       </div>
-    )
-  };
+    );
+  }
 };
 
 ActionBar.propTypes = {
