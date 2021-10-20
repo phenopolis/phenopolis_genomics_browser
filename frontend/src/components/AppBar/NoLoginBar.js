@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
 import { Link } from 'react-router-dom';
 import {
@@ -49,78 +49,90 @@ const NoLoginBar = (props) => {
     setOpenLan(!openLan);
   };
 
-  const { t, i18n } = useTranslation();
+  const { t, i18n, ready } = useTranslation();
   const changeLanguage = (lng) => {
     i18n.changeLanguage(lng);
     setOpenLan(!openLan);
   };
 
+  useEffect(() => {
+    console.log(ready)
+  }, [ready])
+
   const handleTriggerDialog = (dialogName) => {
     dispatch(setDialog(dialogName));
   };
 
-  return (
-    <div>
-      <CssBaseline />
-      <AppBar position="relative" className={'noLoginBar-appbar'}>
-        <Toolbar>
-          <Grid container direction="row" justify="center" alignItems="center">
-            <Hidden mdUp>
-              <Grid item xs={2}>
-                <IconButton size="small" onClick={() => setOpenSideBar(!openSideBar)}>
-                  <MenuIcon className={'noLoginBar-menuicon'} />
-                </IconButton>
-              </Grid>
-            </Hidden>
-            <Grid item xs={10} md={1} className={'noLoginBar-grid'}>
-              <Typography
-                className={'noLoginBar-homelabel'}
-                variant="h6"
-                color="inherit"
-                noWrap
-                component={Link}
-                to="/">
-                Phenopolis
-              </Typography>
-            </Grid>
-            <Hidden smDown>
-              <Grid item xs={6} className={'noLoginBar-gridpaper'} />
-            </Hidden>
-            <Hidden smDown>
-              <div>
-                <BottomNavigationAction
-                  className={'noLoginBar-navigationbutton'}
-                  label={t('AppBar.NoLoginBar.Label_Publication')}
-                  showLabel
-                  icon={<DescriptionIcon />}
+  if(ready === true) {
+    return (
+      <div>
+        <CssBaseline />
+        <AppBar position="relative" className={'noLoginBar-appbar'}>
+          <Toolbar>
+            <Grid container direction="row" justify="center" alignItems="center">
+              <Hidden mdUp>
+                <Grid item xs={2}>
+                  <IconButton size="small" onClick={() => setOpenSideBar(!openSideBar)}>
+                    <MenuIcon className={'noLoginBar-menuicon'} />
+                  </IconButton>
+                </Grid>
+              </Hidden>
+              <Grid item xs={10} md={1} className={'noLoginBar-grid'}>
+                <Typography
+                  className={'noLoginBar-homelabel'}
+                  variant="h6"
+                  color="inherit"
+                  noWrap
                   component={Link}
-                  to="/publications"
-                />
-                <BottomNavigationAction
-                  className={'noLoginBar-navigationbutton'}
-                  label={'Login/Register'}
-                  showLabel
-                  icon={<AccountCircleIcon />}
-                  onClick={() => handleTriggerDialog('Login/Register')}
-                />
-              </div>
-            </Hidden>
-          </Grid>
+                  to="/">
+                  Phenopolis
+                </Typography>
+              </Grid>
+              <Hidden smDown>
+                <Grid item xs={6} className={'noLoginBar-gridpaper'} />
+              </Hidden>
+              <Hidden smDown>
+                <div>
+                  <BottomNavigationAction
+                    className={'noLoginBar-navigationbutton'}
+                    label={t('AppBar.NoLoginBar.Label_Publication')}
+                    showLabel
+                    icon={<DescriptionIcon />}
+                    component={Link}
+                    to="/publications"
+                  />
+                  <BottomNavigationAction
+                    className={'noLoginBar-navigationbutton'}
+                    label={'Login/Register'}
+                    showLabel
+                    icon={<AccountCircleIcon />}
+                    onClick={() => handleTriggerDialog('Login/Register')}
+                  />
+                </div>
+              </Hidden>
+            </Grid>
 
-          <Drawer open={openSideBar} onClose={() => setOpenSideBar(!openSideBar)}>
-            {/* <NoSidebar
+            <Drawer open={openSideBar} onClose={() => setOpenSideBar(!openSideBar)}>
+              {/* <NoSidebar
               SidebarClicked={() => setOpenSideBar(!openSideBar)}
               SidebarLogin={() => setOpenLoginDialog(!openLoginDialog)}
             /> */}
-          </Drawer>
-        </Toolbar>
-      </AppBar>
-      <main>
-        {props.children}
-        <Footer />
-      </main>
-    </div>
-  );
+            </Drawer>
+          </Toolbar>
+        </AppBar>
+        <main>
+          {props.children}
+          <Footer />
+        </main>
+      </div>
+    )
+  } else {
+    return (
+      <div>
+        <h1> Loading Translation </h1>
+      </div>
+    )
+  };
 };
 
 // NoLoginBar.propTypes = {

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useDispatch } from 'react-redux';
 import {
@@ -15,11 +15,15 @@ import { Trans } from 'react-i18next';
 import { userLogin } from '../../redux/actions/auth';
 
 const LoginBox = (props) => {
-  const { t } = useTranslation();
+  const { t, ready } = useTranslation();
   const dispatch = useDispatch();
 
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
+
+  useEffect(() => {
+    console.log(ready)
+  }, [ready])
 
   const handleSubmit = (event) => {
     event.preventDefault();
@@ -49,76 +53,83 @@ const LoginBox = (props) => {
   const handleCloseDialog = () => {
     props.onClose();
   };
+  if(ready === true) {
+    return (
+      <Container component="main" maxWidth="xs">
+        <CssBaseline />
+        <div className="loginbox-paper">
+          <Avatar className="loginbox-avatar" style={{ backgroundColor: '#fb8c00' }}>
+            <LockOutlinedIcon />
+          </Avatar>
+          <Typography component="h1" variant="h6">
+            {t('AppBar.LoginBox.title')}
+          </Typography>
 
-  return (
-    <Container component="main" maxWidth="xs">
-      <CssBaseline />
-      <div className="loginbox-paper">
-        <Avatar className="loginbox-avatar" style={{ backgroundColor: '#fb8c00' }}>
-          <LockOutlinedIcon />
-        </Avatar>
-        <Typography component="h1" variant="h6">
-          {t('AppBar.LoginBox.title')}
-        </Typography>
+          <form className="loginbox-form" noValidate onSubmit={(event) => handleSubmit(event)}>
+            <TextField
+              className="loginbox-textfield"
+              value={username}
+              onChange={(event) => handleNameChange(event)}
+              variant="outlined"
+              margin="normal"
+              required
+              fullWidth
+              id="name"
+              label={t('AppBar.LoginBox.Label_User_Name')}
+              name="name"
+              placeholder="demo"
+              autoFocus
+            />
+            <TextField
+              className="loginbox-textfield"
+              value={password}
+              onChange={(event) => handlePasswordChange(event)}
+              variant="outlined"
+              margin="normal"
+              required
+              fullWidth
+              name="password"
+              placeholder="demo123"
+              label={t('AppBar.LoginBox.Label_Password')}
+              type="password"
+              id="password"
+            />
 
-        <form className="loginbox-form" noValidate onSubmit={(event) => handleSubmit(event)}>
-          <TextField
-            className="loginbox-textfield"
-            value={username}
-            onChange={(event) => handleNameChange(event)}
-            variant="outlined"
-            margin="normal"
-            required
-            fullWidth
-            id="name"
-            label={t('AppBar.LoginBox.Label_User_Name')}
-            name="name"
-            placeholder="demo"
-            autoFocus
-          />
-          <TextField
-            className="loginbox-textfield"
-            value={password}
-            onChange={(event) => handlePasswordChange(event)}
-            variant="outlined"
-            margin="normal"
-            required
-            fullWidth
-            name="password"
-            placeholder="demo123"
-            label={t('AppBar.LoginBox.Label_Password')}
-            type="password"
-            id="password"
-          />
-
-          <Grid container className="mt-4 mb-2">
-            <Grid item xs={6}>
-              <Button type="submit" variant="contained" color="primary" fullWidth>
-                {t('AppBar.LoginBox.Button')}
-              </Button>
+            <Grid container className="mt-4 mb-2">
+              <Grid item xs={6}>
+                <Button type="submit" variant="contained" color="primary" fullWidth>
+                  {t('AppBar.LoginBox.Button')}
+                </Button>
+              </Grid>
+              <Grid item xs={6}>
+                <Button color="default" fullWidth onClick={() => handleCloseDialog()}>
+                  Cancel
+                </Button>
+              </Grid>
             </Grid>
-            <Grid item xs={6}>
-              <Button color="default" fullWidth onClick={() => handleCloseDialog()}>
-                Cancel
-              </Button>
-            </Grid>
-          </Grid>
 
-          <div style={{ textAlign: 'center' }}>
-            <span className="loginBox-demolink-try">
-              <Trans i18nKey="AppBar.LoginBox.Hint">
-                Click
-                <span className="loginBox-demolink" onClick={(event) => DemoLogin(event)}>
-                  Demo Login
-                </span>
-                to have a try!
-              </Trans>
-            </span>
-          </div>
-        </form>
+            <div style={{ textAlign: 'center' }}>
+              <span className="loginBox-demolink-try">
+                <Trans i18nKey="AppBar.LoginBox.Hint">
+                  Click
+                  <span className="loginBox-demolink" onClick={(event) => DemoLogin(event)}>
+                    Demo Login
+                  </span>
+                  to have a try!
+                </Trans>
+              </span>
+            </div>
+          </form>
+        </div>
+      </Container>
+    )
+  } else {
+    return (
+      <div>
+        <h1> Loading Translation </h1>
       </div>
-    </Container>
-  );
+    )
+  };
 };
 
 export default LoginBox;

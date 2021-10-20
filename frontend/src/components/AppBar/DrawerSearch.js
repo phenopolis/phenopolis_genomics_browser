@@ -30,7 +30,7 @@ import { useHistory } from 'react-router-dom';
 import clsx from 'clsx';
 import { getSearchAutocomplete } from '../../redux/actions/search';
 
-function TabPanel(props) {
+function TabPanel (props) {
   const { children } = props;
 
   return <Container style={{ padding: '1em' }}>{children}</Container>;
@@ -40,10 +40,10 @@ TabPanel.propTypes = {
   children: PropTypes.node,
 };
 
-function a11yProps(index) {
+function a11yProps (index) {
   return {
-    id: `vertical-tab-${index}`,
-    'aria-controls': `vertical-tabpanel-${index}`,
+    id: `vertical-tab-${ index }`,
+    'aria-controls': `vertical-tabpanel-${ index }`,
   };
 }
 
@@ -55,12 +55,12 @@ const useStyles = makeStyles((theme) => ({
   tabs: {
     marginTop: '1em',
     height: '250px',
-    borderRight: `1px solid ${theme.palette.divider}`,
+    borderRight: `1px solid ${ theme.palette.divider }`,
   },
 }));
 
 const DrawerSearch = (props) => {
-  const { t } = useTranslation();
+  const { t, ready } = useTranslation();
   const dispatch = useDispatch();
   const history = useHistory();
 
@@ -103,7 +103,7 @@ const DrawerSearch = (props) => {
   };
 
   useEffect(() => {
-    if (searchContent !== '') autocomplete(searchContent);
+    if(searchContent !== '') autocomplete(searchContent);
   }, [type]);
 
   const handleSearchChange = (event) => {
@@ -113,13 +113,13 @@ const DrawerSearch = (props) => {
   useEffect(() => {
     setTyping(true);
     const timeout = setTimeout(() => {
-      if (searchContent !== '') autocomplete(searchContent);
+      if(searchContent !== '') autocomplete(searchContent);
     }, 500);
     return () => clearTimeout(timeout);
   }, [searchContent]);
 
   useEffect(() => {
-    if (keySearch & loaded & (data !== null) & (data.length > 0)) {
+    if(keySearch & loaded & (data !== null) & (data.length > 0)) {
       let itemInfo = data[0].split('::');
       let turnURL = '/' + itemInfo[0] + '/' + itemInfo[2];
       history.push(turnURL);
@@ -144,178 +144,185 @@ const DrawerSearch = (props) => {
   };
 
   const handleKeyDown = (event) => {
-    if (event.key === 'Enter') {
-      if (searchContent !== '') {
+    if(event.key === 'Enter') {
+      if(searchContent !== '') {
         setKeySearch(true);
         autocomplete(searchContent);
       }
     }
   };
-
-  return (
-    <Fragment>
-      <Container maxWidth="lg" className="py-2">
-        <div className="d-flex justify-content-between">
-          <div className="text-black">
-            <h2 className="display-3 font-weight-bold">
-              Search{' '}
-              <strong style={{ color: alltypes[type].color }}> {alltypes[type].label} </strong>
-            </h2>
-            <p className="font-size-md text-black-50">{t('Search.subtitle')}</p>
+  if(ready === true) {
+    return (
+      <Fragment>
+        <Container maxWidth="lg" className="py-2">
+          <div className="d-flex justify-content-between">
+            <div className="text-black">
+              <h2 className="display-3 font-weight-bold">
+                Search{' '}
+                <strong style={{ color: alltypes[type].color }}> {alltypes[type].label} </strong>
+              </h2>
+              <p className="font-size-md text-black-50">{t('Search.subtitle')}</p>
+            </div>
+            <div className="d-flex align-items-center justify-content-center">
+              <Fab onClick={handleClose} size="medium" color="primary">
+                <CloseTwoToneIcon />
+              </Fab>
+            </div>
           </div>
-          <div className="d-flex align-items-center justify-content-center">
-            <Fab onClick={handleClose} size="medium" color="primary">
-              <CloseTwoToneIcon />
-            </Fab>
-          </div>
-        </div>
-      </Container>
-      <div className="app-search-wrapper">
-        <Container maxWidth="lg">
-          <TextField
-            className="app-search-input"
-            fullWidth
-            autoFocus
-            value={searchContent}
-            onChange={(event) => handleSearchChange(event)}
-            inputProps={{ 'aria-label': 'search' }}
-            label="Search…"
-            placeholder={t('AppBar.NavSearch.InputPlaceHolder')}
-            variant="outlined"
-            InputProps={{
-              startAdornment: (
-                <InputAdornment position="start">
-                  <IconButton style={{ color: alltypes[type].color }}>
-                    <FontAwesomeIcon icon={alltypes[type].icon} />
-                  </IconButton>
-                  {/* <SearchIcon className="app-search-icon" /> */}
-                </InputAdornment>
-              ),
-            }}
-            onKeyDown={(event) => handleKeyDown(event)}
-          />
         </Container>
-      </div>
-      <Container maxWidth="lg" className="py-0" style={{ borderBottom: '1px solid lightgrey' }}>
-        <Typography component="div">
-          <Box className="search-example" fontWeight="fontWeightLight" m={1}>
-            {t('Search.Example')}:
-            {examples.map((item, index) => {
-              return (
-                <span key={index}>
-                  <TypeChip
-                    size="small"
-                    label={item.name}
-                    type={item.type}
-                    action="forward"
-                    popover={true}
-                    emit={true}
-                    to={item.to}
-                    onClick={handleClose}
+        <div className="app-search-wrapper">
+          <Container maxWidth="lg">
+            <TextField
+              className="app-search-input"
+              fullWidth
+              autoFocus
+              value={searchContent}
+              onChange={(event) => handleSearchChange(event)}
+              inputProps={{ 'aria-label': 'search' }}
+              label="Search…"
+              placeholder={t('AppBar.NavSearch.InputPlaceHolder')}
+              variant="outlined"
+              InputProps={{
+                startAdornment: (
+                  <InputAdornment position="start">
+                    <IconButton style={{ color: alltypes[type].color }}>
+                      <FontAwesomeIcon icon={alltypes[type].icon} />
+                    </IconButton>
+                    {/* <SearchIcon className="app-search-icon" /> */}
+                  </InputAdornment>
+                ),
+              }}
+              onKeyDown={(event) => handleKeyDown(event)}
+            />
+          </Container>
+        </div>
+        <Container maxWidth="lg" className="py-0" style={{ borderBottom: '1px solid lightgrey' }}>
+          <Typography component="div">
+            <Box className="search-example" fontWeight="fontWeightLight" m={1}>
+              {t('Search.Example')}:
+              {examples.map((item, index) => {
+                return (
+                  <span key={index}>
+                    <TypeChip
+                      size="small"
+                      label={item.name}
+                      type={item.type}
+                      action="forward"
+                      popover={true}
+                      emit={true}
+                      to={item.to}
+                      onClick={handleClose}
+                    />
+                    &bull;
+                  </span>
+                );
+              })}
+            </Box>
+          </Typography>
+        </Container>
+        <Container maxWidth="lg" className="pb-3">
+          <div className={classes.root}>
+            <Tabs
+              orientation="vertical"
+              variant="scrollable"
+              indicatorColor="primary"
+              // textColor="black"
+              value={type}
+              onChange={handleTypeChange}
+              aria-label="Vertical tabs example"
+              className={classes.tabs}>
+              {alltypes.map((item, index) => {
+                return (
+                  <Tab
+                    style={{ color: item.color, fontWeight: '900' }}
+                    key={index}
+                    label={item.label}
+                    {...a11yProps(index)}
                   />
-                  &bull;
-                </span>
-              );
-            })}
-          </Box>
-        </Typography>
-      </Container>
-      <Container maxWidth="lg" className="pb-3">
-        <div className={classes.root}>
-          <Tabs
-            orientation="vertical"
-            variant="scrollable"
-            indicatorColor="primary"
-            // textColor="black"
-            value={type}
-            onChange={handleTypeChange}
-            aria-label="Vertical tabs example"
-            className={classes.tabs}>
-            {alltypes.map((item, index) => {
-              return (
-                <Tab
-                  style={{ color: item.color, fontWeight: '900' }}
-                  key={index}
-                  label={item.label}
-                  {...a11yProps(index)}
-                />
-              );
-            })}
-          </Tabs>
-          <TabPanel style={{ width: '100%' }}>
-            <div
-              className={clsx('no-search-results', 'search-container', {
-                'search-results-hidden': searchContent !== '',
-              })}>
-              <div>
-                <div className="text-warning font-weight-bold font-size-xl">
-                  {t('AppBar.NavSearch.NoContent')}
+                );
+              })}
+            </Tabs>
+            <TabPanel style={{ width: '100%' }}>
+              <div
+                className={clsx('no-search-results', 'search-container', {
+                  'search-results-hidden': searchContent !== '',
+                })}>
+                <div>
+                  <div className="text-warning font-weight-bold font-size-xl">
+                    {t('AppBar.NavSearch.NoContent')}
+                  </div>
                 </div>
               </div>
-            </div>
-            <div
-              className={clsx({
-                'search-results-hidden': searchContent === '',
-              })}>
-              <Grid container direction="column" justify="space-between" alignItems="center">
-                <Grid item xs={12}>
-                  <Pagination
-                    count={Math.ceil(data.length / 20)}
-                    size="small"
-                    showFirstButton
-                    showLastButton
-                    color="primary"
-                    page={page}
-                    onChange={handlePageChange}
-                  />
-                </Grid>
-                <Grid item xs={12} container justify="center">
-                  <div className="text-black py-4">
-                    {!loaded | typing ? (
-                      <div>
-                        <p className="text-black-50 font-size-lg">
-                          {t('AppBar.NavSearch.Searching')}{' '}
-                          <b className="text-black">{searchContent}</b>
-                        </p>
-                        <Divider />
-                      </div>
-                    ) : data !== null ? (
-                      data.length > 0 ? (
-                        <div style={{ textAlign: 'center' }}>
-                          {data.slice((page - 1) * 20, page * 20).map((item, index) => {
-                            return (
-                              <TypeChip
-                                key={index}
-                                size="medium"
-                                label={item.split('::')[1]}
-                                type={item.split('::')[0]}
-                                action="forward"
-                                popover={true}
-                                emit={true}
-                                to={'/' + item.split('::')[0] + '/' + item.split('::')[2]}
-                                onClick={handleClose}
-                              />
-                            );
-                          })}
+              <div
+                className={clsx({
+                  'search-results-hidden': searchContent === '',
+                })}>
+                <Grid container direction="column" justify="space-between" alignItems="center">
+                  <Grid item xs={12}>
+                    <Pagination
+                      count={Math.ceil(data.length / 20)}
+                      size="small"
+                      showFirstButton
+                      showLastButton
+                      color="primary"
+                      page={page}
+                      onChange={handlePageChange}
+                    />
+                  </Grid>
+                  <Grid item xs={12} container justify="center">
+                    <div className="text-black py-4">
+                      {!loaded | typing ? (
+                        <div>
+                          <p className="text-black-50 font-size-lg">
+                            {t('AppBar.NavSearch.Searching')}{' '}
+                            <b className="text-black">{searchContent}</b>
+                          </p>
+                          <Divider />
                         </div>
+                      ) : data !== null ? (
+                        data.length > 0 ? (
+                          <div style={{ textAlign: 'center' }}>
+                            {data.slice((page - 1) * 20, page * 20).map((item, index) => {
+                              return (
+                                <TypeChip
+                                  key={index}
+                                  size="medium"
+                                  label={item.split('::')[1]}
+                                  type={item.split('::')[0]}
+                                  action="forward"
+                                  popover={true}
+                                  emit={true}
+                                  to={'/' + item.split('::')[0] + '/' + item.split('::')[2]}
+                                  onClick={handleClose}
+                                />
+                              );
+                            })}
+                          </div>
+                        ) : (
+                          <div className="text-warning font-weight-bold font-size-xl">
+                            {t('AppBar.NavSearch.NoOption')}
+                          </div>
+                        )
                       ) : (
                         <div className="text-warning font-weight-bold font-size-xl">
-                          {t('AppBar.NavSearch.NoOption')}
+                          {t('AppBar.NavSearch.NoContent')}
                         </div>
-                      )
-                    ) : (
-                      <div className="text-warning font-weight-bold font-size-xl">
-                        {t('AppBar.NavSearch.NoContent')}
-                      </div>
-                    )}
-                  </div>
+                      )}
+                    </div>
+                  </Grid>
                 </Grid>
-              </Grid>
-            </div>
-          </TabPanel>
-        </div>
-      </Container>
-    </Fragment>
-  );
+              </div>
+            </TabPanel>
+          </div>
+        </Container>
+      </Fragment>
+    )
+  } else {
+    return (
+      <div>
+        <h1> Loading Translation </h1>
+      </div>
+    )
+  };
 };
 export default DrawerSearch;

@@ -62,40 +62,40 @@ const ProtectedRoute = ({ component: Component, ...rest }) => {
   );
 };
 
-function App() {
+function App () {
   return (
     <CookiesProvider>
-      <Suspense fallback={<Loading message={'Loading Translation...'} />}>
-        <Router>
-          <ThemeProvider theme={outerTheme}>
-            <AuthCheck />
-            <CustomizedSnackbars />
-            <GlobalDialogs />
-            <ScrollToTop />
-            <HomeAppBar>
-              <Switch>
-                <Route exact path="/" component={Home} />
-                <Route path="/login" component={Login} />
-                <Route path="/publications" component={Publication} />
-                <Route path="/confirm" component={ConfirmPage} />
+      {/* <Suspense fallback={<Loading message={'Loading Translation...'} />}> */}
+      <Router>
+        <ThemeProvider theme={outerTheme}>
+          <AuthCheck />
+          <CustomizedSnackbars />
+          <GlobalDialogs />
+          <ScrollToTop />
+          <HomeAppBar>
+            <Switch>
+              <Route exact path="/" component={Home} />
+              <Route path="/login" component={Login} />
+              <Route path="/publications" component={Publication} />
+              <Route path="/confirm" component={ConfirmPage} />
 
-                <ProtectedRoute path="/dashboard" component={Dashboard} />
-                <ProtectedRoute path="/create_patient" component={CreatePatient} />
-                <ProtectedRoute path="/manage_patient" component={ManagePatient} />
-                <ProtectedRoute path="/manage_user" component={ManageUser} />
-                <ProtectedRoute path="/my_patients" component={MyPatient} />
-                <ProtectedRoute path="/gene/:geneId" component={Gene} />
-                <ProtectedRoute path="/hpo/:hpoId" component={HPO} />
-                <ProtectedRoute path="/individual/:individualId" component={Individual} />
-                <ProtectedRoute path="/variant/:variantId" component={Variant} />
-                <ProtectedRoute path="/editpatient/:individualId" component={EditPatient} />
+              <ProtectedRoute path="/dashboard" component={Dashboard} />
+              <ProtectedRoute path="/create_patient" component={CreatePatient} />
+              <ProtectedRoute path="/manage_patient" component={ManagePatient} />
+              <ProtectedRoute path="/manage_user" component={ManageUser} />
+              <ProtectedRoute path="/my_patients" component={MyPatient} />
+              <ProtectedRoute path="/gene/:geneId" component={Gene} />
+              <ProtectedRoute path="/hpo/:hpoId" component={HPO} />
+              <ProtectedRoute path="/individual/:individualId" component={Individual} />
+              <ProtectedRoute path="/variant/:variantId" component={Variant} />
+              <ProtectedRoute path="/editpatient/:individualId" component={EditPatient} />
 
-                <Route component={NotFoundPage} />
-              </Switch>
-            </HomeAppBar>
-          </ThemeProvider>
-        </Router>
-      </Suspense>
+              <Route component={NotFoundPage} />
+            </Switch>
+          </HomeAppBar>
+        </ThemeProvider>
+      </Router>
+      {/* </Suspense> */}
     </CookiesProvider>
   );
 }

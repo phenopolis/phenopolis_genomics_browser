@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { Grid, Box, Typography, Button, Container } from '@material-ui/core';
 import { Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
@@ -8,11 +8,15 @@ import { setDialog } from '../../redux/actions/dialog';
 import Homebanner from '../../assets/image/Homebanner.jpg';
 
 const HomeBanner = (props) => {
-  const { t } = useTranslation();
+  const { t, ready } = useTranslation();
   const dispatch = useDispatch();
   const { username } = useSelector((state) => ({
     username: state.Auth.username,
   }));
+
+  useEffect(() => {
+    console.log(ready)
+  }, [ready])
 
   const handleTriggerDialog = (dialogName) => {
     dispatch(setDialog(dialogName));
@@ -54,8 +58,8 @@ const HomeBanner = (props) => {
                       color="inherit"
                       size="large"
                       className="banner-button"
-                      // component={Link}
-                      // to='/search'
+                    // component={Link}
+                    // to='/search'
                     >
                       Dashboard
                     </Button>

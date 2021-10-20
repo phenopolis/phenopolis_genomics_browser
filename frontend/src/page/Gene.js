@@ -10,7 +10,7 @@ const MetaData = React.lazy(() => import('../components/MetaData'));
 const VersatileTable = React.lazy(() => import('../components/BaseTable/VersatileTable'));
 
 const Gene = (props) => {
-  const { t } = useTranslation();
+  const { t, ready } = useTranslation();
   const location = useLocation();
   const dispatch = useDispatch();
 
@@ -18,6 +18,10 @@ const Gene = (props) => {
     geneInfo: state.Gene.data[0],
     loaded: state.Gene.loaded,
   }));
+
+  useEffect(() => {
+    console.log(ready)
+  }, [ready])
 
   useEffect(() => {
     dispatch(getGene(props.match.params.geneId));
