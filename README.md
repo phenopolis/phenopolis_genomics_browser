@@ -20,6 +20,7 @@ AWS_SECRET_ACCESS_KEY=....
 AWS_ACCESS_KEY_ID=....
 
 NETLIFY_AUTH_TOKEN=....
+NETLIFY_SITE_ID=....
 ```
 
 Note: do not add single or double quotes around the value as they are preserved.
@@ -29,44 +30,14 @@ Note: do not add single or double quotes around the value as they are preserved.
 This will set up the database and load the demo database.
 
 ```bash
-docker-compose up
+docker compose up
 ```
 
-If an image has previously been built this may cause issues with *npm*.
-If this doesn't work you many to delete and rebuild your `frontend` docker image:
-
-Remove `frontend` docker images:
+If one wants to rebuild fresh images, one can do:
 
 ```bash
-docker rm -f phenopolis_browser_frontend_1 # stop and remove container
-docker rmi phenopolis_frontend:latest # remove image
-docker volume rm -f phenopolis_browser_node_modules # remove node_modules volume
-docker-compose build --no-cache frontend # rebuild from scratch
-```
-
-and rebuild:
-
-```bash
-docker-compose up --build 
-```
-
-If you need to install new libraries in the frontend then you may need to run:
-
-```bash
-docker-compose up --build 
-docker-compose run frontend /bin/bash 
-```
-
-The inside the container run:
-
-```bash
-npm install 
-```
-
-Then quit the container and run:
-
-```bash
-docker-compose up
+docker compose build --no-cache # rebuild from scratch frontend and api
+docker compose build --no-cache frontend # will rebuild just frontend for example
 ```
 
 Once running, the API server should be available at [http://localhost:5000](http://localhost:5000) and the frontend will be available at [http://localhost:8888](http://localhost:8888)
@@ -84,7 +55,7 @@ With the demo data the following exemplar links should work on the frontend:
 Rebuild, if you change `Dockerfile` or `requirements.txt`
 
 ```bash
-docker-compose up --build
+docker compose up --build [--no-cache]
 ```
 
 ## Importing other data into the database
@@ -99,11 +70,11 @@ It is possible to connect to the postgres shell as follows:
 
 ```bash
 # Note change the values of the user and database name required
-docker-compose exec db psql --user phenopolis_api --dbname phenopolis_db
+docker compose exec db psql --user phenopolis_api --dbname phenopolis_db
 ```
 
 > Note: When importing an AWS RDS SQL dump, you will need to create the below user before importing the SQL file:
 
 ```bash
-docker-compose exec db sh -c 'createuser rdsadmin -U phenopolis_api'
+docker compose exec db sh -c 'createuser rdsadmin -U phenopolis_api'
 ```
