@@ -7,7 +7,7 @@ Demo DB need to be updated?
 
 from views import HG_ASSEMBLY
 from views.postgres import postgres_cursor, close_db, session_scope
-from db.model import NewGene, Gene
+from db.model import NewGene
 
 
 def test_db_sql_query_old_schema(_demo):
@@ -29,13 +29,6 @@ def test_db_sql_query(_demo):
     )
     res = cursor.fetchone()
     assert "DNA-damage regulated autophagy modulator 2" in res
-
-
-def test_sqlalchemy_query_old_schema(_demo):
-    """res -> db.Gene"""
-    with session_scope() as db_session:
-        res = db_session.query(Gene).filter(Gene.gene_id == "ENSG00000119685").first()
-        assert res.gene_name == "TTLL5"
 
 
 def test_sqlalchemy_query(_demo):
