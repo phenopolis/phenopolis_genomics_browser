@@ -5,7 +5,7 @@ from views.exceptions import PhenopolisException
 import requests
 from flask.globals import session
 from psycopg2 import sql
-from views import MAX_PAGE_SIZE, application, variant_file, phenoid_mapping
+from views import MAX_PAGE_SIZE, application, variant_file, phenoid_mapping, HG_ASSEMBLY
 from views.auth import DEMO_USER, USER, requires_auth
 from views.autocomplete import CHROMOSOME_POS_REF_ALT_REGEX, ENSEMBL_GENE_REGEX, PATIENT_REGEX
 from views.postgres import get_db, session_scope
@@ -126,7 +126,7 @@ def _get_variants(target: str):
         join phenopolis.individual i2 on i2.id = iv.individual_id
         left outer join phenopolis.variant_gene vg on vg.variant_id = v.id -- variant_gene not complete?
         left outer join ensembl.gene g on vg.gene_id = g.ensembl_gene_id
-            and g.assembly = 'GRCh37' and g.chromosome ~ '^X|^Y|^[0-9]{1,2}'
+            and g.assembly = %(hga)s and g.chromosome ~ '^X|^Y|^[0-9]{1,2}'
         left outer join gnomad.annotation_v3 av
             on av.chrom = v.chrom and av.pos = v.pos and av."ref" = v."ref" and av.alt = v.alt
         --where v.chrom = '12' and v.pos = 7241974 and v."ref" = 'C' and v.alt = 'T' -- 2 rows
@@ -150,7 +150,7 @@ def _get_variants(target: str):
     sqlq = sqlq_main + filter + sqlq_end
     with get_db() as conn:
         with conn.cursor() as cur:
-            cur.execute(sqlq)
+            cur.execute(sqlq, {"hga": HG_ASSEMBLY})
             variants = cursor2dict(cur)
     for v in variants:
         gs, gi = zip(*[x.split("@") for x in sorted(v["genes"])])

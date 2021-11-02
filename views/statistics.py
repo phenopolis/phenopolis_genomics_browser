@@ -4,7 +4,7 @@ Statistics view
 from typing import List
 from flask import jsonify, session
 from db.model import Sex, Individual
-from views import VERSION, application
+from views import VERSION, application, HG_ASSEMBLY
 from views.auth import requires_auth, USER
 from views.individual import _count_all_individuals, _count_all_individuals_by_sex, _get_authorized_individuals
 from views.postgres import session_scope, get_db
@@ -67,10 +67,10 @@ def count_genes(individuals: List[Individual]):
                 """
                 select distinct gene_id from phenopolis.individual_gene ig
                 join ensembl.gene g on g.identifier = ig.gene_id
-                where g.assembly = 'GRCh37' and g.chromosome ~ '^X|^Y|^[0-9]{1,2}'
+                where g.assembly = %s and g.chromosome ~ '^X|^Y|^[0-9]{1,2}'
                 and ig.individual_id = any(%s)
                 """,
-                [[x.id for x in individuals]],
+                [HG_ASSEMBLY, [x.id for x in individuals]],
             )
     return cur.rowcount
 

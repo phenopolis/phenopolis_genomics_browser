@@ -36,7 +36,7 @@ g."end" as "stop", g.strand, g.band, g.biotype, g.hgnc_id, g.hgnc_symbol as gene
 g.percentage_gene_gc_content, g.assembly
 from ensembl.gene g
 left outer join ensembl.gene_synonym gs on gs.gene = g.identifier
-where g.assembly = 'GRCh37'
+where g.assembly = %(hga)s
 and g.chromosome ~ '^X|^Y|^[0-9]{1,2}'
 """
 )
@@ -135,13 +135,13 @@ def _get_gene(db_session: Session, gene_id):
     sqlq = sqlq_main + sqlq_end
     with get_db() as conn:
         with conn.cursor() as cur:
-            cur.execute(sqlq, {"g_id": g_id})
+            cur.execute(sqlq, {"g_id": g_id, "hga": HG_ASSEMBLY})
             gene = cursor2dict(cur)
             if not gene:
                 application.logger.info("Using gene_synonym")
                 sqlq_end = sql.SQL("and upper(gs.external_synonym) = %(g_id)s")
                 sqlq = sqlq_main + sqlq_end
-                cur.execute(sqlq, {"g_id": g_id})
+                cur.execute(sqlq, {"g_id": g_id, "hga": HG_ASSEMBLY})
                 gene = cursor2dict(cur)
     return gene
 
@@ -163,13 +163,13 @@ def get_all_genes():
                 select 1 from public.users_individuals ui
                 join phenopolis.individual i on i.phenopolis_id = ui.internal_id
                 join phenopolis.individual_gene ig on i.id = ig.individual_id and ig.gene_id = g.identifier
-                where ui."user" = %s)
+                where ui."user" = %(user)s)
             """
             )
             sqlq = sqlq_main + sqlq_end + sql.SQL("limit {} offset {}".format(limit, offset))
             with get_db() as conn:
                 with conn.cursor() as cur:
-                    cur.execute(sqlq, [session[USER]])
+                    cur.execute(sqlq, {"user": session[USER], "hga": HG_ASSEMBLY})
                     genes = cursor2dict(cur)
             process_for_display(db_session, genes)
         except PhenopolisException as e:

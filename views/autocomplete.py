@@ -1,17 +1,19 @@
 """
 Autocomplete view
 """
+from db.helpers import cursor2dict
 import re
 from typing import List
 
 from flask import jsonify, session, request
-from sqlalchemy import and_, asc, func, or_, Text, cast, text
+from sqlalchemy import and_, Text, cast
 from sqlalchemy.orm import Session
 
-from db.model import Individual, UserIndividual, HPO, Gene, Variant
-from views import application
+from db.model import Individual, NewGene, NewVariant, TranscriptConsequence, UserIndividual
+from views import application, HG_ASSEMBLY
 from views.auth import requires_auth, USER
-from views.postgres import session_scope
+from views.postgres import get_db, session_scope
+from psycopg2 import sql
 
 CHROMOSOME_POS_REGEX = re.compile(r"^(\w+)[-:](\d+)$")
 CHROMOSOME_POS_REF_REGEX = re.compile(r"^(\w+)[-:](\d+)[-:]([ACGT\*]+)$", re.IGNORECASE)
@@ -41,15 +43,13 @@ def autocomplete(query):
         limit = int(arguments.get("limit", DEFAULT_SEARCH_RESULTS_LIMIT))
     except ValueError:
         return (
-            jsonify(success=False, message="Please, specify a numeric limit value, {}".format(arguments.get("limit"))),
+            jsonify(success=False, message=f"Please, specify a numeric limit value, {arguments.get('limit')}"),
             400,
         )
 
     if limit > MAXIMUM_SEARCH_RESULTS_LIMIT:
         return (
-            jsonify(
-                success=False, message="Please, specify a limit lower than {}".format(MAXIMUM_SEARCH_RESULTS_LIMIT)
-            ),
+            jsonify(success=False, message=f"Please, specify a limit lower than {MAXIMUM_SEARCH_RESULTS_LIMIT}"),
             400,
         )
     application.logger.debug("Autocomplete query '%s' and query type '%s'", query, query_type)
@@ -75,7 +75,7 @@ def autocomplete(query):
                 + _search_variants(db_session, query, limit)
             )
         else:
-            message = "Autocomplete request with unsupported query type '{}'".format(query_type)
+            message = f"Autocomplete request with unsupported query type '{query_type}'"
             application.logger.error(message)
             # raise PhenopolisException(message)
             return (
@@ -112,36 +112,47 @@ def _search_patients(db_session: Session, query, limit):
 def _search_phenotypes(db_session: Session, query, limit):
     r"""
     A user may search for things like 'Abnormality of body height' or for an HPO id as HP:1234567 (ie: HP:\d{7})
+    or just a seq of numbers like '1234'
     """
     if HPO_REGEX.match(query) or NUMERIC_REGEX.match(query):
-        phenotypes = (
-            db_session.query(HPO)
-            .filter(HPO.hpo_id.ilike("%{}%".format(query)))
-            .order_by(HPO.hpo_id.asc())
-            .limit(limit)
-            .all()
+        sqlq = sql.SQL(
+            """
+            select t.hpo_id, t."name" from hpo.term t where t.hpo_id ~ %(query)s order by t.id limit %(limit)s
+            """
         )
     else:
         # TODO: search also over synonyms
         # TODO: return the distance so the frontend have greater flexibility
         # NOTE: order results by similarity and then by hpo_name (case insensitive)
-        phenotypes_and_distances = (
-            db_session.query(HPO, HPO.hpo_name.op("<->")(query).label("distance"))
-            .filter(HPO.hpo_name.op("%")(query))
-            .order_by("distance", asc(func.lower(HPO.hpo_name)))
-            .limit(limit)
-            .all()
+        sqlq = sql.SQL(
+            """
+            select
+                t.hpo_id,
+                t."name" ,
+                t."name" <-> %(query)s as distance
+            from
+                hpo.term t
+            where
+                t."name" %% %(query)s
+            order by
+                distance,
+                lower(t."name")
+            limit %(limit)s
+        """
         )
-        phenotypes = [p for p, _ in phenotypes_and_distances]
-
-    return [f"hpo::{x.hpo_name}::{x.hpo_id}" for x in phenotypes]
+    with get_db() as conn:
+        with conn.cursor() as cur:
+            cur.execute(sqlq, {"query": query, "limit": limit})
+            phenotypes = cursor2dict(cur)
+    return [f"hpo::{x.get('name')}::{x.get('hpo_id')}" for x in phenotypes]
 
 
 def _search_genes(db_session: Session, query, limit):
     """
     Either search for:
     - a gene id like 'ENSG000...'
-    - a transcript id like 'ENST000...'
+    - a transcript id like 'ENST000...' not only canonical
+    - a protein id like 'ENSP000...' not only canonical
     - a numeric id without any qualifier like '12345'
     - a gene name like 'TTLL...'
     - a gene synonym like 'asd...'
@@ -149,47 +160,75 @@ def _search_genes(db_session: Session, query, limit):
     The order of results is sorted by gene identifier for the 3 searches by identifier; and it is sorted by similarity
     for gene name and gene synonym searches
     """
-    # TODO: add search by all Ensembl transcipts (ie: not only canonical) if we add those to the genes table
-    # TODO: add search by Ensembl protein if we add a column to the genes table
     is_identifier_query = (
-        ENSEMBL_GENE_REGEX.match(query) or ENSEMBL_TRANSCRIPT_REGEX.match(query) or NUMERIC_REGEX.match(query)
+        ENSEMBL_GENE_REGEX.match(query)
+        or ENSEMBL_TRANSCRIPT_REGEX.match(query)
+        or NUMERIC_REGEX.match(query)
+        or ENSEMBL_PROTEIN_REGEX.match(query)
     )
     if is_identifier_query:
-        query_without_version = remove_version_from_id(query)
-        genes = (
-            db_session.query(Gene)
-            .filter(
-                or_(
-                    Gene.gene_id.ilike("%{}%".format(query_without_version)),
-                    Gene.canonical_transcript.ilike("%{}%".format(query_without_version)),
+        query = remove_version_from_id(query)
+        sqlq = sql.SQL(
+            """
+            select distinct g.hgnc_symbol, g.ensembl_gene_id
+            from ensembl.gene g
+            left outer join ensembl.transcript t on g.ensembl_gene_id = t.ensembl_gene_id
+            where g.assembly = %(hga)s
+            and g.chromosome ~ '^X|^Y|^[0-9]{1,2}'
+            and (
+                g.ensembl_gene_id ~* %(query)s or
+                t.ensembl_transcript_id ~* %(query)s or
+                t.ensembl_peptide_id ~* %(query)s
                 )
-            )
-            .filter(text("chrom ~ '^X|^Y|^[0-9]{1,2}'"))
-            .order_by(Gene.gene_id.asc())
-            .limit(limit)
-            .all()
+            order by g.ensembl_gene_id
+            limit %(limit)s
+            """
         )
     else:
-        # NOTE: makes two queries by gene name and by other names and returns only the closest results
-        genes_by_gene_name = (
-            db_session.query(Gene, Gene.gene_name.op("<->")(query).label("distance"))
-            .filter(Gene.gene_name.op("%")(query))
-            .filter(text("chrom ~ '^X|^Y|^[0-9]{1,2}'"))
-            .order_by("distance", asc(func.lower(Gene.gene_name)))
-            .limit(limit)
-            .all()
+        sqlq = sql.SQL(
+            """
+            select
+                g.hgnc_symbol,
+                g.ensembl_gene_id ,
+                g.hgnc_symbol <-> %(query)s as distance
+            from
+                ensembl.gene g
+            where g.assembly = %(hga)s
+            and g.chromosome ~ '^X|^Y|^[0-9]{1,2}'
+            and g.hgnc_symbol %% %(query)s
+            order by
+                distance,
+                lower(g.hgnc_symbol)
+            limit %(limit)s
+            """
         )
-        genes_by_other_names = (
-            db_session.query(Gene, Gene.other_names.op("<->")(query).label("distance"))
-            .filter(Gene.other_names.op("%")(query))
-            .filter(text("chrom ~ '^X|^Y|^[0-9]{1,2}'"))
-            .order_by("distance", asc(func.lower(Gene.gene_name)))
-            .limit(limit)
-            .all()
-        )
-        genes = [g for g, _ in sorted(genes_by_gene_name + genes_by_other_names, key=lambda x: x[1])[0:limit]]
-    # while the search is performed on the upper cased gene name, it returns the original gene name
-    return [f"gene::{x.gene_name}::{x.gene_id}" for x in genes]
+    with get_db() as conn:
+        with conn.cursor() as cur:
+            cur.execute(sqlq, {"query": query, "limit": limit, "hga": HG_ASSEMBLY})
+            genes = cursor2dict(cur)
+            if not genes:
+                sqlq = sql.SQL(
+                    """
+                    select
+                        g.hgnc_symbol,
+                        g.ensembl_gene_id ,
+                        gs.external_synonym <-> %(query)s as distance
+                    from
+                        ensembl.gene g
+                    join ensembl.gene_synonym gs on gs.gene = g.identifier
+                    where g.assembly = %(hga)s
+                    and g.chromosome ~ '^X|^Y|^[0-9]{1,2}'
+                    and gs.external_synonym %% %(query)s
+                    order by
+                        distance,
+                        lower(gs.external_synonym)
+                    limit %(limit)s
+                    """
+                )
+                cur.execute(sqlq, {"query": query, "limit": limit, "hga": HG_ASSEMBLY})
+                genes = cursor2dict(cur)
+
+    return [f"gene::{x.get('hgnc_symbol')}::{x.get('ensembl_gene_id')}" for x in genes]
 
 
 def _search_variants(db_session: Session, query, limit):
@@ -204,10 +243,10 @@ def _search_variants(db_session: Session, query, limit):
     elif hgvs_type is not None:
         variants = _search_variants_by_hgvs(db_session, hgvs_type, entity, hgvs, limit)
 
-    return [f"variant::{v.CHROM}-{v.POS}-{v.REF}-{v.ALT}::{v.CHROM}-{v.POS}-{v.REF}-{v.ALT}" for v in variants]
+    return [f"variant::{v.chrom}-{v.pos}-{v.ref}-{v.alt}::{v.chrom}-{v.pos}-{v.ref}-{v.alt}" for v in variants]
 
 
-def _search_variants_by_coordinates(db_session: Session, chrom, pos, ref, alt, limit) -> List[Variant]:
+def _search_variants_by_coordinates(db_session: Session, chrom, pos, ref, alt, limit) -> List[NewVariant]:
     """
     Assuming a user is searching for 22-38212762-A-G or 22-16269829-T-*
     22-382
@@ -218,56 +257,56 @@ def _search_variants_by_coordinates(db_session: Session, chrom, pos, ref, alt, l
     """
     if chrom is not None and ref is not None and alt is not None:
         variants = (
-            db_session.query(Variant)
+            db_session.query(NewVariant)
             .filter(
                 and_(
-                    Variant.CHROM == chrom,
-                    cast(Variant.POS, Text).like("{}%".format(pos)),
-                    Variant.REF == ref,
-                    Variant.ALT == alt,
+                    NewVariant.chrom == chrom,
+                    cast(NewVariant.pos, Text).like(f"{pos}%"),
+                    NewVariant.ref == ref,
+                    NewVariant.alt == alt,
                 )
             )
-            .order_by(Variant.CHROM.asc(), Variant.POS.asc())
+            .order_by(NewVariant.chrom.asc(), NewVariant.pos.asc())
             .limit(limit)
             .all()
         )
     elif chrom is not None and ref is not None and alt is None:
         variants = (
-            db_session.query(Variant)
-            .filter(and_(Variant.CHROM == chrom, cast(Variant.POS, Text).like("{}%".format(pos)), Variant.REF == ref))
-            .order_by(Variant.CHROM.asc(), Variant.POS.asc())
+            db_session.query(NewVariant)
+            .filter(and_(NewVariant.chrom == chrom, cast(NewVariant.pos, Text).like(f"{pos}%"), NewVariant.ref == ref))
+            .order_by(NewVariant.chrom.asc(), NewVariant.pos.asc())
             .limit(limit)
             .all()
         )
     elif chrom is not None and ref is None:
         variants = (
-            db_session.query(Variant)
-            .filter(and_(Variant.CHROM == chrom, cast(Variant.POS, Text).like("{}%".format(pos))))
-            .order_by(Variant.CHROM.asc(), Variant.POS.asc())
+            db_session.query(NewVariant)
+            .filter(and_(NewVariant.chrom == chrom, cast(NewVariant.pos, Text).like(f"{pos}%")))
+            .order_by(NewVariant.chrom.asc(), NewVariant.pos.asc())
             .limit(limit)
             .all()
         )
     return variants
 
 
-def _search_variants_by_region(db_session: Session, chrom, start, end, limit) -> List[Variant]:
+def _search_variants_by_region(db_session: Session, chrom, start, end, limit) -> List[NewVariant]:
     """
     Assuming a user is searching for 22:10000-20000 it will return all variants within that region
     """
     variants = (
-        db_session.query(Variant)
-        .filter(and_(Variant.CHROM == chrom, Variant.POS >= start, Variant.POS <= end,))
-        .order_by(Variant.CHROM.asc(), Variant.POS.asc())
+        db_session.query(NewVariant)
+        .filter(and_(NewVariant.chrom == chrom, NewVariant.pos >= start, NewVariant.pos <= end,))
+        .order_by(NewVariant.chrom.asc(), NewVariant.pos.asc())
         .limit(limit)
         .all()
     )
     return variants
 
 
-def _search_variants_by_hgvs(db_session: Session, hgvs_type, entity, hgvs, limit) -> List[Variant]:
+def _search_variants_by_hgvs(db_session: Session, hgvs_type, entity, hgvs, limit) -> List[NewVariant]:
     """
-    Assuming a user is searching for ENSP00000451572.1:p.His383Tyr, ENST00000355467.4:c.30C>T or
-    ENST00000505973.1:n.97C>T
+    Assuming a user is searching for ENSP00000451572.1:p.His383Tyr, ENST00000355467.4:c.30C>T,
+    ENSG00000119685.1:c.412A>G, ENSG00000119685.1:p.Ile138Val or ENST00000505973.1:n.97C>T
     The queries need to do something like HGVSC like %query%, because the HGVS codes are a comma separated list in the
     corresponding text column. The query must start with either ENST or ENSP to be performed
     """
@@ -278,9 +317,18 @@ def _search_variants_by_hgvs(db_session: Session, hgvs_type, entity, hgvs, limit
             # NOTE: the % after transcript deals with missing transcript version, as a positive side effect this allow
             # for partial ids
             variants = (
-                db_session.query(Variant)
-                .filter(Variant.hgvsc.ilike("%{}%:{}%".format(entity, hgvs)))
-                .order_by(Variant.CHROM.asc(), Variant.POS.asc())
+                db_session.query(NewVariant, TranscriptConsequence)
+                .filter(
+                    and_(
+                        NewVariant.chrom == TranscriptConsequence.chrom,
+                        NewVariant.pos == TranscriptConsequence.pos,
+                        NewVariant.ref == TranscriptConsequence.ref,
+                        NewVariant.alt == TranscriptConsequence.alt,
+                        TranscriptConsequence.hgvs_c.ilike(f"%{entity}%:{hgvs}%"),
+                    )
+                )
+                .with_entities(NewVariant)
+                .order_by(NewVariant.chrom.asc(), NewVariant.pos.asc())
                 .limit(limit)
                 .all()
             )
@@ -288,20 +336,40 @@ def _search_variants_by_hgvs(db_session: Session, hgvs_type, entity, hgvs, limit
             # search for HGVS on the variants for the given gene id
             ensembl_gene_id_without_version = remove_version_from_id(entity)
             variants = (
-                db_session.query(Variant)
+                db_session.query(NewVariant, TranscriptConsequence)
                 .filter(
-                    and_(Variant.gene_id == ensembl_gene_id_without_version, Variant.hgvsc.ilike("%{}%".format(hgvs)))
+                    and_(
+                        NewVariant.chrom == TranscriptConsequence.chrom,
+                        NewVariant.pos == TranscriptConsequence.pos,
+                        NewVariant.ref == TranscriptConsequence.ref,
+                        NewVariant.alt == TranscriptConsequence.alt,
+                        TranscriptConsequence.gene_id == ensembl_gene_id_without_version,
+                        TranscriptConsequence.hgvs_c.ilike(f"%{hgvs}%"),
+                    )
                 )
-                .order_by(Variant.CHROM.asc(), Variant.POS.asc())
+                .with_entities(NewVariant)
+                .order_by(NewVariant.chrom.asc(), NewVariant.pos.asc())
                 .limit(limit)
                 .all()
             )
         else:
             # search for HGVS on the variants for the given gene symbol
             variants = (
-                db_session.query(Variant)
-                .filter(and_(Variant.gene_symbol == entity, Variant.hgvsc.ilike("%{}%".format(hgvs))))
-                .order_by(Variant.CHROM.asc(), Variant.POS.asc())
+                db_session.query(NewVariant, TranscriptConsequence, NewGene)
+                .filter(
+                    and_(
+                        NewVariant.chrom == TranscriptConsequence.chrom,
+                        NewVariant.pos == TranscriptConsequence.pos,
+                        NewVariant.ref == TranscriptConsequence.ref,
+                        NewVariant.alt == TranscriptConsequence.alt,
+                        TranscriptConsequence.gene_id == NewGene.ensembl_gene_id,
+                        NewGene.assembly == HG_ASSEMBLY,
+                        NewGene.hgnc_symbol == entity,
+                        TranscriptConsequence.hgvs_c.ilike(f"%{hgvs}%"),
+                    )
+                )
+                .with_entities(NewVariant)
+                .order_by(NewVariant.chrom.asc(), NewVariant.pos.asc())
                 .limit(limit)
                 .all()
             )
@@ -312,9 +380,18 @@ def _search_variants_by_hgvs(db_session: Session, hgvs_type, entity, hgvs, limit
             # NOTE: the % after transcript deals with missing transcript version, as a positive side effect this allow
             # for partial ids
             variants = (
-                db_session.query(Variant)
-                .filter(Variant.hgvsp.ilike("%{}%:{}%".format(entity, hgvs)))
-                .order_by(Variant.CHROM.asc(), Variant.POS.asc())
+                db_session.query(NewVariant, TranscriptConsequence)
+                .filter(
+                    and_(
+                        NewVariant.chrom == TranscriptConsequence.chrom,
+                        NewVariant.pos == TranscriptConsequence.pos,
+                        NewVariant.ref == TranscriptConsequence.ref,
+                        NewVariant.alt == TranscriptConsequence.alt,
+                        TranscriptConsequence.hgvs_p.ilike(f"%{entity}%:{hgvs}%"),
+                    )
+                )
+                .with_entities(NewVariant)
+                .order_by(NewVariant.chrom.asc(), NewVariant.pos.asc())
                 .limit(limit)
                 .all()
             )
@@ -322,22 +399,40 @@ def _search_variants_by_hgvs(db_session: Session, hgvs_type, entity, hgvs, limit
             # search for HGVS on the variants for the given gene id
             ensembl_protein_id_without_version = remove_version_from_id(entity)
             variants = (
-                db_session.query(Variant)
+                db_session.query(NewVariant, TranscriptConsequence)
                 .filter(
                     and_(
-                        Variant.gene_id == ensembl_protein_id_without_version, Variant.hgvsp.ilike("%{}%".format(hgvs))
+                        NewVariant.chrom == TranscriptConsequence.chrom,
+                        NewVariant.pos == TranscriptConsequence.pos,
+                        NewVariant.ref == TranscriptConsequence.ref,
+                        NewVariant.alt == TranscriptConsequence.alt,
+                        TranscriptConsequence.gene_id == ensembl_protein_id_without_version,
+                        TranscriptConsequence.hgvs_p.ilike(f"%{hgvs}%"),
                     )
                 )
-                .order_by(Variant.CHROM.asc(), Variant.POS.asc())
+                .with_entities(NewVariant)
+                .order_by(NewVariant.chrom.asc(), NewVariant.pos.asc())
                 .limit(limit)
                 .all()
             )
         else:
             # search for HGVS on the variants for the given gene symbol
             variants = (
-                db_session.query(Variant)
-                .filter(and_(Variant.gene_symbol == entity, Variant.hgvsp.ilike("%{}%".format(hgvs))))
-                .order_by(Variant.CHROM.asc(), Variant.POS.asc())
+                db_session.query(NewVariant, TranscriptConsequence, NewGene)
+                .filter(
+                    and_(
+                        NewVariant.chrom == TranscriptConsequence.chrom,
+                        NewVariant.pos == TranscriptConsequence.pos,
+                        NewVariant.ref == TranscriptConsequence.ref,
+                        NewVariant.alt == TranscriptConsequence.alt,
+                        TranscriptConsequence.gene_id == NewGene.ensembl_gene_id,
+                        NewGene.assembly == HG_ASSEMBLY,
+                        NewGene.hgnc_symbol == entity,
+                        TranscriptConsequence.hgvs_p.ilike(f"%{hgvs}%"),
+                    )
+                )
+                .with_entities(NewVariant)
+                .order_by(NewVariant.chrom.asc(), NewVariant.pos.asc())
                 .limit(limit)
                 .all()
             )
