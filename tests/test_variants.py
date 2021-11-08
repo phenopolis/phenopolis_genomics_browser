@@ -5,7 +5,7 @@ from views.variant import variant, variant_preview
 
 
 def test_get_genotypes_exception():
-    # if this happens, something is out of sync between S3 VCF file and variant table in DB
+    # if this happens, something is out of sync between VCF file and variant table in DB
     redirected_error = sys.stderr = StringIO()
     exec('_get_genotypes("443", "10000")')
     err = redirected_error.getvalue()
@@ -14,7 +14,7 @@ def test_get_genotypes_exception():
 
 def test_variant(_demo):
     """
-    This tests S3 and VCF access via cvycf2
+    This tests VCF access via cvycf2
     tests both for subset and entry not in DB, the real one is 14-76127655-C-T
     res -> str
     """
@@ -33,6 +33,19 @@ def test_variant_web(_admin_client):
     resp = _admin_client.get("/variant/14-76156575-A-G")
     assert resp.status_code == 200
     assert "[{'display': 'my:PH00008258'," in str(resp.json), "Check for 'my:..."
+
+
+def test_variant_genotype_vcf(_admin_client):
+    resp = _admin_client.get("/variant/14-76156575-A-G")
+    assert resp.status_code == 200
+    assert len(resp.json[0]["genotypes"]["data"]) == 4, "Critical, VCF access not working"
+
+
+def test_cyvcf2_S3(_admin_client):
+    from cyvcf2 import VCF
+
+    vcf_S3 = VCF("s3://3kricegenome/test/test.vcf.gz")  # public VCF file
+    assert len(vcf_S3.raw_header) == 559362, "Critical, S3 access not working"
 
 
 def test_missing_variant(_demo):

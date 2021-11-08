@@ -16,7 +16,6 @@ from cyvcf2 import VCF
 from subprocess import Popen, STDOUT, PIPE
 import psycopg2
 
-
 # Options are: prod, dev, debug (default)
 APP_ENV = os.getenv("APP_ENV", "debug")
 
@@ -34,11 +33,7 @@ ENV_LOG_FLAG = True
 if APP_ENV in ["prod"]:
     ENV_LOG_FLAG = False
 
-# in GH Workflow tests, private.env is not available so skip variant tests
-try:
-    variant_file = VCF(os.getenv("S3_VCF_FILE_URL", "s3://phenopolis-vcf/August2019/merged2.vcf.gz"))
-except OSError:
-    variant_file = None
+variant_file = VCF(os.getenv("S3_VCF_FILE_URL"))
 
 
 def _configure_logs():
