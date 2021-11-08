@@ -84,7 +84,7 @@ def requires_admin_or_user(f):
 @application.route("/<language>/login", methods=["POST"])
 @application.route("/login", methods=["POST"])
 def login():
-    print(request.json)
+    application.logger.info(f"request.json: {request.json}")
     username = request.json.get(USER)
     password = request.json.get(PASSWORD)
     if not check_auth(username, password):

@@ -183,11 +183,12 @@ def _get_variants(target: str):
 
 def _config_variant(variants, language):
     with session_scope() as db_session:
-        # get the genotype information for this variant from the VCF
+        # get the genotype information for this variant from the VCF file
         if session[USER] == DEMO_USER:
             genotypes = []
         else:
             genotypes = _get_genotypes(variants[0]["CHROM"], variants[0]["POS"])
+        application.logger.debug(f"genotypes: {len(genotypes)} {genotypes[:1]}...")
         process_for_display(db_session, variants)
         config = query_user_config(db_session=db_session, language=language, entity="variant")
         config[0]["metadata"]["data"] = variants
@@ -208,7 +209,7 @@ def _get_preview(chrom, pos, ref, alt):
 
 def _get_genotypes(chrom, pos):
     genotypes = []
-    # reads the variant file from S3
+    # reads the variant data from the VCF file (either local or on S3)
     try:
         v = next(variant_file(f"{chrom}:{pos}-{pos}"))
         lookup = {s: i for i, s in enumerate(variant_file.samples)}
@@ -228,8 +229,10 @@ def _get_genotypes(chrom, pos):
             for s in variant_file.samples
             if phenoid_mapping.get(s) is not None
         ]
+    except StopIteration:
+        application.logger.debug(f"{_get_genotypes.__name__} for variant {chrom}:{pos} not FOUND")
     except Exception as e:
-        print(e)
+        application.logger.error(f"{_get_genotypes.__name__} FAILED: {e}")
     return genotypes
 
 
