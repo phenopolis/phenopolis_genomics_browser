@@ -1,4 +1,5 @@
 import pytest
+import os
 from dotenv import load_dotenv
 from views import application, APP_ENV, VERSION
 from views.auth import ADMIN_USER, USER, DEMO_USER
@@ -8,7 +9,7 @@ load_dotenv(dotenv_path="./private.env")
 
 
 def pytest_report_header(config):
-    return f">>> Version: {VERSION}, APP_ENV: {APP_ENV}"
+    return f">>>\tVersion: {VERSION}\n\tAPP_ENV: {APP_ENV}\n\tVCF_FILE: {os.getenv('VCF_FILE')}"
 
 
 @pytest.fixture
