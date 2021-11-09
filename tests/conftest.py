@@ -9,7 +9,7 @@ load_dotenv(dotenv_path="./private.env")
 
 
 def pytest_report_header(config):
-    return f">>>\tVersion: {VERSION}\n\tAPP_ENV: {APP_ENV}\n\tS3_VCF_FILE_URL: {os.getenv('S3_VCF_FILE_URL')}"
+    return f">>>\tVersion: {VERSION}\n\tAPP_ENV: {APP_ENV}\n\tVCF_FILE: {os.getenv('VCF_FILE')}"
 
 
 @pytest.fixture

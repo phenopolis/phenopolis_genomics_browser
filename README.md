@@ -13,7 +13,19 @@ A description of the code setup is available [here](code_setup.md).
 
 ## Setup using docker compose
 
-Set the following environment variables in `private.env`:
+Set the following environment variable in
+
+* `public.env`:
+
+```bash
+VCF_FILE=...
+```
+
+Where `VCF_FILE` can be either a local file (e.g. `path/file.vcf.gz`) or a remote `S3` file (e.g. `s3://any_remote/file.vcf.gz` )
+
+It's critical that the `VCF_FILE` has along its `tbi` file as well.
+
+* Create `private.env` and add:
 
 ```bash
 AWS_SECRET_ACCESS_KEY=....

@@ -33,7 +33,7 @@ ENV_LOG_FLAG = True
 if APP_ENV in ["prod"]:
     ENV_LOG_FLAG = False
 
-variant_file = VCF(os.getenv("S3_VCF_FILE_URL"))
+variant_file = VCF(os.getenv("VCF_FILE"))
 
 
 def _configure_logs():
