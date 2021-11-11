@@ -1,7 +1,7 @@
 import sys
 from io import StringIO
 from views.variant import _get_genotypes  # noqa: F401
-from views.variant import variant, variant_preview
+from views.variant import variant, variant_preview, _get_variants
 
 
 def test_get_genotypes_exception():
@@ -67,3 +67,8 @@ def test_variant_preview(_demo):
 def test_wrong_variant_preview(_demo):
     response = variant_preview("something-else")
     assert response.status_code == 400
+
+
+def test_get_variants(_demo):
+    response = _get_variants("wrong")
+    assert not response

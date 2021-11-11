@@ -102,6 +102,9 @@ def test_enable_user(_admin):
     assert status == 400
     assert not response.json.get("success")
     assert response.json.get("message") == "Cannot change the status of Admin user!"
+    response, status = enable_user("abcdefxyz", "True")
+    assert status == 404
+    assert response.json.get("message") == "User not found"
 
 
 def test_bad_attempt_to_disable_user(_admin):
