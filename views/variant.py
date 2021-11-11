@@ -75,7 +75,7 @@ def _get_variants(target: str):
             * variant_id (e.g '14-76156575-A-G') - and it will return the variant(s) dict for it
                 '12-7241974-C-T', e.g., returns 2 dicts because of 'phenopolis.individual_variant'
             * gene_id (e.g. 'ENSG00000144285') - and it will return all variants linked to that gene
-            * phenopolis_id (e.g. 'PH00008256') - aand it will return all variants linked to that patient
+            * phenopolis_id (e.g. 'PH00008256') - and it will return all variants linked to that patient
         input 'target' must obey its respective string format.
     Returns:
         List[dict variant]: empty ([]), one or more variants depending on input target

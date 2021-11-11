@@ -53,6 +53,9 @@ def test_my_variants(_demo_client):
     resp = _demo_client.get("/my_variants?limit=10000")
     assert len(resp.json) == 4099
     assert "'variant_id': [{'display': '14-95236097-C-A'" in str(resp.json)
+    resp = _demo_client.get("/my_variants?limit=100001")
+    assert resp.status_code == 400
+    assert resp.json == {"message": "The maximum page size for variants is 100000"}
 
 
 def test_my_genes(_demo_client):
