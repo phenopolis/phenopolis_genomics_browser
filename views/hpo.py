@@ -3,10 +3,12 @@ HPO view - Human Phenotype Ontology
 """
 from flask import session, jsonify
 from psycopg2 import sql
-from views import application
+from views import MAX_PAGE_SIZE, application
 from views.auth import requires_auth, USER
+from views.exceptions import PhenopolisException
+from views.individual import _get_authorized_individuals
 from views.postgres import get_db, session_scope
-from views.general import process_for_display, cache_on_browser
+from views.general import _get_pagination_parameters, process_for_display, cache_on_browser
 from db.helpers import cursor2dict, query_user_config
 
 
@@ -174,3 +176,33 @@ def _preview(cur, user, hpo_id):
         q = q1 + q2
     cur.execute(q, [user])
     return cur.rowcount
+
+
+@application.route("/my_hpos")
+@requires_auth
+def get_all_hpos():
+    with session_scope() as db_session:
+        individuals = _get_authorized_individuals(db_session)
+        sqlq_all_hpos = sql.SQL(
+            """
+            select distinct t.hpo_id, t."name" from phenopolis.individual_feature ife
+            join hpo.term t on t.id = ife.feature_id
+            where ife.individual_id = any(%s) and ife.type in ('observed')
+        """
+        )
+        try:
+            limit, offset = _get_pagination_parameters()
+            if limit > MAX_PAGE_SIZE:
+                return (
+                    jsonify(message="The maximum page size for variants is {}".format(MAX_PAGE_SIZE)),
+                    400,
+                )
+            sqlq = sqlq_all_hpos + sql.SQL("limit {} offset {}".format(limit, offset))
+            with get_db() as conn:
+                with conn.cursor() as cur:
+                    cur.execute(sqlq, [[x.id for x in individuals]])
+                    hpos = cursor2dict(cur)
+            process_for_display(db_session, hpos)
+        except PhenopolisException as e:
+            return jsonify(success=False, message=str(e)), e.http_status
+    return jsonify(hpos), 200

@@ -62,3 +62,12 @@ def test_my_genes(_demo_client):
     resp = _demo_client.get("/my_genes")
     assert len(resp.json) == 3
     assert "'percentage_gene_gc_content': 49.73" in str(resp.json)
+
+
+def test_my_hpos(_demo_client):
+    resp = _demo_client.get("/my_hpos")
+    assert len(resp.json) == 7
+    assert "'Abnormal retinal morphology'" in str(resp.json)
+    resp = _demo_client.get("/my_hpos?limit=100001")
+    assert resp.status_code == 400
+    assert resp.json == {"message": "The maximum page size for variants is 100000"}
