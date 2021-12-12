@@ -7,4 +7,4 @@ amazon-linux-extras enable postgresql11
 yum install -y postgresql
 
 "${PYTHONPATH}/pip3" install cython
-"${PYTHONPATH}/pip3" install cyvcf2==0.20.9
+"${PYTHONPATH}/pip3" install cyvcf2==0.30.12 
