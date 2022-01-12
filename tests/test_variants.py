@@ -6,7 +6,7 @@ def test_get_genotypes_exception(capsys):
     # if this happens, something is out of sync between VCF file and variant table in DB
     _get_genotypes("443", "10000")
     captured = capsys.readouterr()
-    assert "no intervals found for" in captured.err
+    assert "no intervals found for" in captured.err + captured.out
 
 
 def test_variant(_demo):
