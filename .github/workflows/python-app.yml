@@ -22,7 +22,7 @@ jobs:
          # https://github.com/marketplace/actions/docker-layer-caching
          - run: docker-compose pull app db
 
-         - uses: satackey/action-docker-layer-caching@v0.0.8
+         - uses: satackey/action-docker-layer-caching@v0.0.11
            # Ignore the failure of a step and avoid terminating the job.
            continue-on-error: true
 
@@ -40,14 +40,14 @@ jobs:
          - name: Check format with black
            run: docker-compose run app black --diff --check .
 
-         - name: Test with PyTest
-           env:
-              AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-              AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
-           run: docker-compose run -e APP_ENV=prod -e AWS_SECRET_ACCESS_KEY -e AWS_ACCESS_KEY_ID app pytest -k "not test_get_genotypes_exception" --color=yes
-
          - name: Test with PyTest for S3
            env:
               AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
               AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
            run: docker-compose run -e APP_ENV=prod -e VCF_FILE="s3://phenopolis-vcf/August2019/merged2.vcf.gz" -e AWS_SECRET_ACCESS_KEY -e AWS_ACCESS_KEY_ID app pytest --color=yes -k test_variants
+
+         - name: Test with PyTest
+           env:
+              AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+              AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+           run: docker-compose run -e APP_ENV=prod -e AWS_SECRET_ACCESS_KEY -e AWS_ACCESS_KEY_ID app pytest --color=yes
