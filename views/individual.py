@@ -3,21 +3,23 @@ Individual view
 """
 import functools
 import operator
-from typing import Dict, List, Optional, Tuple, Union
-from sqlalchemy import and_, or_
-from psycopg2 import sql
-from sqlalchemy.orm import Session
 from collections import Counter
-from flask import session, jsonify, request
-from db.model import Individual, UserIndividual, Sex
-from views import HG_ASSEMBLY, MAX_PAGE_SIZE, application
-from views.auth import requires_auth, is_demo_user, USER, ADMIN_USER
-from views.exceptions import PhenopolisException
-from views.helpers import _get_json_payload
-from views.postgres import session_scope, get_db
+from typing import Dict, List, Optional, Tuple, Union
+
 from bidict import bidict
-from views.general import _get_pagination_parameters, process_for_display, cache_on_browser
 from db.helpers import cursor2dict, query_user_config
+from db.model import Individual, Sex, UserIndividual
+from flask import jsonify, request, session
+from psycopg2 import sql
+from sqlalchemy import and_, or_
+from sqlalchemy.orm import Session
+
+from views import HG_ASSEMBLY, MAX_PAGE_SIZE, application
+from views.auth import ADMIN_USER, DEMO_USER, USER, is_demo_user, requires_auth
+from views.exceptions import PhenopolisException
+from views.general import _get_pagination_parameters, cache_on_browser, process_for_display
+from views.helpers import _get_json_payload
+from views.postgres import get_db, session_scope
 from views.variant import _get_variants
 
 MAPPING_SEX_REPRESENTATIONS = bidict({"male": Sex.M, "female": Sex.F, "unknown": Sex.U})
@@ -297,9 +299,12 @@ def _individual_preview(config, individual: Individual):
     hom_count = hh.get("HOM", 0)
     het_count = hh.get("HET", 0)
     comp_het_count = hc
+    external_id = individual.external_id
+    if session[USER] == DEMO_USER:
+        external_id = "_demo_"
     # TODO: make a dict of this and not a list of lists
     config[0]["preview"] = [
-        ["External_id", individual.external_id],
+        ["External_id", external_id],
         ["Sex", individual.sex.name],
         ["Genes", [g[0] for g in _get_genes_for_individual(individual)]],
         ["Features", [f[1] for f in _get_feature_for_individual(individual)]],
@@ -312,6 +317,8 @@ def _individual_preview(config, individual: Individual):
 
 def _map_individual2output(config, individual: Individual):
     config[0]["metadata"]["data"][0].update(individual.as_dict())
+    if session[USER] == DEMO_USER:
+        config[0]["metadata"]["data"][0]["external_id"] = "_demo_"
     config[0]["metadata"]["data"][0]["internal_id"] = [{"display": individual.phenopolis_id}]
     config[0]["metadata"]["data"][0]["simplified_observed_features"] = [
         {"display": x[1], "end_href": x[0]} for x in _get_feature_for_individual(individual)
@@ -369,9 +376,9 @@ def _get_genes_for_individual(individual: Union[Individual, dict]) -> List[Tuple
 
 def _fetch_all_individuals(db_session: Session, offset, limit) -> List[Dict]:
     """
-    For admin users it returns all individuals and all users having access to them.
-    But for other than admin it returns only individuals which this user has access, other users having access are
-    not returned
+    For admin user it returns all individuals and all users having access to them.
+    But for others than admin it returns only individuals which this user has access,
+    other users having access are not returned
     """
     query = _query_all_individuals() + sql.SQL("limit {} offset {}".format(limit, offset))
     with get_db() as conn:
