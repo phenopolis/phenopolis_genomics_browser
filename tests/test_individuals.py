@@ -1,12 +1,10 @@
 import pytest
 import views.individual as vi  # to allow MAX_PAGE_SIZE redefinition
-
-from sqlalchemy.orm import Session
-
 from db.model import Individual, UserIndividual
-from views.individual import get_individual_by_id, get_all_individuals, MAPPING_SEX_REPRESENTATIONS
-from views.postgres import session_scope
+from sqlalchemy.orm import Session
 from views.auth import USER
+from views.individual import MAPPING_SEX_REPRESENTATIONS, get_all_individuals, get_individual_by_id
+from views.postgres import session_scope
 
 
 @pytest.mark.parametrize(
@@ -14,7 +12,7 @@ from views.auth import USER
     (
         ("PH00008267", "all", "'Number of individuals that are wildtype in our dataset'"),
         ("PH00008258", "preview", "'Visual impairment', 'Macular dystrophy'"),
-        ("PH00008258", "metadata", "WebsterURMD_Sample_IC16489"),
+        ("PH00008258", "metadata", "_demo_"),
     ),
 )
 def test_get_authorised_individual_by_id(_demo, query, subset, msg):
@@ -66,6 +64,7 @@ def test_get_individual_preview_by_id(_admin):
 
     # test individual with homozygous variants
     individual_view = _get_view_individual_by_id(identifier="PH00008256", subset="preview")
+    assert individual_view.get("preview")[0][1] == "WebsterURMD_Sample_GV4344"
     assert individual_view.get("preview")[4][0] == "Number of hom variants"
     assert individual_view.get("preview")[4][1] == 82, "Unexpected number of homozygous variants"
     assert individual_view.get("preview")[5][0] == "Number of compound hets"

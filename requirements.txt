@@ -13,7 +13,7 @@ ujson>=3.0,<3.1
 python-dotenv>=0.14,<0.15
 itsdangerous>=1.1,<1.2
 bidict>=0.21,<0.22
-cyvcf2>=0.30.12
+cyvcf2==0.30.12
 boto3>=1.16.43
 
 # for checks
