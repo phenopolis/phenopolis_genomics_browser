@@ -16,7 +16,7 @@ jobs:
       steps:
          - uses: actions/checkout@v2
 
-         - name: Set empty Private ENV mockup
+         - name: Set empty Private ENV mock up
            run: touch private.env
 
          # https://github.com/marketplace/actions/docker-layer-caching
@@ -44,7 +44,7 @@ jobs:
            env:
               AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
               AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
-           run: docker-compose run -e APP_ENV=prod -e AWS_SECRET_ACCESS_KEY -e AWS_ACCESS_KEY_ID app pytest -k "test_get_genotypes_exception" --color=yes
+           run: docker-compose run -e APP_ENV=prod -e AWS_SECRET_ACCESS_KEY -e AWS_ACCESS_KEY_ID app pytest -k "not test_get_genotypes_exception" --color=yes
 
          - name: Test with PyTest for S3
            env:
