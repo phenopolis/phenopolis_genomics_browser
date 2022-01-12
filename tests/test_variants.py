@@ -1,20 +1,17 @@
-import sys
-from io import StringIO
 from views.variant import _get_genotypes  # noqa: F401
-from views.variant import variant, variant_preview, _get_variants
+from views.variant import _get_variants, variant, variant_preview
 
 
-def test_get_genotypes_exception():
+def test_get_genotypes_exception(capsys):
     # if this happens, something is out of sync between VCF file and variant table in DB
-    redirected_error = sys.stderr = StringIO()
-    exec('_get_genotypes("443", "10000")')
-    err = redirected_error.getvalue()
-    assert "no intervals found for" in err
+    _get_genotypes("443", "10000")
+    captured = capsys.readouterr()
+    assert "no intervals found for" in captured.err
 
 
 def test_variant(_demo):
     """
-    This tests VCF access via cvycf2
+    This tests VCF access via cyvcf2
     tests both for subset and entry not in DB, the real one is 14-76127655-C-T
     res -> str
     """
