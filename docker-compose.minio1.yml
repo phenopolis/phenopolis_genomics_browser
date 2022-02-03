@@ -1,0 +1,50 @@
+# docker-compose -f docker-compose.yml -f docker-compose.minio1.yml up
+version: '3.8'
+
+x-minio-common:
+   &minio-common
+   env_file:
+      - private.env
+      - public.env
+   image: quay.io/minio/minio:latest
+   command: server --console-address ":9001" /data
+   expose:
+      - "9000"
+      - "9001"
+   healthcheck:
+      test:
+         [
+            "CMD",
+            "curl",
+            "-f",
+            "http://localhost:9000/minio/health/live"
+         ]
+      interval: 30s
+      timeout: 20s
+      retries: 3
+
+services:
+   app:
+      depends_on:
+         - db
+         - nginx
+
+   minio1:
+      <<: *minio-common
+      hostname: minio1
+      volumes:
+         - data:/data
+
+   nginx:
+      image: nginx:1.19.2-alpine
+      hostname: nginx
+      volumes:
+         - ./nginx1.conf:/etc/nginx/nginx.conf:ro
+      ports:
+         - "9000:9000"
+         - "9001:9001"
+      depends_on:
+         - minio1
+
+volumes:
+   data:
