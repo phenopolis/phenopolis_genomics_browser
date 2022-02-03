@@ -20,7 +20,8 @@ services:
          - ./:/app
       depends_on:
          - db
-
+      extra_hosts:
+         - "host.docker.internal:host-gateway"
    db:
       <<: *env-common
       image: postgres:12-alpine

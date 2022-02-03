@@ -2,40 +2,56 @@
 Received Uploaded Files
 """
 import os
+
 import boto3
 from botocore.client import Config
-from flask import request, jsonify
+from flask import jsonify, request
 
 from views import application
-from views.auth import requires_admin
+from views.auth import requires_user
 from views.exceptions import PhenopolisException
 
+REMOTE_FILES = int(os.getenv("REMOTE_FILES", 0))
+
+BUCKET = os.getenv("BUCKET")
 
 UPLOAD_FOLDER = "upload"
 
-S3_KEY = os.getenv("VCF_S3_KEY")
-SECRET_ACCESS_KEY = os.environ.get("VCF_S3_SECRET")
 DOWNLOAD_SIGNED_URL_TIME = 300
 
-s3_client = boto3.client(
-    "s3",
-    aws_access_key_id=S3_KEY,
-    aws_secret_access_key=SECRET_ACCESS_KEY,
-    config=Config(signature_version="s3v4", region_name="eu-west-2"),
-)
+if REMOTE_FILES:
+    s3_client1 = boto3.client("s3", config=Config(signature_version="s3v4", region_name=os.getenv("REGION")))
+    s3_client2 = s3_client1
+else:
+    s3_client1 = boto3.client(
+        "s3",
+        endpoint_url="http://host.docker.internal:9000",
+        aws_access_key_id=os.getenv("MINIO_ROOT_USER"),
+        aws_secret_access_key=os.getenv("MINIO_ROOT_PASSWORD"),
+        config=Config(signature_version="s3v4", region_name=os.getenv("REGION")),
+        use_ssl=False,
+        verify=False,
+    )
+    s3_client2 = boto3.client(
+        "s3",
+        endpoint_url="http://localhost:9000",
+        aws_access_key_id=os.getenv("MINIO_ROOT_USER"),
+        aws_secret_access_key=os.getenv("MINIO_ROOT_PASSWORD"),
+        config=Config(signature_version="s3v4", region_name=os.getenv("REGION")),
+        use_ssl=False,
+        verify=False,
+    )
 
 
 @application.route("/preSignS3URL", methods=["GET", "POST"])
-@requires_admin
+@requires_user
 def presign_S3():
     data = request.get_json()
     filename = data.get("filename")
     prefix = data.get("prefix")
 
     try:
-        response = s3_client.generate_presigned_post(
-            Bucket="phenopolis-website-uploads", Key=prefix + "/" + filename, ExpiresIn=3600
-        )
+        response = s3_client2.generate_presigned_post(Bucket=BUCKET, Key=prefix + "/" + filename, ExpiresIn=3600)
     except PhenopolisException as e:
         application.logger.error(str(e))
         return None
@@ -44,11 +60,10 @@ def presign_S3():
 
 
 @application.route("/files/<individual_id>", methods=["GET", "POST"])
-@requires_admin
+@requires_user
 def getUploadedFile(individual_id):
     try:
-        response = s3_client.list_objects_v2(Bucket="phenopolis-website-uploads", Prefix=individual_id, MaxKeys=100)
-
+        response = s3_client1.list_objects_v2(Bucket=BUCKET, Prefix=individual_id, MaxKeys=100)
         if response["KeyCount"] == 0:
             return jsonify(response), 404
     except PhenopolisException as e:
@@ -59,23 +74,21 @@ def getUploadedFile(individual_id):
 
 
 @application.route("/files", methods=["DELETE"])
-@requires_admin
+@requires_user
 def delete_file():
     data = request.get_json()
     fileKey = data.get("fileKey")
-    response = s3_client.delete_object(Bucket="phenopolis-website-uploads", Key=fileKey)
+    response = s3_client1.delete_object(Bucket=BUCKET, Key=fileKey)
 
     return jsonify(message="Delete File Success", response=response), 200
 
 
 @application.route("/file_download", methods=["POST"])
-@requires_admin
+@requires_user
 def download_file():
     data = request.get_json()
     fileKey = data.get("fileKey")
-    response = s3_client.generate_presigned_url(
-        "get_object",
-        Params={"Bucket": "phenopolis-website-uploads", "Key": fileKey},
-        ExpiresIn=DOWNLOAD_SIGNED_URL_TIME,
+    response = s3_client2.generate_presigned_url(
+        "get_object", Params={"Bucket": BUCKET, "Key": fileKey}, ExpiresIn=DOWNLOAD_SIGNED_URL_TIME,
     )
     return jsonify(filename=fileKey, response=response), 200

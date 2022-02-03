@@ -3,11 +3,12 @@ Authentication modules
 """
 
 from functools import wraps
-from flask import session, request, jsonify
+
+from db.model import User
+from flask import jsonify, request, session
 from passlib.handlers.argon2 import argon2
 from sqlalchemy import and_
 
-from db.model import User
 from views import application
 from views.postgres import session_scope
 
@@ -77,6 +78,15 @@ def requires_admin_or_user(f):
         if session.get(USER) in [ADMIN_USER, user_id]:
             return f(*args, **kwargs)
         return jsonify(error="Only Admin or the own User can perform this operation"), 403
+
+    return decorated
+
+
+def requires_user(f):
+    @wraps(f)
+    def decorated(*args, **kwargs):
+        if session.get(USER) != DEMO_USER:
+            return f(*args, **kwargs)
 
     return decorated
 
