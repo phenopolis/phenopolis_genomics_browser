@@ -13,34 +13,39 @@ from views.exceptions import PhenopolisException
 
 REMOTE_FILES = int(os.getenv("REMOTE_FILES", 0))
 
-BUCKET = os.getenv("BUCKET")
+BUCKET = os.getenv("BUCKET", "phenopolis-website-uploads")
+REGION = os.getenv("REGION", "eu-west-2")
 
-UPLOAD_FOLDER = "upload"
-
-DOWNLOAD_SIGNED_URL_TIME = 300
+M_USER = os.getenv("MINIO_ROOT_USER")
+M_PASS = os.getenv("MINIO_ROOT_PASSWORD")
 
 if REMOTE_FILES:
-    s3_client1 = boto3.client("s3", config=Config(signature_version="s3v4", region_name=os.getenv("REGION")))
+    s3_client1 = boto3.client("s3", config=Config(signature_version="s3v4", region_name=REGION))
     s3_client2 = s3_client1
 else:
     s3_client1 = boto3.client(
         "s3",
         endpoint_url="http://host.docker.internal:9000",
-        aws_access_key_id=os.getenv("MINIO_ROOT_USER"),
-        aws_secret_access_key=os.getenv("MINIO_ROOT_PASSWORD"),
-        config=Config(signature_version="s3v4", region_name=os.getenv("REGION")),
+        aws_access_key_id=M_USER,
+        aws_secret_access_key=M_PASS,
+        config=Config(signature_version="s3v4", region_name=REGION),
         use_ssl=False,
         verify=False,
     )
     s3_client2 = boto3.client(
         "s3",
         endpoint_url="http://localhost:9000",
-        aws_access_key_id=os.getenv("MINIO_ROOT_USER"),
-        aws_secret_access_key=os.getenv("MINIO_ROOT_PASSWORD"),
-        config=Config(signature_version="s3v4", region_name=os.getenv("REGION")),
+        aws_access_key_id=M_USER,
+        aws_secret_access_key=M_PASS,
+        config=Config(signature_version="s3v4", region_name=REGION),
         use_ssl=False,
         verify=False,
     )
+
+try:
+    s3_client1.create_bucket(Bucket=BUCKET)
+except Exception:
+    pass
 
 
 @application.route("/preSignS3URL", methods=["GET", "POST"])
@@ -89,6 +94,6 @@ def download_file():
     data = request.get_json()
     fileKey = data.get("fileKey")
     response = s3_client2.generate_presigned_url(
-        "get_object", Params={"Bucket": BUCKET, "Key": fileKey}, ExpiresIn=DOWNLOAD_SIGNED_URL_TIME,
+        "get_object", Params={"Bucket": BUCKET, "Key": fileKey}, ExpiresIn=300,
     )
     return jsonify(filename=fileKey, response=response), 200

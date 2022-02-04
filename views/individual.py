@@ -40,7 +40,7 @@ def get_all_individuals():
             for ind in individuals:
                 a1, a2 = zip(*[x.split("@") for x in sorted(ind["ancestor_observed_features"])])
                 o1, o2 = zip(*[x.split("@") for x in sorted(ind["observed_features"])])
-                # NOTE: casting list in strings just for frotend, but list is better, I guess (Alan)
+                # NOTE: casting list in strings just for frontend, but list is better, I guess (Alan)
                 ind["ancestor_observed_features"] = ",".join(a1)
                 ind["ancestor_observed_features_names"] = ",".join(a2)
                 ind["observed_features"] = ",".join(o1)

@@ -18,28 +18,50 @@ Set the following environment variable in
 * `public.env`:
 
 ```bash
-VCF_FILE=...
+...
+HG_ASSEMBLY=GRCh37
+
+# Uploaded files are local (0) or remote (1)?
+# Local uses MinIO, remote uses AWS S3, see private.env for further setup
+REMOTE_FILES=0
+
+# Set if local path or remote "s3://_bucket_/_folder_/_file_.vcf.gz" (see private.env for more)
+# It's possible to use local uploaded files with remote VCF_FILE
+VCF_FILE=_my_folder_/_my_file_.vcf.gz
+
+# Set bucket name and region
+BUCKET=_my_bucket_name_
+REGION=eu-west-2
 ```
 
-Where `VCF_FILE` can be either a local file (e.g. `path/file.vcf.gz`) or a remote `S3` file (e.g. `s3://any_remote/file.vcf.gz` )
+Where `VCF_FILE` can be either a local file (e.g. `path/file.vcf.gz`) or a remote `S3` file (e.g. `s3://any_remote/file.vcf.gz`)
 
 It's critical that the `VCF_FILE` has along its `tbi` file as well.
 
 * Create `private.env` and add:
 
 ```bash
-AWS_SECRET_ACCESS_KEY=....
-AWS_ACCESS_KEY_ID=....
+APP_ENV=prod # or debug
+
+# Set public.env REMOTE_FILES accordingly
+
+# Set below if using AWS S3 for uploaded files and/or remote VCF_FILE in public.env
+AWS_SECRET_ACCESS_KEY=... # ignore it if not using AWS S3
+AWS_ACCESS_KEY_ID=... # ignore it if not using AWS S3
+
+# Set below if using local uploaded files otherwise ignore them
+MINIO_ROOT_USER=minio # change it for your own safety
+MINIO_ROOT_PASSWORD=minio123 # change it for your own safety
 ```
 
 Note: do not add single or double quotes around the value as they are preserved.
 
 ### Build and launch the services
 
-This will set up the database and load the demo database.
+This will set up the database and load the demo database running local S3 file service (by [MinIO](https://min.io/)).
 
 ```bash
-docker compose up
+docker-compose -f docker-compose.yml -f docker-compose.minio1.yml up
 ```
 
 If one wants to rebuild fresh images, one can do:

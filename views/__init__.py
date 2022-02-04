@@ -1,20 +1,21 @@
 """
-Package to init views
+Package views
 """
-import os
 import datetime
-from flask import Flask
-from flask_sessionstore import SqlAlchemySessionInterface
-from flask_compress import Compress
-from flask_caching import Cache
-from flask_mail import Mail
-from flask_sqlalchemy import SQLAlchemy
 import logging
+import os
 from logging.config import dictConfig
-from flask.logging import default_handler
-from cyvcf2 import VCF
-from subprocess import Popen, STDOUT, PIPE
+from subprocess import PIPE, STDOUT, Popen
+
 import psycopg2
+from cyvcf2 import VCF
+from flask import Flask
+from flask.logging import default_handler
+from flask_caching import Cache
+from flask_compress import Compress
+from flask_mail import Mail
+from flask_sessionstore import SqlAlchemySessionInterface
+from flask_sqlalchemy import SQLAlchemy
 
 # Options are: prod, dev, debug (default)
 APP_ENV = os.getenv("APP_ENV", "debug")
@@ -33,7 +34,7 @@ ENV_LOG_FLAG = True
 if APP_ENV in ["prod"]:
     ENV_LOG_FLAG = False
 
-variant_file = VCF(os.getenv("VCF_FILE"))
+variant_file = VCF(os.getenv("VCF_FILE", "schema/small_demo.vcf.gz"))
 
 
 def _configure_logs():
@@ -64,7 +65,7 @@ def _configure_logs():
             "root": {"level": log_level, "handlers": ["wsgi"]},
         }
     )
-    # add SQLalchemy logs
+    # add SQLAlchemy logs
     logging.getLogger("sqlalchemy").addHandler(default_handler)
 
 
@@ -130,19 +131,20 @@ try:
 except Exception:
     phenoid_mapping = {}
 
+import views.auth
+import views.autocomplete
+import views.gene
+
 # NOTE: These imports must be placed at the end of this file
 # flake8: noqa E402
 import views.general
-import views.postgres
-import views.auth
-import views.statistics
-import views.gene
-import views.variant
-import views.individual
 import views.hpo
-import views.users
-import views.user_individuals
-import views.autocomplete
+import views.individual
+import views.postgres
 import views.save_configuration
-import views.variant_classification
+import views.statistics
 import views.upload
+import views.user_individuals
+import views.users
+import views.variant
+import views.variant_classification
