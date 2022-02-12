@@ -1,17 +1,18 @@
 """
 variant view
 """
-from views.exceptions import PhenopolisException
 import requests
+from db.helpers import cursor2dict, query_user_config
+from flask import Response, jsonify
 from flask.globals import session
 from psycopg2 import sql
-from views import MAX_PAGE_SIZE, application, variant_file, phenoid_mapping, HG_ASSEMBLY
+
+from views import HG_ASSEMBLY, MAX_PAGE_SIZE, application, phenoid_mapping, variant_file
 from views.auth import DEMO_USER, USER, requires_auth
 from views.autocomplete import CHROMOSOME_POS_REF_ALT_REGEX, ENSEMBL_GENE_REGEX, PATIENT_REGEX
-from views.postgres import get_db, session_scope
+from views.exceptions import PhenopolisException
 from views.general import _get_pagination_parameters, cache_on_browser, process_for_display
-from flask import jsonify, Response
-from db.helpers import cursor2dict, query_user_config
+from views.postgres import get_db, session_scope
 
 msg_var = "Wrong variant id. Format must be chrom-pos-ref-alt"
 

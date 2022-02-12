@@ -11,39 +11,41 @@ from views import application
 from views.auth import requires_user
 from views.exceptions import PhenopolisException
 
-REMOTE_FILES = int(os.getenv("REMOTE_FILES", 0))
-
 BUCKET = os.getenv("BUCKET", "phenopolis-website-uploads")
 REGION = os.getenv("REGION", "eu-west-2")
 
-M_USER = os.getenv("MINIO_ROOT_USER")
-M_PASS = os.getenv("MINIO_ROOT_PASSWORD")
+S3_USER = os.getenv("S3_ACCESS_KEY_ID")
+S3_PASS = os.getenv("S3_SECRET_ACCESS_KEY")
+ENDPOINT = os.getenv("ENDPOINT")
 
-if REMOTE_FILES:
-    s3_client1 = boto3.client("s3", config=Config(signature_version="s3v4", region_name=REGION))
-    s3_client2 = s3_client1
-else:
-    s3_client1 = boto3.client(
-        "s3",
-        endpoint_url="http://host.docker.internal:9000",
-        aws_access_key_id=M_USER,
-        aws_secret_access_key=M_PASS,
-        config=Config(signature_version="s3v4", region_name=REGION),
-        use_ssl=False,
-        verify=False,
-    )
-    s3_client2 = boto3.client(
-        "s3",
-        endpoint_url="http://localhost:9000",
-        aws_access_key_id=M_USER,
-        aws_secret_access_key=M_PASS,
-        config=Config(signature_version="s3v4", region_name=REGION),
-        use_ssl=False,
-        verify=False,
-    )
+s3_client1 = boto3.client(  # for listing and delete
+    "s3",
+    endpoint_url=ENDPOINT,  # http://minio-server:9000 works
+    # endpoint_url="http://localhost:9000", # did not work
+    # endpoint_url="http://host.docker.internal:9000", # does work
+    aws_access_key_id=S3_USER,
+    aws_secret_access_key=S3_PASS,
+    config=Config(signature_version="s3v4", region_name=REGION),
+    # use_ssl=False,
+    # verify=False,
+)
+
+s3_client2 = s3_client1
+if ENDPOINT:
+    if "minio-server" in ENDPOINT:
+        s3_client2 = boto3.client(  # needs localhost, because of uppy? to presign (upload) and download
+            "s3",
+            endpoint_url="http://localhost:9000",  # worked
+            # endpoint_url="http://minio-server:9000", # does not work
+            aws_access_key_id=S3_USER,
+            aws_secret_access_key=S3_PASS,
+            config=Config(signature_version="s3v4", region_name=REGION),
+            # use_ssl=False,
+            # verify=False,
+        )
 
 try:
-    s3_client1.create_bucket(Bucket=BUCKET)
+    s3_client1.create_bucket(Bucket=BUCKET, CreateBucketConfiguration={"LocationConstraint": REGION})
 except Exception:
     pass
 

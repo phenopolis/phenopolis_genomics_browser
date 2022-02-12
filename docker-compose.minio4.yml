@@ -1,4 +1,4 @@
-# docker-compose -f docker-compose.yml -f docker-compose.minio4.yml up
+# source private.env; export S3_ACCESS_KEY_ID; export S3_SECRET_ACCESS_KEY; docker-compose -f docker-compose.yml -f docker-compose.minio4.yml up
 version: '3.8'
 
 x-minio-common:
@@ -6,11 +6,11 @@ x-minio-common:
    env_file:
       - private.env
       - public.env
+   environment:
+      MINIO_ROOT_USER: ${S3_ACCESS_KEY_ID}
+      MINIO_ROOT_PASSWORD: ${S3_SECRET_ACCESS_KEY}
    image: quay.io/minio/minio:latest
    command: server --console-address ":9001" http://minio{1...4}/data{1...2}
-   expose:
-      - "9000"
-      - "9001"
    healthcheck:
       test:
          [
@@ -27,7 +27,7 @@ services:
    app:
       depends_on:
          - db
-         - nginx
+         - minio-server
 
    # starts 4 docker containers running minio server instances.
    # using nginx reverse proxy, load balancing, you can access
@@ -60,11 +60,11 @@ services:
          - data4-1:/data1
          - data4-2:/data2
 
-   nginx:
+   minio-server:
       image: nginx:1.19.2-alpine
-      hostname: nginx
+      hostname: minio-server
       volumes:
-         - ./nginx4.conf:/etc/nginx/nginx.conf:ro
+         - ./config/nginx4.conf:/etc/nginx/nginx.conf:ro
       ports:
          - "9000:9000"
          - "9001:9001"
@@ -75,7 +75,6 @@ services:
          - minio4
 
 volumes:
-   db:
    data1-1:
    data1-2:
    data2-1:
