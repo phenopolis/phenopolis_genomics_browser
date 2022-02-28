@@ -19,19 +19,10 @@ Set the following environment variable in
 
 ```bash
 ...
-HG_ASSEMBLY=GRCh37
+HG_ASSEMBLY=GRCh37 # or GRCh38
 
-# Uploaded files are local (0) or remote (1)?
-# Local uses MinIO, remote uses AWS S3, see private.env for further setup
-REMOTE_FILES=0
-
-# Set if local path or remote "s3://_bucket_/_folder_/_file_.vcf.gz" (see private.env for more)
-# It's possible to use local uploaded files with remote VCF_FILE
-VCF_FILE=_my_folder_/_my_file_.vcf.gz
-
-# Set bucket name and region
-BUCKET=_my_bucket_name_
-REGION=eu-west-2
+# Set if local path or remote "s3://_bucket_/_folder_/_file_.vcf.gz"
+VCF_FILE=schema/small_demo.vcf.gz
 ```
 
 Where `VCF_FILE` can be either a local file (e.g. `path/file.vcf.gz`) or a remote `S3` file (e.g. `s3://any_remote/file.vcf.gz`)
@@ -43,15 +34,28 @@ It's critical that the `VCF_FILE` has along its `tbi` file as well.
 ```bash
 APP_ENV=prod # or debug
 
-# Set public.env REMOTE_FILES accordingly
+# Set bucket name and region
+BUCKET=_your_bucket_
+REGION=_region_
 
-# Set below if using AWS S3 for uploaded files and/or remote VCF_FILE in public.env
-AWS_SECRET_ACCESS_KEY=... # ignore it if not using AWS S3
-AWS_ACCESS_KEY_ID=... # ignore it if not using AWS S3
+# Set below if using remote S3 (AWS, Wasabi etc.) or local (MinIO)
+S3_ACCESS_KEY_ID=...
+S3_SECRET_ACCESS_KEY=...
 
-# Set below if using local uploaded files otherwise ignore them
-MINIO_ROOT_USER=minio # change it for your own safety
-MINIO_ROOT_PASSWORD=minio123 # change it for your own safety
+# Wasabi example
+# S3_ACCESS_KEY_ID=...
+# S3_SECRET_ACCESS_KEY=...
+# ENDPOINT=https://s3.eu-central-1.wasabisys.com
+# REGION=eu-central-1
+
+# MinIO example
+# S3_ACCESS_KEY_ID=minio # change it for your own safety
+# S3_SECRET_ACCESS_KEY=minio123 # change it for your own safety
+# ENDPOINT=http://minio-server:9000
+
+# Set accordingly
+MAIL_SUPPRESS_SEND=false # or true
+MAIL_PASSWORD=...
 ```
 
 Note: do not add single or double quotes around the value as they are preserved.

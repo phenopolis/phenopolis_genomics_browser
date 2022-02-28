@@ -26,8 +26,6 @@ s3_client1 = boto3.client(  # for listing and delete
     aws_access_key_id=S3_USER,
     aws_secret_access_key=S3_PASS,
     config=Config(signature_version="s3v4", region_name=REGION),
-    # use_ssl=False,
-    # verify=False,
 )
 
 s3_client2 = s3_client1
@@ -36,12 +34,11 @@ if ENDPOINT:
         s3_client2 = boto3.client(  # needs localhost, because of uppy? to presign (upload) and download
             "s3",
             endpoint_url="http://localhost:9000",  # worked
+            # see https://docs.min.io/docs/how-to-use-aws-sdk-for-python-with-minio-server.html
             # endpoint_url="http://minio-server:9000", # does not work
             aws_access_key_id=S3_USER,
             aws_secret_access_key=S3_PASS,
             config=Config(signature_version="s3v4", region_name=REGION),
-            # use_ssl=False,
-            # verify=False,
         )
 
 try:

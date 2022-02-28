@@ -41,6 +41,7 @@ services:
       volumes:
          - ./config/nginx1.conf:/etc/nginx/nginx.conf:ro
       ports:
+         # needed to access console http://127.0.0.1:9001/login
          - "9000:9000"
          - "9001:9001"
       depends_on:
