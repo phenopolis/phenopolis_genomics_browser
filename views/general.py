@@ -2,18 +2,20 @@
 General modules
 """
 import traceback
-from views.postgres import get_db
-import ujson as json
+from datetime import datetime, timedelta
+from functools import wraps
 from time import strftime
-from flask import jsonify, request, Response, session
+
+import ujson as json
+from flask import Response, jsonify, request, session
 from flask_mail import Message
 from sqlalchemy.orm import Session
 from werkzeug.exceptions import HTTPException
-from views import MAIL_USERNAME, VERSION, application, mail, APP_ENV
+
+from views import APP_ENV, MAIL_USERNAME, VERSION, application, mail
 from views.auth import DEMO_USER, USER
 from views.exceptions import PhenopolisException
-from datetime import datetime, timedelta
-from functools import wraps
+from views.postgres import get_db
 
 
 @application.route("/check_health")
@@ -167,7 +169,7 @@ def cache_on_browser(minutes=5):
 def _get_pagination_parameters():
     try:
         offset = int(request.args.get("offset", 0))
-        limit = int(request.args.get("limit", 10))
+        limit = int(request.args.get("limit", 1000))
     except ValueError as e:
         raise PhenopolisException(str(e), 500)
     return limit, offset
