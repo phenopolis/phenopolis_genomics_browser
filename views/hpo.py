@@ -1,15 +1,16 @@
 """
 HPO view - Human Phenotype Ontology
 """
-from flask import session, jsonify
+from db.helpers import cursor2dict, query_user_config
+from flask import jsonify, session
 from psycopg2 import sql
+
 from views import MAX_PAGE_SIZE, application
-from views.auth import requires_auth, USER
+from views.auth import USER, requires_auth
 from views.exceptions import PhenopolisException
+from views.general import _get_pagination_parameters, cache_on_browser, process_for_display
 from views.individual import _get_authorized_individuals
 from views.postgres import get_db, session_scope
-from views.general import _get_pagination_parameters, process_for_display, cache_on_browser
-from db.helpers import cursor2dict, query_user_config
 
 
 @application.route("/<language>/hpo/<hpo_id>")

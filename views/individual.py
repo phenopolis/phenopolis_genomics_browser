@@ -147,12 +147,12 @@ def create_individual():
         message = "Individuals were created"
         ids_new_individuals = []
         try:
-            # generate a new unique id for the individual
+            # generate a new unique ID for the individual
             for trio in new_individuals:
                 i, g, f = trio
                 # insert individual
                 db_session.add(i)
-                # to refresh i and with new id and phenopolis_id, both lines below needed (black magic)
+                # to refresh i and with new ID and phenopolis_id, both lines below needed (black magic)
                 db_session.query(Individual).count()
                 db_session.refresh(i)
                 # add entry to user_individual
@@ -249,7 +249,7 @@ def _individual_complete_view(db_session: Session, config, individual: Individua
     variants = _get_variants(individual.phenopolis_id)
     hom_vars = [x for x in variants if "HOM" in x["zigosity"]]
     het_vars = [x for x in variants if "HET" in x["zigosity"]]
-    # hom variants
+    # HOM variants
     config[0]["rare_homs"]["data"] = hom_vars
     # rare variants
     config[0]["rare_variants"]["data"] = het_vars
