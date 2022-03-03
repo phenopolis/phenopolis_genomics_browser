@@ -1,6 +1,8 @@
 import api from './api';
 import axios from 'axios';
 
+// @ALAN - this where all the frontend functions are defined
+
 function getStatistics() {
   return axios.get(api.STATISTICS, {
     withCredentials: true,
@@ -85,6 +87,8 @@ function createIndividual(data) {
 }
 
 function getIndividualInformation(param) {
+  console.log(param)
+
   return axios.get(api.INDIVIDUAL + param, {
     withCredentials: true,
   });

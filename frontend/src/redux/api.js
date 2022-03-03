@@ -1,5 +1,7 @@
 const API_URL = '/api';
 
+// @ALAN - this where all the frontend endpoints are defined
+
 export default {
   BASE_URL: API_URL,
   STATISTICS: API_URL + '/statistics',

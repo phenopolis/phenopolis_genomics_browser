@@ -20,11 +20,11 @@ const Gene = (props) => {
   }));
 
   useEffect(() => {
-    dispatch(getGene(props.match.params.geneId));
+    dispatch(getGene(props.match.params.geneId + '?limit=30&offset=10'));
   }, [location]);
 
   useEffect(() => {
-    dispatch(getGene(props.match.params.geneId));
+    dispatch(getGene(props.match.params.geneId + '?limit=30&offset=10'));
   }, []);
 
   return (

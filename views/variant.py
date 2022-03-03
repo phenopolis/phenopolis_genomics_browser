@@ -1,17 +1,18 @@
 """
 variant view
 """
-from views.exceptions import PhenopolisException
 import requests
+from db.helpers import cursor2dict, query_user_config
+from flask import Response, jsonify
 from flask.globals import session
 from psycopg2 import sql
-from views import MAX_PAGE_SIZE, application, variant_file, phenoid_mapping, HG_ASSEMBLY
+
+from views import HG_ASSEMBLY, MAX_PAGE_SIZE, application, phenoid_mapping, variant_file
 from views.auth import DEMO_USER, USER, requires_auth
 from views.autocomplete import CHROMOSOME_POS_REF_ALT_REGEX, ENSEMBL_GENE_REGEX, PATIENT_REGEX
-from views.postgres import get_db, session_scope
+from views.exceptions import PhenopolisException
 from views.general import _get_pagination_parameters, cache_on_browser, process_for_display
-from flask import jsonify, Response
-from db.helpers import cursor2dict, query_user_config
+from views.postgres import get_db, session_scope
 
 msg_var = "Wrong variant id. Format must be chrom-pos-ref-alt"
 
@@ -80,6 +81,14 @@ def _get_variants(target: str):
     Returns:
         List[dict variant]: empty ([]), one or more variants depending on input target
     """
+    limit, offset = _get_pagination_parameters()
+    if limit > MAX_PAGE_SIZE:
+        return (
+            jsonify(message="The maximum page size for variants is {}".format(MAX_PAGE_SIZE)),
+            400,
+        )
+    sql_page = sql.SQL("limit {} offset {}".format(limit, offset))
+
     if CHROMOSOME_POS_REF_ALT_REGEX.match(target):
         c, p, r, a = target.split("-")
         filter = sql.SQL(f"""where v.chrom = '{c}' and v.pos = {p} and v."ref" = '{r}' and v.alt = '{a}'""")
@@ -147,7 +156,7 @@ def _get_variants(target: str):
         """
     )
 
-    sqlq = sqlq_main + filter + sqlq_end
+    sqlq = sqlq_main + filter + sqlq_end + sql_page
     with get_db() as conn:
         with conn.cursor() as cur:
             cur.execute(sqlq, {"hga": HG_ASSEMBLY})

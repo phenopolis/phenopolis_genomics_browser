@@ -39,7 +39,7 @@ const Individual = (props) => {
   }));
 
   useEffect(() => {
-    dispatch(getIndividualInformation(props.match.params.individualId));
+    dispatch(getIndividualInformation(props.match.params.individualId + '?limit=50&offset=50'));
   }, [location]);
 
   const handleChange = (event, newValue) => {
