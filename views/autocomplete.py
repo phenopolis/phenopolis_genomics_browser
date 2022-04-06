@@ -1,19 +1,19 @@
 """
 Autocomplete view
 """
-from db.helpers import cursor2dict
 import re
 from typing import List
 
-from flask import jsonify, session, request
-from sqlalchemy import and_, Text, cast
+from flask import jsonify, request, session
+from psycopg2 import sql
+from sqlalchemy import Text, and_, cast
 from sqlalchemy.orm import Session
 
+from db.helpers import cursor2dict
 from db.model import Individual, NewGene, NewVariant, TranscriptConsequence, UserIndividual
-from views import application, HG_ASSEMBLY
-from views.auth import requires_auth, USER
+from views import HG_ASSEMBLY, application
+from views.auth import USER, requires_auth
 from views.postgres import get_db, session_scope
-from psycopg2 import sql
 
 CHROMOSOME_POS_REGEX = re.compile(r"^(\w+)[-:](\d+)$")
 CHROMOSOME_POS_REF_REGEX = re.compile(r"^(\w+)[-:](\d+)[-:]([ACGT\*]+)$", re.IGNORECASE)

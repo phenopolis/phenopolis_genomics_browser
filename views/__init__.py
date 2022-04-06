@@ -1,20 +1,21 @@
 """
 Package to init views
 """
-import os
 import datetime
-from flask import Flask
-from flask_sessionstore import SqlAlchemySessionInterface
-from flask_compress import Compress
-from flask_caching import Cache
-from flask_mail import Mail
-from flask_sqlalchemy import SQLAlchemy
 import logging
+import os
 from logging.config import dictConfig
-from flask.logging import default_handler
-from cyvcf2 import VCF
-from subprocess import Popen, STDOUT, PIPE
+from subprocess import PIPE, STDOUT, Popen
+
 import psycopg2
+from cyvcf2 import VCF
+from flask import Flask
+from flask.logging import default_handler
+from flask_caching import Cache
+from flask_compress import Compress
+from flask_mail import Mail
+from flask_sessionstore import SqlAlchemySessionInterface
+from flask_sqlalchemy import SQLAlchemy
 
 # Options are: prod, dev, debug (default)
 APP_ENV = os.getenv("APP_ENV", "debug")
@@ -86,7 +87,7 @@ def _load_config():
     application.config["SECURITY_PASSWORD_SALT"] = os.getenv("PH_SECURITY_PASSWORD_SALT", "p4$$w0rd")
     application.config["TOKEN_EXPIRY_SECONDS"] = int(os.getenv("PH_TOKEN_EXPIRY_SECONDS", 172800))
     application.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = True
-    db_uri = "postgresql+psycopg2://%s:%s@%s:%s/%s" % (
+    db_uri = "postgresql+psycopg2://{}:{}@{}:{}/{}".format(
         application.config["DB_USER"],
         application.config["DB_PASSWORD"],
         application.config["DB_HOST"],
@@ -132,17 +133,18 @@ except Exception:
 
 # NOTE: These imports must be placed at the end of this file
 # flake8: noqa E402
-import views.general
-import views.postgres
+
 import views.auth
-import views.statistics
-import views.gene
-import views.variant
-import views.individual
-import views.hpo
-import views.users
-import views.user_individuals
 import views.autocomplete
+import views.gene
+import views.general
+import views.hpo
+import views.individual
+import views.postgres
 import views.save_configuration
-import views.variant_classification
+import views.statistics
 import views.upload
+import views.user_individuals
+import views.users
+import views.variant
+import views.variant_classification

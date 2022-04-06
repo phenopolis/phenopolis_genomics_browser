@@ -1,13 +1,15 @@
 """
 Postgres module
 """
+from contextlib import contextmanager
+
 import psycopg2
 from flask import g
 from sqlalchemy import create_engine
 from sqlalchemy.engine import Engine
-from sqlalchemy.orm import sessionmaker, Session
-from views import application, ENV_LOG_FLAG
-from contextlib import contextmanager
+from sqlalchemy.orm import Session, sessionmaker
+
+from views import ENV_LOG_FLAG, application
 
 
 def get_db():

@@ -1,7 +1,7 @@
 """
 Flask app
 """
-from views import application, APP_ENV
+from views import APP_ENV, application
 
 if __name__ == "__main__":
     application.debug = False

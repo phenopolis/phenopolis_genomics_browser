@@ -1,2 +1,27 @@
+[tool.isort]
+profile = "black"
+line_length = 120
+
 [tool.black]
+# This needs to match the isort and flake8 line lengths
 line-length = 120
+target_version = ['py38']
+include = '\.pyi?$'
+exclude = '''
+(
+  /(
+      \.mypy_cache
+    | \.pytest_cache
+    | \.git
+    | \.eggs
+    | alembic
+    | build
+    | build-steps
+    | dist
+    | docs
+    | env
+    | examples
+    | htmlcov
+  )/
+) | (_pb2\.pyi?$)
+'''

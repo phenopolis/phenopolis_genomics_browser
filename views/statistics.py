@@ -2,12 +2,14 @@
 Statistics view
 """
 from typing import List
+
 from flask import jsonify, session
-from db.model import Sex, Individual
-from views import VERSION, application, HG_ASSEMBLY
-from views.auth import requires_auth, USER
+
+from db.model import Individual, Sex
+from views import HG_ASSEMBLY, VERSION, application
+from views.auth import USER, requires_auth
 from views.individual import _count_all_individuals, _count_all_individuals_by_sex, _get_authorized_individuals
-from views.postgres import session_scope, get_db
+from views.postgres import get_db, session_scope
 from views.variant import sqlq_all_variants
 
 COMMON_VARIANTS_THRESHOLD = 0.05

@@ -59,7 +59,7 @@ from views.autocomplete import HPO_REGEX, NUMERIC_REGEX
     ),
 )
 def test_autocomplete(_demo_client, query, qt, msg):
-    resp = _demo_client.get("/autocomplete/{query}?query_type={qt}".format(query=query, qt=qt))
+    resp = _demo_client.get(f"/autocomplete/{query}?query_type={qt}")
     assert resp.status_code == 200
     if msg:
         assert msg in resp.json
@@ -93,7 +93,7 @@ def test_autocomplete(_demo_client, query, qt, msg):
     ),
 )
 def test_autocomplete_limit(_demo_client, limit, msg):
-    resp = _demo_client.get("/autocomplete/ttll?limit={limit}".format(limit=limit))
+    resp = _demo_client.get(f"/autocomplete/ttll?limit={limit}")
     assert resp.status_code == 400
     assert resp.json == msg
 

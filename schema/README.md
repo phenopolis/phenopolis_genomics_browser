@@ -259,11 +259,11 @@ limit 10;
 
     ```sql
     update public.individuals set observed_features = (
-        select string_agg(DISTINCT t.hpo_id , ',' ORDER BY t.hpo_id) AS hpo_ids from hpo.term t 
+        select string_agg(DISTINCT t.hpo_id , ',' ORDER BY t.hpo_id) AS hpo_ids from hpo.term t
         where t."name" = any(string_to_array((select observed_features_names from public.individuals i where i.internal_id = 'PH00002126'),';'))
     ),
     simplified_observed_features = (
-        select string_agg(DISTINCT t.hpo_id , ',' ORDER BY t.hpo_id) AS hpo_ids from hpo.term t 
+        select string_agg(DISTINCT t.hpo_id , ',' ORDER BY t.hpo_id) AS hpo_ids from hpo.term t
         where t."name" = any(string_to_array((select observed_features_names from public.individuals i where i.internal_id = 'PH00002126'),';'))
     )
     where internal_id = 'PH00002126'
@@ -290,7 +290,7 @@ limit 10;
 
     ```sql
     insert into phenopolis.individual_feature (individual_id,feature_id,"type")
-    select individual_id, feature_id, 'simplified' 
+    select individual_id, feature_id, 'simplified'
     from phenopolis.individual_feature where individual_id in (
         select if2.individual_id from phenopolis.individual_feature if2 where if2."type" = 'observed'
         except

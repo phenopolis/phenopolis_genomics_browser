@@ -4,9 +4,9 @@
 See https://hpo.jax.org/app/download/ontology
 """
 
+import logging
 import re
 import sys
-import logging
 
 import obonet
 import psycopg2

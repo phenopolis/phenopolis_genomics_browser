@@ -1,19 +1,19 @@
 #!/usr/bin/env python
 """Import an individual's VAR.tsv file"""
 
+import atexit
+import logging
 import os
 import re
 import sys
-import atexit
-import logging
 import tempfile
 from argparse import ArgumentParser, RawDescriptionHelpFormatter
 from urllib.parse import urlparse
 
 import boto3
 import psycopg2  # type: ignore
-from psycopg2 import sql
 from botocore.exceptions import ClientError
+from psycopg2 import sql
 
 logger = logging.getLogger()
 logging.basicConfig(level=logging.DEBUG, format="%(asctime)s %(levelname)s %(message)s")

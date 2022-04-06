@@ -5,12 +5,12 @@
 \! mkdir -p for_demo
 
 create temp view t_iv as
-    select iv.* from phenopolis.individual_variant iv 
-    join phenopolis.individual_gene ig on ig.individual_id = iv.individual_id 
-    where ig.gene_id = any('{3,15644,19297,21302}') 
+    select iv.* from phenopolis.individual_variant iv
+    join phenopolis.individual_gene ig on ig.individual_id = iv.individual_id
+    where ig.gene_id = any('{3,15644,19297,21302}')
     union
     select iv.* from phenopolis.individual_variant iv
-    join phenopolis.variant_gene vg on vg.variant_id = iv.variant_id 
+    join phenopolis.variant_gene vg on vg.variant_id = iv.variant_id
     where vg.gene_id = any('{ENSG00000184502,ENSG00000156171,ENSG00000119685}')
 ;
 

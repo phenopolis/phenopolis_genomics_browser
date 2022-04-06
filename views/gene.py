@@ -1,16 +1,17 @@
 """
 Gene view
 """
-from views.exceptions import PhenopolisException
-from views.variant import _get_variants
-from psycopg2 import sql
-from db.helpers import query_user_config, cursor2dict
-from sqlalchemy.orm import Session
 from flask import jsonify, session
+from psycopg2 import sql
+from sqlalchemy.orm import Session
+
+from db.helpers import cursor2dict, query_user_config
 from views import HG_ASSEMBLY, MAX_PAGE_SIZE, application
-from views.auth import USER, requires_auth, is_demo_user
+from views.auth import USER, is_demo_user, requires_auth
+from views.exceptions import PhenopolisException
+from views.general import _get_pagination_parameters, cache_on_browser, process_for_display
 from views.postgres import get_db, session_scope
-from views.general import _get_pagination_parameters, process_for_display, cache_on_browser
+from views.variant import _get_variants
 
 # NOTE: using tables: ensembl.gene, ensembl.gene_synonym, ensembl.transcript, ensembl.transcript_uniprot
 sqlq_main = sql.SQL(
@@ -154,7 +155,7 @@ def get_all_genes():
             limit, offset = _get_pagination_parameters()
             if limit > MAX_PAGE_SIZE:
                 return (
-                    jsonify(message="The maximum page size for genes is {}".format(MAX_PAGE_SIZE)),
+                    jsonify(message=f"The maximum page size for genes is {MAX_PAGE_SIZE}"),
                     400,
                 )
             sqlq_end = sql.SQL(
@@ -166,7 +167,7 @@ def get_all_genes():
                 where ui."user" = %(user)s)
             """
             )
-            sqlq = sqlq_main + sqlq_end + sql.SQL("limit {} offset {}".format(limit, offset))
+            sqlq = sqlq_main + sqlq_end + sql.SQL(f"limit {limit} offset {offset}")
             with get_db() as conn:
                 with conn.cursor() as cur:
                     cur.execute(sqlq, {"user": session[USER], "hga": HG_ASSEMBLY})

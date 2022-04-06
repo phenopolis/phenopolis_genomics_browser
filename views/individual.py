@@ -7,13 +7,13 @@ from collections import Counter
 from typing import Dict, List, Optional, Tuple, Union
 
 from bidict import bidict
-from db.helpers import cursor2dict, query_user_config
-from db.model import Individual, Sex, UserIndividual
 from flask import jsonify, request, session
 from psycopg2 import sql
 from sqlalchemy import and_, or_
 from sqlalchemy.orm import Session
 
+from db.helpers import cursor2dict, query_user_config
+from db.model import Individual, Sex, UserIndividual
 from views import HG_ASSEMBLY, MAX_PAGE_SIZE, application
 from views.auth import ADMIN_USER, DEMO_USER, USER, is_demo_user, requires_auth
 from views.exceptions import PhenopolisException
@@ -33,7 +33,7 @@ def get_all_individuals():
             limit, offset = _get_pagination_parameters()
             if limit > MAX_PAGE_SIZE:
                 return (
-                    jsonify(message="The maximum page size for individuals is {}".format(MAX_PAGE_SIZE)),
+                    jsonify(message=f"The maximum page size for individuals is {MAX_PAGE_SIZE}"),
                     400,
                 )
             individuals = _fetch_all_individuals(db_session=db_session, offset=offset, limit=limit)
@@ -380,7 +380,7 @@ def _fetch_all_individuals(db_session: Session, offset, limit) -> List[Dict]:
     But for others than admin it returns only individuals which this user has access,
     other users having access are not returned
     """
-    query = _query_all_individuals() + sql.SQL("limit {} offset {}".format(limit, offset))
+    query = _query_all_individuals() + sql.SQL(f"limit {limit} offset {offset}")
     with get_db() as conn:
         with conn.cursor() as cur:
             cur.execute(query, [session[USER]])

@@ -2,12 +2,13 @@
 Save configurations for a user
 """
 import psycopg2
-import db.helpers
 import ujson as json
-from flask import request, jsonify, session
+from flask import jsonify, request, session
+
+import db.helpers
 from views import application
-from views.auth import requires_auth, USER
-from views.postgres import postgres_cursor, get_db
+from views.auth import USER, requires_auth
+from views.postgres import get_db, postgres_cursor
 
 
 @application.route("/<language>/save_configuration/<pageType>/<pagePart>", methods=["POST"])
