@@ -72,7 +72,7 @@ class VCFTransform:
         assert self.headers["ALT"] == self.ALT
         assert self.headers["INFO"] == self.INFO
 
-    seen = set()
+    seen: set = set()
 
     def convert_line_data(self, line):
         fields = line.split(b"\t")
