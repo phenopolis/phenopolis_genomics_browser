@@ -20,6 +20,7 @@ boto3>=1.16.43
 pytest-cov>=2.10,<2.11
 black==19.10b0
 flake8>=3.8,<3.9
+markupsafe<=2.0.1
 pre-commit==2.18.1
 isort==5.10.1
 pyupgrade==2.31.1

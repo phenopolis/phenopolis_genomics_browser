@@ -8,10 +8,11 @@ import { useTranslation, Trans } from 'react-i18next';
 import i18next from 'i18next';
 
 function Copyright() {
+  var year = new Date().getFullYear();
   return (
     <Typography variant="body2" align="left">
       {'© '}
-      2021 Phenopolis Limited. Registered company number 11541164.
+      {year} Phenopolis Limited. Registered company number 11541164.
     </Typography>
   );
 }
@@ -19,7 +20,7 @@ function Copyright() {
 export default function StickyFooter() {
   const location = useLocation();
 
-  React.useEffect(() => {}, [location.pathname]);
+  React.useEffect(() => { }, [location.pathname]);
 
   const { t } = useTranslation();
 
