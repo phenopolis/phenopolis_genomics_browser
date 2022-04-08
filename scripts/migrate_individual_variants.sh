@@ -23,7 +23,7 @@ analyze public.hom_variants, public.het_variants, phenopolis.variant, public.ind
 insert into phenopolis.individual_variant
     (individual_id, variant_id, chrom, pos, ref, alt, zygosity)
 select ind.internal_id, pv.id, pv.chrom, pv.pos, pv.ref, pv.alt, 'HOM'
-from public.hom_variants hv 
+from public.hom_variants hv
 join phenopolis.variant pv
     on (hv."CHROM", hv."POS", hv."REF", hv."ALT") = (pv.chrom, pv.pos, pv.ref, pv.alt)
 join public.individuals ind on ind.internal_id = hv.individual;
@@ -31,7 +31,7 @@ join public.individuals ind on ind.internal_id = hv.individual;
 insert into phenopolis.individual_variant
     (individual_id, variant_id, chrom, pos, ref, alt, zygosity)
 select ind.internal_id, pv.id, pv.chrom, pv.pos, pv.ref, pv.alt, 'HOM'
-from public.hom_variants hv 
+from public.hom_variants hv
 join phenopolis.variant pv
     on (hv."CHROM", hv."POS", hv."REF", hv."ALT") = (pv.chrom, pv.pos, pv.ref, pv.alt)
 join public.individuals ind on ind.external_id = hv.individual;
@@ -39,7 +39,7 @@ join public.individuals ind on ind.external_id = hv.individual;
 insert into phenopolis.individual_variant
     (individual_id, variant_id, chrom, pos, ref, alt, zygosity)
 select ind.internal_id, pv.id, pv.chrom, pv.pos, pv.ref, pv.alt, 'HET'
-from public.het_variants hv 
+from public.het_variants hv
 join phenopolis.variant pv
     on (hv."CHROM", hv."POS", hv."REF", hv."ALT") = (pv.chrom, pv.pos, pv.ref, pv.alt)
 join public.individuals ind on ind.internal_id = hv.individual;
@@ -47,7 +47,7 @@ join public.individuals ind on ind.internal_id = hv.individual;
 insert into phenopolis.individual_variant
     (individual_id, variant_id, chrom, pos, ref, alt, zygosity)
 select ind.internal_id, pv.id, pv.chrom, pv.pos, pv.ref, pv.alt, 'HET'
-from public.het_variants hv 
+from public.het_variants hv
 join phenopolis.variant pv
     on (hv."CHROM", hv."POS", hv."REF", hv."ALT") = (pv.chrom, pv.pos, pv.ref, pv.alt)
 join public.individuals ind on ind.external_id = hv.individual;

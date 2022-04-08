@@ -2,14 +2,14 @@
 Received Uploaded Files
 """
 import os
+
 import boto3
 from botocore.client import Config
-from flask import request, jsonify
+from flask import jsonify, request
 
 from views import application
 from views.auth import requires_admin
 from views.exceptions import PhenopolisException
-
 
 UPLOAD_FOLDER = "upload"
 

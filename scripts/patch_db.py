@@ -13,15 +13,15 @@ in any script language, they should just have a shebang (e.g. NAME.sql is
 associated with NAME.pre.py and/or NAME.post.sh).
 """
 
+import logging
 import os
 import re
-import sys
 import shutil
 import socket
-import logging
 import subprocess as sp
-from glob import glob
+import sys
 from argparse import ArgumentParser
+from glob import glob
 
 import psycopg2
 from psycopg2.extras import NamedTupleCursor
@@ -274,7 +274,7 @@ commit;
     else:
         cur = cnn.cursor()
         while version in patches:
-            confirm("Upgrade patch table from version %s to version %s?" % (version, version + 1))
+            confirm(f"Upgrade patch table from version {version} to version {version + 1}?")
             logger.info("upgrading to patch version %s", version + 1)
             if not opt.dry_run:
                 cur.execute(patches[version])
@@ -293,7 +293,7 @@ def remove_applied_patches(cnn, patches):
         select name from schema_patch
         where status in ('applied', 'skipped')"""
     )
-    applied = set(r[0] for r in cur.fetchall())
+    applied = {r[0] for r in cur.fetchall()}
 
     rv = []
     for patch in patches:

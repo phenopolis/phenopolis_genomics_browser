@@ -1,5 +1,6 @@
 # code modified from https://realpython.com/handling-email-confirmation-in-flask/
 from itsdangerous import URLSafeTimedSerializer
+
 from views import application
 
 

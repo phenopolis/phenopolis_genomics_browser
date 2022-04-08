@@ -1,9 +1,9 @@
 from flask import jsonify, session
 from sqlalchemy.orm import Session
 
-from db.model import IndividualVariantClassification, Individual
+from db.model import Individual, IndividualVariantClassification
 from views import application
-from views.auth import requires_auth, USER
+from views.auth import USER, requires_auth
 from views.exceptions import PhenopolisException
 from views.helpers import _get_json_payload
 from views.individual import _fetch_authorized_individual
@@ -79,5 +79,5 @@ def _check_classification_valid(db_session: Session, classification: IndividualV
     individual = _fetch_authorized_individual(db_session, phenopolis_id)
     if individual is None:
         raise PhenopolisException(
-            "User not authorized to classify variants for individual {}".format(classification.individual_id), 401
+            f"User not authorized to classify variants for individual {classification.individual_id}", 401
         )

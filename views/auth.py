@@ -3,7 +3,8 @@ Authentication modules
 """
 
 from functools import wraps
-from flask import session, request, jsonify
+
+from flask import jsonify, request, session
 from passlib.handlers.argon2 import argon2
 from sqlalchemy import and_
 

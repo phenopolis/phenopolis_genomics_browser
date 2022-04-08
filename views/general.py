@@ -2,18 +2,20 @@
 General modules
 """
 import traceback
-from views.postgres import get_db
-import ujson as json
+from datetime import datetime, timedelta
+from functools import wraps
 from time import strftime
-from flask import jsonify, request, Response, session
+
+import ujson as json
+from flask import Response, jsonify, request, session
 from flask_mail import Message
 from sqlalchemy.orm import Session
 from werkzeug.exceptions import HTTPException
-from views import MAIL_USERNAME, VERSION, application, mail, APP_ENV
+
+from views import APP_ENV, MAIL_USERNAME, VERSION, application, mail
 from views.auth import DEMO_USER, USER
 from views.exceptions import PhenopolisException
-from datetime import datetime, timedelta
-from functools import wraps
+from views.postgres import get_db
 
 
 @application.route("/check_health")
@@ -142,7 +144,7 @@ def _parse_boolean_parameter(val):
     elif val in ("n", "no", "f", "false", "off", "0"):
         return 0
     else:
-        raise PhenopolisException("invalid truth value %r" % (val,), 400)
+        raise PhenopolisException(f"invalid truth value {val!r}", 400)
 
 
 def cache_on_browser(minutes=5):

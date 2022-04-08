@@ -4,12 +4,23 @@ DB schema
 # "postgres://admin:donotusethispassword@aws-us-east-1-portal.19.dblayer.com:15813/compose"
 
 import enum
-from sqlalchemy import Column, String, Integer, ForeignKey, JSON, Boolean, DateTime, Enum, func
-from sqlalchemy import BigInteger, SmallInteger
-from sqlalchemy.orm import relationship
-from sqlalchemy.ext.declarative import declarative_base, DeclarativeMeta
-from sqlalchemy.sql.schema import MetaData
 
+from sqlalchemy import (
+    JSON,
+    BigInteger,
+    Boolean,
+    Column,
+    DateTime,
+    Enum,
+    ForeignKey,
+    Integer,
+    SmallInteger,
+    String,
+    func,
+)
+from sqlalchemy.ext.declarative import DeclarativeMeta, declarative_base
+from sqlalchemy.orm import relationship
+from sqlalchemy.sql.schema import MetaData
 
 Public: DeclarativeMeta = declarative_base()
 Phenopolis: DeclarativeMeta = declarative_base(metadata=MetaData(schema="phenopolis"))
@@ -19,7 +30,7 @@ Hpo: DeclarativeMeta = declarative_base(metadata=MetaData(schema="hpo"))
 # meta=MetaData(engine)
 
 
-class AsDictable(object):
+class AsDictable:
     def as_dict(self):
         dictionary = self.__dict__.copy()
         if "_sa_instance_state" in dictionary:

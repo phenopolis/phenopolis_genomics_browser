@@ -1,8 +1,10 @@
-import pytest
 import os
+
+import pytest
 from dotenv import load_dotenv
-from views import application, APP_ENV, VERSION
-from views.auth import ADMIN_USER, USER, DEMO_USER
+
+from views import APP_ENV, VERSION, application
+from views.auth import ADMIN_USER, DEMO_USER, USER
 
 NONDEMO_USER = "nondemo"
 load_dotenv(dotenv_path="./private.env")

@@ -6,10 +6,11 @@ TODO:
       I think it's a frontend feature
 """
 
-from views.gene import gene
-from views.individual import get_all_individuals
-from views.general import check_health, after_request, exceptions
 from werkzeug.exceptions import BadHost
+
+from views.gene import gene
+from views.general import after_request, check_health, exceptions
+from views.individual import get_all_individuals
 
 
 def test_check_health(_demo):

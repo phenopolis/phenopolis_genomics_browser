@@ -11,15 +11,15 @@ Example usage:
             "host=$(dchost db) dbname=phenopolis_db user=phenopolis_api"
 """
 
-import re
-import os
-import sys
-import shlex
 import logging
+import os
+import re
+import shlex
 import subprocess as sp
-from shutil import which
-from contextlib import contextmanager
+import sys
 from argparse import ArgumentParser, RawDescriptionHelpFormatter
+from contextlib import contextmanager
+from shutil import which
 
 logger = logging.getLogger()
 logging.basicConfig(level=logging.DEBUG, format="%(asctime)s %(levelname)s %(message)s")
@@ -72,7 +72,7 @@ class VCFTransform:
         assert self.headers["ALT"] == self.ALT
         assert self.headers["INFO"] == self.INFO
 
-    seen = set()
+    seen: set = set()
 
     def convert_line_data(self, line):
         fields = line.split(b"\t")

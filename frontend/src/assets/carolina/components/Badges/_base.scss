@@ -15,4 +15,3 @@
 @each $color, $value in $theme-colors-neutral {
   @include badge-neutral-variant(".badge-neutral-#{$color}", $value);
 }
-

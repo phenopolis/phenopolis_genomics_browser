@@ -1,11 +1,11 @@
 #!/usr/bin/env python3
+import logging
+import re
+import time
 from typing import List, Tuple
 
-from pybiomart import Server
 import pandas as pd
-import re
-import logging
-import time
+from pybiomart import Server
 
 SYNONYM = "external_synonym"
 TRANSCRIPT_VERSION = "transcript_version"
@@ -231,7 +231,7 @@ class BiomartReader:
         Adds a column indicating whether the gene version is the latest in this table
         """
         id_with_version = "id_with_version"
-        df[id_with_version] = df[[id_field, version_field]].apply(lambda x: "{}.{}".format(x[0], x[1]), axis=1)
+        df[id_with_version] = df[[id_field, version_field]].apply(lambda x: f"{x[0]}.{x[1]}", axis=1)
         latest = df.groupby(id_field)[[id_with_version, version_field]].max()
         latest.reset_index(inplace=True)
         is_latest = df[id_with_version].isin(latest[id_with_version])
@@ -248,9 +248,7 @@ class BiomartReader:
         return transcripts_grch37, transcripts_grch38
 
     def _genes_sanity_checks(self, genes: pd.DataFrame) -> None:
-        unique_genes = (
-            genes[[ENSEMBL_GENE_ID, ASSEMBLY]].apply(lambda x: "{}.{}".format(x[0], x[1]), axis=1).value_counts()
-        )
+        unique_genes = genes[[ENSEMBL_GENE_ID, ASSEMBLY]].apply(lambda x: f"{x[0]}.{x[1]}", axis=1).value_counts()
         assert unique_genes[unique_genes > 1].shape[0] == 0, "Found non unique genes: {}".format(
             unique_genes[unique_genes > 1]
         )
@@ -263,9 +261,7 @@ class BiomartReader:
 
     def _transcripts_sanity_checks(self, transcripts: pd.DataFrame) -> None:
         unique_transcripts = (
-            transcripts[[ENSEMBL_TRANSCRIPT_ID, ASSEMBLY]]
-            .apply(lambda x: "{}.{}".format(x[0], x[1]), axis=1)
-            .value_counts()
+            transcripts[[ENSEMBL_TRANSCRIPT_ID, ASSEMBLY]].apply(lambda x: f"{x[0]}.{x[1]}", axis=1).value_counts()
         )
         assert unique_transcripts[unique_transcripts > 1].shape[0] == 0, "Found non unique genes: {}".format(
             unique_transcripts[unique_transcripts > 1]
@@ -281,7 +277,7 @@ class BiomartReader:
     def _exons_sanity_checks(self, exons: pd.DataFrame) -> None:
         unique_exons = (
             exons[[ENSEMBL_TRANSCRIPT_ID, ENSEMBL_EXON_ID, ASSEMBLY]]
-            .apply(lambda x: "{}.{}.{}".format(x[0], x[1], x[2]), axis=1)
+            .apply(lambda x: f"{x[0]}.{x[1]}.{x[2]}", axis=1)
             .value_counts()
         )
         assert unique_exons[unique_exons > 1].shape[0] == 0, "Found non unique exons: {}".format(
@@ -289,12 +285,12 @@ class BiomartReader:
         )
         unique_exons_by_rank = (
             exons[[ENSEMBL_TRANSCRIPT_ID, "rank", ASSEMBLY]]
-            .apply(lambda x: "{}.{}.{}".format(x[0], x[1], x[2]), axis=1)
+            .apply(lambda x: f"{x[0]}.{x[1]}.{x[2]}", axis=1)
             .value_counts()
         )
         assert (
             unique_exons_by_rank[unique_exons_by_rank > 1].shape[0] == 0
-        ), "Found non unique exons by rank: {}".format(unique_exons_by_rank[unique_exons_by_rank > 1])
+        ), f"Found non unique exons by rank: {unique_exons_by_rank[unique_exons_by_rank > 1]}"
         assert exons.ensembl_exon_id.isna().sum() == 0, "Found entry without ensembl id"
         assert exons.ensembl_transcript_id.isna().sum() == 0, "Found entry without transcript ensembl id"
         assert exons.ensembl_gene_id.isna().sum() == 0, "Found entry without gene ensembl id"
@@ -380,4 +376,4 @@ if __name__ == "__main__":
     transcripts_exons.to_csv("transcripts_exons.csv", index=False, header=True)
 
     end_time = time.time()
-    logging.warning("Finished in {} seconds".format(end_time - start_time))
+    logging.warning(f"Finished in {end_time - start_time} seconds")

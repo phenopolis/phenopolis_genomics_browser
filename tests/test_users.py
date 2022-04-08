@@ -6,8 +6,8 @@ from tests.conftest import NONDEMO_USER
 from tests.test_views import _check_only_available_to_admin
 from views.postgres import session_scope
 from views.token import generate_confirmation_token
-from views.user_individuals import delete_user_individual, create_user_individual
-from views.users import enable_user, get_users, get_user, create_user
+from views.user_individuals import create_user_individual, delete_user_individual
+from views.users import create_user, enable_user, get_user, get_users
 
 
 def test_create_user_individual_without_permissions(_demo):

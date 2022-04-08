@@ -11,14 +11,14 @@ Example usage:
             "host=$(dchost db) dbname=phenopolis_db user=phenopolis_api"
 """
 
-import re
-import os
-import sys
 import gzip
 import logging
+import os
+import re
+import sys
+from argparse import ArgumentParser, RawDescriptionHelpFormatter
 from urllib.parse import quote
 from urllib.request import urlopen
-from argparse import ArgumentParser, RawDescriptionHelpFormatter
 
 logger = logging.getLogger()
 logging.basicConfig(level=logging.DEBUG, format="%(asctime)s %(levelname)s %(message)s")
