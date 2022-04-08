@@ -2,11 +2,11 @@
 variant view
 """
 import requests
-from db.helpers import cursor2dict, query_user_config
 from flask import Response, jsonify
 from flask.globals import session
 from psycopg2 import sql
 
+from db.helpers import cursor2dict, query_user_config
 from views import HG_ASSEMBLY, MAX_PAGE_SIZE, application, phenoid_mapping, variant_file
 from views.auth import DEMO_USER, USER, requires_auth
 from views.autocomplete import CHROMOSOME_POS_REF_ALT_REGEX, ENSEMBL_GENE_REGEX, PATIENT_REGEX
@@ -84,10 +84,10 @@ def _get_variants(target: str):
     limit, offset = _get_pagination_parameters()
     if limit > MAX_PAGE_SIZE:
         return (
-            jsonify(message="The maximum page size for variants is {}".format(MAX_PAGE_SIZE)),
+            jsonify(message=f"The maximum page size for variants is {MAX_PAGE_SIZE}"),
             400,
         )
-    sql_page = sql.SQL("limit {} offset {}".format(limit, offset))
+    sql_page = sql.SQL(f"limit {limit} offset {offset}")
 
     if CHROMOSOME_POS_REF_ALT_REGEX.match(target):
         c, p, r, a = target.split("-")
@@ -222,7 +222,7 @@ def _get_genotypes(chrom, pos):
     try:
         v = next(variant_file(f"{chrom}:{pos}-{pos}"))
         lookup = {s: i for i, s in enumerate(variant_file.samples)}
-        gts = [tuple([item if item >= 0 else None for item in alist[:2]]) for alist in v.genotypes]
+        gts = [tuple(item if item >= 0 else None for item in alist[:2]) for alist in v.genotypes]
         rds = [x.item() if x >= 0 else None for x in v.gt_ref_depths]
         ads = [x.item() if x >= 0 else None for x in v.gt_alt_depths]
         dps = [x.item() if x >= 0 else None for x in v.gt_depths]
@@ -279,10 +279,10 @@ def get_all_variants():
             limit, offset = _get_pagination_parameters()
             if limit > MAX_PAGE_SIZE:
                 return (
-                    jsonify(message="The maximum page size for variants is {}".format(MAX_PAGE_SIZE)),
+                    jsonify(message=f"The maximum page size for variants is {MAX_PAGE_SIZE}"),
                     400,
                 )
-            sqlq = sqlq_all_variants + sql.SQL("limit {} offset {}".format(limit, offset))
+            sqlq = sqlq_all_variants + sql.SQL(f"limit {limit} offset {offset}")
             with get_db() as conn:
                 with conn.cursor() as cur:
                     cur.execute(sqlq, [session[USER]])

@@ -87,7 +87,7 @@ def _load_config():
     application.config["SECURITY_PASSWORD_SALT"] = os.getenv("PH_SECURITY_PASSWORD_SALT", "p4$$w0rd")
     application.config["TOKEN_EXPIRY_SECONDS"] = int(os.getenv("PH_TOKEN_EXPIRY_SECONDS", 172800))
     application.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = True
-    db_uri = "postgresql+psycopg2://%s:%s@%s:%s/%s" % (
+    db_uri = "postgresql+psycopg2://{}:{}@{}:{}/{}".format(
         application.config["DB_USER"],
         application.config["DB_PASSWORD"],
         application.config["DB_HOST"],
@@ -131,12 +131,11 @@ try:
 except Exception:
     phenoid_mapping = {}
 
+# NOTE: These imports must be placed at the end of this file
+# flake8: noqa E402
 import views.auth
 import views.autocomplete
 import views.gene
-
-# NOTE: These imports must be placed at the end of this file
-# flake8: noqa E402
 import views.general
 import views.hpo
 import views.individual

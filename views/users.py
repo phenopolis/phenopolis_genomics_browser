@@ -1,18 +1,19 @@
 """
 Users view
 """
-from flask import session, jsonify
+from flask import jsonify, session
 from flask_mail import Message
 from passlib.handlers.argon2 import argon2
 from sqlalchemy import func
-from db.model import User, UserIndividual, UserConfig
+
+from db.model import User, UserConfig, UserIndividual
 from views import MAIL_USERNAME, application, mail
-from views.auth import requires_admin_or_user, requires_auth, check_auth, requires_admin, is_demo_user, USER, ADMIN_USER
+from views.auth import ADMIN_USER, USER, check_auth, is_demo_user, requires_admin, requires_admin_or_user, requires_auth
 from views.exceptions import PhenopolisException
 from views.general import _parse_boolean_parameter
 from views.helpers import _get_json_payload
 from views.postgres import session_scope
-from views.token import generate_confirmation_token, confirm_token
+from views.token import confirm_token, generate_confirmation_token
 
 CONFIRMATION_URL = "confirmation_url"
 

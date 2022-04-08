@@ -2,8 +2,8 @@
 """Import a variants csv file into the database.
 """
 
-import sys
 import logging
+import sys
 from argparse import ArgumentParser, RawDescriptionHelpFormatter
 
 import psycopg2  # type: ignore

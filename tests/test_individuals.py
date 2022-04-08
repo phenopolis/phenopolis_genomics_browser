@@ -1,7 +1,8 @@
 import pytest
+from sqlalchemy.orm import Session
+
 import views.individual as vi  # to allow MAX_PAGE_SIZE redefinition
 from db.model import Individual, UserIndividual
-from sqlalchemy.orm import Session
 from views.auth import USER
 from views.individual import MAPPING_SEX_REPRESENTATIONS, get_all_individuals, get_individual_by_id
 from views.postgres import session_scope

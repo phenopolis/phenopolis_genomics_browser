@@ -54,10 +54,10 @@ join hpo.term f on f.hpo_id = j.hpo_id
 on conflict on constraint individual_feature_pkey do nothing;
 
 insert into phenopolis.individual_gene (individual_id, gene_id)
-select i2.id, g.identifier 
-from public.individuals i 
+select i2.id, g.identifier
+from public.individuals i
 join ensembl.gene g on g.hgnc_symbol = any(string_to_array(i.genes , ','))
-join phenopolis.individual i2 on i2.phenopolis_id = i.internal_id 
+join phenopolis.individual i2 on i2.phenopolis_id = i.internal_id
 where g.assembly = 'GRCh37'
 on conflict on constraint individual_gene_pkey do nothing
 ;

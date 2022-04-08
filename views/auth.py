@@ -4,11 +4,11 @@ Authentication modules
 
 from functools import wraps
 
-from db.model import User
 from flask import jsonify, request, session
 from passlib.handlers.argon2 import argon2
 from sqlalchemy import and_
 
+from db.model import User
 from views import application
 from views.postgres import session_scope
 

@@ -1,6 +1,7 @@
 from flask import session
 from sqlalchemy import and_
 from sqlalchemy.orm import Session
+
 from db.model import UserConfig
 from views.postgres import postgres_cursor
 

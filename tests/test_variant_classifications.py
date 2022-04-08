@@ -1,6 +1,7 @@
+import random
+
 from db.model import IndividualVariantClassification
 from views.postgres import session_scope
-import random
 
 
 def test_create_classification_with_admin_user(_admin_client):
@@ -160,7 +161,7 @@ def test_get_classifications_by_individual(_admin_client):
     assert 13309 in observed_variant_ids
     assert 22678 in observed_variant_ids
     assert 3491 not in observed_variant_ids
-    observed_individual_ids = set([c.get("individual_id") for c in classifications])
+    observed_individual_ids = {c.get("individual_id") for c in classifications}
     assert individual_id in observed_individual_ids
     assert len(observed_individual_ids) == 1
 

@@ -1,10 +1,10 @@
 """
 HPO view - Human Phenotype Ontology
 """
-from db.helpers import cursor2dict, query_user_config
 from flask import jsonify, session
 from psycopg2 import sql
 
+from db.helpers import cursor2dict, query_user_config
 from views import MAX_PAGE_SIZE, application
 from views.auth import USER, requires_auth
 from views.exceptions import PhenopolisException
@@ -195,10 +195,10 @@ def get_all_hpos():
             limit, offset = _get_pagination_parameters()
             if limit > MAX_PAGE_SIZE:
                 return (
-                    jsonify(message="The maximum page size for variants is {}".format(MAX_PAGE_SIZE)),
+                    jsonify(message=f"The maximum page size for variants is {MAX_PAGE_SIZE}"),
                     400,
                 )
-            sqlq = sqlq_all_hpos + sql.SQL("limit {} offset {}".format(limit, offset))
+            sqlq = sqlq_all_hpos + sql.SQL(f"limit {limit} offset {offset}")
             with get_db() as conn:
                 with conn.cursor() as cur:
                     cur.execute(sqlq, [[x.id for x in individuals]])

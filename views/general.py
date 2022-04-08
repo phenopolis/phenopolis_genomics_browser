@@ -144,7 +144,7 @@ def _parse_boolean_parameter(val):
     elif val in ("n", "no", "f", "false", "off", "0"):
         return 0
     else:
-        raise PhenopolisException("invalid truth value %r" % (val,), 400)
+        raise PhenopolisException(f"invalid truth value {val!r}", 400)
 
 
 def cache_on_browser(minutes=5):
@@ -169,7 +169,7 @@ def cache_on_browser(minutes=5):
 def _get_pagination_parameters():
     try:
         offset = int(request.args.get("offset", 0))
-        limit = int(request.args.get("limit", 1000))
+        limit = int(request.args.get("limit", 1500))
     except ValueError as e:
         raise PhenopolisException(str(e), 500)
     return limit, offset

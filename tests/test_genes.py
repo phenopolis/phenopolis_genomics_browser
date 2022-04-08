@@ -1,4 +1,5 @@
 import pytest
+
 from views.gene import gene
 
 

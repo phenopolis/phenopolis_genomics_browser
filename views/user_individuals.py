@@ -5,7 +5,7 @@ NOTE: by @alanwilter - I don't see this module being used anywhere anymore, if e
 from flask import jsonify
 from sqlalchemy.orm import Session
 
-from db.model import UserIndividual, User, Individual
+from db.model import Individual, User, UserIndividual
 from views import application
 from views.auth import requires_admin
 from views.exceptions import PhenopolisException
