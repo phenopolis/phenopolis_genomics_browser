@@ -1,6 +1,6 @@
 {
-  "short_name": "Phenopolis",
-  "name": "Phenopolis - Harmonization & Analysis of Sequencing & Phenotype Data.",
+  "short_name": "Open-source Genome Browser",
+  "name": "Open-source Genome Browser by Phenopolis - Harmonization & Analysis of Sequencing & Phenotype Data.",
   "icons": [
     {
       "src": "phenopolis_logo.ico",

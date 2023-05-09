@@ -7,7 +7,7 @@ const Home = () => {
   return (
     <>
       <CssBaseline />
-      <HomeBanner BannerText="Phenopolis" />
+      <HomeBanner BannerText="Open-source Genome Browser" />
       <HomeMainPart />
     </>
   );
