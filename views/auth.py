@@ -82,6 +82,15 @@ def requires_admin_or_user(f):
     return decorated
 
 
+def requires_user(f):
+    @wraps(f)
+    def decorated(*args, **kwargs):
+        if session.get(USER) != DEMO_USER:
+            return f(*args, **kwargs)
+
+    return decorated
+
+
 @application.route("/<language>/login", methods=["POST"])
 @application.route("/login", methods=["POST"])
 def login():

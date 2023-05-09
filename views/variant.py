@@ -81,6 +81,14 @@ def _get_variants(target: str):
     Returns:
         List[dict variant]: empty ([]), one or more variants depending on input target
     """
+    limit, offset = _get_pagination_parameters()
+    if limit > MAX_PAGE_SIZE:
+        return (
+            jsonify(message=f"The maximum page size for variants is {MAX_PAGE_SIZE}"),
+            400,
+        )
+    sql_page = sql.SQL(f"limit {limit} offset {offset}")
+
     if CHROMOSOME_POS_REF_ALT_REGEX.match(target):
         c, p, r, a = target.split("-")
         filter = sql.SQL(f"""where v.chrom = '{c}' and v.pos = {p} and v."ref" = '{r}' and v.alt = '{a}'""")
@@ -148,7 +156,7 @@ def _get_variants(target: str):
         """
     )
 
-    sqlq = sqlq_main + filter + sqlq_end
+    sqlq = sqlq_main + filter + sqlq_end + sql_page
     with get_db() as conn:
         with conn.cursor() as cur:
             cur.execute(sqlq, {"hga": HG_ASSEMBLY})

@@ -1,5 +1,5 @@
 """
-Package to init views
+Package views
 """
 import datetime
 import logging
@@ -34,7 +34,7 @@ ENV_LOG_FLAG = True
 if APP_ENV in ["prod"]:
     ENV_LOG_FLAG = False
 
-variant_file = VCF(os.getenv("VCF_FILE"))
+variant_file = VCF(os.getenv("VCF_FILE", "schema/small_demo.vcf.gz"))
 
 
 def _configure_logs():
@@ -65,7 +65,7 @@ def _configure_logs():
             "root": {"level": log_level, "handlers": ["wsgi"]},
         }
     )
-    # add SQLalchemy logs
+    # add SQLAlchemy logs
     logging.getLogger("sqlalchemy").addHandler(default_handler)
 
 
@@ -133,7 +133,6 @@ except Exception:
 
 # NOTE: These imports must be placed at the end of this file
 # flake8: noqa E402
-
 import views.auth
 import views.autocomplete
 import views.gene

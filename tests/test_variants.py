@@ -42,6 +42,7 @@ def test_variant_genotype_vcf(_admin_client):
 def test_cyvcf2_S3(_admin_client):
     from cyvcf2 import VCF
 
+    # a valid AWS_ACCESS_KEY_ID / AWS_SECRET_ACCESS_KEY is needed here
     vcf_S3 = VCF("s3://3kricegenome/test/test.vcf.gz")  # public VCF file
     assert len(vcf_S3.raw_header) == 559362, "Critical, S3 access not working"
 

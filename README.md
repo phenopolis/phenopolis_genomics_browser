@@ -18,28 +18,54 @@ Set the following environment variable in
 * `public.env`:
 
 ```bash
-VCF_FILE=...
+...
+HG_ASSEMBLY=GRCh37 # or GRCh38
+
+# Set if local path or remote "s3://_bucket_/_folder_/_file_.vcf.gz"
+VCF_FILE=schema/small_demo.vcf.gz
 ```
 
-Where `VCF_FILE` can be either a local file (e.g. `path/file.vcf.gz`) or a remote `S3` file (e.g. `s3://any_remote/file.vcf.gz` )
+Where `VCF_FILE` can be either a local file (e.g. `path/file.vcf.gz`) or a remote `S3` file (e.g. `s3://any_remote/file.vcf.gz`)
 
 It's critical that the `VCF_FILE` has along its `tbi` file as well.
 
 * Create `private.env` and add:
 
 ```bash
-AWS_SECRET_ACCESS_KEY=....
-AWS_ACCESS_KEY_ID=....
+APP_ENV=prod # or debug
+
+# Set bucket name and region
+BUCKET=_your_bucket_
+REGION=_region_
+
+# Set below if using remote S3 (AWS, Wasabi etc.) or local (MinIO)
+S3_ACCESS_KEY_ID=...
+S3_SECRET_ACCESS_KEY=...
+
+# Wasabi example
+# S3_ACCESS_KEY_ID=...
+# S3_SECRET_ACCESS_KEY=...
+# ENDPOINT=https://s3.eu-central-1.wasabisys.com
+# REGION=eu-central-1
+
+# MinIO example
+# S3_ACCESS_KEY_ID=minio # change it for your own safety
+# S3_SECRET_ACCESS_KEY=minio123 # change it for your own safety
+# ENDPOINT=http://minio-server:9000
+
+# Set accordingly
+MAIL_SUPPRESS_SEND=false # or true
+MAIL_PASSWORD=...
 ```
 
 Note: do not add single or double quotes around the value as they are preserved.
 
 ### Build and launch the services
 
-This will set up the database and load the demo database.
+This will set up the database and load the demo database running local S3 file service (by [MinIO](https://min.io/)).
 
 ```bash
-docker compose up
+docker-compose -f docker-compose.yml -f docker-compose.minio1.yml up
 ```
 
 If one wants to rebuild fresh images, one can do:

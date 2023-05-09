@@ -1,42 +1,47 @@
 version: '3.8'
-x-common: &common
+
+x-env-common:
+   &env-common
    env_file:
-   - public.env
-   - private.env
+      - private.env
+      - public.env
+
 services:
    app:
-      <<: *common
+      <<: *env-common
       build:
          context: .
       image: phenopolis_api
       command: |
          sh -c "gunicorn -b 0.0.0.0:5000 --reload --workers=1 --threads=15 application:application"
       ports:
-      - 5000:5000
+         - 5000:5000
       volumes:
-      - ./:/app
+         - ./:/app
       depends_on:
-      - db
+         - db
    db:
-      <<: *common
+      <<: *env-common
       image: postgres:12-alpine
       volumes:
-      - db:/var/lib/postgresql/data
-      - ./:/app
-      - ./schema/initdb.d/:/docker-entrypoint-initdb.d
+         - db:/var/lib/postgresql/data
+         - ./:/app
+         - ./schema/initdb.d/:/docker-entrypoint-initdb.d
+
    frontend:
-      <<: *common
+      <<: *env-common
       tty: true # give extra colours in term log
       build:
          context: frontend
       image: phenopolis_frontend
       command: ./entrypoint.sh _redirects_docker
       ports:
-      - 8888:8888
+         - 8888:8888 # export 8889 to avoid jupyter on 8888
       depends_on:
-      - app
+         - app
       volumes:
-      - ./frontend/:/app
+         - ./frontend/:/app
       stdin_open: true
+
 volumes:
-   db: null
+   db:

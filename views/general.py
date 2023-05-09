@@ -169,7 +169,7 @@ def cache_on_browser(minutes=5):
 def _get_pagination_parameters():
     try:
         offset = int(request.args.get("offset", 0))
-        limit = int(request.args.get("limit", 10))
+        limit = int(request.args.get("limit", 1500))
     except ValueError as e:
         raise PhenopolisException(str(e), 500)
     return limit, offset
